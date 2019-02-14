@@ -1,4 +1,4 @@
-package org.grobid.service;
+package org.grobid.service.controller;
 
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
@@ -7,7 +7,10 @@ import org.grobid.core.layout.Page;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.IOUtilities;
 import org.grobid.core.utilities.Pair;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -17,14 +20,20 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Singleton
+@Path("/")
 public class AnnotationController {
 
     private static final String PATH_BASE = "/";
     private static final String PATH_IS_ALIVE = "isalive";
 
-    private static final String PATH_ANNOTATE_SUPERCONDUCTORS_PDF = "annotateSuperconductorsPDF";
-    private static final String PATH_SUPERCONDUCTORS_TEXT = "processSuperconductorsText";
+    private SuperconductorsParser superconductorsParser;
 
+
+    @Inject
+    public AnnotationController(GrobidSuperconductorsConfiguration configuration, SuperconductorsParser superconductorsParser) {
+        this.superconductorsParser = superconductorsParser;
+    }
 
     @Path(PATH_IS_ALIVE)
     @Produces(MediaType.TEXT_PLAIN)
@@ -46,14 +55,13 @@ public class AnnotationController {
         return response;
     }
 
-    @Path(PATH_ANNOTATE_SUPERCONDUCTORS_PDF)
+    @Path("annotateSuperconductorsPDF")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("application/json")
     @POST
-    public static Response processPDF(final InputStream inputStream) {
+    public Response processPDF(final InputStream inputStream) {
         Response response = null;
         File originFile = null;
-        SuperconductorsParser parser = SuperconductorsParser.getInstance();
 
         try {
             LibraryLoader.load();
@@ -63,7 +71,7 @@ public class AnnotationController {
                 response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             } else {
                 long start = System.currentTimeMillis();
-                Pair<List<Superconductor>, Document> extractedEntities = parser.extractQuantitiesPDF(originFile);
+                Pair<List<Superconductor>, Document> extractedEntities = superconductorsParser.extractQuantitiesPDF(originFile);
                 long end = System.currentTimeMillis();
 
                 Document doc = extractedEntities.getB();
@@ -118,16 +126,15 @@ public class AnnotationController {
         return response;
     }
 
-    @Path(PATH_SUPERCONDUCTORS_TEXT)
+    @Path("processSuperconductorsText")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @POST
-    public static Response processTextSuperconductors(String text) {
+    public Response processTextSuperconductors(String text) {
         Response response = null;
 
         try {
             long start = System.currentTimeMillis();
-            SuperconductorsParser quantityParser = SuperconductorsParser.getInstance();
-            List<Superconductor> measurements = quantityParser.process(text);
+            List<Superconductor> measurements = superconductorsParser.process(text);
             long end = System.currentTimeMillis();
 
             StringBuilder jsonBuilder = null;

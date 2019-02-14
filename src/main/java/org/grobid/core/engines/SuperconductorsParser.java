@@ -29,6 +29,8 @@ import org.grobid.core.utilities.LayoutTokensUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,11 +43,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTOR_OTHER;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTOR_VALUE_NAME;
 
-/**
- * Quantity/measurement extraction.
- *
- * @author Patrice Lopez
- */
+@Singleton
 public class SuperconductorsParser extends AbstractParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParser.class);
 
@@ -63,7 +61,8 @@ public class SuperconductorsParser extends AbstractParser {
         instance = new SuperconductorsParser();
     }
 
-    private SuperconductorsParser() {
+    @Inject
+    public SuperconductorsParser() {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         parsers = new EngineParsers();
     }
