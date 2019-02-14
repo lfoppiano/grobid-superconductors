@@ -104,8 +104,7 @@ test {
 
 def trainerTasks = [
         //Training models
-        "train_superconductors": "org.grobid.trainer.SuperconductorTrainer",
-        "generateTraining_superconductors": "org.grobid.core.main.batch.SuperconductorsMain"
+        "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer"
 ]
 
 trainerTasks.each { taskName, mainClassName ->
