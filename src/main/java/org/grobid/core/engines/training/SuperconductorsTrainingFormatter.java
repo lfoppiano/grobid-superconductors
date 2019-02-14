@@ -1,12 +1,7 @@
 package org.grobid.core.engines.training;
 
-import nu.xom.Attribute;
 import nu.xom.Element;
-import org.grobid.core.data.Measurement;
-import org.grobid.core.data.Quantity;
 import org.grobid.core.data.Superconductor;
-import org.grobid.core.data.Unit;
-import org.grobid.core.utilities.UnitUtilities;
 
 import java.util.List;
 
@@ -54,25 +49,4 @@ public class SuperconductorsTrainingFormatter {
         return p;
     }
 
-    private Element unitToElement(String text, Unit unit) {
-        int startU = unit.getOffsetStart();
-        int endU = unit.getOffsetEnd();
-
-        Element unitNode = teiElement("measure");
-
-        if ((unit.getUnitDefinition() != null) && (unit.getUnitDefinition().getType() != null)) {
-            unitNode.addAttribute(new Attribute("type", unit.getUnitDefinition().getType().toString()));
-        } else {
-            unitNode.addAttribute(new Attribute("type", "?"));
-        }
-
-        if (unit.getRawName() != null) {
-            unitNode.addAttribute(new Attribute("unit", unit.getRawName().trim()));
-        } else {
-            unitNode.addAttribute(new Attribute("unit", "?"));
-        }
-
-        unitNode.appendChild(text.substring(startU, endU));
-        return unitNode;
-    }
 }

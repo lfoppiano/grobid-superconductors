@@ -5,8 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.QuantityAnalyzer;
-import org.grobid.core.data.*;
-import org.grobid.core.data.normalization.QuantityNormalizer;
+import org.grobid.core.data.BiblioItem;
+import org.grobid.core.data.Figure;
+import org.grobid.core.data.Superconductor;
+import org.grobid.core.data.Table;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
 import org.grobid.core.document.DocumentSource;
@@ -48,9 +50,6 @@ public class SuperconductorsParser extends AbstractParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParser.class);
 
     private static volatile SuperconductorsParser instance;
-    private ValueParser valueParser = ValueParser.getInstance();
-    private QuantifiedObjectParser substanceParser = QuantifiedObjectParser.getInstance();
-    private QuantityNormalizer quantityNormalizer = new QuantityNormalizer();
     private EngineParsers parsers;
 
     public static SuperconductorsParser getInstance() {

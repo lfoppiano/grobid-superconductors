@@ -1,7 +1,7 @@
 package org.grobid.core.analyzers;
 
-import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lang.Language;
+import org.grobid.core.layout.LayoutToken;
 
 import java.util.ArrayList;
 import java.util.List;

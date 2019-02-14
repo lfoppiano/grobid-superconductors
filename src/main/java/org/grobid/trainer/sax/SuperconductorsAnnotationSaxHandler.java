@@ -4,7 +4,6 @@ package org.grobid.trainer.sax;
 import org.grobid.core.analyzers.QuantityAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.Pair;
-import org.grobid.core.utilities.UnitUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
