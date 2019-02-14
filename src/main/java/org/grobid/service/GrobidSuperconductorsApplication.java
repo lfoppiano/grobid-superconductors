@@ -8,6 +8,7 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.grobid.service.command.TrainingGenerationCommand;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
 
     @Override
     public String getName() {
-        return "Grobid-superconductors";
+        return "grobid-superconductors";
     }
 
     private List<? extends Module> getGuiceModules() {
@@ -36,6 +37,7 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(new MultiPartBundle());
         bootstrap.addBundle(new AssetsBundle("/web", "/", "index.html", "assets"));
+        bootstrap.addCommand(new TrainingGenerationCommand());
     }
 
     @Override

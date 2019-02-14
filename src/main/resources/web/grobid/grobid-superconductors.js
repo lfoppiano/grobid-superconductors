@@ -160,7 +160,7 @@ var grobid = (function ($) {
 
         if (selected == 'processSuperconductorsText') {
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: urlLocal,
                 data: {text: $('#inputTextArea').val()},
                 success: SubmitSuccesful,

@@ -8,6 +8,7 @@ import com.hubspot.dropwizard.guicier.DropwizardAwareModule;
 import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.service.controller.AnnotationController;
+import org.grobid.service.controller.HealthCheck;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

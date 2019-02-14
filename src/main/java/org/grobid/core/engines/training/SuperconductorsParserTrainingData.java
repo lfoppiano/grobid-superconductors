@@ -202,7 +202,6 @@ public class SuperconductorsParserTrainingData {
     }*/
 
     private void createTrainingPDF(File file, String outputDirectory, int id) {
-        List<Superconductor> superconductorsList = null;
         // first we apply GROBID fulltext model on the PDF to get the full text TEI
         Document teiDoc = null;
         try {
@@ -211,7 +210,7 @@ public class SuperconductorsParserTrainingData {
                             .build();
             teiDoc = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
         } catch (Exception e) {
-            throw new GrobidException("Cannot create training data because GROBIL full text model failed on the PDF: " + file.getPath(), e);
+            throw new GrobidException("Cannot create training data because GROBID Fulltext model failed on the PDF: " + file.getPath(), e);
         }
         if (teiDoc == null) {
             return;
@@ -263,8 +262,7 @@ public class SuperconductorsParserTrainingData {
      */
     @SuppressWarnings({"UnusedParameters"})
     public int createTrainingBatch(String inputDirectory,
-                                   String outputDirectory,
-                                   int ind) {
+                                   String outputDirectory) {
         try {
             File path = new File(inputDirectory);
             if (!path.exists()) {
@@ -291,10 +289,6 @@ public class SuperconductorsParserTrainingData {
             LOGGER.info(refFiles.size() + " files to be processed.");
 
             int n = 0;
-            if (ind == -1) {
-                // for undefined identifier (value at -1), we initialize it to 0
-                n = 1;
-            }
             for (final File file : refFiles) {
                 try {
                     createTraining(file.getAbsolutePath(), outputDirectory, n);
@@ -302,8 +296,7 @@ public class SuperconductorsParserTrainingData {
                     LOGGER.error("An error occured while processing the following pdf: "
                             + file.getPath(), exp);
                 }
-                if (ind != -1)
-                    n++;
+                n++;
             }
 
             return refFiles.size();

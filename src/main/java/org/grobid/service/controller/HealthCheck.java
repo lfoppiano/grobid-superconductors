@@ -1,4 +1,4 @@
-package org.grobid.service;
+package org.grobid.service.controller;
 
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
