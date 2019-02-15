@@ -1,6 +1,7 @@
 package org.grobid.core.features;
 
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.utilities.GrobidProperties;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,6 +14,7 @@ public class FeaturesVectorSuperconductorsTest {
 
     @Before
     public void setUp() throws Exception {
+        GrobidProperties.getInstance();
         target = new FeaturesVectorSuperconductors();
     }
 

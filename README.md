@@ -11,7 +11,13 @@ We focus our work on technical and scientific articles (text, XML and PDF input)
 
 ## Documentation
 
-TBD 
+Getting started
+
+> git clone ....
+
+> git submodule init
+
+> git submodule update 
 
 ## License
 
