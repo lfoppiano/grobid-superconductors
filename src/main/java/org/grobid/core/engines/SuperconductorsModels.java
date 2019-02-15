@@ -13,8 +13,8 @@ public class SuperconductorsModels {
 
     public static final GrobidModel SUPERCONDUCTORS = GrobidModels.modelFor("superconductors");
 
-    public static List<String> getList() {
-        return Collections.singletonList(SUPERCONDUCTORS.getModelName());
-    }
+//    public static List<String> getList() {
+//        return Collections.singletonList(SUPERCONDUCTORS.getModelName());
+//    }
 
 }

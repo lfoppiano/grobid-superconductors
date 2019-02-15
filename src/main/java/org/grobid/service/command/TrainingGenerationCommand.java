@@ -7,7 +7,6 @@ import net.sourceforge.argparse4j.inf.Subparser;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
-import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
@@ -15,6 +14,7 @@ import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
@@ -49,20 +49,30 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
                 .dest(MODEL_NAME)
                 .type(String.class)
                 .required(true)
-                .choices(SuperconductorsModels.getList())
-                .help("Model for which to create training data: ");
+//                .choices(SuperconductorsModels.getList())
+                .help("Model for which to create training data");
     }
 
     @Override
     protected void run(Bootstrap bootstrap, Namespace namespace, GrobidSuperconductorsConfiguration configuration) throws Exception {
         try {
+
+            GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
+            String grobidHome = configuration.getGrobidHome();
+            if (grobidHome != null) {
+                GrobidProperties.setGrobidPropertiesPath(new File(grobidHome, "/config/grobid.properties").getAbsolutePath());
+            }
+
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
-            grobidHomeFinder.findGrobidHomeOrFail();
-            LibraryLoader.load();
             GrobidProperties.getInstance(grobidHomeFinder);
+            Engine.getEngine(true);
+            LibraryLoader.load();
+
+//            GrobidProperties.getInstance(grobidHomeFinder);
+//            LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Please use the option -gH to specify in the command.");
-            System.err.println(exp);
+            exp.printStackTrace();
 
             System.exit(-1);
         }
