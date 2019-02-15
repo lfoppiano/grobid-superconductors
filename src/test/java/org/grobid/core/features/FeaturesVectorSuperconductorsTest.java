@@ -1,12 +1,11 @@
 package org.grobid.core.features;
 
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.GrobidProperties;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class FeaturesVectorSuperconductorsTest {
 
@@ -14,7 +13,6 @@ public class FeaturesVectorSuperconductorsTest {
 
     @Before
     public void setUp() throws Exception {
-        GrobidProperties.getInstance();
         target = new FeaturesVectorSuperconductors();
     }
 
@@ -37,8 +35,7 @@ public class FeaturesVectorSuperconductorsTest {
         previousToken.setBold(true);
 
 
-        FeaturesVectorSuperconductors features = target.addFeatures(token, "bao",
-                previousToken);
+        FeaturesVectorSuperconductors features = target.addFeatures(token, "bao", previousToken);
 
         assertThat(features.printVector(), is("token1 token1 t to tok toke 1 n1 en1 ken1 NOCAPS CONTAINDIGIT 0 NOPUNCT tokenX xxxd xd SAMEFONT SAMEFONTSIZE bao"));
     }

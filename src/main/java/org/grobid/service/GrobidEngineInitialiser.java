@@ -20,6 +20,7 @@ public class GrobidEngineInitialiser {
 
     @Inject
     public GrobidEngineInitialiser(GrobidSuperconductorsConfiguration configuration) {
+        LOGGER.info("Initialising Grobid");
         GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
         String grobidHome = configuration.getGrobidHome();
         if (grobidHome != null) {
@@ -31,7 +32,7 @@ public class GrobidEngineInitialiser {
         Engine engine = null;
         try {
             // this will init or not all the models in memory
-            engine = Engine.getEngine(false);
+            engine = Engine.getEngine(true);
         } catch (NoSuchElementException nseExp) {
             LOGGER.error("Could not get an engine from the pool within configured time.");
         } catch (Exception exp) {

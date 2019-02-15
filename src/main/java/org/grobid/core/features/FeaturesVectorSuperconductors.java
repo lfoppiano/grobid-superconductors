@@ -52,9 +52,6 @@ public class FeaturesVectorSuperconductors {
 
     private boolean isNumberToken = false;
 
-    public FeaturesVectorSuperconductors() {
-    }
-
     public String printVector() {
         if (isBlank(string)) {
             return null;
