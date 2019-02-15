@@ -9,6 +9,7 @@ import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
+import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
@@ -67,9 +68,6 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
             GrobidProperties.getInstance(grobidHomeFinder);
             Engine.getEngine(true);
             LibraryLoader.load();
-
-//            GrobidProperties.getInstance(grobidHomeFinder);
-//            LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Please use the option -gH to specify in the command.");
             exp.printStackTrace();
@@ -81,8 +79,10 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
         String outputDirectory = namespace.get(OUTPUT_DIRECTORY);
         String modelName = namespace.get(MODEL_NAME);
 
+        ChemspotClient chemspotClient = new ChemspotClient(configuration);
+
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            new SuperconductorsParserTrainingData().createTrainingBatch(inputDirectory, outputDirectory);
+            new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory, outputDirectory);
         } else {
             System.out.println(super.getDescription());
         }

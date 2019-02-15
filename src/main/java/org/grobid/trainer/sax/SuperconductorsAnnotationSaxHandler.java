@@ -1,7 +1,7 @@
 package org.grobid.trainer.sax;
 
 
-import org.grobid.core.analyzers.QuantityAnalyzer;
+import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.Pair;
 import org.slf4j.Logger;
@@ -129,7 +129,7 @@ public class SuperconductorsAnnotationSaxHandler extends DefaultHandler {
             //StringTokenizer st = new StringTokenizer(text, " \n\t" + TextUtilities.fullPunctuations, true);
             List<String> tokenizations = null;
             try {
-                tokenizations = QuantityAnalyzer.getInstance().tokenize(text);
+                tokenizations = DeepAnalyzer.getInstance().tokenize(text);
             } catch (Exception e) {
                 //logger.error("fail to tokenize:, " + text, e);
                 throw new GrobidException("fail to tokenize:, " + text, e);

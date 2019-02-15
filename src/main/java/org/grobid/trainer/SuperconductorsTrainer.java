@@ -42,7 +42,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + "staging");
+            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "staging");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -97,7 +97,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
                 // we can now add the features
                 // we open the featured file
-                File theRawFile = new File(corpusDir.getAbsolutePath() + File.separator +
+                File theRawFile = new File(adaptedCorpusDir + File.separator +
                         name.replace(".tei.xml", ".features.txt"));
                 if (!theRawFile.exists()) {
                     LOGGER.warn("Raw file " + theRawFile + " does not exist. Please have a look!");

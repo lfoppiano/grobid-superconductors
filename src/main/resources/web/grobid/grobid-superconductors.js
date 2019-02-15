@@ -159,14 +159,17 @@ var grobid = (function ($) {
         $('#requestResult').html('');
 
         if (selected == 'processSuperconductorsText') {
+            var formData = new FormData();
+            formData.append("text", $('#inputTextArea').val());
+
             $.ajax({
                 type: 'POST',
                 url: urlLocal,
-                data: {text: $('#inputTextArea').val()},
+                data: formData,
                 success: SubmitSuccesful,
                 error: AjaxError,
-                contentType: false
-                //dataType: "text"
+                contentType: false,
+                processData: false
             });
         } else if (selected == 'annotateSuperconductorsPDF') {
             // we will have JSON annotations to be layered on the PDF

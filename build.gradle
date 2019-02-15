@@ -76,6 +76,7 @@ dependencies {
 
     //Misc
     compile group: 'com.google.guava', name: 'guava', version: '22.0'
+    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.3'
 }
 
 configurations {

@@ -11,7 +11,7 @@ import static org.grobid.core.document.xml.XmlBuilderUtils.teiElement;
 
 public class TeiUtils {
 
-    public static Element getQuantitiesTEIHeader(int id) {
+    public static Element getTeiHeader(int id) {
         Element tei = teiElement("tei");
         Element teiHeader = teiElement("teiHeader");
 

@@ -1,5 +1,7 @@
 grobidHome: ../grobid-home
 
+chemspotUrl: http://falcon.nims.go.jp/chemspot
+
 server:
   type: custom
   idleTimeout: 120 seconds

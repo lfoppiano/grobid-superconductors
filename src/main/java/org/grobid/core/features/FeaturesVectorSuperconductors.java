@@ -2,6 +2,7 @@ package org.grobid.core.features;
 
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.TextUtilities;
 
 import java.util.regex.Matcher;
@@ -13,7 +14,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * and patent descriptions.
  */
 public class FeaturesVectorSuperconductors {
-
     public LayoutToken token = null;    // just the reference value, not a feature
 
     public String string = null; // lexical feature
@@ -37,7 +37,7 @@ public class FeaturesVectorSuperconductors {
     //    public boolean rotation = false;
     public boolean containDash = false;
 
-//    public boolean isKnownChemCompound = false;
+    public boolean isKnownChemCompound = false;
 
 //    public boolean isPartOfUnitPattern = false;
 
@@ -112,6 +112,13 @@ public class FeaturesVectorSuperconductors {
         //Font size
         res.append(" " + fontSize);
 
+        //Is known compound / substance from chemspot
+        if(isKnownChemCompound) {
+            res.append(" 1");
+        } else {
+            res.append(" 0");
+        }
+
         // label - for training data (1)
         if (label != null)
             res.append(" " + label + "");
@@ -126,7 +133,8 @@ public class FeaturesVectorSuperconductors {
      */
     public static FeaturesVectorSuperconductors addFeatures(LayoutToken token,
                                                             String label,
-                                                            LayoutToken previousToken) {
+                                                            LayoutToken previousToken,
+                                                            boolean isCompound) {
         FeatureFactory featureFactory = FeatureFactory.getInstance();
 
         FeaturesVectorSuperconductors featuresVector = new FeaturesVectorSuperconductors();
@@ -209,6 +217,9 @@ public class FeaturesVectorSuperconductors {
         featuresVector.wordShape = TextUtilities.wordShape(string);
 
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
+
+        // Chemspot
+        featuresVector.isKnownChemCompound = isCompound;
 
         return featuresVector;
     }

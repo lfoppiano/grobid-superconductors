@@ -1,5 +1,6 @@
 package org.grobid.service.controller;
 
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.SuperconductorsParser;
@@ -71,7 +72,7 @@ public class AnnotationController {
                 response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             } else {
                 long start = System.currentTimeMillis();
-                Pair<List<Superconductor>, Document> extractedEntities = superconductorsParser.extractQuantitiesPDF(originFile);
+                Pair<List<Superconductor>, Document> extractedEntities = superconductorsParser.extractFromPDF(originFile);
                 long end = System.currentTimeMillis();
 
                 Document doc = extractedEntities.getB();
@@ -127,9 +128,9 @@ public class AnnotationController {
     }
 
     @Path("processSuperconductorsText")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response processTextSuperconductors(String text) {
+    public Response processTextSuperconductors(@FormDataParam("text") String text) {
         Response response = null;
 
         try {

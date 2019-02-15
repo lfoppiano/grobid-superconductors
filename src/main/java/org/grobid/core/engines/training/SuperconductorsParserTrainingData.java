@@ -13,6 +13,7 @@ import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.sax.TextChunkSaxHandler;
+import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.TeiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,8 @@ public class SuperconductorsParserTrainingData {
     private SuperconductorsParser superconductorsParser;
     private SuperconductorsTrainingFormatter superconductorsTrainingFormatter;
 
-    public SuperconductorsParserTrainingData() {
-        this(SuperconductorsParser.getInstance());
+    public SuperconductorsParserTrainingData(ChemspotClient chemspotClient) {
+        this(SuperconductorsParser.getInstance(chemspotClient));
     }
 
     public SuperconductorsParserTrainingData(SuperconductorsParser parser) {
@@ -111,7 +112,7 @@ public class SuperconductorsParserTrainingData {
                              Element quantityNode,
                              String features,
                              String plainText) {
-        Element quantityDocumentRoot = TeiUtils.getQuantitiesTEIHeader(id);
+        Element quantityDocumentRoot = TeiUtils.getTeiHeader(id);
         quantityDocumentRoot.appendChild(quantityNode);
 
 
@@ -124,7 +125,7 @@ public class SuperconductorsParserTrainingData {
         }
 
         //Write the output for superconductors tags XML
-        String outputFileQuantity = FilenameUtils.concat(outputDirectory, FilenameUtils.removeExtension(file.getName()) + ".superconductors.xml");
+        String outputFileQuantity = FilenameUtils.concat(outputDirectory, FilenameUtils.removeExtension(file.getName()) + ".superconductors.tei.xml");
         try {
             FileUtils.writeStringToFile(new File(outputFileQuantity), XmlBuilderUtils.toXml(quantityDocumentRoot), UTF_8);
         } catch (IOException e) {
@@ -192,7 +193,7 @@ public class SuperconductorsParserTrainingData {
                 quantifiedObjectNode.appendChild(substanceTrainingFormatter.trainingExtraction(measurements, text));
 
             }
-            Element quantityRoot = TeiUtils.getQuantitiesTEIHeader(id);
+            Element quantityRoot = TeiUtils.getTeiHeader(id);
             quantityRoot.appendChild(quantityNode);
 
             writeOutput(input, outputDirectory, id, quantityNode, unitNode, valueNode, quantifiedObjectNode, sb.toString());

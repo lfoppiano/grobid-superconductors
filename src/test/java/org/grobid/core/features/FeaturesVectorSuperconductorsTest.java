@@ -35,8 +35,8 @@ public class FeaturesVectorSuperconductorsTest {
         previousToken.setBold(true);
 
 
-        FeaturesVectorSuperconductors features = target.addFeatures(token, "bao", previousToken);
+        FeaturesVectorSuperconductors features = target.addFeatures(token, "bao", previousToken, false);
 
-        assertThat(features.printVector(), is("token1 token1 t to tok toke 1 n1 en1 ken1 NOCAPS CONTAINDIGIT 0 NOPUNCT tokenX xxxd xd SAMEFONT SAMEFONTSIZE bao"));
+        assertThat(features.printVector(), is("token1 token1 t to tok toke 1 n1 en1 ken1 NOCAPS CONTAINDIGIT 0 NOPUNCT tokenX xxxd xd SAMEFONT SAMEFONTSIZE 0 bao"));
     }
 }

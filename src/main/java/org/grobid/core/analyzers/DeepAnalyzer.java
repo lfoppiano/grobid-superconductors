@@ -1,5 +1,6 @@
 package org.grobid.core.analyzers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Quantity tokenizer adequate for all Indo-European languages and special characters.
+ * Tokenizer adequate for all Indo-European languages and special characters.
  * <p>
  * The difference with the Standard Grobid tokenizer is that this tokenizer
  * is also tokenizing mixture of alphabetical and numerical characters.
@@ -20,11 +21,11 @@ import java.util.StringTokenizer;
  * @author Patrice Lopez
  */
 
-public class QuantityAnalyzer implements Analyzer {
+public class DeepAnalyzer implements Analyzer {
 
-    private static volatile QuantityAnalyzer instance;
+    private static volatile DeepAnalyzer instance;
 
-    public static QuantityAnalyzer getInstance() {
+    public static DeepAnalyzer getInstance() {
         if (instance == null) {
             //double check idiom
             // synchronized (instanceController) {
@@ -39,20 +40,20 @@ public class QuantityAnalyzer implements Analyzer {
      * Creates a new instance.
      */
     private static synchronized void getNewInstance() {
-        instance = new QuantityAnalyzer();
+        instance = new DeepAnalyzer();
     }
 
     /**
      * Hidden constructor
      */
-    private QuantityAnalyzer() {
+    private DeepAnalyzer() {
     }
 
     public static final String DELIMITERS = " \n\r\t([^%‰°,:;?.!/)-–−=≈<>+\"“”‘’'`$]*\u2666\u2665\u2663\u2660\u00A0";
     private static final String REGEX = "(?<=[a-zA-Z])(?=\\d)|(?<=\\d)(?=\\D)";
 
     public String getName() {
-        return "QuantityAnalyzer";
+        return "DeepAnalyzer";
     }
 
     public List<String> tokenize(String text) {
@@ -101,13 +102,15 @@ public class QuantityAnalyzer implements Analyzer {
 
     public List<LayoutToken> retokenizeLayoutTokens(List<LayoutToken> tokens) {
         List<LayoutToken> result = new ArrayList<>();
+        int idx = 0;
         for (LayoutToken token : tokens) {
-            result.addAll(tokenize(token));
+            result.addAll(tokenize(token, idx));
+            idx += StringUtils.length(token.getText());
         }
         return result;
     }
 
-    public List<LayoutToken> tokenize(LayoutToken chunk) {
+    public List<LayoutToken> tokenize(LayoutToken chunk, int startingIndex) {
         List<LayoutToken> result = new ArrayList<>();
         String text = chunk.getText();
         StringTokenizer st = new StringTokenizer(text, DELIMITERS, true);
@@ -119,6 +122,8 @@ public class QuantityAnalyzer implements Analyzer {
                 LayoutToken theChunk = new LayoutToken(chunk); // deep copy
                 theChunk.setText(subtokens[i]);
                 result.add(theChunk);
+                theChunk.setOffset(startingIndex);
+                startingIndex+= StringUtils.length(theChunk.getText());
             }
         }
         return result;
