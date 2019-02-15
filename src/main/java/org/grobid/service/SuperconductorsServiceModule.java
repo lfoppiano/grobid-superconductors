@@ -16,21 +16,17 @@ import javax.ws.rs.client.ClientBuilder;
 
 public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSuperconductorsConfiguration> {
 
-
     @Override
     public void configure(Binder binder) {
-        binder.bind(HealthCheck.class);
         // -- Generic modules --
-
         binder.bind(GrobidEngineInitialiser.class);
+        binder.bind(HealthCheck.class);
 
         //Services
         binder.bind(SuperconductorsParser.class);
 
         //REST
         binder.bind(AnnotationController.class);
-
-
     }
 
     @Provides

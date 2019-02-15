@@ -1,0 +1,3 @@
+[submodule "resources/dataset/superconductors/corpus"]
+	path = resources/dataset/superconductors/corpus
+	url = https://lfoppiano@bitbucket.org/lfoppiano/grobid-superconductors-data.git
