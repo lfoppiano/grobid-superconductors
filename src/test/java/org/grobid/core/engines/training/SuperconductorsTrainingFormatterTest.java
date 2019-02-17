@@ -2,6 +2,7 @@ package org.grobid.core.engines.training;
 
 import nu.xom.Element;
 import org.grobid.core.data.Superconductor;
+import org.grobid.core.main.LibraryLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ public class SuperconductorsTrainingFormatterTest {
     @Before
     public void setUp() throws Exception {
         target = new SuperconductorsTrainingFormatter();
+//        LibraryLoader.load();
     }
 
     @Test
