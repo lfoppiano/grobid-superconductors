@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,8 @@ public class ChemspotClient {
                 return fromJson(response.getEntity().getContent());
             }
 
+        } catch (UnknownHostException e) {
+            LOGGER.warn("Chemspot is unreachable. Ignoring it. ");
         } catch (IOException e) {
             LOGGER.error("Something generically bad happened. ", e);
         }
@@ -91,7 +94,8 @@ public class ChemspotClient {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<List<Mention>>(){});
+            return mapper.readValue(inputLine, new TypeReference<List<Mention>>() {
+            });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
         } catch (IOException e) {
