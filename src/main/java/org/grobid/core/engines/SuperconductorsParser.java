@@ -3,13 +3,11 @@ package org.grobid.core.engines;
 import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.BiblioItem;
-import org.grobid.core.data.Figure;
-import org.grobid.core.data.Superconductor;
-import org.grobid.core.data.Table;
+import org.grobid.core.data.*;
 import org.grobid.core.data.chemspot.Mention;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
@@ -29,6 +27,7 @@ import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.BoundingBoxCalculator;
 import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.UnitUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +113,7 @@ public class SuperconductorsParser extends AbstractParser {
 
     }
 
-    public List<Superconductor> process(List<LayoutToken> layoutTokens) {
+    public Pair<List<Superconductor>, List<Measurement>> process(List<LayoutToken> layoutTokens) {
 
         List<Superconductor> entities = new ArrayList<>();
 
@@ -125,19 +124,18 @@ public class SuperconductorsParser extends AbstractParser {
         //List<String> texts = getTexts(tokenizationParts);
 
         List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokens));
-
         List<Boolean> listChemspotEntities = synchroniseLayoutTokensWithMentions(tokens, mentions);
 
 
         if (isEmpty(tokens))
-            return entities;
+            return new ImmutablePair<>(entities, new ArrayList<>());
 
         try {
             // string representation of the feature matrix for CRF lib
             String ress = addFeatures(tokens, listChemspotEntities);
 
             if (StringUtils.isEmpty(ress))
-                return entities;
+                return new ImmutablePair<>(entities, new ArrayList<>());
 
             // labeled result from CRF lib
             String res = null;
@@ -147,16 +145,37 @@ public class SuperconductorsParser extends AbstractParser {
                 throw new GrobidException("CRF labeling for quantity parsing failed.", e);
             }
 
-            List<Superconductor> localMeasurements = extractResults(tokens, res);
-            if (isEmpty(localMeasurements))
-                return entities;
+            List<Superconductor> localEntities = extractResults(tokens, res);
 
-            entities.addAll(localMeasurements);
+            entities.addAll(localEntities);
         } catch (Exception e) {
             throw new GrobidException("An exception occured while running Grobid.", e);
         }
 
-        return entities;
+        QuantityParser quantityParser = QuantityParser.getInstance();
+        List<Measurement> process = quantityParser.process(layoutTokens);
+
+        List<Measurement> temperatures = process.stream().filter(measurement -> {
+            switch (measurement.getType()) {
+                case VALUE:
+                    return UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityAtomic().getType());
+                case CONJUNCTION:
+                    return measurement.getQuantityList()
+                            .stream().anyMatch(quantity -> UnitUtilities.Unit_Type.TEMPERATURE.equals(quantity.getType()));
+                case INTERVAL_BASE_RANGE:
+                    return UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityBase().getType()) ||
+                            UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityRange());
+
+                case INTERVAL_MIN_MAX:
+                    return (measurement.getQuantityMost() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityMost().getType())) ||
+                            (measurement.getQuantityLeast() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityLeast()));
+
+            }
+
+            return false;
+        }).collect(Collectors.toList());
+
+        return new ImmutablePair<>(entities, temperatures);
     }
 
     private List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Mention> mentions) {
@@ -212,7 +231,7 @@ public class SuperconductorsParser extends AbstractParser {
     /**
      * Extract all occurrences of measurement/quantities from a simple piece of text.
      */
-    public List<Superconductor> process(String text) {
+    public Pair<List<Superconductor>, List<Measurement>> process(String text) {
         if (isBlank(text)) {
             return null;
         }
@@ -229,14 +248,17 @@ public class SuperconductorsParser extends AbstractParser {
         }
 
         if ((tokens == null) || (tokens.size() == 0)) {
-            return null;
+            return new ImmutablePair<>(new ArrayList<>(), new ArrayList<>());
         }
         return process(tokens);
     }
 
-    public org.grobid.core.utilities.Pair<List<Superconductor>, Document> extractFromPDF(File file) throws IOException {
+    public Pair<Pair<List<Superconductor>, List<Measurement>>, Document> extractFromPDF(File file) throws IOException {
         parsers = new EngineParsers();
-        List<Superconductor> measurements = new ArrayList<>();
+
+        List<Superconductor> superconductorNamesList = new ArrayList<>();
+        List<Measurement> temperaturesList = new ArrayList<>();
+
         Document doc = null;
         try {
             GrobidAnalysisConfig config =
@@ -256,7 +278,7 @@ public class SuperconductorsParser extends AbstractParser {
             SortedSet<DocumentPiece> documentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
             if (documentParts != null) {
                 org.apache.commons.lang3.tuple.Pair<String, List<LayoutToken>> headerStruct = parsers.getHeaderParser().getSectionHeaderFeatured(doc, documentParts, true);
-                List<LayoutToken> tokenizationHeader = headerStruct.getRight();//doc.getTokenizationParts(documentParts, doc.getTokenizations());
+                List<LayoutToken> tokenizationHeader = headerStruct.getRight();
                 String header = headerStruct.getLeft();
                 String labeledResult = null;
                 if ((header != null) && (header.trim().length() > 0)) {
@@ -269,19 +291,25 @@ public class SuperconductorsParser extends AbstractParser {
                     // title
                     List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
                     if (titleTokens != null) {
-                        measurements.addAll(process(titleTokens));
+                        Pair<List<Superconductor>, List<Measurement>> result = process(titleTokens);
+                        superconductorNamesList.addAll(result.getLeft());
+                        temperaturesList.addAll(result.getRight());
                     }
 
                     // abstract
                     List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
                     if (abstractTokens != null) {
-                        measurements.addAll(process(abstractTokens));
+                        Pair<List<Superconductor>, List<Measurement>> result = process(abstractTokens);
+                        superconductorNamesList.addAll(result.getLeft());
+                        temperaturesList.addAll(result.getRight());
                     }
 
                     // keywords
                     List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
                     if (keywordTokens != null) {
-                        measurements.addAll(process(keywordTokens));
+                        Pair<List<Superconductor>, List<Measurement>> result = process(keywordTokens);
+                        superconductorNamesList.addAll(result.getLeft());
+                        temperaturesList.addAll(result.getRight());
                     }
                 }
             }
@@ -314,11 +342,16 @@ public class SuperconductorsParser extends AbstractParser {
                             //apply the figure model to only get the caption
                             final Figure processedFigure = parsers.getFigureParser()
                                     .processing(cluster.concatTokens(), cluster.getFeatureBlock());
-                            measurements.addAll(process(processedFigure.getCaptionLayoutTokens()));
+
+                            Pair<List<Superconductor>, List<Measurement>> result = process(processedFigure.getCaptionLayoutTokens());
+                            superconductorNamesList.addAll(result.getLeft());
+                            temperaturesList.addAll(result.getRight());
                         } else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
                             //apply the table model to only get the caption/description 
                             final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
-                            measurements.addAll(process(processedTable.getFullDescriptionTokens()));
+                            Pair<List<Superconductor>, List<Measurement>> result = process(processedTable.getFullDescriptionTokens());
+                            superconductorNamesList.addAll(result.getLeft());
+                            temperaturesList.addAll(result.getRight());
                         } else {
                             final List<LabeledTokensContainer> labeledTokensContainers = cluster.getLabeledTokensContainers();
 
@@ -328,7 +361,10 @@ public class SuperconductorsParser extends AbstractParser {
                                     .flatMap(List::stream)
                                     .collect(Collectors.toList());
 
-                            measurements.addAll(process(tokens));
+                            Pair<List<Superconductor>, List<Measurement>> result = process(tokens);
+                            superconductorNamesList.addAll(result.getLeft());
+                            temperaturesList.addAll(result.getRight());
+
                         }
 
                     }
@@ -341,7 +377,10 @@ public class SuperconductorsParser extends AbstractParser {
             // we can process annexes
             documentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
             if (documentParts != null) {
-                measurements.addAll(processDocumentPart(documentParts, doc));
+
+                Pair<List<Superconductor>, List<Measurement>> result = processDocumentPart(documentParts, doc);
+                superconductorNamesList.addAll(result.getLeft());
+                temperaturesList.addAll(result.getRight());
             }
 
         } catch (Exception e) {
@@ -350,13 +389,13 @@ public class SuperconductorsParser extends AbstractParser {
 
         // for next line, comparable measurement needs to be implemented
         //Collections.sort(measurements);
-        return new org.grobid.core.utilities.Pair<>(measurements, doc);
+        return new ImmutablePair<>(new ImmutablePair<>(superconductorNamesList, temperaturesList), doc);
     }
 
     /**
      * Process with the quantity model a segment coming from the segmentation model
      */
-    private List<Superconductor> processDocumentPart(SortedSet<DocumentPiece> documentParts,
+    private Pair<List<Superconductor>, List<Measurement>> processDocumentPart(SortedSet<DocumentPiece> documentParts,
                                                      Document doc) {
         // List<LayoutToken> for the selected segment
         List<LayoutToken> layoutTokens

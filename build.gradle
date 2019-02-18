@@ -55,6 +55,19 @@ dependencies {
     //GROBID
     compile 'org.grobid:grobid-core:0.5.4'
     compile 'org.grobid:grobid-trainer:0.5.4'
+    compile('org.grobid:grobid-quantities:0.5.2-SNAPSHOT') {
+        transitive = false
+    }
+
+    // grobid-quantities specific dependencies
+    compile group: 'si.uom', name: 'si-units-java8', version: '0.9'
+    compile group: 'si.uom', name: 'si-quantity', version: '0.9'
+    compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
+    compile group: 'systems.uom', name: 'systems-ucum-java8', version: '0.9'
+    compile group: 'systems.uom', name: 'systems-unicode-java8', version: '0.9'
+    compile group: 'systems.uom', name: 'systems-quantity', version: '0.9'
+    compile group: 'systems.uom', name: 'systems-common', version: '0.9'
+    compile group: 'com.googlecode.clearnlp', name: 'clearnlp', version: '1.3.1'
 
     //Apache commons
     compile 'org.apache.commons:commons-collections4:4.1'
@@ -83,6 +96,10 @@ configurations {
     compile.exclude group: "org.slf4j", module: "slf4j-jdk14"
     compile.exclude group: 'org.slf4j', module: "slf4j-log4j12"
     compile.exclude group: 'log4j', module: "log4j"
+//    compile.exclude group: 'org.glassfish.jersey.core', module: 'jersey-media-multipart'
+//    compile.exclude group: 'org.glassfish.jersey.inject', module: 'jersey-hk2'
+//    compile.exclude group: 'org.glassfish.jersey.containers', module: 'jersey-container-grizzly2-servlet'
+//    compile.exclude group: 'org.glassfish.jersey.containers', module: 'jersey-container-servlet-core'
 }
 
 configurations.all {

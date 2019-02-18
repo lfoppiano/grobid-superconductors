@@ -1,13 +1,16 @@
 package org.grobid.service.controller;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
+import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.layout.Page;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.IOUtilities;
-import org.grobid.core.utilities.Pair;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
 import javax.inject.Inject;
@@ -72,11 +75,13 @@ public class AnnotationController {
                 response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             } else {
                 long start = System.currentTimeMillis();
-                Pair<List<Superconductor>, Document> extractedEntities = superconductorsParser.extractFromPDF(originFile);
+                Pair<Pair<List<Superconductor>, List<Measurement>>, Document> extractedEntities = superconductorsParser.extractFromPDF(originFile);
                 long end = System.currentTimeMillis();
 
-                Document doc = extractedEntities.getB();
-                List<Superconductor> measurements = extractedEntities.getA();
+                Document doc = extractedEntities.getRight();
+                Pair<List<Superconductor>, List<Measurement>> entities = extractedEntities.getLeft();
+                List<Superconductor> superconductorsList = entities.getLeft();
+                List<Measurement> temperatures = entities.getRight();
                 StringBuilder json = new StringBuilder();
                 json.append("{ ");
 
@@ -95,12 +100,22 @@ public class AnnotationController {
 
                 json.append("], \"superconductors\":[");
                 first = true;
-                for (Superconductor entity : measurements) {
+                for (Superconductor entity : superconductorsList) {
                     if (!first)
                         json.append(", ");
                     else
                         first = false;
                     json.append(entity.toJson());
+                }
+
+                json.append("], \"temperatures\": [");
+                first = true;
+                for (Measurement temperature : temperatures) {
+                    if (!first)
+                        json.append(", ");
+                    else
+                        first = false;
+                    json.append(temperature.toJson());
                 }
 
                 json.append("]");
@@ -135,26 +150,41 @@ public class AnnotationController {
 
         try {
             long start = System.currentTimeMillis();
-            List<Superconductor> measurements = superconductorsParser.process(text);
+            Pair<List<Superconductor>, List<Measurement>> extractedEntities = superconductorsParser.process(text);
+
+            List<Superconductor> superconductorsList = extractedEntities.getLeft();
+            List<Measurement> temperatures = extractedEntities.getRight();
+
             long end = System.currentTimeMillis();
 
             StringBuilder jsonBuilder = null;
-            if (measurements != null) {
+            if ((superconductorsList == null) && (temperatures == null)) {
+                response = Response.status(Response.Status.NO_CONTENT).build();
+            } else {
                 jsonBuilder = new StringBuilder();
                 jsonBuilder.append("{ ");
                 jsonBuilder.append("\"runtime\" : " + (end - start));
                 jsonBuilder.append(", \"superconductors\" : [ ");
                 boolean first = true;
-                for (Superconductor measurement : measurements) {
+                for (Superconductor superconductor : superconductorsList) {
                     if (first)
                         first = false;
                     else
                         jsonBuilder.append(", ");
-                    jsonBuilder.append(measurement.toJson());
+                    jsonBuilder.append(superconductor.toJson());
+                }
+                jsonBuilder.append("], \"temperatures\": [");
+                first = true;
+                for (Measurement temperature : temperatures) {
+                    if (!first)
+                        jsonBuilder.append(", ");
+                    else
+                        first = false;
+                    jsonBuilder.append(temperature.toJson());
                 }
                 jsonBuilder.append("] }");
-            } else
-                response = Response.status(Response.Status.NO_CONTENT).build();
+            }
+
 
             if (jsonBuilder != null) {
                 //System.out.println(jsonBuilder.toString());
