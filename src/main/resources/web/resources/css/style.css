@@ -356,7 +356,7 @@ span.section-active {
 .table td {
     background-color: #fff;
     border: 0px;
-    font-size: 14;
+    font-size: 14pt;
 }
 
 /*.table tr{background-color:#FCF8E3;} */
@@ -419,7 +419,7 @@ span {
 }
 
 .info-sense-box, .details-list {
-    margin: 1px 1;
+    margin: 1px;
     padding: 5px 2px 3px 2px;
     border: 1px solid #87A1A8;
     background-color: #87A1A8;
@@ -541,9 +541,8 @@ span {
     background-color: #01A9DB;
 }
 
-/
-/
-links for box PDF annotations
+/*links for box PDF annotations*/
+
 a.TEMPERATURE {
     border-color: #398739;
 }

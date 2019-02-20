@@ -253,11 +253,18 @@ public class SuperconductorsParser extends AbstractParser {
         return process(tokens);
     }
 
-    public Pair<Pair<List<Superconductor>, List<Measurement>>, Document> extractFromPDF(File file) throws IOException {
+    public Pair<OutputResponse, Document> extractFromPDF(File file) throws IOException {
         parsers = new EngineParsers();
 
+        OutputResponse outputResponse = new OutputResponse();
         List<Superconductor> superconductorNamesList = new ArrayList<>();
+        outputResponse.setSuperconductors(superconductorNamesList);
         List<Measurement> temperaturesList = new ArrayList<>();
+        outputResponse.setTemperatures(temperaturesList);
+        List<Abbreviation> abbreviationList = new ArrayList<>();
+        outputResponse.setAbbreviations(abbreviationList);
+
+        AbbreviationsParser abbreviationsParser = AbbreviationsParser.getInstance();
 
         Document doc = null;
         try {
@@ -294,6 +301,8 @@ public class SuperconductorsParser extends AbstractParser {
                         Pair<List<Superconductor>, List<Measurement>> result = process(titleTokens);
                         superconductorNamesList.addAll(result.getLeft());
                         temperaturesList.addAll(result.getRight());
+                        abbreviationList.addAll(abbreviationsParser.process(titleTokens));
+
                     }
 
                     // abstract
@@ -302,6 +311,7 @@ public class SuperconductorsParser extends AbstractParser {
                         Pair<List<Superconductor>, List<Measurement>> result = process(abstractTokens);
                         superconductorNamesList.addAll(result.getLeft());
                         temperaturesList.addAll(result.getRight());
+                        abbreviationList.addAll(abbreviationsParser.process(abstractTokens));
                     }
 
                     // keywords
@@ -346,12 +356,14 @@ public class SuperconductorsParser extends AbstractParser {
                             Pair<List<Superconductor>, List<Measurement>> result = process(processedFigure.getCaptionLayoutTokens());
                             superconductorNamesList.addAll(result.getLeft());
                             temperaturesList.addAll(result.getRight());
+                            abbreviationList.addAll(abbreviationsParser.process(processedFigure.getCaptionLayoutTokens()));
                         } else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
                             //apply the table model to only get the caption/description 
                             final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
                             Pair<List<Superconductor>, List<Measurement>> result = process(processedTable.getFullDescriptionTokens());
                             superconductorNamesList.addAll(result.getLeft());
                             temperaturesList.addAll(result.getRight());
+                            abbreviationList.addAll(abbreviationsParser.process(processedTable.getFullDescriptionTokens()));
                         } else {
                             final List<LabeledTokensContainer> labeledTokensContainers = cluster.getLabeledTokensContainers();
 
@@ -364,6 +376,7 @@ public class SuperconductorsParser extends AbstractParser {
                             Pair<List<Superconductor>, List<Measurement>> result = process(tokens);
                             superconductorNamesList.addAll(result.getLeft());
                             temperaturesList.addAll(result.getRight());
+                            abbreviationList.addAll(abbreviationsParser.process(tokens));
 
                         }
 
@@ -378,9 +391,12 @@ public class SuperconductorsParser extends AbstractParser {
             documentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
             if (documentParts != null) {
 
-                Pair<List<Superconductor>, List<Measurement>> result = processDocumentPart(documentParts, doc);
+                List<LayoutToken> annexTokens = doc.getTokenizationParts(documentParts, doc.getTokenizations());
+                Pair<List<Superconductor>, List<Measurement>> result = process(annexTokens);
                 superconductorNamesList.addAll(result.getLeft());
                 temperaturesList.addAll(result.getRight());
+                abbreviationList.addAll(abbreviationsParser.process(annexTokens));
+
             }
 
         } catch (Exception e) {
@@ -389,18 +405,7 @@ public class SuperconductorsParser extends AbstractParser {
 
         // for next line, comparable measurement needs to be implemented
         //Collections.sort(measurements);
-        return new ImmutablePair<>(new ImmutablePair<>(superconductorNamesList, temperaturesList), doc);
-    }
-
-    /**
-     * Process with the quantity model a segment coming from the segmentation model
-     */
-    private Pair<List<Superconductor>, List<Measurement>> processDocumentPart(SortedSet<DocumentPiece> documentParts,
-                                                     Document doc) {
-        // List<LayoutToken> for the selected segment
-        List<LayoutToken> layoutTokens
-                = doc.getTokenizationParts(documentParts, doc.getTokenizations());
-        return process(layoutTokens);
+        return new ImmutablePair<>(outputResponse, doc);
     }
 
 

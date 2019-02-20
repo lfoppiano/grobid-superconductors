@@ -4,7 +4,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
 import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.grobid.core.data.Abbreviation;
 import org.grobid.core.data.Measurement;
+import org.grobid.core.data.OutputResponse;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.SuperconductorsParser;
@@ -75,13 +77,14 @@ public class AnnotationController {
                 response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             } else {
                 long start = System.currentTimeMillis();
-                Pair<Pair<List<Superconductor>, List<Measurement>>, Document> extractedEntities = superconductorsParser.extractFromPDF(originFile);
+                Pair<OutputResponse, Document> extractedEntities = superconductorsParser.extractFromPDF(originFile);
                 long end = System.currentTimeMillis();
 
                 Document doc = extractedEntities.getRight();
-                Pair<List<Superconductor>, List<Measurement>> entities = extractedEntities.getLeft();
-                List<Superconductor> superconductorsList = entities.getLeft();
-                List<Measurement> temperatures = entities.getRight();
+                OutputResponse outputResponse = extractedEntities.getLeft();
+                List<Superconductor> superconductorsList = outputResponse.getSuperconductors();
+                List<Measurement> temperatures = outputResponse.getTemperatures();
+                List<Abbreviation> abbreviations = outputResponse.getAbbreviations();
                 StringBuilder json = new StringBuilder();
                 json.append("{ ");
 
@@ -116,6 +119,16 @@ public class AnnotationController {
                     else
                         first = false;
                     json.append(temperature.toJson());
+                }
+
+                json.append("], \"abbreviations\": [");
+                first = true;
+                for (Abbreviation abbreviation : abbreviations) {
+                    if (!first)
+                        json.append(", ");
+                    else
+                        first = false;
+                    json.append(abbreviation.toJson());
                 }
 
                 json.append("]");

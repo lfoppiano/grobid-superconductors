@@ -12,6 +12,7 @@ var grobid = (function ($) {
         // for associating several quantities to a measurement
         var superconMap = new Array();
         var measurementMap = new Array();
+        var abbreviationsMap = new Array();
 
         function defineBaseURL(ext) {
             var baseUrl = null;
@@ -480,6 +481,32 @@ var grobid = (function ($) {
                 });
             }
 
+            // Abbreviations
+            var abbreviations = json.abbreviations;
+            if (abbreviations) {
+                // hey bro, this must be asynchronous to avoid blocking the brothers
+                abbreviations.forEach(function (abbreviation, abbreviationIdx) {
+                    abbreviationsMap[abbreviationIdx] = abbreviation;
+
+                    //var theId = measurement.type;
+                    var theUrl = null;
+                    //var theUrl = annotation.url;
+                    var pos = abbreviation.boundingBoxes;
+                    if ((pos != null) && (pos.length > 0)) {
+                        pos.forEach(function (thePos, positionIdx) {
+                            // get page information for the annotation
+                            var pageNumber = thePos.p;
+                            if (pageInfo[pageNumber - 1]) {
+                                page_height = pageInfo[pageNumber - 1].page_height;
+                                page_width = pageInfo[pageNumber - 1].page_width;
+                            }
+                            annotateAbbreviation(thePos, theUrl, page_height, page_width, abbreviationIdx, positionIdx);
+                        });
+                    }
+                });
+            }
+
+
             // Temperatures
             var temperatures = json.temperatures;
             if (temperatures) {
@@ -579,6 +606,37 @@ var grobid = (function ($) {
             $('#annot_quantity-' + measurementIndex + '-' + positionIndex).bind('click', viewQuantityPDF);
         }
 
+        function annotateAbbreviation(thePos, theUrl, page_height, page_width, superconIdx, positionIdx) {
+            var page = thePos.p;
+            var pageDiv = $('#page-' + page);
+            var canvas = pageDiv.children('canvas').eq(0);
+            //var canvas = pageDiv.find('canvas').eq(0);;
+
+            var canvasHeight = canvas.height();
+            var canvasWidth = canvas.width();
+            var scale_x = canvasHeight / page_height;
+            var scale_y = canvasWidth / page_width;
+
+            var x = thePos.x * scale_x - 1;
+            var y = thePos.y * scale_y - 1;
+            var width = thePos.w * scale_x + 1;
+            var height = thePos.h * scale_y + 1;
+
+            //make clickable the area
+            var element = document.createElement("a");
+            var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
+                y + "px; left:" + x + "px;";
+            element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor('volume') + ";");
+            element.setAttribute("class", 'volume');
+            element.setAttribute("id", 'annot_abbreviation-' + superconIdx + '-' + positionIdx);
+            element.setAttribute("page", page);
+
+            pageDiv.append(element);
+
+            $('#annot_abbreviation-' + superconIdx + '-' + positionIdx).bind('hover', abbreviationsMap, viewEntityPDF);
+            $('#annot_abbreviation-' + superconIdx + '-' + positionIdx).bind('click', abbreviationsMap, viewEntityPDF);
+        }
+
         function annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx) {
             var page = thePos.p;
             var pageDiv = $('#page-' + page);
@@ -599,15 +657,15 @@ var grobid = (function ($) {
             var element = document.createElement("a");
             var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
                 y + "px; left:" + x + "px;";
-            element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor(1) + ";");
-            element.setAttribute("class", 2);
+            element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor('area') + ";");
+            element.setAttribute("class", 'area');
             element.setAttribute("id", 'annot_supercon-' + superconIdx + '-' + positionIdx);
             element.setAttribute("page", page);
 
             pageDiv.append(element);
 
-            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('hover', viewEntityPDF);
-            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('click', viewEntityPDF);
+            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('hover', superconMap, viewEntityPDF);
+            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('click', superconMap, viewEntityPDF);
         }
 
         function viewSuperconductor() {
@@ -638,7 +696,9 @@ var grobid = (function ($) {
             $('#detailed_annot-0-0').show();
         }
 
-        function viewEntityPDF() {
+        function viewEntityPDF(param) {
+            map = param.data;
+
             var pageIndex = $(this).attr('page');
             var localID = $(this).attr('id');
 
@@ -648,13 +708,13 @@ var grobid = (function ($) {
             var ind2 = localID.indexOf('-', ind1 + 1);
             var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, ind2));
             //var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, localID.length));
-            if ((superconMap[localMeasurementNumber] === null) || (superconMap[localMeasurementNumber].length === 0)) {
+            if ((map[localMeasurementNumber] === null) || (map[localMeasurementNumber].length === 0)) {
                 // this should never be the case
-                console.log("Error for visualising annotation measurement with id " + localMeasurementNumber
+                console.log("Error for visualising annotation with id " + localMeasurementNumber
                     + ", empty list of measurement");
             }
 
-            var string = toHtmlSemiconductor(superconMap[localMeasurementNumber], $(this).position().top);
+            var string = toHtmlSemiconductor(map[localMeasurementNumber], $(this).position().top);
 
             $('#detailed_annot-' + pageIndex).html(string);
             $('#detailed_annot-' + pageIndex).show();
@@ -931,10 +991,7 @@ var grobid = (function ($) {
         }
 
         function createInputFile(selected) {
-            //$('#label').html('&nbsp;');
             $('#textInputDiv').hide();
-            //$('#fileInputDiv').fileupload({uploadtype:'file'});
-            //$('#fileInputDiv').fileupload('reset');
             $('#fileInputDiv').show();
 
             $('#gbdForm').attr('enctype', 'multipart/form-data');
@@ -942,16 +999,8 @@ var grobid = (function ($) {
         }
 
         function createInputTextArea() {
-            //$('#label').html('&nbsp;');
             $('#fileInputDiv').hide();
-            //$('#input').remove();
-
-            //$('#field').html('<table><tr><td><textarea class="span7" rows="5" id="input" name="'+nameInput+'" /></td>'+
-            //"<td><span style='padding-left:20px;'>&nbsp;</span></td></tr></table>");
             $('#textInputDiv').show();
-
-            //$('#gbdForm').attr('enctype', '');
-            //$('#gbdForm').attr('method', 'post');
         }
 
         var mapColor = {
