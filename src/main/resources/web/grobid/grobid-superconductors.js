@@ -423,8 +423,8 @@ var grobid = (function ($) {
                 for (var measurementIndex = 0; measurementIndex < superconductors.length; measurementIndex++) {
                     // var measurement = measurements[measurementIndex];
 
-                    $('#annot-' + measurementIndex).bind('hover', viewSuperconductor);
-                    $('#annot-' + measurementIndex).bind('click', viewSuperconductor);
+                    $('#annot_supercon-' + measurementIndex).bind('hover', viewSuperconductor);
+                    $('#annot_supercon-' + measurementIndex).bind('click', viewSuperconductor);
                 }
             }
             /*for (var key in quantityMap) {
@@ -459,22 +459,22 @@ var grobid = (function ($) {
             var superconductors = json.superconductors;
             if (superconductors) {
                 // hey bro, this must be asynchronous to avoid blocking the brothers
-                superconductors.forEach(function (superconductor, n) {
-                    superconMap[n] = superconductor;
+                superconductors.forEach(function (superconductor, superconIdx) {
+                    superconMap[superconIdx] = superconductor;
 
                     //var theId = measurement.type;
                     var theUrl = null;
                     //var theUrl = annotation.url;
                     var pos = superconductor.boundingBoxes;
                     if ((pos != null) && (pos.length > 0)) {
-                        pos.forEach(function (thePos, m) {
+                        pos.forEach(function (thePos, positionIdx) {
                             // get page information for the annotation
                             var pageNumber = thePos.p;
                             if (pageInfo[pageNumber - 1]) {
                                 page_height = pageInfo[pageNumber - 1].page_height;
                                 page_width = pageInfo[pageNumber - 1].page_width;
                             }
-                            annotateSuperconductor(thePos, theUrl, page_height, page_width, n, m);
+                            annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx);
                         });
                     }
                 });
@@ -570,16 +570,16 @@ var grobid = (function ($) {
                 y + "px; left:" + x + "px;";
             element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor(theId) + ";");
             element.setAttribute("class", theId);
-            element.setAttribute("id", 'annot-' + measurementIndex + '-' + positionIndex);
+            element.setAttribute("id", 'annot_quantity-' + measurementIndex + '-' + positionIndex);
             element.setAttribute("page", page);
 
             pageDiv.append(element);
 
-            $('#annot-' + measurementIndex + '-' + positionIndex).bind('hover', viewQuantityPDF);
-            $('#annot-' + measurementIndex + '-' + positionIndex).bind('click', viewQuantityPDF);
+            $('#annot_quantity-' + measurementIndex + '-' + positionIndex).bind('hover', viewQuantityPDF);
+            $('#annot_quantity-' + measurementIndex + '-' + positionIndex).bind('click', viewQuantityPDF);
         }
 
-        function annotateSuperconductor(thePos, theUrl, page_height, page_width, index) {
+        function annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx) {
             var page = thePos.p;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);
@@ -601,16 +601,17 @@ var grobid = (function ($) {
                 y + "px; left:" + x + "px;";
             element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor(1) + ";");
             element.setAttribute("class", 2);
-            element.setAttribute("id", 'annot-' + index);
+            element.setAttribute("id", 'annot_supercon-' + superconIdx + '-' + positionIdx);
             element.setAttribute("page", page);
 
             pageDiv.append(element);
 
-            $('#annot-' + index).bind('hover', viewEntityPDF);
-            $('#annot-' + index).bind('click', viewEntityPDF);
+            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('hover', viewEntityPDF);
+            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('click', viewEntityPDF);
         }
 
         function viewSuperconductor() {
+
             var localID = $(this).attr('id');
 
             if (responseJson.superconductors == null) {
@@ -633,8 +634,8 @@ var grobid = (function ($) {
             var string = toHtmlSemiconductor(superconductor, -1);
 
 
-            $('#detailed_annot-0').html(string);
-            $('#detailed_annot-0').show();
+            $('#detailed_annot-0-0').html(string);
+            $('#detailed_annot-0-0').show();
         }
 
         function viewEntityPDF() {
@@ -644,9 +645,10 @@ var grobid = (function ($) {
             // console.log('viewQuanityPDF ' + pageIndex + ' / ' + localID);
 
             var ind1 = localID.indexOf('-');
-            var localMeasurementNumber = parseInt(localID.substring(ind1 + 1));
+            var ind2 = localID.indexOf('-', ind1 + 1);
+            var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, ind2));
             //var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, localID.length));
-            if ((superconMap[localMeasurementNumber] == null) || (superconMap[localMeasurementNumber].length == 0)) {
+            if ((superconMap[localMeasurementNumber] === null) || (superconMap[localMeasurementNumber].length === 0)) {
                 // this should never be the case
                 console.log("Error for visualising annotation measurement with id " + localMeasurementNumber
                     + ", empty list of measurement");
