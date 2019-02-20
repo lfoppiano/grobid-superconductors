@@ -12,7 +12,6 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.BoundingBoxCalculator;
-import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.LayoutTokensUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class AbbreviationsParser extends AbstractParser {
 
     private static volatile AbbreviationsParser instance;
 
-    public static AbbreviationsParser getInstance(){
+    public static AbbreviationsParser getInstance() {
         if (instance == null) {
             getNewInstance();
         }

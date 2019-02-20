@@ -1,42 +1,30 @@
 package org.grobid.core.engines;
 
-import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.*;
+import org.grobid.core.data.Superconductor;
 import org.grobid.core.data.chemspot.Mention;
-import org.grobid.core.document.Document;
-import org.grobid.core.document.DocumentPiece;
-import org.grobid.core.document.DocumentSource;
-import org.grobid.core.engines.config.GrobidAnalysisConfig;
-import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
-import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.layout.LayoutTokenization;
-import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.BoundingBoxCalculator;
 import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.UnitUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -49,7 +37,6 @@ public class SuperconductorsParser extends AbstractParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParser.class);
 
     private static volatile SuperconductorsParser instance;
-    private EngineParsers parsers;
     private ChemspotClient chemspotClient;
 
     public static SuperconductorsParser getInstance(ChemspotClient chemspotClient) {
@@ -113,7 +100,7 @@ public class SuperconductorsParser extends AbstractParser {
 
     }
 
-    public Pair<List<Superconductor>, List<Measurement>> process(List<LayoutToken> layoutTokens) {
+    public List<Superconductor> process(List<LayoutToken> layoutTokens) {
 
         List<Superconductor> entities = new ArrayList<>();
 
@@ -128,14 +115,14 @@ public class SuperconductorsParser extends AbstractParser {
 
 
         if (isEmpty(tokens))
-            return new ImmutablePair<>(entities, new ArrayList<>());
+            return new ArrayList<>();
 
         try {
             // string representation of the feature matrix for CRF lib
             String ress = addFeatures(tokens, listChemspotEntities);
 
             if (StringUtils.isEmpty(ress))
-                return new ImmutablePair<>(entities, new ArrayList<>());
+                return entities;
 
             // labeled result from CRF lib
             String res = null;
@@ -152,30 +139,7 @@ public class SuperconductorsParser extends AbstractParser {
             throw new GrobidException("An exception occured while running Grobid.", e);
         }
 
-        QuantityParser quantityParser = QuantityParser.getInstance();
-        List<Measurement> process = quantityParser.process(layoutTokens);
-
-        List<Measurement> temperatures = process.stream().filter(measurement -> {
-            switch (measurement.getType()) {
-                case VALUE:
-                    return UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityAtomic().getType());
-                case CONJUNCTION:
-                    return measurement.getQuantityList()
-                            .stream().anyMatch(quantity -> UnitUtilities.Unit_Type.TEMPERATURE.equals(quantity.getType()));
-                case INTERVAL_BASE_RANGE:
-                    return UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityBase().getType()) ||
-                            UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityRange());
-
-                case INTERVAL_MIN_MAX:
-                    return (measurement.getQuantityMost() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityMost().getType())) ||
-                            (measurement.getQuantityLeast() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityLeast()));
-
-            }
-
-            return false;
-        }).collect(Collectors.toList());
-
-        return new ImmutablePair<>(entities, temperatures);
+        return entities;
     }
 
     private List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Mention> mentions) {
@@ -231,181 +195,26 @@ public class SuperconductorsParser extends AbstractParser {
     /**
      * Extract all occurrences of measurement/quantities from a simple piece of text.
      */
-    public Pair<List<Superconductor>, List<Measurement>> process(String text) {
+    public List<Superconductor> process(String text) {
         if (isBlank(text)) {
-            return null;
+            return new ArrayList<>();
         }
 
         text = text.replace("\r", " ");
         text = text.replace("\n", " ");
         text = text.replace("\t", " ");
 
-        List<LayoutToken> tokens = null;
+        List<LayoutToken> tokens = new ArrayList<>();
         try {
             tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         } catch (Exception e) {
             LOGGER.error("fail to tokenize:, " + text, e);
         }
 
-        if ((tokens == null) || (tokens.size() == 0)) {
-            return new ImmutablePair<>(new ArrayList<>(), new ArrayList<>());
+        if (isEmpty(tokens)) {
+            return new ArrayList<>();
         }
         return process(tokens);
-    }
-
-    public Pair<OutputResponse, Document> extractFromPDF(File file) throws IOException {
-        parsers = new EngineParsers();
-
-        OutputResponse outputResponse = new OutputResponse();
-        List<Superconductor> superconductorNamesList = new ArrayList<>();
-        outputResponse.setSuperconductors(superconductorNamesList);
-        List<Measurement> temperaturesList = new ArrayList<>();
-        outputResponse.setTemperatures(temperaturesList);
-        List<Abbreviation> abbreviationList = new ArrayList<>();
-        outputResponse.setAbbreviations(abbreviationList);
-
-        AbbreviationsParser abbreviationsParser = AbbreviationsParser.getInstance();
-
-        Document doc = null;
-        try {
-            GrobidAnalysisConfig config =
-                    new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                            .build();
-            DocumentSource documentSource =
-                    DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
-            doc = parsers.getSegmentationParser().processing(documentSource, config);
-
-            // In the following, we process the relevant textual content of the document
-
-            // for refining the process based on structures, we need to filter
-            // segment of interest (e.g. header, body, annex) and possibly apply
-            // the corresponding model to further filter by structure types
-
-            // from the header, we are interested in title, abstract and keywords
-            SortedSet<DocumentPiece> documentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
-            if (documentParts != null) {
-                org.apache.commons.lang3.tuple.Pair<String, List<LayoutToken>> headerStruct = parsers.getHeaderParser().getSectionHeaderFeatured(doc, documentParts, true);
-                List<LayoutToken> tokenizationHeader = headerStruct.getRight();
-                String header = headerStruct.getLeft();
-                String labeledResult = null;
-                if ((header != null) && (header.trim().length() > 0)) {
-                    labeledResult = parsers.getHeaderParser().label(header);
-
-                    BiblioItem resHeader = new BiblioItem();
-                    //parsers.getHeaderParser().processingHeaderSection(false, doc, resHeader);
-                    resHeader.generalResultMapping(doc, labeledResult, tokenizationHeader);
-
-                    // title
-                    List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
-                    if (titleTokens != null) {
-                        Pair<List<Superconductor>, List<Measurement>> result = process(titleTokens);
-                        superconductorNamesList.addAll(result.getLeft());
-                        temperaturesList.addAll(result.getRight());
-                        abbreviationList.addAll(abbreviationsParser.process(titleTokens));
-
-                    }
-
-                    // abstract
-                    List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
-                    if (abstractTokens != null) {
-                        Pair<List<Superconductor>, List<Measurement>> result = process(abstractTokens);
-                        superconductorNamesList.addAll(result.getLeft());
-                        temperaturesList.addAll(result.getRight());
-                        abbreviationList.addAll(abbreviationsParser.process(abstractTokens));
-                    }
-
-                    // keywords
-                    List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
-                    if (keywordTokens != null) {
-                        Pair<List<Superconductor>, List<Measurement>> result = process(keywordTokens);
-                        superconductorNamesList.addAll(result.getLeft());
-                        temperaturesList.addAll(result.getRight());
-                    }
-                }
-            }
-
-            // we can process all the body, in the future figure and table could be the
-            // object of more refined processing
-            documentParts = doc.getDocumentPart(SegmentationLabels.BODY);
-            if (documentParts != null) {
-                org.apache.commons.lang3.tuple.Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, documentParts);
-
-                String fulltextTaggedRawResult = null;
-                if (featSeg != null) {
-                    String featureText = featSeg.getLeft();
-                    LayoutTokenization layoutTokenization = featSeg.getRight();
-
-                    if (StringUtils.isNotEmpty(featureText)) {
-                        fulltextTaggedRawResult = parsers.getFullTextParser().label(featureText);
-                    }
-
-                    TaggingTokenClusteror clusteror = new TaggingTokenClusteror(GrobidModels.FULLTEXT, fulltextTaggedRawResult,
-                            layoutTokenization.getTokenization(), true);
-
-                    //Iterate and exclude figures and tables
-                    for (TaggingTokenCluster cluster : Iterables.filter(clusteror.cluster(),
-                            new TaggingTokenClusteror
-                                    .LabelTypeExcludePredicate(TaggingLabels.TABLE_MARKER, TaggingLabels.EQUATION, TaggingLabels.CITATION_MARKER,
-                                    TaggingLabels.FIGURE_MARKER, TaggingLabels.EQUATION_MARKER, TaggingLabels.EQUATION_LABEL))) {
-
-                        if (cluster.getTaggingLabel().equals(TaggingLabels.FIGURE)) {
-                            //apply the figure model to only get the caption
-                            final Figure processedFigure = parsers.getFigureParser()
-                                    .processing(cluster.concatTokens(), cluster.getFeatureBlock());
-
-                            Pair<List<Superconductor>, List<Measurement>> result = process(processedFigure.getCaptionLayoutTokens());
-                            superconductorNamesList.addAll(result.getLeft());
-                            temperaturesList.addAll(result.getRight());
-                            abbreviationList.addAll(abbreviationsParser.process(processedFigure.getCaptionLayoutTokens()));
-                        } else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
-                            //apply the table model to only get the caption/description 
-                            final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
-                            Pair<List<Superconductor>, List<Measurement>> result = process(processedTable.getFullDescriptionTokens());
-                            superconductorNamesList.addAll(result.getLeft());
-                            temperaturesList.addAll(result.getRight());
-                            abbreviationList.addAll(abbreviationsParser.process(processedTable.getFullDescriptionTokens()));
-                        } else {
-                            final List<LabeledTokensContainer> labeledTokensContainers = cluster.getLabeledTokensContainers();
-
-                            // extract all the layout tokens from the cluster as a list
-                            List<LayoutToken> tokens = labeledTokensContainers.stream()
-                                    .map(LabeledTokensContainer::getLayoutTokens)
-                                    .flatMap(List::stream)
-                                    .collect(Collectors.toList());
-
-                            Pair<List<Superconductor>, List<Measurement>> result = process(tokens);
-                            superconductorNamesList.addAll(result.getLeft());
-                            temperaturesList.addAll(result.getRight());
-                            abbreviationList.addAll(abbreviationsParser.process(tokens));
-
-                        }
-
-                    }
-                }
-            }
-
-            // we don't process references (although reference titles could be relevant)
-            // acknowledgement?
-
-            // we can process annexes
-            documentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
-            if (documentParts != null) {
-
-                List<LayoutToken> annexTokens = doc.getTokenizationParts(documentParts, doc.getTokenizations());
-                Pair<List<Superconductor>, List<Measurement>> result = process(annexTokens);
-                superconductorNamesList.addAll(result.getLeft());
-                temperaturesList.addAll(result.getRight());
-                abbreviationList.addAll(abbreviationsParser.process(annexTokens));
-
-            }
-
-        } catch (Exception e) {
-            throw new GrobidException("Cannot process pdf file: " + file.getPath(), e);
-        }
-
-        // for next line, comparable measurement needs to be implemented
-        //Collections.sort(measurements);
-        return new ImmutablePair<>(outputResponse, doc);
     }
 
 
