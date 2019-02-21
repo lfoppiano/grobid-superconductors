@@ -2,6 +2,9 @@ package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Layout;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.*;
 import org.grobid.core.document.Document;
@@ -18,16 +21,17 @@ import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.IOUtilities;
+import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.UnitUtilities;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Singleton
 public class AggregatedProcessing {
@@ -55,7 +59,142 @@ public class AggregatedProcessing {
     private List<Measurement> processQuantity(List<LayoutToken> tokens) {
         List<Measurement> process = quantityParser.process(tokens);
 
-        return filterTemperature(process);
+        List<Measurement> temperatures = filterTemperature(process);
+
+        for (Measurement temperature : temperatures) {
+            Quantity quantity = null;
+            Pair<Integer, Integer> extremities = null;
+            switch (temperature.getType()) {
+                case VALUE:
+                    quantity = temperature.getQuantityAtomic();
+                    List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
+                    int centerPosition = layoutTokens.get(0).getOffset();
+
+                    extremities = getExtremities(tokens, centerPosition);
+
+
+                    break;
+                case INTERVAL_BASE_RANGE:
+                    if (temperature.getQuantityBase() != null && temperature.getQuantityRange() != null) {
+                        Quantity quantityBase = temperature.getQuantityBase();
+                        Quantity quantityRange = temperature.getQuantityRange();
+
+                        extremities = getExtremities(tokens, quantityBase.getLayoutTokens().get(0).getOffset(), quantityRange.getLayoutTokens().get(quantityRange.getLayoutTokens().size() - 1).getOffset());
+                    } else {
+                        Quantity quantityTmp;
+                        if (temperature.getQuantityBase() == null) {
+                            quantityTmp = temperature.getQuantityRange();
+                        } else {
+                            quantityTmp = temperature.getQuantityBase();
+                        }
+
+                        extremities = getExtremities(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
+                    }
+
+                    break;
+
+                case INTERVAL_MIN_MAX:
+                    if (temperature.getQuantityLeast() != null && temperature.getQuantityMost() != null) {
+                        Quantity quantityLeast = temperature.getQuantityLeast();
+                        Quantity quantityMost = temperature.getQuantityMost();
+
+                        extremities = getExtremities(tokens, quantityLeast.getLayoutTokens().get(0).getOffset(), quantityMost.getLayoutTokens().get(quantityMost.getLayoutTokens().size() - 1).getOffset());
+                    } else {
+                        Quantity quantityTmp;
+                        if (temperature.getQuantityLeast() == null) {
+                            quantityTmp = temperature.getQuantityMost();
+                        } else {
+                            quantityTmp = temperature.getQuantityLeast();
+                        }
+
+                        extremities = getExtremities(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
+                    }
+                    break;
+
+                case CONJUNCTION:
+                    List<Quantity> quantityList = temperature.getQuantityList();
+                    if (quantityList.size() > 1) {
+                        extremities = getExtremities(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset());
+                    } else {
+                        extremities = getExtremities(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset());
+                    }
+
+                    break;
+            }
+
+
+            if (extremities == null) {
+                continue;
+            }
+            List<LayoutToken> temperatureWindow = tokens.subList(extremities.getLeft(), extremities.getRight());
+
+            if (isNotEmpty(temperatureWindow)) {
+                ListIterator<LayoutToken> it = temperatureWindow.listIterator();
+
+                // searching for Tc
+                while (it.hasNext()) {
+                    LayoutToken token = it.next();
+                    if (token.getText().equalsIgnoreCase("tc") || StringUtils.equalsAny(token.getText(), "temperature")) {
+                        QuantifiedObject quantifiedObject = new QuantifiedObject(token.getText());
+                        temperature.setQuantifiedObject(quantifiedObject);
+                    } else if ((token.getText().equalsIgnoreCase("t")) && it.nextIndex()+1 < temperatureWindow.size() && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("c"))) {
+                        String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
+                        QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
+                        temperature.setQuantifiedObject(quantifiedObject);
+                    }
+                }
+            }
+
+
+        }
+
+        return temperatures;
+    }
+
+    public static int WINDOW_TC = 20;
+
+    private Pair<Integer, Integer> getExtremities(List<LayoutToken> tokens, int centroidTokenOffset) {
+
+        int start = 0;
+        int end = tokens.size() - 1;
+
+        Optional<LayoutToken> centralToken = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidTokenOffset).findFirst();
+        LayoutToken layoutToken = centralToken.orElseThrow(RuntimeException::new);
+
+        int indexOf = tokens.indexOf(layoutToken);
+
+        if (indexOf > WINDOW_TC) {
+            start = indexOf - WINDOW_TC;
+        }
+        if (end - indexOf > WINDOW_TC) {
+            end = indexOf + WINDOW_TC;
+        }
+
+        return new ImmutablePair(start, end);
+    }
+
+    private Pair<Integer, Integer> getExtremities(List<LayoutToken> tokens, int centroidTokenOffsetLow, int centroidTokenOffsetHigh) {
+
+        int start = 0;
+        int end = tokens.size() - 1;
+
+        Optional<LayoutToken> centralTokenLower = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidTokenOffsetLow).findFirst();
+        Optional<LayoutToken> centralTokenHigher = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidTokenOffsetHigh).findFirst();
+        LayoutToken layoutTokenLow = centralTokenLower.orElseThrow(RuntimeException::new);
+        LayoutToken layoutTokenHigh = centralTokenHigher.orElseThrow(RuntimeException::new);
+
+        int lowIndex = tokens.indexOf(layoutTokenLow);
+        int highIndex = tokens.indexOf(layoutTokenHigh);
+
+        if (lowIndex > 10) {
+            start = lowIndex - 10;
+        }
+        if (end - highIndex > 10) {
+            end = highIndex + 10;
+        }
+
+        return new ImmutablePair(start, end);
+
     }
 
     private List<Measurement> filterTemperature(List<Measurement> process) {
@@ -68,11 +207,11 @@ public class AggregatedProcessing {
                             .stream().anyMatch(quantity -> UnitUtilities.Unit_Type.TEMPERATURE.equals(quantity.getType()));
                 case INTERVAL_BASE_RANGE:
                     return UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityBase().getType()) ||
-                            UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityRange());
+                            UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityRange().getType());
 
                 case INTERVAL_MIN_MAX:
                     return (measurement.getQuantityMost() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityMost().getType())) ||
-                            (measurement.getQuantityLeast() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityLeast()));
+                            (measurement.getQuantityLeast() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityLeast().getType()));
 
             }
 
