@@ -13,6 +13,9 @@ We focus our work on technical and scientific articles (text, XML and PDF input)
 
 Getting started
 
+> install grobid http://github.com/kermitt2/grobid 
+
+> clone the grobid-superconductor repository inside the grobid directory 
 > git clone ....
 
 > git submodule init
