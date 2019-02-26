@@ -7,6 +7,7 @@ import com.google.inject.Provides;
 import com.hubspot.dropwizard.guicier.DropwizardAwareModule;
 import org.grobid.core.engines.AbbreviationsParser;
 import org.grobid.core.engines.AggregatedProcessing;
+import org.grobid.core.engines.QuantityParser;
 import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;

@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Layout;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.*;
 import org.grobid.core.document.Document;
@@ -19,10 +18,11 @@ import org.grobid.core.layout.LayoutTokenization;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.IOUtilities;
 import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.UnitUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,25 +35,63 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Singleton
 public class AggregatedProcessing {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AggregatedProcessing.class);
 
     private EngineParsers parsers;
 
     private SuperconductorsParser superconductorsParser;
     private AbbreviationsParser abbreviationsParser;
-    private final QuantityParser quantityParser;
+    private QuantityParser quantityParser;
+
+
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, AbbreviationsParser abbreviationsParser, QuantityParser quantityParser) {
+        this.superconductorsParser = superconductorsParser;
+        this.abbreviationsParser = abbreviationsParser;
+        this.quantityParser = quantityParser;
+    }
 
     @Inject
     public AggregatedProcessing(SuperconductorsParser superconductorsParser, AbbreviationsParser abbreviationsParser) {
         this.superconductorsParser = superconductorsParser;
         this.abbreviationsParser = abbreviationsParser;
-        quantityParser = QuantityParser.getInstance();
-
+        this.quantityParser = QuantityParser.getInstance(true);
     }
 
     private List<Measurement> processQuantity(String text) {
         List<Measurement> process = quantityParser.process(text);
 
         return filterTemperature(process);
+    }
+
+    private List<Superconductor> linkSuperconductorsWithTc(List<Superconductor> superconductors, List<Measurement> measurements, List<LayoutToken> tokens) {
+        if (measurements.size() == 0)
+            return superconductors;
+
+        for (Superconductor superconductor : superconductors) {
+            Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesSingle(tokens, superconductor.getLayoutTokens().get(0).getOffset());
+
+
+//            List<LayoutToken> superconductorWindow = tokens.subList(extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
+
+            for (Measurement temperature : measurements) {
+                if (temperature.getType() == UnitUtilities.Measurement_Type.VALUE) {
+                    int temperatureOffset = temperature.getQuantityAtomic().getLayoutTokens().get(0).getOffset();
+                    if (temperatureOffset > extremitiesSuperconductor.getLeft() || temperatureOffset < extremitiesSuperconductor.getRight()) {
+                        if (temperature.getQuantifiedObject() != null
+                                && StringUtils.equalsIgnoreCase("Critical temperature", temperature.getQuantifiedObject().getNormalizedName())) {
+                            //link!
+                            superconductor.setCriticalTemperature(temperature);
+                            break;
+                        } else {
+                            LOGGER.warn("Found a temperature but not a critical temperature. Skipping it. ");
+                        }
+                    }
+                }
+            }
+
+        }
+
+        return superconductors;
     }
 
     private List<Measurement> processQuantity(List<LayoutToken> tokens) {
@@ -70,7 +108,7 @@ public class AggregatedProcessing {
                     List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
                     int centerPosition = layoutTokens.get(0).getOffset();
 
-                    extremities = getExtremities(tokens, centerPosition);
+                    extremities = getExtremitiesSingle(tokens, centerPosition);
 
 
                     break;
@@ -79,7 +117,7 @@ public class AggregatedProcessing {
                         Quantity quantityBase = temperature.getQuantityBase();
                         Quantity quantityRange = temperature.getQuantityRange();
 
-                        extremities = getExtremities(tokens, quantityBase.getLayoutTokens().get(0).getOffset(), quantityRange.getLayoutTokens().get(quantityRange.getLayoutTokens().size() - 1).getOffset());
+                        extremities = getExtremitiesDouble(tokens, quantityBase.getLayoutTokens().get(0).getOffset(), quantityRange.getLayoutTokens().get(quantityRange.getLayoutTokens().size() - 1).getOffset());
                     } else {
                         Quantity quantityTmp;
                         if (temperature.getQuantityBase() == null) {
@@ -88,7 +126,7 @@ public class AggregatedProcessing {
                             quantityTmp = temperature.getQuantityBase();
                         }
 
-                        extremities = getExtremities(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesSingle(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
                     }
 
                     break;
@@ -98,7 +136,7 @@ public class AggregatedProcessing {
                         Quantity quantityLeast = temperature.getQuantityLeast();
                         Quantity quantityMost = temperature.getQuantityMost();
 
-                        extremities = getExtremities(tokens, quantityLeast.getLayoutTokens().get(0).getOffset(), quantityMost.getLayoutTokens().get(quantityMost.getLayoutTokens().size() - 1).getOffset());
+                        extremities = getExtremitiesDouble(tokens, quantityLeast.getLayoutTokens().get(0).getOffset(), quantityMost.getLayoutTokens().get(quantityMost.getLayoutTokens().size() - 1).getOffset());
                     } else {
                         Quantity quantityTmp;
                         if (temperature.getQuantityLeast() == null) {
@@ -107,16 +145,16 @@ public class AggregatedProcessing {
                             quantityTmp = temperature.getQuantityLeast();
                         }
 
-                        extremities = getExtremities(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesSingle(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
                     }
                     break;
 
                 case CONJUNCTION:
                     List<Quantity> quantityList = temperature.getQuantityList();
                     if (quantityList.size() > 1) {
-                        extremities = getExtremities(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesDouble(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset());
                     } else {
-                        extremities = getExtremities(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesSingle(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset());
                     }
 
                     break;
@@ -134,10 +172,10 @@ public class AggregatedProcessing {
                 // searching for Tc
                 while (it.hasNext()) {
                     LayoutToken token = it.next();
-                    if (token.getText().equalsIgnoreCase("tc") || StringUtils.equalsAny(token.getText(), "temperature")) {
+                    if (StringUtils.equalsAny(token.getText(), "temperature")) {
                         QuantifiedObject quantifiedObject = new QuantifiedObject(token.getText());
                         temperature.setQuantifiedObject(quantifiedObject);
-                    } else if ((token.getText().equalsIgnoreCase("t")) && it.nextIndex()+1 < temperatureWindow.size() && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("c"))) {
+                    } else if (token.getText().equalsIgnoreCase("tc") || ((token.getText().equalsIgnoreCase("t")) && it.nextIndex() + 1 < temperatureWindow.size() && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("c")))) {
                         String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
                         QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
                         temperature.setQuantifiedObject(quantifiedObject);
@@ -153,27 +191,35 @@ public class AggregatedProcessing {
 
     public static int WINDOW_TC = 20;
 
-    private Pair<Integer, Integer> getExtremities(List<LayoutToken> tokens, int centroidTokenOffset) {
+    protected Pair<Integer, Integer> getExtremitiesSingle(List<LayoutToken> tokens, int centroidTokenOffset) {
+        return getExtremitiesSingle(tokens, centroidTokenOffset, WINDOW_TC);
+    }
 
+
+    protected Pair<Integer, Integer> getExtremitiesSingle(List<LayoutToken> tokens, int centroidTokenOffset, int windowlayoutTokensSize) {
         int start = 0;
         int end = tokens.size() - 1;
 
         Optional<LayoutToken> centralToken = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidTokenOffset).findFirst();
         LayoutToken layoutToken = centralToken.orElseThrow(RuntimeException::new);
 
-        int indexOf = tokens.indexOf(layoutToken);
+        int centroidLayoutTokenIndex = tokens.indexOf(layoutToken);
 
-        if (indexOf > WINDOW_TC) {
-            start = indexOf - WINDOW_TC;
+        if (centroidLayoutTokenIndex > windowlayoutTokensSize) {
+            start = centroidLayoutTokenIndex - windowlayoutTokensSize;
         }
-        if (end - indexOf > WINDOW_TC) {
-            end = indexOf + WINDOW_TC;
+        if (end - centroidLayoutTokenIndex > windowlayoutTokensSize) {
+            end = centroidLayoutTokenIndex + windowlayoutTokensSize + 1;
         }
 
         return new ImmutablePair(start, end);
     }
 
-    private Pair<Integer, Integer> getExtremities(List<LayoutToken> tokens, int centroidTokenOffsetLow, int centroidTokenOffsetHigh) {
+    protected Pair<Integer, Integer> getExtremitiesDouble(List<LayoutToken> tokens, int centroidTokenOffsetLow, int centroidTokenOffsetHigh) {
+        return getExtremitiesDouble(tokens, centroidTokenOffsetLow, centroidTokenOffsetHigh, WINDOW_TC);
+    }
+
+    protected Pair<Integer, Integer> getExtremitiesDouble(List<LayoutToken> tokens, int centroidTokenOffsetLow, int centroidTokenOffsetHigh, int windowSize) {
 
         int start = 0;
         int end = tokens.size() - 1;
@@ -245,6 +291,8 @@ public class AggregatedProcessing {
         Document doc = null;
         File file = null;
 
+        OutputResponse response = new OutputResponse();
+
         try {
             file = IOUtilities.writeInputFile(inputStream);
             GrobidAnalysisConfig config =
@@ -277,26 +325,19 @@ public class AggregatedProcessing {
                     // title
                     List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
                     if (titleTokens != null) {
-
-                        superconductorNamesList.addAll(superconductorsParser.process(titleTokens));
-                        temperaturesList.addAll(processQuantity(titleTokens));
-                        abbreviationList.addAll(abbreviationsParser.process(titleTokens));
-
+                        outputResponse.extendEntities(process(titleTokens));
                     }
 
                     // abstract
                     List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
                     if (abstractTokens != null) {
-                        superconductorNamesList.addAll(superconductorsParser.process(abstractTokens));
-                        temperaturesList.addAll(processQuantity(abstractTokens));
-                        abbreviationList.addAll(abbreviationsParser.process(abstractTokens));
+                        outputResponse.extendEntities(process(abstractTokens));
                     }
 
                     // keywords
                     List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
                     if (keywordTokens != null) {
-                        superconductorNamesList.addAll(superconductorsParser.process(keywordTokens));
-                        temperaturesList.addAll(processQuantity(keywordTokens));
+                        outputResponse.extendEntities(process(keywordTokens));
                     }
                 }
             }
@@ -331,16 +372,15 @@ public class AggregatedProcessing {
                                     .processing(cluster.concatTokens(), cluster.getFeatureBlock());
 
                             List<LayoutToken> tokens = processedFigure.getCaptionLayoutTokens();
-                            superconductorNamesList.addAll(superconductorsParser.process(tokens));
-                            temperaturesList.addAll(processQuantity(tokens));
-                            abbreviationList.addAll(abbreviationsParser.process(tokens));
+
+                            outputResponse.extendEntities(process(tokens));
+
                         } else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
                             //apply the table model to only get the caption/description
                             final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
                             List<LayoutToken> tokens = processedTable.getFullDescriptionTokens();
-                            superconductorNamesList.addAll(superconductorsParser.process(tokens));
-                            temperaturesList.addAll(processQuantity(tokens));
-                            abbreviationList.addAll(abbreviationsParser.process(tokens));
+
+                            outputResponse.extendEntities(process(tokens));
                         } else {
                             final List<LabeledTokensContainer> labeledTokensContainers = cluster.getLabeledTokensContainers();
 
@@ -350,9 +390,7 @@ public class AggregatedProcessing {
                                     .flatMap(List::stream)
                                     .collect(Collectors.toList());
 
-                            superconductorNamesList.addAll(superconductorsParser.process(tokens));
-                            temperaturesList.addAll(processQuantity(tokens));
-                            abbreviationList.addAll(abbreviationsParser.process(tokens));
+                            outputResponse.extendEntities(process(tokens));
 
                         }
 
@@ -367,11 +405,8 @@ public class AggregatedProcessing {
             documentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
             if (documentParts != null) {
 
-                List<LayoutToken> annexTokens = doc.getTokenizationParts(documentParts, doc.getTokenizations());
-                superconductorNamesList.addAll(superconductorsParser.process(annexTokens));
-                temperaturesList.addAll(processQuantity(annexTokens));
-                abbreviationList.addAll(abbreviationsParser.process(annexTokens));
-
+                List<LayoutToken> tokens = doc.getTokenizationParts(documentParts, doc.getTokenizations());
+                outputResponse.extendEntities(process(tokens));
             }
 
             List<Page> pages = new ArrayList<>();
@@ -388,5 +423,15 @@ public class AggregatedProcessing {
         }
 
         return outputResponse;
+    }
+
+    public OutputResponse process(List<LayoutToken> tokens) {
+        List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
+        List<Measurement> temperatureList = processQuantity(tokens);
+        List<Abbreviation> abbreviationsList = abbreviationsParser.process(tokens);
+
+        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(superconductorsNames, temperatureList, tokens);
+
+        return new OutputResponse(linkedSuperconductors, temperatureList, abbreviationsList);
     }
 }

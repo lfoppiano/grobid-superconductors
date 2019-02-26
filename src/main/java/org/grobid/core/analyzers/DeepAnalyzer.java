@@ -78,6 +78,7 @@ public class DeepAnalyzer implements Analyzer {
     public List<LayoutToken> tokenizeWithLayoutToken(String text) {
         List<LayoutToken> result = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(text, DELIMITERS, true);
+        int offset = 0;
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             // in addition we split "letter" characters and digits
@@ -85,6 +86,8 @@ public class DeepAnalyzer implements Analyzer {
             for (int i = 0; i < subtokens.length; i++) {
                 LayoutToken layoutToken = new LayoutToken();
                 layoutToken.setText(subtokens[i]);
+                layoutToken.setOffset(offset);
+                offset += subtokens[i].length();
                 result.add(layoutToken);
             }
         }
@@ -104,7 +107,7 @@ public class DeepAnalyzer implements Analyzer {
         List<LayoutToken> result = new ArrayList<>();
         int idx = 0;
         for (LayoutToken token : tokens) {
-            result.addAll(tokenize(token, idx));
+            result.addAll(tokenize(token, token.getOffset()));
             idx += StringUtils.length(token.getText());
         }
         return result;

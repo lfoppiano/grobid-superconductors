@@ -2,6 +2,7 @@ package org.grobid.core.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.*;
@@ -14,6 +15,26 @@ public class OutputResponse {
     private List<Superconductor> superconductors;
     private List<Measurement> temperatures;
     private List<Abbreviation> abbreviations;
+
+    public OutputResponse() {
+        superconductors = new ArrayList<>();
+        temperatures = new ArrayList<>();
+        abbreviations = new ArrayList<>();
+    }
+
+    public OutputResponse(List<Superconductor> superconductorList, List<Measurement> temperatures, List<Abbreviation> abbreviations) {
+        this.superconductors = superconductorList;
+        this.temperatures = temperatures;
+        this.abbreviations = abbreviations;
+    }
+
+    public OutputResponse extendEntities(OutputResponse other) {
+        this.superconductors.addAll(other.getSuperconductors());
+        this.abbreviations.addAll(other.getAbbreviations());
+        this.temperatures.addAll(other.getTemperatures());
+
+        return this;
+    }
 
     private List<Page> pages;
 
@@ -91,7 +112,7 @@ public class OutputResponse {
             jsonBuilder.append("]");
         }
 
-        if(isNotEmpty(getTemperatures())) {
+        if (isNotEmpty(getTemperatures())) {
             jsonBuilder.append(", \"temperatures\": [");
             first = true;
             for (Measurement temperature : getTemperatures()) {
@@ -104,7 +125,7 @@ public class OutputResponse {
             jsonBuilder.append("]");
         }
 
-        if(isNotEmpty(getAbbreviations())) {
+        if (isNotEmpty(getAbbreviations())) {
             jsonBuilder.append(", \"abbreviations\": [");
             first = true;
             for (Abbreviation abbreviation : getAbbreviations()) {

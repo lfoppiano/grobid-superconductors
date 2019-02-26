@@ -773,6 +773,10 @@ var grobid = (function ($) {
                 string += "<p>name: <b>" + name + "</b></p>";
             }
 
+            if (superconductor.tc) {
+                string += "<p>Tc: <b>" + superconductor.tc + "</b></p>";
+            }
+
             string += "</td></tr>";
             string += "</table></div>";
 

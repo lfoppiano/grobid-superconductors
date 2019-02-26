@@ -16,6 +16,7 @@ public class Superconductor {
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
     private List<LayoutToken> layoutTokens = new ArrayList<>();
     private OffsetPosition offsets = null;
+    private Measurement criticalTemperature = null;
 
     public List<BoundingBox> getBoundingBoxes() {
         return boundingBoxes;
@@ -115,7 +116,21 @@ public class Superconductor {
             json.append("] ");
         }
 
+        if (criticalTemperature != null) {
+            Quantity tc = criticalTemperature.getQuantityAtomic();
+            Unit criticalUnit = criticalTemperature.getQuantityAtomic().getRawUnit();
+            json.append(", \"tc\":\"" + tc.getRawValue() + " " + criticalUnit.getRawName() + "\"");
+        }
+
         json.append(" }");
         return json.toString();
+    }
+
+    public Measurement getCriticalTemperature() {
+        return criticalTemperature;
+    }
+
+    public void setCriticalTemperature(Measurement criticalTemperature) {
+        this.criticalTemperature = criticalTemperature;
     }
 }
