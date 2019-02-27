@@ -1,6 +1,9 @@
 package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
+import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -78,6 +81,8 @@ public class AggregatedProcessing {
             Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesAsIndex(tokens,
                     layoutTokensSupercon.get(0).getOffset(), layoutTokensSupercon.get(layoutTokensSupercon.size() - 1).getOffset());
 
+            extremitiesSuperconductor = adjustExtremities(extremitiesSuperconductor, superconductor, tokens);
+
             List<Pair<Quantity, Measurement>> criticalTemperaturesFlattenSorted
                     = criticalTemperaturesFlatten.stream().sorted((o1, o2) -> {
                 int superconductorLayoutTokenLowerOffset = superconductor.getLayoutTokens().get(0).getOffset();
@@ -103,7 +108,7 @@ public class AggregatedProcessing {
                 int distanceT1Supercon = Math.abs(t1CentroidOffset - superconductorCentroidOffset);
                 int distanceT2Supercon = Math.abs(t2CentroidOffset - superconductorCentroidOffset);
 
-                if(distanceT1Supercon > distanceT2Supercon) {
+                if (distanceT1Supercon > distanceT2Supercon) {
                     return 1;
                 } else if (distanceT2Supercon > distanceT1Supercon) {
                     return -1;
@@ -137,6 +142,72 @@ public class AggregatedProcessing {
         }
 
         return superconductors;
+    }
+
+    /**
+     * we reduce the window if going on a separate sentence
+     **/
+    private Pair<Integer, Integer> adjustExtremities(Pair<Integer, Integer> extremitiesSuperconductor, Superconductor superconductor, List<LayoutToken> tokens) {
+
+        List<Token> tokensNlp4j = tokens
+                .stream()
+                .map(token -> {
+                    Token token1 = new Token(token.getText());
+                    token1.setStartOffset(token.getOffset());
+                    token1.setEndOffset(token.getOffset() + token.getText().length());
+                    return token1;
+                })
+                .collect(Collectors.toList());
+
+        Tokenizer tokenizer = new EnglishTokenizer();
+        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
+
+        int superconductorOffsetLower = superconductor.getLayoutTokens().get(0).getOffset();
+        int superconductorOffsetHigher = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset();
+
+        //In which sentence is the superconductor?
+        Optional<List<Token>> superconductorSentenceOptional = sentences
+                .stream()
+                .filter(sentence -> {
+                    int startOffset = sentence.get(0).getStartOffset();
+                    int endOffset = sentence.get(sentence.size() - 1).getEndOffset();
+
+                    return superconductorOffsetHigher < endOffset && superconductorOffsetLower > startOffset;
+                })
+                .findFirst();
+
+
+        if (!superconductorSentenceOptional.isPresent()) {
+            return extremitiesSuperconductor;
+        }
+
+        List<Token> superconductorSentence = superconductorSentenceOptional.get();
+
+
+        int startSentenceOffset = superconductorSentence.get(0).getStartOffset();
+        int endSentenceOffset = superconductorSentence.get(superconductorSentence.size() - 1).getStartOffset();
+
+        //Get the layout tokens they correspond
+        Optional<LayoutToken> first = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == startSentenceOffset).findFirst();
+        Optional<LayoutToken> last = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == endSentenceOffset).findFirst();
+
+        if (!first.isPresent() || !last.isPresent()) {
+            return extremitiesSuperconductor;
+        }
+        int newStart = extremitiesSuperconductor.getLeft();
+        int newEnd = extremitiesSuperconductor.getRight();
+
+        int adjustedStart = tokens.indexOf(first.get());
+        int adjustedEnd = tokens.indexOf(last.get());
+
+        if (extremitiesSuperconductor.getLeft() < adjustedStart) {
+            newStart = adjustedStart;
+        }
+        if (extremitiesSuperconductor.getRight() > adjustedEnd) {
+            newEnd = adjustedEnd;
+        }
+
+        return new ImmutablePair<>(newStart, newEnd);
     }
 
     private List<Pair<Quantity, Measurement>> flattenTemperatures(List<Measurement> criticalTemperatures) {
