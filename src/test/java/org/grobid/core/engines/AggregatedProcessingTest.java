@@ -5,19 +5,17 @@ import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.UnitUtilities;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class AggregatedProcessingTest {
 
@@ -72,11 +70,11 @@ public class AggregatedProcessingTest {
     }
 
     @Test
-    public void testGetExtremitiesSingle_short_nearBeginning() {
+    public void testGetExtremitiesIndex_short_nearBeginning() {
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken("This is a short sentence");
 
-        Pair<Integer, Integer> extremitiesSingle = target.getExtremitiesSingle(tokens, 5, 3);
+        Pair<Integer, Integer> extremitiesSingle = target.getExtremitiesAsIndex(tokens, 5, 5, 3);
 
         assertThat(extremitiesSingle.getLeft(), is(0));
         assertThat(extremitiesSingle.getRight(), is(6));
@@ -89,7 +87,7 @@ public class AggregatedProcessingTest {
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken("This is a short sentence");
 
-        Pair<Integer, Integer> extremitiesSingle = target.getExtremitiesSingle(tokens, 8, 3);
+        Pair<Integer, Integer> extremitiesSingle = target.getExtremitiesAsIndex(tokens, 8, 8, 3);
 
         assertThat(extremitiesSingle.getLeft(), is(1));
         assertThat(extremitiesSingle.getRight(), is(8));
@@ -102,7 +100,21 @@ public class AggregatedProcessingTest {
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken("This is a very very very long sentence, and we keep writing.");
 
-        Pair<Integer, Integer> extremitiesSingle = target.getExtremitiesSingle(tokens, 25, 5);
+        Pair<Integer, Integer> extremitiesSingle = target.getExtremitiesAsIndex(tokens, 25, 25, 5);
+
+        assertThat(extremitiesSingle.getLeft(), is(7));
+        assertThat(extremitiesSingle.getRight(), is(18));
+        List<String> stringList = tokens.subList(extremitiesSingle.getLeft(), extremitiesSingle.getRight()).stream().map(LayoutToken::getText).collect(Collectors.toList());
+        assertThat(String.join("", stringList), is(" very very long sentence, and"));
+    }
+
+
+    @Test
+    public void testGetExtremitiesSingle_long_centroidWithMultipleLayoutToken_middle() {
+
+        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken("This is a very very very long sentence, and we keep writing.");
+
+        Pair<Integer, Integer> extremitiesSingle = target.getExtremitiesAsIndex(tokens, 25, 25, 5);
 
         assertThat(extremitiesSingle.getLeft(), is(7));
         assertThat(extremitiesSingle.getRight(), is(18));

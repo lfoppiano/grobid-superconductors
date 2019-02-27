@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.CollectionUtils.emptyCollection;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Singleton
@@ -67,28 +68,75 @@ public class AggregatedProcessing {
         if (measurements.size() == 0)
             return superconductors;
 
+
+        List<Measurement> criticalTemperatures = measurements
+                .stream()
+                .filter(measurement -> measurement.getQuantifiedObject() != null
+                        && StringUtils.equalsIgnoreCase("Critical temperature", measurement.getQuantifiedObject().getNormalizedName()))
+                .collect(Collectors.toList());
+
+        List<Pair<Quantity, Measurement>> criticalTemperaturesFlatten = new ArrayList<>();
+
+        for (Measurement measurement : criticalTemperatures) {
+            if (measurement.getType().equals(UnitUtilities.Measurement_Type.VALUE)) {
+                criticalTemperaturesFlatten.add(new ImmutablePair<>(measurement.getQuantityAtomic(), measurement));
+            } else if (measurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_BASE_RANGE)) {
+                List<Pair<Quantity, Measurement>> list = new ArrayList<>();
+
+                if (measurement.getQuantityBase() != null) {
+                    list.add(new ImmutablePair<>(measurement.getQuantityBase(), measurement));
+                }
+
+                if (measurement.getQuantityRange() != null) {
+                    list.add(new ImmutablePair<>(measurement.getQuantityRange(), measurement));
+                }
+
+                criticalTemperaturesFlatten.addAll(list);
+
+            } else if (measurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_MIN_MAX)) {
+                List<Pair<Quantity, Measurement>> list = new ArrayList<>();
+                if (measurement.getQuantityMost() != null) {
+                    list.add(new ImmutablePair<>(measurement.getQuantityMost(), measurement));
+                }
+
+                if (measurement.getQuantityLeast() != null) {
+                    list.add(new ImmutablePair<>(measurement.getQuantityLeast(), measurement));
+                }
+
+                criticalTemperaturesFlatten.addAll(list);
+            } else if (measurement.getType().equals(UnitUtilities.Measurement_Type.CONJUNCTION)) {
+                List<Pair<Quantity, Measurement>> collect = measurement.getQuantityList()
+                        .stream()
+                        .map(q -> new ImmutablePair<>(q, measurement))
+                        .collect(Collectors.toList());
+
+                criticalTemperaturesFlatten.addAll(collect);
+            }
+        }
+
         for (Superconductor superconductor : superconductors) {
-            Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesSingle(tokens, superconductor.getLayoutTokens().get(0).getOffset());
+            List<LayoutToken> layoutTokensSupercon = superconductor.getLayoutTokens();
+            Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesAsIndex(tokens,
+                    layoutTokensSupercon.get(0).getOffset(), layoutTokensSupercon.get(layoutTokensSupercon.size() - 1).getOffset());
 
+            List<LayoutToken> layoutTokenWindow = tokens.subList(extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
+            int offsetWindowStart = layoutTokenWindow.get(0).getOffset();
+            LayoutToken lastToken = layoutTokenWindow.get(layoutTokenWindow.size() - 1);
+            int offsetWindowEnd = lastToken.getOffset();
 
-//            List<LayoutToken> superconductorWindow = tokens.subList(extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
+            for (Pair<Quantity, Measurement> criticalTemperature : criticalTemperaturesFlatten) {
 
-            for (Measurement temperature : measurements) {
-                if (temperature.getType() == UnitUtilities.Measurement_Type.VALUE) {
-                    int temperatureOffset = temperature.getQuantityAtomic().getLayoutTokens().get(0).getOffset();
-                    if (temperatureOffset > extremitiesSuperconductor.getLeft() || temperatureOffset < extremitiesSuperconductor.getRight()) {
-                        if (temperature.getQuantifiedObject() != null
-                                && StringUtils.equalsIgnoreCase("Critical temperature", temperature.getQuantifiedObject().getNormalizedName())) {
-                            //link!
-                            superconductor.setCriticalTemperature(temperature);
-                            break;
-                        } else {
-                            LOGGER.warn("Found a temperature but not a critical temperature. Skipping it. ");
-                        }
-                    }
+                List<LayoutToken> criticalTemperatureLayoutTokens = criticalTemperature.getLeft().getLayoutTokens();
+                int temperatureOffsetStart = criticalTemperatureLayoutTokens.get(0).getOffset();
+                int temperatureOffsetEnd = criticalTemperatureLayoutTokens.get(criticalTemperatureLayoutTokens.size() - 1).getOffset();
+                if ((temperatureOffsetStart < offsetWindowStart && temperatureOffsetEnd >= offsetWindowStart)
+                        || (temperatureOffsetEnd > offsetWindowEnd && temperatureOffsetStart <= offsetWindowEnd)
+                        || (temperatureOffsetStart >= offsetWindowStart && temperatureOffsetEnd < offsetWindowEnd)
+                        || (temperatureOffsetStart > offsetWindowStart && temperatureOffsetEnd <= offsetWindowEnd)) {
+                    superconductor.setCriticalTemperature(criticalTemperature.getRight());
+                    break;
                 }
             }
-
         }
 
         return superconductors;
@@ -106,9 +154,8 @@ public class AggregatedProcessing {
                 case VALUE:
                     quantity = temperature.getQuantityAtomic();
                     List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
-                    int centerPosition = layoutTokens.get(0).getOffset();
 
-                    extremities = getExtremitiesSingle(tokens, centerPosition);
+                    extremities = getExtremitiesAsIndex(tokens, layoutTokens.get(0).getOffset(), layoutTokens.get(layoutTokens.size() - 1).getOffset());
 
 
                     break;
@@ -117,7 +164,7 @@ public class AggregatedProcessing {
                         Quantity quantityBase = temperature.getQuantityBase();
                         Quantity quantityRange = temperature.getQuantityRange();
 
-                        extremities = getExtremitiesDouble(tokens, quantityBase.getLayoutTokens().get(0).getOffset(), quantityRange.getLayoutTokens().get(quantityRange.getLayoutTokens().size() - 1).getOffset());
+                        extremities = getExtremitiesAsIndex(tokens, quantityBase.getLayoutTokens().get(0).getOffset(), quantityRange.getLayoutTokens().get(quantityRange.getLayoutTokens().size() - 1).getOffset());
                     } else {
                         Quantity quantityTmp;
                         if (temperature.getQuantityBase() == null) {
@@ -126,7 +173,7 @@ public class AggregatedProcessing {
                             quantityTmp = temperature.getQuantityBase();
                         }
 
-                        extremities = getExtremitiesSingle(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesAsIndex(tokens, quantityTmp.getLayoutTokens().get(0).getOffset(), quantityTmp.getLayoutTokens().get(0).getOffset());
                     }
 
                     break;
@@ -136,7 +183,7 @@ public class AggregatedProcessing {
                         Quantity quantityLeast = temperature.getQuantityLeast();
                         Quantity quantityMost = temperature.getQuantityMost();
 
-                        extremities = getExtremitiesDouble(tokens, quantityLeast.getLayoutTokens().get(0).getOffset(), quantityMost.getLayoutTokens().get(quantityMost.getLayoutTokens().size() - 1).getOffset());
+                        extremities = getExtremitiesAsIndex(tokens, quantityLeast.getLayoutTokens().get(0).getOffset(), quantityMost.getLayoutTokens().get(quantityMost.getLayoutTokens().size() - 1).getOffset());
                     } else {
                         Quantity quantityTmp;
                         if (temperature.getQuantityLeast() == null) {
@@ -145,16 +192,16 @@ public class AggregatedProcessing {
                             quantityTmp = temperature.getQuantityLeast();
                         }
 
-                        extremities = getExtremitiesSingle(tokens, quantityTmp.getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesAsIndex(tokens, quantityTmp.getLayoutTokens().get(0).getOffset(), quantityTmp.getLayoutTokens().get(quantityTmp.getLayoutTokens().size() - 1).getOffset());
                     }
                     break;
 
                 case CONJUNCTION:
                     List<Quantity> quantityList = temperature.getQuantityList();
                     if (quantityList.size() > 1) {
-                        extremities = getExtremitiesDouble(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesAsIndex(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset());
                     } else {
-                        extremities = getExtremitiesSingle(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset());
+                        extremities = getExtremitiesAsIndex(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(0).getLayoutTokens().get(0).getOffset());
                     }
 
                     break;
@@ -179,6 +226,10 @@ public class AggregatedProcessing {
                         String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
                         QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
                         temperature.setQuantifiedObject(quantifiedObject);
+                    } else if (token.getText().equalsIgnoreCase("superconductivity") && temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("at")) {
+                        String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
+                        QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
+                        temperature.setQuantifiedObject(quantifiedObject);
                     }
                 }
             }
@@ -191,56 +242,31 @@ public class AggregatedProcessing {
 
     public static int WINDOW_TC = 20;
 
-    protected Pair<Integer, Integer> getExtremitiesSingle(List<LayoutToken> tokens, int centroidTokenOffset) {
-        return getExtremitiesSingle(tokens, centroidTokenOffset, WINDOW_TC);
+    /* We work with offsets (so no need to increase by size of the text) and we return indexes in the token list */
+    protected Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int centroidOffsetLower, int centroidOffsetHigher) {
+        return getExtremitiesAsIndex(tokens, centroidOffsetLower, centroidOffsetHigher, WINDOW_TC);
     }
 
 
-    protected Pair<Integer, Integer> getExtremitiesSingle(List<LayoutToken> tokens, int centroidTokenOffset, int windowlayoutTokensSize) {
+    protected Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int centroidOffsetLower, int centroidOffsetHigher, int windowlayoutTokensSize) {
         int start = 0;
         int end = tokens.size() - 1;
 
-        Optional<LayoutToken> centralToken = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidTokenOffset).findFirst();
-        LayoutToken layoutToken = centralToken.orElseThrow(RuntimeException::new);
+        List<LayoutToken> centralTokens = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidOffsetLower || (layoutToken.getOffset() > centroidOffsetLower && layoutToken.getOffset() < centroidOffsetHigher)).collect(Collectors.toList());
 
-        int centroidLayoutTokenIndex = tokens.indexOf(layoutToken);
+        if (isNotEmpty(centralTokens)) {
+            int centroidLayoutTokenIndexStart = tokens.indexOf(centralTokens.get(0));
+            int centroidLayoutTokenIndexEnd = tokens.indexOf(centralTokens.get(centralTokens.size() - 1));
 
-        if (centroidLayoutTokenIndex > windowlayoutTokensSize) {
-            start = centroidLayoutTokenIndex - windowlayoutTokensSize;
-        }
-        if (end - centroidLayoutTokenIndex > windowlayoutTokensSize) {
-            end = centroidLayoutTokenIndex + windowlayoutTokensSize + 1;
-        }
-
-        return new ImmutablePair(start, end);
-    }
-
-    protected Pair<Integer, Integer> getExtremitiesDouble(List<LayoutToken> tokens, int centroidTokenOffsetLow, int centroidTokenOffsetHigh) {
-        return getExtremitiesDouble(tokens, centroidTokenOffsetLow, centroidTokenOffsetHigh, WINDOW_TC);
-    }
-
-    protected Pair<Integer, Integer> getExtremitiesDouble(List<LayoutToken> tokens, int centroidTokenOffsetLow, int centroidTokenOffsetHigh, int windowSize) {
-
-        int start = 0;
-        int end = tokens.size() - 1;
-
-        Optional<LayoutToken> centralTokenLower = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidTokenOffsetLow).findFirst();
-        Optional<LayoutToken> centralTokenHigher = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == centroidTokenOffsetHigh).findFirst();
-        LayoutToken layoutTokenLow = centralTokenLower.orElseThrow(RuntimeException::new);
-        LayoutToken layoutTokenHigh = centralTokenHigher.orElseThrow(RuntimeException::new);
-
-        int lowIndex = tokens.indexOf(layoutTokenLow);
-        int highIndex = tokens.indexOf(layoutTokenHigh);
-
-        if (lowIndex > 10) {
-            start = lowIndex - 10;
-        }
-        if (end - highIndex > 10) {
-            end = highIndex + 10;
+            if (centroidLayoutTokenIndexStart > windowlayoutTokensSize) {
+                start = centroidLayoutTokenIndexStart - windowlayoutTokensSize;
+            }
+            if (end - centroidLayoutTokenIndexEnd > windowlayoutTokensSize) {
+                end = centroidLayoutTokenIndexEnd + windowlayoutTokensSize + 1;
+            }
         }
 
         return new ImmutablePair(start, end);
-
     }
 
     private List<Measurement> filterTemperature(List<Measurement> process) {

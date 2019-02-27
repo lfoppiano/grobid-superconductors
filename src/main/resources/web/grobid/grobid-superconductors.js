@@ -766,6 +766,9 @@ var grobid = (function ($) {
             if (topPos != -1)
                 string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
 
+            string += ">";
+            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16;'>Material</h2>";
+
             string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
                 "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
 
