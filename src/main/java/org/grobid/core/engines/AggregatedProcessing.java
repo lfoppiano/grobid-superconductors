@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.collections4.CollectionUtils.emptyCollection;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Singleton
@@ -133,7 +132,7 @@ public class AggregatedProcessing {
                         || (temperatureOffsetEnd > offsetWindowEnd && temperatureOffsetStart <= offsetWindowEnd)
                         || (temperatureOffsetStart >= offsetWindowStart && temperatureOffsetEnd < offsetWindowEnd)
                         || (temperatureOffsetStart > offsetWindowStart && temperatureOffsetEnd <= offsetWindowEnd)) {
-                    superconductor.setCriticalTemperature(criticalTemperature.getRight());
+                    superconductor.setCriticalTemperatureMeasurement(criticalTemperature.getRight());
                     break;
                 }
             }
@@ -222,11 +221,11 @@ public class AggregatedProcessing {
                     if (StringUtils.equalsAny(token.getText(), "temperature")) {
                         QuantifiedObject quantifiedObject = new QuantifiedObject(token.getText());
                         temperature.setQuantifiedObject(quantifiedObject);
-                    } else if (token.getText().equalsIgnoreCase("tc") || ((token.getText().equalsIgnoreCase("t")) && it.nextIndex() + 1 < temperatureWindow.size() && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("c")))) {
+                    } else if (it.nextIndex() < temperatureWindow.size() - 1 && (token.getText().equalsIgnoreCase("tc") || ((token.getText().equalsIgnoreCase("t")) && it.nextIndex() + 1 < temperatureWindow.size() && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("c"))))) {
                         String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
                         QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
                         temperature.setQuantifiedObject(quantifiedObject);
-                    } else if (token.getText().equalsIgnoreCase("superconductivity") && temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("at")) {
+                    } else if (it.nextIndex() < temperatureWindow.size() - 1 && (token.getText().equalsIgnoreCase("superconductivity") && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("at") || temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("around")))) {
                         String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
                         QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
                         temperature.setQuantifiedObject(quantifiedObject);

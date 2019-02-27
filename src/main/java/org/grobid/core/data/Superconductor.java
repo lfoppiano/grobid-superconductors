@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.util.BufferRecyclers;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.OffsetPosition;
+import org.grobid.core.utilities.UnitUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class Superconductor {
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
     private List<LayoutToken> layoutTokens = new ArrayList<>();
     private OffsetPosition offsets = null;
-    private Measurement criticalTemperature = null;
+    private Measurement criticalTemperatureMeasurement = null;
 
     public List<BoundingBox> getBoundingBoxes() {
         return boundingBoxes;
@@ -116,21 +117,70 @@ public class Superconductor {
             json.append("] ");
         }
 
-        if (criticalTemperature != null) {
-            Quantity tc = criticalTemperature.getQuantityAtomic();
-            Unit criticalUnit = criticalTemperature.getQuantityAtomic().getRawUnit();
-            json.append(", \"tc\":\"" + tc.getRawValue() + " " + criticalUnit.getRawName() + "\"");
+        if (criticalTemperatureMeasurement != null) {
+            if (criticalTemperatureMeasurement.getType() == UnitUtilities.Measurement_Type.VALUE) {
+                Quantity tc = criticalTemperatureMeasurement.getQuantityAtomic();
+                Unit criticalUnit = criticalTemperatureMeasurement.getQuantityAtomic().getRawUnit();
+                json.append(", \"tc\":\"" + tc.getRawValue() + " " + criticalUnit.getRawName() + "\"");
+            } else if (criticalTemperatureMeasurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_BASE_RANGE)) {
+
+                Unit criticalUnit = null;
+                StringBuilder temperature = new StringBuilder();
+                if (criticalTemperatureMeasurement.getQuantityBase() != null) {
+                    Quantity tc = criticalTemperatureMeasurement.getQuantityBase();
+
+                    criticalUnit = tc.getRawUnit();
+                    temperature.append(tc.getRawValue());
+                }
+
+                if (criticalTemperatureMeasurement.getQuantityRange() != null) {
+                    if (criticalTemperatureMeasurement.getQuantityBase() != null) {
+                        temperature.append("±");
+                    }
+                    Quantity tc = criticalTemperatureMeasurement.getQuantityRange();
+
+                    criticalUnit = tc.getRawUnit();
+                    temperature.append(tc.getRawValue());
+
+                }
+                temperature.append(" ").append(criticalUnit.getRawName());
+
+                json.append(", \"tc\":\"" + temperature.toString() + "\"");
+
+            } else if (criticalTemperatureMeasurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_MIN_MAX)) {
+                Unit criticalUnit = null;
+                StringBuilder temperature = new StringBuilder();
+                if (criticalTemperatureMeasurement.getQuantityMost() != null) {
+                    Quantity tc = criticalTemperatureMeasurement.getQuantityMost();
+
+                    criticalUnit = tc.getRawUnit();
+                    temperature.append(" < ").append(tc.getRawValue());
+                }
+
+                if (criticalTemperatureMeasurement.getQuantityLeast() != null) {
+                    Quantity tc = criticalTemperatureMeasurement.getQuantityLeast();
+
+                    criticalUnit = tc.getRawUnit();
+                    temperature.append(" > ").append(tc.getRawValue());
+
+                }
+                temperature.append(" ").append(criticalUnit.getRawName());
+
+                json.append(", \"tc\":\"" + temperature.toString() + "\"");
+
+            } else if (criticalTemperatureMeasurement.getType().equals(UnitUtilities.Measurement_Type.CONJUNCTION)) {
+            }
         }
 
         json.append(" }");
         return json.toString();
     }
 
-    public Measurement getCriticalTemperature() {
-        return criticalTemperature;
+    public Measurement getCriticalTemperatureMeasurement() {
+        return criticalTemperatureMeasurement;
     }
 
-    public void setCriticalTemperature(Measurement criticalTemperature) {
-        this.criticalTemperature = criticalTemperature;
+    public void setCriticalTemperatureMeasurement(Measurement criticalTemperatureMeasurement) {
+        this.criticalTemperatureMeasurement = criticalTemperatureMeasurement;
     }
 }
