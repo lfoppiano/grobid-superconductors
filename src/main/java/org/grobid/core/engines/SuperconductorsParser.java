@@ -245,13 +245,6 @@ public class SuperconductorsParser extends AbstractParser {
                     continue;
                 }
 
-//                // parano normalisation
-//                text = UnicodeUtil.normaliseTextAndRemoveSpaces(text);
-//                if (text.trim().length() == 0) {
-//                    continue;
-//                }
-
-
                 FeaturesVectorSuperconductors featuresVector =
                         FeaturesVectorSuperconductors.addFeatures(token, null, previous, chemspotEntities.get(index));
                 result.append(featuresVector.printVector());
