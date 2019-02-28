@@ -13,6 +13,7 @@ import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.BoundingBoxCalculator;
 import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.UnicodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -56,9 +58,17 @@ public class AbbreviationsParser extends AbstractParser {
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
+        //Normalisation
+        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
+                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+
+                    return layoutToken;
+                }
+        ).collect(Collectors.toList());
+
         try {
             // string representation of the feature matrix for CRF lib
-            ress = addFeatures(tokens);
+            ress = addFeatures(layoutTokensNormalised);
 
             String res = null;
             try {
@@ -66,7 +76,7 @@ public class AbbreviationsParser extends AbstractParser {
             } catch (Exception e) {
                 throw new GrobidException("CRF labeling for quantity parsing failed.", e);
             }
-            measurements.addAll(extractResults(tokens, res));
+            measurements.addAll(extractResults(layoutTokensNormalised, res));
         } catch (Exception e) {
             throw new GrobidException("An exception occured while running Grobid.", e);
         }

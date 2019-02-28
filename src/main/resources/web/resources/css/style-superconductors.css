@@ -1,0 +1,24 @@
+.info-sense-box.superconductor {
+    background-color: #0e90d2;
+}
+
+.info-sense-box.abbreviation {
+    background-color: #b92c28;
+}
+
+.info-sense-box.measurement {
+    background-color: #356635;
+}
+
+
+.label.superconductor {
+    background-color: #0e90d2;
+}
+
+.label.abbreviation {
+    background-color: #b92c28;
+}
+
+.label.measurement {
+    background-color: #356635;
+}

@@ -1,0 +1,39 @@
+[rel=popover][data-color=person] + .popover .popover-title {
+    background-color: #c43c35;
+    color: white;
+}
+
+[rel=popover][data-color=period] + .popover .popover-title {
+    background-color: #f89406;
+    color: white;
+}
+
+[rel=popover][data-color=event] + .popover .popover-title {
+    background-color: #01A9DB;
+    color: white;
+}
+
+[rel=popover][data-color=national] + .popover .popover-title {
+    background-color: #8904B1;
+    color: white;
+}
+
+[rel=popover][data-color=measure] + .popover .popover-title {
+    background-color: #c43c35;
+    color: white;
+}
+
+[rel=popover][data-color=acronym] + .popover .popover-title {
+    background-color: #c43c35;
+    color: white;
+}
+
+[rel=popover][data-color=institution] + .popover .popover-title {
+    background-color: #c43c35;
+    color: white;
+}
+
+[rel=popover][data-color=sense] + .popover .popover-title {
+    background-color: #87A1A8;
+    color: white;
+}

@@ -13,9 +13,7 @@ import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.BoundingBoxCalculator;
-import org.grobid.core.utilities.ChemspotClient;
-import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -107,19 +106,27 @@ public class SuperconductorsParser extends AbstractParser {
         // List<LayoutToken> for the selected segment
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
+        //Normalisation
+        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
+                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+
+                    return layoutToken;
+                }
+        ).collect(Collectors.toList());
+
         // list of textual tokens of the selected segment
         //List<String> texts = getTexts(tokenizationParts);
 
-        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokens));
-        List<Boolean> listChemspotEntities = synchroniseLayoutTokensWithMentions(tokens, mentions);
+        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+        List<Boolean> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
 
-        if (isEmpty(tokens))
+        if (isEmpty(layoutTokensNormalised))
             return new ArrayList<>();
 
         try {
             // string representation of the feature matrix for CRF lib
-            String ress = addFeatures(tokens, listChemspotEntities);
+            String ress = addFeatures(layoutTokensNormalised, listChemspotEntities);
 
             if (StringUtils.isEmpty(ress))
                 return entities;
@@ -132,7 +139,7 @@ public class SuperconductorsParser extends AbstractParser {
                 throw new GrobidException("CRF labeling for quantity parsing failed.", e);
             }
 
-            List<Superconductor> localEntities = extractResults(tokens, res);
+            List<Superconductor> localEntities = extractResults(layoutTokensNormalised, res);
 
             entities.addAll(localEntities);
         } catch (Exception e) {

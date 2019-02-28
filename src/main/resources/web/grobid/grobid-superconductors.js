@@ -13,6 +13,11 @@ var grobid = (function ($) {
         var superconMap = new Array();
         var measurementMap = new Array();
         var abbreviationsMap = new Array();
+        var annotationsMap = new Array();
+
+
+        // Transformers to HTML
+
 
         function defineBaseURL(ext) {
             var baseUrl = null;
@@ -168,7 +173,7 @@ var grobid = (function ($) {
                     type: 'POST',
                     url: urlLocal,
                     data: formData,
-                    success: SubmitSuccesful,
+                    success: SubmitSuccesfulText,
                     error: AjaxError,
                     contentType: false,
                     processData: false
@@ -315,12 +320,128 @@ var grobid = (function ($) {
             }
         }
 
-        function SubmitSuccesful(responseText, statusText) {
-            var selected = $('#selectedService option:selected').attr('value');
+        function annotateTextAsHtml(inputText, annotationList) {
+            var newString = "";
+            var lastMaxIndex = inputText.length;
+            if (annotationList) {
+                var pos = 0; // current position in the text
 
-            if (selected == 'processSuperconductorsText') {
-                SubmitSuccesfulText(responseText, statusText);
+                for (var annotationIndex = 0; annotationIndex < annotationList.length; annotationIndex++) {
+                    var currentAnnotation = annotationList[annotationIndex];
+                    if (currentAnnotation) {
+                        var startUnit = -1;
+                        var endUnit = -1;
+                        var start = parseInt(currentAnnotation.offsetStart, 10);
+                        var end = parseInt(currentAnnotation.offsetEnd, 10);
+                        var type = currentAnnotation.type;
+                        if ((startUnit !== -1) && ((startUnit === end) || (startUnit === end + 1)))
+                            end = endUnit;
+                        if ((endUnit !== -1) && ((endUnit === start) || (endUnit + 1 === start)))
+                            start = startUnit;
+
+                        if (start < pos) {
+                            // we have a problem in the initial sort of the quantities
+                            // the server response is not compatible with the present client
+                            console.log("Sorting of quantities as present in the server's response not valid for this client.");
+                            // note: this should never happen?
+                        } else {
+                            newString += inputText.substring(pos, start)
+                                + ' <span id="annot_supercon-' + annotationIndex + '" rel="popover" data-color="interval">'
+                                + '<span class="label ' + type + ' style="cursor:hand;cursor:pointer;" >'
+                                + inputText.substring(start, end) + '</span></span>';
+                            pos = end;
+                        }
+                        // superconMap[currentSuperconIndex] = currentAnnotation;
+                        annotationsMap[annotationIndex] = currentAnnotation;
+                    }
+                }
+                newString += inputText.substring(pos, inputText.length);
             }
+
+            return newString;
+        }
+
+
+        function extractOffsetsFromAtomic(quantity) {
+            offsetStart = -1;
+            offsetEnd = -1;
+
+            if (quantity.rawUnit) {
+                if (quantity.offsetStart < quantity.rawUnit.offsetStart) {
+                    offsetStart = quantity.offsetStart;
+                } else {
+                    offsetStart = quantity.rawUnit.offsetStart;
+                }
+
+                if (quantity.offsetEnd > quantity.rawUnit.offsetEnd) {
+                    offsetEnd = quantity.offsetEnd;
+                } else {
+                    offsetEnd = quantity.rawUnit.offsetEnd;
+                }
+            } else {
+                offsetStart = quantity.offsetStart;
+                offsetStart = quantity.offsetEnd;
+            }
+
+            return {'offsetStart': offsetStart, 'offsetEnd': offsetEnd};
+        }
+
+        function extractOffsetsFromIntervals(quantityLow, quantityHigh) {
+            offsets = {'offsetStart': -1, 'offsetEnd': -1};
+            offsetLeast = undefined;
+            offsetMost = undefined;
+
+            if (quantityLow) {
+                offsetLeast = extractOffsetsFromAtomic(quantityLow);
+            }
+
+            if (quantityHigh) {
+                offsetMost = extractOffsetsFromAtomic(quantityHigh);
+            }
+
+            if (offsetLeast) {
+                offsets['offsetStart'] = offsetLeast['offsetStart'];
+                if (offsetMost) {
+                    offsets['offsetEnd'] = offsetMost['offsetEnd'];
+                } else {
+                    offsets['offsetEnd'] = offsetLeast['offsetEnd'];
+                }
+            } else {
+                if (offsetMost) {
+                    offsets['offsetStart'] = offsetMost['offsetStart'];
+                    offsets['offsetEnd'] = offsetMost['offsetEnd'];
+                } else {
+                    console.log("Something very wrong here.");
+                }
+            }
+
+            return offsets;
+        }
+
+        function adjustTemperatureObjcts(temperatures) {
+            for (tmpIdx in temperatures) {
+                var temperature = temperatures[tmpIdx];
+
+                var offsets;
+
+                if (temperature.type === 'value') {
+                    let quantity = temperature.quantity;
+                    offsets = extractOffsetsFromAtomic(quantity);
+
+                } else if (temperature.type === 'interval') {
+                    if (temperature.quantityLeast || temperature.quantityMost) {
+                        offsets = extractOffsetsFromIntervals(temperature.quantityLeast, temperature.quantityMost);
+                    } else if (temperature.quantityRange || temperature.quantityBase) {
+                        offsets = extractOffsetsFromIntervals(temperature.quantityBase, temperature.quantityRange);
+                    }
+                } else if (temperature.type === 'list') {
+                    console.log("For now I'm not implementing this. ")
+                }
+
+                temperature.offsetStart = offsets['offsetStart'];
+                temperature.offsetEnd = offsets['offsetEnd'];
+            }
+            return temperatures;
         }
 
         function SubmitSuccesfulText(responseText, statusText) {
@@ -333,8 +454,6 @@ var grobid = (function ($) {
                 return;
             }
 
-            //responseJson = jQuery.parseJSON(responseJson);
-
             var display = '<div class=\"note-tabs\"> \
             <ul id=\"resultTab\" class=\"nav nav-tabs\"> \
                 <li class="active"><a href=\"#navbar-fixed-annotation\" data-toggle=\"tab\">Annotations</a></li> \
@@ -345,68 +464,60 @@ var grobid = (function ($) {
 
             display += '<pre style="background-color:#FFF;width:95%;" id="displayAnnotatedText">';
 
-            var string = $('#inputTextArea').val();
-            var newString = "";
-            var lastMaxIndex = string.length;
+            var inputText = $('#inputTextArea').val();
 
             display += '<table id="sentenceNER" style="width:100%;table-layout:fixed;" class="table">';
             //var string = responseJson.text;
 
             display += '<tr style="background-color:#FFF;">';
             var superconductors = responseJson.superconductors;
-            if (superconductors) {
-                var pos = 0; // current position in the text
 
-                for (var currentSuperconIndex = 0; currentSuperconIndex < superconductors.length; currentSuperconIndex++) {
-                    var currentSuperconductor = superconductors[currentSuperconIndex];
-                    if (currentSuperconductor) {
-                        var name = currentSuperconductor.name;
-                        var startUnit = -1;
-                        var endUnit = -1;
-                        var start = parseInt(currentSuperconductor.offsetStart, 10);
-                        var end = parseInt(currentSuperconductor.offsetEnd, 10);
-                        if ((startUnit != -1) && ((startUnit == end) || (startUnit == end + 1)))
-                            end = endUnit;
-                        if ((endUnit != -1) && ((endUnit == start) || (endUnit + 1 == start)))
-                            start = startUnit;
+            annotationList = [];
 
-                        if (start < pos) {
-                            // we have a problem in the initial sort of the quantities
-                            // the server response is not compatible with the present client
-                            console.log("Sorting of quantities as present in the server's response not valid for this client.");
-                            // note: this should never happen?
-                        } else {
-                            newString += string.substring(pos, start)
-                                + ' <span id="annot-' + currentSuperconIndex + '" rel="popover" data-color="interval">'
-                                + '<span class="label interval" style="cursor:hand;cursor:pointer;" >'
-                                + string.substring(start, end) + '</span></span>';
-                            pos = end;
-                        }
-                        superconMap[currentSuperconIndex] = currentSuperconductor;
+            function addAnnotations(responseAnnotations, type, annotationList) {
+                if (responseAnnotations) {
+                    for (idx in responseAnnotations) {
+                        annotation = {
+                            'obj': responseAnnotations[idx],
+                            'type': type,
+                            'offsetStart': responseAnnotations[idx].offsetStart,
+                            'offsetEnd': responseAnnotations[idx].offsetEnd
+                        };
+                        annotationList.push(annotation);
                     }
                 }
-                newString += string.substring(pos, string.length);
+                return annotationList
             }
 
-            newString = "<p>" + newString.replace(/(\r\n|\n|\r)/gm, "</p><p>") + "</p>";
+            // Custom for measurements
+            addAnnotations(responseJson.superconductors, 'superconductor', annotationList);
+            var temperaturesList = adjustTemperatureObjcts(responseJson.temperatures);
+
+            addAnnotations(temperaturesList, 'measurement', annotationList);
+            addAnnotations(responseJson.abbreviations, 'abbreviation', annotationList);
+
+            annotationList = annotationList.sort(function (a, b) {
+                if (a.offsetStart > b.offsetStart) return 1;
+                else if (a.offsetStart < b.offsetStart) return -1;
+                else return 0;
+            });
+
+            var annotatedTextAsHtml = annotateTextAsHtml(inputText, annotationList);
+
+            annotatedTextAsHtml = "<p>" + annotatedTextAsHtml.replace(/(\r\n|\n|\r)/gm, "</p><p>") + "</p>";
             //string = string.replace("<p></p>", "");
 
-            display += '<td style="font-size:small;width:60%;border:1px solid #CCC;"><p>' + newString + '</p></td>';
-            display += '<td style="font-size:small;width:40%;padding:0 5px; border:0"><span id="detailed_annot-0" /></td>';
+            display += '<td style="font-size:small;width:60%;border:1px solid #CCC;"><p>' + annotatedTextAsHtml + '</p></td>';
+            display += '<td style="font-size:small;width:40%;padding:0 5px; border:0"><span id="detailed_annot-0-0" /></td>';
 
             display += '</tr>';
-
-
             display += '</table>\n';
-
-
             display += '</pre>\n';
-
-
             display += '</div> \
                     <div class="tab-pane " id="navbar-fixed-json">\n';
 
 
+            //JSON Pretty print box
             display += "<pre class='prettyprint' id='jsonCode'>";
 
             display += "<pre class='prettyprint lang-json' id='xmlCode'>";
@@ -420,20 +531,15 @@ var grobid = (function ($) {
             $('#requestResult').html(display);
             window.prettyPrint && prettyPrint();
 
-            if (superconductors) {
-                for (var measurementIndex = 0; measurementIndex < superconductors.length; measurementIndex++) {
+            // Adding events
+            if (annotationList) {
+                for (var annotationIdx = 0; annotationIdx < annotationList.length; annotationIdx++) {
                     // var measurement = measurements[measurementIndex];
 
-                    $('#annot_supercon-' + measurementIndex).bind('hover', viewSuperconductor);
-                    $('#annot_supercon-' + measurementIndex).bind('click', viewSuperconductor);
+                    $('#annot_supercon-' + annotationIdx).bind('hover', annotationList, viewAnnotation);
+                    $('#annot_supercon-' + annotationIdx).bind('click', annotationList, viewAnnotation);
                 }
             }
-            /*for (var key in quantityMap) {
-             if (entityMap.hasOwnProperty(key)) {
-             $('#annot-'+key).bind('hover', viewQuantity);
-             $('#annot-'+key).bind('click', viewQuantity);
-             }
-             }*/
 
             $('#detailed_annot-0').hide();
 
@@ -516,11 +622,11 @@ var grobid = (function ($) {
                     var quantities = [];
                     var substance = measurement.quantified;
 
-                    if (measurementType == "value") {
+                    if (measurementType === "value") {
                         var quantity = measurement.quantity;
                         if (quantity)
                             quantities.push(quantity)
-                    } else if (measurementType == "interval") {
+                    } else if (measurementType === "interval") {
                         var quantityLeast = measurement.quantityLeast;
                         if (quantityLeast)
                             quantities.push(quantityLeast);
@@ -668,29 +774,31 @@ var grobid = (function ($) {
             $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('click', superconMap, viewEntityPDF);
         }
 
-        function viewSuperconductor() {
 
-            var localID = $(this).attr('id');
+        function viewAnnotation(annotationsList) {
 
-            if (responseJson.superconductors == null) {
+            if (annotationsList.length === 0) {
                 return;
             }
+            var localID = $(this).attr('id');
 
             var ind1 = localID.indexOf('-');
-            var localMeasurementNumber = parseInt(localID.substring(ind1 + 1));
-            if ((superconMap[localMeasurementNumber] == null) || (superconMap[localMeasurementNumber].length === 0)) {
+            var localAnnotationID = parseInt(localID.substring(ind1 + 1));
+            if ((annotationsMap[localAnnotationID] == null) || (annotationsMap[localAnnotationID].length === 0)) {
                 // this should never be the case
-                console.log("Error for visualising annotation measurement with id " + localMeasurementNumber
+                console.log("Error for visualising annotation measurement with id " + localAnnotationID
                     + ", empty list of measurement");
-            } else if ((superconMap[localMeasurementNumber] == null)) {
-                // this should never be the case
-                console.log("Error for visualising annotation of id " + localMeasurementNumber
-                    + ", empty superconductor");
             }
 
-            var superconductor = superconMap[localMeasurementNumber];
-            var string = toHtmlSemiconductor(superconductor, -1);
-
+            var annotation = annotationsMap[localAnnotationID];
+            var string = "";
+            if (annotation.type === 'superconductor') {
+                string = toHtmlSemiconductor(annotation.obj, -1);
+            } else if (annotation.type === 'measurement') {
+                string = toHtmlMeasurement(annotation.obj, -1)
+            } else if (annotation.type === 'abbreviation') {
+                string = toHtmlAbbreviation(annotation.obj, -1)
+            }
 
             $('#detailed_annot-0-0').html(string);
             $('#detailed_annot-0-0').show();
@@ -755,19 +863,20 @@ var grobid = (function ($) {
             $('#detailed_annot-' + pageIndex).show();
         }
 
+        // Transformation to HTML
         function toHtmlSemiconductor(superconductor, topPos) {
             var string = "";
             var first = true;
 
-            colorLabel = superconductor.name;
+            colorLabel = 'superconductor';
             var name = superconductor.name;
 
             string += "<div class='info-sense-box " + colorLabel + "'";
-            if (topPos != -1)
+            if (topPos !== -1)
                 string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
 
             string += ">";
-            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16;'>Material</h2>";
+            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>Material</h2>";
 
             string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
                 "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
@@ -787,6 +896,98 @@ var grobid = (function ($) {
 
             return string;
         }
+
+        function toHtmlAbbreviation(abbreviation, topPos) {
+            var string = "";
+            var first = true;
+
+            colorLabel = 'abbreviation';
+            var name = abbreviation.name;
+
+            string += "<div class='info-sense-box " + colorLabel + "'";
+            if (topPos != -1)
+                string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
+
+            string += ">";
+            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>Abbreviation</h2>";
+
+            string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
+                "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
+
+            if (name) {
+                string += "<p>name: <b>" + name + "</b></p>";
+            }
+
+            string += "</td></tr>";
+            string += "</table></div>";
+
+            string += "</div>";
+
+            return string;
+        }
+
+        function toHtmlMeasurement(measurement, topPos) {
+            var string = "";
+            var first = true;
+
+            colorLabel = 'measurement';
+
+            string += "<div class='info-sense-box " + colorLabel + "'";
+            if (topPos != -1)
+                string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
+
+            string += ">";
+            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>Measurement</h2>";
+
+            string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
+                "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
+
+            quantityMap = [];
+            if (measurement.type === 'value') {
+                measurementType = "Atomic value";
+                measurement.quantity['quantified'] = measurement.quantified;
+                quantityMap.push(measurement.quantity);
+                string = toHtml(quantityMap, measurementType, -1);
+            } else if (measurement.type === 'interval') {
+                measurementType = "Interval";
+                if (measurement.quantityLeast) {
+                    measurement.quantityLeast['quantified'] = measurement.quantified;
+                    quantityMap.push(measurement.quantityLeast)
+                }
+
+                if (measurement.quantityBase) {
+                    measurement.quantityBase['quantified'] = measurement.quantified;
+                    quantityMap.push(measurement.quantityBase)
+                }
+
+                if (measurement.quantityMost) {
+                    measurement.quantityMost['quantified'] = measurement.quantified;
+                    quantityMap.push(measurement.quantityMost)
+                }
+
+                if (measurement.quantityRange) {
+                    measurement.quantityMost['quantified'] = measurement.quantified;
+                    quantityMap.push(measurement.quantityRange)
+                }
+
+                if (quantityMap.length > 1)
+                    string = intervalToHtml(quantityMap, measurementType, -1);
+                else
+                    string = toHtml(quantityMap, measurementType, -1);
+            } else {
+                measurementType = "List";
+                quantityMap.push(measurement.list);
+                string = toHtml(quantityMap, measurementType, -1);
+            }
+
+            string += "</td></tr>";
+            string += "</table></div>";
+
+            string += "</div>";
+
+            return string;
+        }
+
 
         function intervalToHtml(quantityMap, measurementType, topPos) {
             var string = "";
@@ -1029,36 +1230,10 @@ var grobid = (function ($) {
         }
 
         var examples = [
-            "We report X-ray diffraction, magnetization and transport measurements for polycrystalline samples of the new layered superconductor Bi4−xAgxO4S3 (0 < x < 0.2). " +
-            "The superconducting transition temperature (TC) decreases gradually and finally suppressed when x < 0.10. " +
-            "Accordingly, the resistivity changes from a metallic behavior for x < 0.1 to a semiconductor-like behavior for x > 0.1. " +
-            "The analysis of Seebeck coefficient shows there are two types of electron-like carriers dominate at different temperature regions, indicative of a multiband effect responsible for the transport properties. " +
-            "The suppression of superconductivity and the increased resistivity can be attributed to a shift of the Fermi level to the lower-energy side upon doping, which reduces the density of states at EF. Further, our result indicates the superconductivity in Bi4O4S3 is intrinsic and the dopant Ag prefers to enter the BiS2 layers, which may essentially modify the electronic structure.",
-
-            "Uranium compounds U6X (X 1⁄4 Mn, Fe, Co, and Ni) are superconductors with relatively high superconducting (SC) transition temperatures Tc among the uranium-based compounds. " +
-            "Contrary to other uranium-based heavy-fermion systems including ferromagnetic superconductors, 5f electrons in U6X compounds exhibit an itinerant nature even at room temperature, and do not exhibit magnetic ground states. " +
-            "The SC properties are consistent with the conventional one: for instance, the full-gap superconductivity of U6Co (Tc 1⁄4 2:33 K) has been indicated by the penetration depth, nuclear spin–lattice relaxation rate 1=T1, and more recently, by specific heat measurements. " +
-            "Thus, at present, these compounds are good reference systems for the uranium-based unconventional superconductors.\n\n" +
-            "It is also noteworthy that SC U6Co has a large upper critical field Hc2 for Tc. In spin-singlet superconductors, the superconductivity is limited by the Pauli-paramagnetic effect under a magnetic field. This is because the spin susceptibility decreases in the SC state, and the energy difference between the SC and the normal states reduces under a larger magnetic field due to the magnetic energy in the normal state. The Pauli-limiting field HP is expressed as \"0 HP =T 1⁄4 1:86ð2=gÞTc=K in the weak-coupling BCS model, where g is the g-factor. " +
-            "If this is applied to U6Co assuming g 1⁄4 2, \"0HP 1⁄4 4:3 T is obtained. However, \"0Hc2 along the [001] and [110] directions in U6Co in the tetragonal structure is 7.85 and 6.56T, respectively,6) and both of them exceed 4.3T. The Pauli-paramagnetic effect is actually absent in U6Co. " +
-            "The large Hc2 value has been considered to originate from the small g-factor.",
-
-            "The flux line lattice (FLL) that is established in the mixed state of a type-II superconductor leads to a distinctive field distribution in the sample. " +
-            "The positive muon can be employed as an extremely sensitive probe of local magnetic environments and directly measures the distribution of fields associated with the FLL. " +
-            "In this way, μSR is used to calculate the temperature evolution of the magnetic penetration depth λ and thus can determine the presence of nodes in the superconducting order parameter. " +
-            "The technique is also sensitive to the very small magnetic moments associated with the formation of spin-triplet electron pairs, and measurements in zero field provide one of the most unambiguous methods of detecting this broken time- reversal symmetry [11]. " +
-            "Time-reversal symmetry breaking (TRSB) is an extremely rare phenomenon, which has only been reported for a handful of unconventional supercon- ductors: the candidate chiral p-wave superconductor Sr2 RuO4 [12,13], the heavy fermion superconductors UPt3 and ðU;ThÞBe13 [14–17], the filled skutterudites ðPr; LaÞðRu; OsÞ4Sb12 [18,19], PrPt4Ge12 [20] and centrosymmetric LaNiGa2 [21], and recently the caged- type superconductor Lu5 Rh6 Sn18 [22]. " +
-            "μSR studies have been carried out on many other noncentrosymmetric superconductors (NCSs), including CaðIr; PtÞSi3 [23], LaðRh; Pt; Pd; IrÞSi3 [24–26], Mg10Ir19B16 [27], and Re3W [28]. No spontaneous magnetization has been observed in these materials, implying that the supercon- ductivity in these systems occurs predominantly in a spin- singlet channel.",
-
-            "The newly discovered superconductivity in iron oxypnictide superconductors has stimulated intensive research on high- temperature superconductivity outside the cuprate system. In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system [1–6], as well as 25 K in hole-doped La1−x Srx OFeAs compound [7]. " +
-            "Because of the layered structure, the doping behavior and many other properties of the iron-based system are very similar to those of the copper oxides, and it has been thus expected that higher Tc values may be found in multi-layer systems. Soon after, single crystals of LnFeAs(O1−x Fx ) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method [8–10], though the sub-millimeter sizes limit the experimental studies on them [11, 12]. " +
-            "Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties.\n" +
-            "Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported [13]." +
-            "By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity\n" +
-            "up to 38 K was discovered both in hole-doped and electron-doped samples [14–17]. " +
-            "Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−x Kx Fe2 As2 (A = Ba, Sr) [14, 18]. Meanwhile, superconductivity could also be induced in the parent phase by high pressure [19, 20] or by replacing some of the Fe by Co [21, 22]. " +
-            "More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics [23–25]. " +
-            "However, single crystals with high homogeneity and low contamination are still hard to obtain by this method [26]. To avoid these problems, the FeAs self-flux method may be more appropriate."]
+            "Uranium compounds U6X (X 1⁄4 Mn, Fe, Co, and Ni) are superconductors with relatively high superconducting (SC) transition temperatures Tc among the uranium-based compounds. Contrary to other uranium-based heavy-fermion systems including ferromagnetic superconductors, 5f electrons in U6X compounds exhibit an itinerant nature even at room temperature, and do not exhibit magnetic ground states. The SC properties are consistent with the conventional one: for instance, the full-gap superconductivity of U6Co (Tc 1⁄4 2:33 K) has been indicated by the penetration depth, nuclear spin–lattice relaxation rate 1=T1, and more recently, by specific heat measurements. Thus, at present, these compounds are good reference systems for the uranium-based unconventional superconductors. ",
+            "We report X-ray diffraction, magnetization and transport measurements for polycrystalline samples of the new layered superconductor Bi4−xAgxO4S3 (0 < x < 0.2). The superconducting transition temperature (TC) decreases gradually and finally suppressed when x < 0.10. Accordingly, the resistivity changes from a metallic behavior for x < 0.1 to a semiconductor-like behavior for x > 0.1. The analysis of Seebeck coefficient shows there are two types of electron-like carriers dominate at different temperature regions, indicative of a multiband effect responsible for the transport properties. The suppression of superconductivity and the increased resistivity can be attributed to a shift of the Fermi level to the lower-energy side upon doping, which reduces the density of states at EF. Further, our result indicates the superconductivity in Bi4O4S3 is intrinsic and the dopant Ag prefers to enter the BiS2 layers, which may essentially modify the electronic structure.",
+            "The flux line lattice (FLL) that is established in the mixed state of a type-II superconductor leads to a distinctive field distribution in the sample. The positive muon can be employed as an extremely sensitive probe of local magnetic environments and directly measures the distribution of fields associated with the FLL. Time-reversal symmetry breaking (TRSB) is an extremely rare phenomenon, which has only been reported for a handful of unconventional superconductors: the candidate chiral p-wave superconductor Sr2 RuO4, the heavy fermion superconductors UPt3 and ðU;ThÞBe13, the filled skutterudites ðPr; LaÞðRu; OsÞ4Sb12, PrPt4Ge12 and centrosymmetric LaNiGa2, and recently the caged- type superconductor Lu5 Rh6 Sn18. μSR studies have been carried out on many other noncentrosymmetric superconductors (NCSs), including CaðIr; PtÞSi3, LaðRh; Pt; Pd; IrÞSi3, Mg10Ir19B16, and Re3W. No spontaneous magnetization has been observed in these materials, implying that the superconductivity in these systems occurs predominantly in a spin- singlet channel.",
+            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x Srx OFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx ) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method [8–10], though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported.By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−x Kx Fe2 As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics."]
 
     }
 
