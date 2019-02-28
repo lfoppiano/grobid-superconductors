@@ -1,0 +1,57 @@
+15:18:41.072 [main] INFO org.grobid.trainer.AbstractTrainer - 4 files
+15:18:41.072 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081113707.superconductors.tei.xml
+15:18:41.384 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081024716.superconductors.tei.xml
+15:18:41.579 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081103706.superconductors.tei.xml
+15:18:41.789 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081033701.superconductors.tei.xml
+	epsilon: 1.0E-6
+	window: 20
+	nb max iterations: 2000
+	nb threads: 12
+* Load patterns
+* Load training data
+* Initialize the model
+* Summary
+    nb train:    78
+    nb labels:   3
+    nb blocks:   43364
+    nb features: 130098
+* Train the model with l-bfgs
+* Save the model
+* Done
+Model for org.grobid.core.GrobidModels$1@71318ec4 created in 4789 ms
+15:18:45.814 [main] INFO org.grobid.trainer.AbstractTrainer - sourcePathLabel: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/resources/dataset/abbreviations/evaluation/staging
+15:18:45.814 [main] INFO org.grobid.trainer.AbstractTrainer - outputPath for training data: /Users/lfoppiano/development/nims/projects/grobid/grobid-home/tmp/abbreviations6788328532009612016.test
+15:18:45.815 [main] INFO org.grobid.trainer.AbstractTrainer - 1 files
+15:18:45.815 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081054708.superconductors.tei.xml
+15:18:45.921 [main] INFO org.grobid.core.jni.WapitiModel - Loading model: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/abbreviations/model.wapiti (size: 754883)
+[Wapiti] Loading model: "/Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/abbreviations/model.wapiti"
+Model path: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/abbreviations/model.wapiti
+Labeling took: 76 ms
+
+===== Token-level results =====
+
+
+label                accuracy     precision    recall       f1
+
+<acronym>            99.51        57.14        53.33        55.17
+
+all fields           99.51        57.14        53.33        55.17   (micro average)
+                     99.51        57.14        53.33        55.17   (macro average)
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1
+
+<acronym>            75           66.67        50           57.14
+
+all fields           75           66.67        50           57.14   (micro average)
+                     75           66.67        50           57.14   (macro average)
+
+===== Instance-level results =====
+
+Total expected instances:   24
+Correct instances:          22
+Instance-level recall:      91.67
+
+Evaluation for org.grobid.core.GrobidModels$1@71318ec4 model is realized in 253 ms
+

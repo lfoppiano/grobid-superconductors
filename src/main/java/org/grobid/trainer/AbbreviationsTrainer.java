@@ -45,7 +45,7 @@ public class AbbreviationsTrainer extends AbstractTrainer {
 
         try {
 
-            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "generated");
+            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "staging");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
