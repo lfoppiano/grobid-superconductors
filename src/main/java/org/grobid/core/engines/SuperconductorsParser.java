@@ -149,7 +149,7 @@ public class SuperconductorsParser extends AbstractParser {
         return entities;
     }
 
-    private List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Mention> mentions) {
+    protected List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Mention> mentions) {
         List<Boolean> isChemspotMention = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(mentions)) {
@@ -160,32 +160,43 @@ public class SuperconductorsParser extends AbstractParser {
             return isChemspotMention;
         }
 
+        int globalOffset = 0;
+        if (CollectionUtils.isNotEmpty(tokens)) {
+            globalOffset = tokens.get(0).getOffset();
+        }
+
         int mentionId = 0;
         Mention mention = mentions.get(mentionId);
 
         for (LayoutToken token : tokens) {
-            if (token.getOffset() < mention.getStart()) {
+            //Try to normalise the offsets
+            int mentionStart = globalOffset + mention.getStart();
+            int mentionEnd = globalOffset + mention.getEnd();
+
+            if (token.getOffset() < mentionStart) {
                 isChemspotMention.add(false);
                 continue;
-            } else if (token.getOffset() >= mention.getStart()
-                    && token.getOffset() + length(token.getText()) <= mention.getEnd()) {
-                isChemspotMention.add(true);
             } else {
-                if (mentionId == mentions.size() - 1) {
-                    isChemspotMention.add(false);
-                    break;
-                }
-                mentionId++;
-                mention = mentions.get(mentionId);
-
-                if (token.getOffset() < mention.getStart()) {
-                    isChemspotMention.add(false);
-                    continue;
-                } else if (token.getOffset() >= mention.getStart()
-                        && token.getOffset() + length(token.getText()) < mention.getEnd()) {
+                if (token.getOffset() >= mentionStart
+                        && token.getOffset() + length(token.getText()) <= mentionEnd) {
                     isChemspotMention.add(true);
                 } else {
-                    LOGGER.error("Something is really wrong here. ");
+                    if (mentionId == mentions.size() - 1) {
+                        isChemspotMention.add(false);
+                        break;
+                    }
+                    mentionId++;
+                    mention = mentions.get(mentionId);
+
+                    if (token.getOffset() < mentionStart) {
+                        isChemspotMention.add(false);
+                        continue;
+                    } else if (token.getOffset() >= mentionStart
+                            && token.getOffset() + length(token.getText()) <= mentionEnd) {
+                        isChemspotMention.add(true);
+                    } else {
+                        continue;
+                    }
                 }
             }
         }
