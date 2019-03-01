@@ -62,12 +62,23 @@ public class SuperconductorsParser extends AbstractParser {
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
-        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokens));
-        List<Boolean> listChemspotEntities = synchroniseLayoutTokensWithMentions(tokens, mentions);
+        //Normalisation
+        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
+                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+
+                    return layoutToken;
+                }
+        ).collect(Collectors.toList());
+
+
+        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+        List<Boolean> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
+
+//        mentions.stream().forEach(m -> System.out.println(">>>>>> " + m.getText() + " --> " + m.getType().name()));
 
         try {
             // string representation of the feature matrix for CRF lib
-            ress = addFeatures(tokens, listChemspotEntities);
+            ress = addFeatures(layoutTokensNormalised, listChemspotEntities);
 
             String res = null;
             try {
@@ -180,23 +191,16 @@ public class SuperconductorsParser extends AbstractParser {
                 if (token.getOffset() >= mentionStart
                         && token.getOffset() + length(token.getText()) <= mentionEnd) {
                     isChemspotMention.add(true);
+                    continue;
+                }
+
+                if (mentionId == mentions.size() - 1) {
+                    isChemspotMention.add(false);
+                    break;
                 } else {
-                    if (mentionId == mentions.size() - 1) {
-                        isChemspotMention.add(false);
-                        break;
-                    }
+                    isChemspotMention.add(false);
                     mentionId++;
                     mention = mentions.get(mentionId);
-
-                    if (token.getOffset() < mentionStart) {
-                        isChemspotMention.add(false);
-                        continue;
-                    } else if (token.getOffset() >= mentionStart
-                            && token.getOffset() + length(token.getText()) <= mentionEnd) {
-                        isChemspotMention.add(true);
-                    } else {
-                        continue;
-                    }
                 }
             }
         }
