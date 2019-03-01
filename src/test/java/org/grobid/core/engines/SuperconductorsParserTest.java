@@ -13,13 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-import static org.easymock.EasyMock.*;
+import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class SuperconductorsParserTest {
 
@@ -43,9 +42,9 @@ public class SuperconductorsParserTest {
                 "framework with polyhedral cages are partially substituted with\n" +
                 "lower valent elements such as ");
         List<Mention> mentions = Arrays.asList(new Mention(70, 72, "Si"), new Mention(74, 76, "Ge"));
-        List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
+        List<String> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
 
-        assertThat(booleans.stream().filter(b -> b).count(), greaterThan(0L));
+        assertThat(booleans.stream().filter(b -> !b.equals(NONE_CHEMSPOT_TYPE)).count(), greaterThan(0L));
     }
 
     @Test
@@ -55,15 +54,15 @@ public class SuperconductorsParserTest {
                 "framework with polyhedral cages are partially substituted with\n" +
                 "lower valent elements such as ");
         List<Mention> mentions = Arrays.asList(new Mention(29, 44, "Zintl compounds"), new Mention(70, 72, "Si"), new Mention(74, 76, "Ge"));
-        List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
+        List<String> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
 
-        List<Boolean> collect = booleans.stream().filter(b -> b).collect(Collectors.toList());
+        List<String> collect = booleans.stream().filter(b -> !b.equals(NONE_CHEMSPOT_TYPE)).collect(Collectors.toList());
 
         assertThat(collect, hasSize(5));
 
         List<LayoutToken> annotatedTokens = IntStream
                 .range(0, tokens.size())
-                .filter(booleans::get)
+                .filter(i -> !booleans.get(i).equals(NONE_CHEMSPOT_TYPE))
                 .mapToObj(tokens::get)
                 .collect(Collectors.toList());
 
@@ -84,15 +83,15 @@ public class SuperconductorsParserTest {
                 "lower valent elements such as ");
 
         List<Mention> mentions = Arrays.asList(new Mention(70, 72, "Si"), new Mention(73, 75, "Ge"));
-        List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
+        List<String> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
 
-        List<Boolean> collect = booleans.stream().filter(b -> b).collect(Collectors.toList());
+        List<String> collect = booleans.stream().filter(b -> !b.equals(NONE_CHEMSPOT_TYPE)).collect(Collectors.toList());
 
         assertThat(collect, hasSize(2));
 
         List<LayoutToken> annotatedTokens = IntStream
                 .range(0, tokens.size())
-                .filter(booleans::get)
+                .filter(i -> !booleans.get(i).equals(NONE_CHEMSPOT_TYPE))
                 .mapToObj(tokens::get)
                 .collect(Collectors.toList());
 

@@ -2,7 +2,6 @@ package org.grobid.core.features;
 
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.TextUtilities;
 
 import java.util.regex.Matcher;
@@ -37,7 +36,7 @@ public class FeaturesVectorSuperconductors {
     //    public boolean rotation = false;
     public boolean containDash = false;
 
-    public boolean isKnownChemCompound = false;
+    public String chemspotCompound = null;
 
 //    public boolean isPartOfUnitPattern = false;
 
@@ -113,11 +112,7 @@ public class FeaturesVectorSuperconductors {
         res.append(" " + fontSize);
 
         //Is known compound / substance from chemspot
-        if(isKnownChemCompound) {
-            res.append(" 1");
-        } else {
-            res.append(" 0");
-        }
+        res.append(" " + chemspotCompound);
 
         // label - for training data (1)
         if (label != null)
@@ -134,7 +129,7 @@ public class FeaturesVectorSuperconductors {
     public static FeaturesVectorSuperconductors addFeatures(LayoutToken token,
                                                             String label,
                                                             LayoutToken previousToken,
-                                                            boolean isCompound) {
+                                                            String compoundType) {
         FeatureFactory featureFactory = FeatureFactory.getInstance();
 
         FeaturesVectorSuperconductors featuresVector = new FeaturesVectorSuperconductors();
@@ -219,7 +214,7 @@ public class FeaturesVectorSuperconductors {
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
 
         // Chemspot
-        featuresVector.isKnownChemCompound = isCompound;
+        featuresVector.chemspotCompound = compoundType;
 
         return featuresVector;
     }

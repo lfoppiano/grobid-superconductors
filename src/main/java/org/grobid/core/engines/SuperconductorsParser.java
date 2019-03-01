@@ -36,6 +36,7 @@ public class SuperconductorsParser extends AbstractParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParser.class);
 
     private static volatile SuperconductorsParser instance;
+    public static final String NONE_CHEMSPOT_TYPE = "NONE";
     private ChemspotClient chemspotClient;
 
     public static SuperconductorsParser getInstance(ChemspotClient chemspotClient) {
@@ -72,7 +73,7 @@ public class SuperconductorsParser extends AbstractParser {
 
 
         List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
-        List<Boolean> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
+        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
 //        mentions.stream().forEach(m -> System.out.println(">>>>>> " + m.getText() + " --> " + m.getType().name()));
 
@@ -129,7 +130,7 @@ public class SuperconductorsParser extends AbstractParser {
         //List<String> texts = getTexts(tokenizationParts);
 
         List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
-        List<Boolean> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
+        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
 
         if (isEmpty(layoutTokensNormalised))
@@ -160,13 +161,11 @@ public class SuperconductorsParser extends AbstractParser {
         return entities;
     }
 
-    protected List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Mention> mentions) {
-        List<Boolean> isChemspotMention = new ArrayList<>();
+    protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Mention> mentions) {
+        List<String> isChemspotMention = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(mentions)) {
-            for (LayoutToken token : tokens) {
-                isChemspotMention.add(false);
-            }
+            tokens.stream().forEach(t -> isChemspotMention.add(NONE_CHEMSPOT_TYPE));
 
             return isChemspotMention;
         }
@@ -180,25 +179,25 @@ public class SuperconductorsParser extends AbstractParser {
         Mention mention = mentions.get(mentionId);
 
         for (LayoutToken token : tokens) {
-            //Try to normalise the offsets
+            //normalise the offsets
             int mentionStart = globalOffset + mention.getStart();
             int mentionEnd = globalOffset + mention.getEnd();
 
             if (token.getOffset() < mentionStart) {
-                isChemspotMention.add(false);
+                isChemspotMention.add(NONE_CHEMSPOT_TYPE);
                 continue;
             } else {
                 if (token.getOffset() >= mentionStart
                         && token.getOffset() + length(token.getText()) <= mentionEnd) {
-                    isChemspotMention.add(true);
+                    isChemspotMention.add(mention.getType().name());
                     continue;
                 }
 
                 if (mentionId == mentions.size() - 1) {
-                    isChemspotMention.add(false);
+                    isChemspotMention.add(NONE_CHEMSPOT_TYPE);
                     break;
                 } else {
-                    isChemspotMention.add(false);
+                    isChemspotMention.add(NONE_CHEMSPOT_TYPE);
                     mentionId++;
                     mention = mentions.get(mentionId);
                 }
@@ -207,7 +206,7 @@ public class SuperconductorsParser extends AbstractParser {
         if (tokens.size() > isChemspotMention.size()) {
 
             for (int counter = isChemspotMention.size(); counter < tokens.size(); counter++) {
-                isChemspotMention.add(false);
+                isChemspotMention.add(NONE_CHEMSPOT_TYPE);
             }
         }
 
@@ -248,7 +247,7 @@ public class SuperconductorsParser extends AbstractParser {
 
 
     @SuppressWarnings({"UnusedParameters"})
-    private String addFeatures(List<LayoutToken> tokens, List<Boolean> chemspotEntities) {
+    private String addFeatures(List<LayoutToken> tokens, List<String> chemspotEntities) {
         StringBuilder result = new StringBuilder();
         try {
             LayoutToken previous = new LayoutToken();

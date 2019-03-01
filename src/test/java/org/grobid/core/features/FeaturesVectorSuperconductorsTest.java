@@ -4,6 +4,7 @@ import org.grobid.core.layout.LayoutToken;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,7 +36,7 @@ public class FeaturesVectorSuperconductorsTest {
         previousToken.setBold(true);
 
 
-        FeaturesVectorSuperconductors features = target.addFeatures(token, "bao", previousToken, false);
+        FeaturesVectorSuperconductors features = target.addFeatures(token, "bao", previousToken, NONE_CHEMSPOT_TYPE);
 
         assertThat(features.printVector(), is("token1 token1 t to tok toke 1 n1 en1 ken1 NOCAPS CONTAINDIGIT 0 NOPUNCT tokenX xxxd xd SAMEFONT SAMEFONTSIZE 0 bao"));
     }

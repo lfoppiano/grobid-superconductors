@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
 import static org.grobid.core.engines.label.AbbreviationsTaggingLabels.ABBREVIATION_OTHER;
 import static org.grobid.core.engines.label.AbbreviationsTaggingLabels.ABBREVIATION_VALUE_NAME;
 
@@ -196,7 +197,7 @@ public class AbbreviationsParser extends AbstractParser {
 
 
                 FeaturesVectorSuperconductors featuresVector =
-                        FeaturesVectorSuperconductors.addFeatures(token, null, previous, false);
+                        FeaturesVectorSuperconductors.addFeatures(token, null, previous, NONE_CHEMSPOT_TYPE);
                 result.append(featuresVector.printVector());
                 result.append("\n");
                 previous = token;

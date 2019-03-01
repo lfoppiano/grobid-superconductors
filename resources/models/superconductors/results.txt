@@ -1,8 +1,8 @@
-15:49:09.163 [main] INFO org.grobid.trainer.AbstractTrainer - 4 files
-15:49:09.163 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081113707.superconductors.tei.xml
-15:49:09.344 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081024716.superconductors.tei.xml
-15:49:09.505 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081103706.superconductors.tei.xml
-15:49:09.573 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081033701.superconductors.tei.xml
+11:02:10.169 [main] INFO org.grobid.trainer.AbstractTrainer - 4 files
+11:02:10.169 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081113707.superconductors.tei.xml
+11:02:10.350 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081024716.superconductors.tei.xml
+11:02:10.508 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081103706.superconductors.tei.xml
+11:02:10.579 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081033701.superconductors.tei.xml
 	epsilon: 1.0E-6
 	window: 20
 	nb max iterations: 2000
@@ -13,20 +13,20 @@
 * Summary
     nb train:    63
     nb labels:   3
-    nb blocks:   66224
-    nb features: 198678
+    nb blocks:   66296
+    nb features: 198894
 * Train the model with l-bfgs
 * Save the model
 * Done
-Model for org.grobid.core.GrobidModels$1@25bbe1b6 created in 13561 ms
-15:49:22.692 [main] INFO org.grobid.trainer.AbstractTrainer - sourcePathLabel: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/resources/dataset/superconductors/evaluation/staging
-15:49:22.692 [main] INFO org.grobid.trainer.AbstractTrainer - outputPath for training data: /Users/lfoppiano/development/nims/projects/grobid/grobid-home/tmp/superconductors3863309655992912381.test
-15:49:22.692 [main] INFO org.grobid.trainer.AbstractTrainer - 1 files
-15:49:22.693 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081054708.superconductors.tei.xml
-15:49:22.837 [main] INFO org.grobid.core.jni.WapitiModel - Loading model: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti (size: 1177669)
+Model for org.grobid.core.GrobidModels$1@25bbe1b6 created in 30264 ms
+11:02:40.401 [main] INFO org.grobid.trainer.AbstractTrainer - sourcePathLabel: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/resources/dataset/superconductors/evaluation/staging
+11:02:40.401 [main] INFO org.grobid.trainer.AbstractTrainer - outputPath for training data: /Users/lfoppiano/development/nims/projects/grobid/grobid-home/tmp/superconductors3496449518797658528.test
+11:02:40.401 [main] INFO org.grobid.trainer.AbstractTrainer - 1 files
+11:02:40.402 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081054708.superconductors.tei.xml
+11:02:40.499 [main] INFO org.grobid.core.jni.WapitiModel - Loading model: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti (size: 1174375)
 [Wapiti] Loading model: "/Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti"
 Model path: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti
-Labeling took: 208 ms
+Labeling took: 223 ms
 
 ===== Token-level results =====
 
@@ -53,4 +53,4 @@ Total expected instances:   22
 Correct instances:          15
 Instance-level recall:      68.18
 
-Evaluation for org.grobid.core.GrobidModels$1@25bbe1b6 model is realized in 483 ms
+Evaluation for org.grobid.core.GrobidModels$1@25bbe1b6 model is realized in 435 ms
