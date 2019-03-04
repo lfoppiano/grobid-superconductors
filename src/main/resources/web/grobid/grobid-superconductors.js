@@ -747,11 +747,11 @@ var grobid = (function ($) {
 
             $('#annot_abbreviation-' + superconIdx + '-' + positionIdx).bind('hover', {
                 'type': 'abbreviation',
-                'map': superconMap
+                'map': abbreviationsMap
             }, viewEntityPDF);
             $('#annot_abbreviation-' + superconIdx + '-' + positionIdx).bind('click', {
                 'type': 'abbreviation',
-                'map': superconMap
+                'map': abbreviationsMap
             }, viewEntityPDF);
         }
 
