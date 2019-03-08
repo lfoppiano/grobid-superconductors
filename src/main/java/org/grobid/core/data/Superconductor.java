@@ -82,9 +82,10 @@ public class Superconductor {
         JsonStringEncoder encoder = BufferRecyclers.getJsonStringEncoder();
         StringBuilder json = new StringBuilder();
         boolean started = false;
+
+        String encodedName = new String(encoder.quoteAsString(new String(encoder.encodeAsUTF8(name))));
         json.append("{ ");
-        byte[] encodedName = null;
-        json.append("\"name\":" + "\"" + name + "\"");
+        json.append("\"name\":" + "\"" + encodedName + "\"");
         started = true;
 
         if (offsets != null) {
