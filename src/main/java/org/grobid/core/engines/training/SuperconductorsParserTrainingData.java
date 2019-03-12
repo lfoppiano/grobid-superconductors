@@ -234,7 +234,7 @@ public class SuperconductorsParserTrainingData {
 
             //get a new instance of parser
             SAXParser p = spf.newSAXParser();
-            p.parse(new InputSource(new StringReader(teiXML)), handler);
+            p.  parse(new InputSource(new StringReader(teiXML)), handler);
 
             List<String> chunks = handler.getChunks();
 

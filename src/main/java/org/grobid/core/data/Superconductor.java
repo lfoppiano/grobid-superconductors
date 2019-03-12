@@ -151,20 +151,28 @@ public class Superconductor {
             } else if (criticalTemperatureMeasurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_MIN_MAX)) {
                 Unit criticalUnit = null;
                 StringBuilder temperature = new StringBuilder();
-                if (criticalTemperatureMeasurement.getQuantityMost() != null) {
+
+                if(criticalTemperatureMeasurement.getQuantityMost() != null &&
+                        criticalTemperatureMeasurement.getQuantityLeast() != null) {
+                    Quantity tcL = criticalTemperatureMeasurement.getQuantityLeast();
+                    Quantity tcM = criticalTemperatureMeasurement.getQuantityMost();
+
+                    criticalUnit = tcL.getRawUnit();
+                    temperature.append(tcL.getRawValue()). append(" < Tc < ").append(tcM.getRawValue());
+
+                } else if (criticalTemperatureMeasurement.getQuantityLeast() != null) {
+                    Quantity tc = criticalTemperatureMeasurement.getQuantityLeast();
+
+                    criticalUnit = tc.getRawUnit();
+                    temperature.append(" > ").append(tc.getRawValue());
+
+                } else if (criticalTemperatureMeasurement.getQuantityMost() != null) {
                     Quantity tc = criticalTemperatureMeasurement.getQuantityMost();
 
                     criticalUnit = tc.getRawUnit();
                     temperature.append(" < ").append(tc.getRawValue());
                 }
 
-                if (criticalTemperatureMeasurement.getQuantityLeast() != null) {
-                    Quantity tc = criticalTemperatureMeasurement.getQuantityLeast();
-
-                    criticalUnit = tc.getRawUnit();
-                    temperature.append(" > ").append(tc.getRawValue());
-
-                }
                 temperature.append(" ").append(criticalUnit.getRawName());
 
                 json.append(", \"tc\":\"" + temperature.toString() + "\"");
