@@ -105,10 +105,10 @@ public class DeepAnalyzer implements Analyzer {
 
     public List<LayoutToken> retokenizeLayoutTokens(List<LayoutToken> tokens) {
         List<LayoutToken> result = new ArrayList<>();
-        int idx = 0;
+//        int idx = 0;
         for (LayoutToken token : tokens) {
             result.addAll(tokenize(token, token.getOffset()));
-            idx += StringUtils.length(token.getText());
+//            idx += StringUtils.length(token.getText());
         }
         return result;
     }
