@@ -54,6 +54,7 @@ public class SuperconductorsParser extends AbstractParser {
     public SuperconductorsParser(ChemspotClient chemspotClient) {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         this.chemspotClient = chemspotClient;
+        instance = this;
     }
 
     public Pair<String, List<Superconductor>> generateTrainingData(List<LayoutToken> layoutTokens) {
@@ -236,13 +237,6 @@ public class SuperconductorsParser extends AbstractParser {
             return new ArrayList<>();
         }
         return process(tokens);
-    }
-
-
-    public int batchProcess(String inputDirectory,
-                            String outputDirectory,
-                            boolean isRecursive) throws IOException {
-        return 0;
     }
 
 
