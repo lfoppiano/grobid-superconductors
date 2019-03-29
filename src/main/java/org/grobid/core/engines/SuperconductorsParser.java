@@ -97,7 +97,7 @@ public class SuperconductorsParser extends AbstractParser {
     }
 
     public Pair<String, List<Superconductor>> generateTrainingData(String text) {
-        text = text.replace("\r", " ");
+        text = text.replace("\r\t", " ");
         text = text.replace("\n", " ");
         text = text.replace("\t", " ");
 

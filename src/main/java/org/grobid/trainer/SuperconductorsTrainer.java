@@ -2,10 +2,10 @@ package org.grobid.trainer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
-import org.grobid.core.utilities.Pair;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.sax.SuperconductorsAnnotationSaxHandler;
 
@@ -123,7 +123,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                     }
                     // we get the label in the labelled data file for the same token
                     for (int pp = q; pp < labeled.size(); pp++) {
-                        String tag = labeled.get(pp).getB();
+                        String tag = labeled.get(pp).getRight();
 
                         if (tag == null || StringUtils.length(StringUtils.trim(tag)) == 0) {
                             output.append("\n");
@@ -132,7 +132,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             continue;
                         }
 
-                        String localToken = labeled.get(pp).getA();
+                        String localToken = labeled.get(pp).getLeft();
                         // unicode normalisation of the token - it should not be necessary if the training data
                         // has been gnerated by a recent version of grobid
                         localToken = UnicodeUtil.normaliseTextAndRemoveSpaces(localToken);

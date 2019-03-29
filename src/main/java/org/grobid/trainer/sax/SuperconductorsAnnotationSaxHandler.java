@@ -1,9 +1,10 @@
 package org.grobid.trainer.sax;
 
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.utilities.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -68,7 +69,7 @@ public class SuperconductorsAnnotationSaxHandler extends DefaultHandler {
                 ignore = false;
             } else if (qName.equals("p") || qName.equals("paragraph")) {
                 // let's consider a new CRF input per paragraph too
-                labeled.add(new Pair<>("\n", null));
+                labeled.add(ImmutablePair.of("\n", null));
             }
         } catch (Exception e) {
             throw new GrobidException("An exception occured while running Grobid.", e);
@@ -141,19 +142,19 @@ public class SuperconductorsAnnotationSaxHandler extends DefaultHandler {
                     continue;
 
                 if (tok.equals("+L+")) {
-                    labeled.add(new Pair<>("@newline", null));
+                    labeled.add(ImmutablePair.of("@newline", null));
                 } else if (tok.equals("+PAGE+")) {
                     // page break should be a distinct feature
-                    labeled.add(new Pair<>("@newpage", null));
+                    labeled.add(ImmutablePair.of("@newpage", null));
                 } else {
                     String content = tok;
                     int i = 0;
                     if (content.length() > 0) {
                         if (begin && (!currentTag.equals("<other>"))) {
-                            labeled.add(new Pair<>(content, "I-" + currentTag));
+                            labeled.add(ImmutablePair.of(content, "I-" + currentTag));
                             begin = false;
                         } else {
-                            labeled.add(new Pair<>(content, currentTag));
+                            labeled.add(ImmutablePair.of(content, currentTag));
                         }
                     }
                 }
