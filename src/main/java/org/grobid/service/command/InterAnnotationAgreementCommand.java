@@ -93,9 +93,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             for (IUnitizingAnnotationStudy study : studies) {
 
                 if (i == 0) {
-                    study.getCategories().forEach(c -> {
-                        agreementsByCategory.put(c, new ArrayList<>());
-                    });
+                    study.getCategories().forEach(c -> agreementsByCategory.put(c, new ArrayList<>()));
                 }
 
                 KrippendorffAlphaUnitizingAgreement krippendorffAlphaUnitizingAgreement = new KrippendorffAlphaUnitizingAgreement(study);
@@ -104,7 +102,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
                 study.getCategories().forEach(c -> {
                     agreementsByCategory.get(c).add(krippendorffAlphaUnitizingAgreement.calculateCategoryAgreement(c));
                 });
-
+                i++;
             }
             Mean mean = new Mean();
 
