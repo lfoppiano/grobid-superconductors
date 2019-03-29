@@ -53,8 +53,9 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 
     //GROBID
-    compile 'org.grobid:grobid-core:0.5.4'
-    compile 'org.grobid:grobid-trainer:0.5.4'
+    compile 'org.grobid:grobid-core:0.5.5-SNAPSHOT'
+    compile 'org.grobid:grobid-trainer:0.5.5-SNAPSHOT'
+    
     compile('org.grobid:grobid-quantities:0.5.2-SNAPSHOT') {
         transitive = false
     }
@@ -88,7 +89,7 @@ dependencies {
     compile "io.dropwizard.metrics:metrics-servlets:4.0.0"
 
     //Misc
-    compile group: 'com.google.guava', name: 'guava', version: '22.0'
+    compile group: 'com.google.guava', name: 'guava', version: '27.0'
     compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.3'
 
 
