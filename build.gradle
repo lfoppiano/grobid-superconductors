@@ -89,7 +89,7 @@ dependencies {
     compile "io.dropwizard.metrics:metrics-servlets:4.0.0"
 
     //Misc
-    compile group: 'com.google.guava', name: 'guava', version: '27.0'
+    compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
     compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.3'
 
 

@@ -1,4 +1,4 @@
-package org.grobid.core.engines.training;
+package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.collections4.CollectionUtils;

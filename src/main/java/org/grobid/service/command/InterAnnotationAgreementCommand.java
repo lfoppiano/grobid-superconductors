@@ -13,7 +13,7 @@ import org.dkpro.statistics.agreement.distance.NominalDistanceFunction;
 import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationStudy;
 import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreement;
 import org.dkpro.statistics.agreement.visualization.ReliabilityMatrixPrinter;
-import org.grobid.core.engines.training.InterAnnotationAgreementUtils;
+import org.grobid.trainer.InterAnnotationAgreementUtils;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
