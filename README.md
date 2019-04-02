@@ -11,7 +11,7 @@ We focus our work on technical and scientific articles (text, XML and PDF input)
 
 ## Documentation
 
-Getting started
+### Getting started
 
 > install grobid http://github.com/kermitt2/grobid 
 
@@ -21,6 +21,22 @@ Getting started
 > git submodule init
 
 > git submodule update 
+
+### Build
+
+> ./gradlew clean build 
+
+### Run
+To run the service: 
+
+> java -jar build/libs/grobid-superconductor-{version}.onejar.jar server config/config.yml 
+
+To run the IAA (Inter Annotators Agreement) measurements: 
+
+> java -jar build/libs/grobid-superconductor-{version}.onejar.jar iaa -dIn baseDirectory config/config.yml 
+
+for example: 
+> java -jar build/libs/grobid-superconductor-{version}.onejar.jar iaa -dIn baseDirectory resources/dataset/superconductors/guidelines/annotated
 
 ## License
 
