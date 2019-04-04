@@ -54,7 +54,7 @@ public class InterAnnotationAgreementUtils {
             }
 
             try {
-                System.out.println("Processing " + file.getParentFile().getName() + File.separator + file.getName() + " with corresponding annotatiions.");
+                LOGGER.info("Processing " + file.getParentFile().getName() + File.separator + file.getName() + " with corresponding annotatiions.");
 
                 processFileForCodingStudy(filesToBeProcessed, (CodingAnnotationStudy) study);
 
@@ -127,7 +127,7 @@ public class InterAnnotationAgreementUtils {
             }
 
             try {
-                System.out.println("Processing " + file.getParentFile().getName() + File.separator + file.getName() + " with corresponding annotatiions.");
+                LOGGER.info("Processing " + file.getParentFile().getName() + File.separator + file.getName() + " with corresponding annotations.");
 
                 studies.add(processFileForUnitizingStudy(filesToBeProcessed, directories.size()));
                 filesToBeProcessed = new ArrayList<>();
@@ -150,7 +150,7 @@ public class InterAnnotationAgreementUtils {
                 AnnotationExtractionStaxHandler handler = new AnnotationExtractionStaxHandler();
 
                 try {
-                    System.out.println("Processing rater: " + rating.getValue());
+                    LOGGER.info("Processing rater: " + rating.getValue() + ", file: " + rating.getKey());
                     XMLStreamReader2 reader = inputFactory.createXMLStreamReader(rating.getKey());
 
                     StaxUtils.traverse(reader, handler);
@@ -163,7 +163,7 @@ public class InterAnnotationAgreementUtils {
                     } else {
                         //check
                         if (length1 != study.getContinuumLength()) {
-                            LOGGER.warn("There is a mismatch between two continuoum lengths referring to the same document.");
+                            LOGGER.warn("There is a mismatch between two continuum lengths referring to the same document.");
                             LOGGER.warn("Rater: " + rating.getValue() + " -> " + length1);
                             LOGGER.warn(previousContinuoum);
                             LOGGER.warn(handler.getContinuoum());
