@@ -4,6 +4,8 @@ import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.dkpro.statistics.agreement.coding.FleissKappaAgreement;
 import org.dkpro.statistics.agreement.coding.ICodingAnnotationStudy;
@@ -106,8 +108,8 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             }
             Mean mean = new Mean();
 
-            System.out.println("Krippendorf alpha agreements: " + mean.evaluate(agreements));
-            System.out.println("Krippendorf alpha agreement by category: ");
+            LOGGER.info("Krippendorf alpha agreements: " + mean.evaluate(agreements));
+            LOGGER.info("Krippendorf alpha agreement by category: ");
 
             agreementsByCategory.forEach((c, doubles) -> {
                 double[] measures = new double[doubles.size()];
@@ -115,10 +117,39 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
                     measures[b] = doubles.get(b);
                 }
 
-                System.out.println(c.toString() + ": " + mean.evaluate(measures));
+                LOGGER.info(c.toString() + ": " + mean.evaluate(measures));
             });
+
+//            List<Double> agreementList = studies.stream().map(s -> new KrippendorffAlphaUnitizingAgreement(s).calculateAgreement()).collect(Collectors.toList());
+//
+//
+//            HashMap<Pair<Integer, Integer>, double[]> structure = new HashMap<>();
+//
+//            for (int idx1 = 0; idx1 < agreementList.size(); idx1++) {
+//                for (int idx2 = idx1; idx2 < agreementList.size(); idx2++) {
+//                    System.out.println(idx1 + ", " + idx2);
+//                    if (idx1 == idx2) continue;
+//
+//                    double[] value = new double[2];
+//                    value[0] = agreementList.get(idx1);
+//                    value[1] = agreementList.get(idx2);
+//                    structure.put(ImmutablePair.of(idx1, idx2), value);
+//                }
+//            }
+//
+//            structure.forEach((key, value) -> {
+//                LOGGER.info("Comparing " + key.getLeft() + " with " + key.getRight() + ": " + mean.evaluate(value));
+//            });
 
         }
 
+    }
+
+    public long calculateTotalCombination(int n) {
+        long sum = 0;
+        for (int i = n - 1; i > 0; i--) {
+            sum += i;
+        }
+        return sum;
     }
 }

@@ -127,7 +127,7 @@ public class InterAnnotationAgreementUtils {
             }
 
             try {
-                LOGGER.info("Processing " + file.getParentFile().getName() + File.separator + file.getName() + " with corresponding annotations.");
+                LOGGER.info("Start processing for " + file.getName() + ".");
 
                 studies.add(processFileForUnitizingStudy(filesToBeProcessed, directories.size()));
                 filesToBeProcessed = new ArrayList<>();
@@ -150,16 +150,14 @@ public class InterAnnotationAgreementUtils {
                 AnnotationExtractionStaxHandler handler = new AnnotationExtractionStaxHandler();
 
                 try {
-                    LOGGER.info("Processing rater: " + rating.getValue() + ", file: " + rating.getKey());
                     XMLStreamReader2 reader = inputFactory.createXMLStreamReader(rating.getKey());
-
                     StaxUtils.traverse(reader, handler);
 
                     int length1 = handler.getContinuoum().length();
 
                     if (study == null) {
                         study = new UnitizingAnnotationStudy(raters, length1);
-                        LOGGER.info("Building study with " + raters + " raters and continuoum: " + length1 );
+                        LOGGER.info("Building study with " + raters + " raters and continuoum: " + length1);
                     } else {
                         //check
                         if (length1 != study.getContinuumLength()) {
@@ -170,6 +168,7 @@ public class InterAnnotationAgreementUtils {
                         }
 
                     }
+                    LOGGER.info("Processing rater: " + rating.getValue() + ", file: " + rating.getKey());
 
                     for (Triple<String, Integer, Integer> annotation : handler.getData()) {
                         String annotationName = annotation.getLeft();
