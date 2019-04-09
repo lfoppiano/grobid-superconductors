@@ -72,8 +72,6 @@ There are few more annotation information that should be followed for materials:
         The material XYZ show no superconductor properties.
 
 
-
-
 Value substitution
 ------------------
 
@@ -111,6 +109,9 @@ Some basic rules:
    * Adjectives applied to critical temperature should be annotated, for example: ``high Tc cuprate``, ``maximum Tc`` or ``higher Tc`` having the adjective describing the temperature included in the annotation,
    * A sentence like ``the critical temperature (Tc)`` should be annotated with multiples tokens like: ``the <tc>critical temperature</tc> (<tc>Tc</tc>)``,
    * implicit description of critical temperature, like ``superconducts``, ``shows superconductor properties`` should be annotated as well
+   * When the critical temperature is not directly referred as a property but an entity related to other materials should not be annotated, here an example:
+     ::
+        The conventional nature of the temperature dependence is also found in case [..]
 
 Value of properties
 -------------------
