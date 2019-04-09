@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 public class AnnotationExtractionStaxHandlerTest {
@@ -17,7 +18,7 @@ public class AnnotationExtractionStaxHandlerTest {
 
     @Before
     public void setUp() {
-        target = new AnnotationExtractionStaxHandler();
+        target = new AnnotationExtractionStaxHandler(Arrays.asList("p"), Arrays.asList("supercon", "tc", "substitution"));
     }
 
     @Test

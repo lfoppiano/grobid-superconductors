@@ -12,7 +12,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.trim;
@@ -27,28 +26,22 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationExtractionStaxHandler.class);
 
     private StringBuilder accumulator = new StringBuilder();
-    public static final List<String> DEFAULT_ANNOTATIONS_TAGS = Arrays.asList("supercon", "tc", "substitution");
-    public static final String DEFAULT_TOP_LEVEL_TAG = "p";
 
     private boolean insideParagraph = false;
     private int offset = 0;
     private Integer currentStartingPosition = -1;
     private Integer currentLength = 0;
 
-    private List<String> annotationTags = new ArrayList<>();
-    private List<String> topLevelTags = new ArrayList<>();
+    private List<String> annotationsTags;
+    private List<String> topLevelTags;
 
-    private StringBuilder continuoum = new StringBuilder();
+    private StringBuilder continuum = new StringBuilder();
 
     private List<Triple<String, Integer, Integer>> data = new ArrayList<>();
 
-    public AnnotationExtractionStaxHandler() {
-        this(Arrays.asList(DEFAULT_TOP_LEVEL_TAG), DEFAULT_ANNOTATIONS_TAGS);
-    }
-
     public AnnotationExtractionStaxHandler(List<String> topLevelTags, List<String> annotationsTags) {
         this.topLevelTags = topLevelTags;
-        this.annotationTags = annotationsTags;
+        this.annotationsTags = annotationsTags;
     }
 
     @Override
@@ -66,7 +59,7 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
         if (topLevelTags.contains(localName)) {
             insideParagraph = true;
 
-        } else if (annotationTags.contains(localName)) {
+        } else if (annotationsTags.contains(localName)) {
             this.currentStartingPosition = offset;
         }
     }
@@ -75,10 +68,10 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
     public void onEndElement(XMLStreamReader2 reader) {
         final String localName = reader.getName().getLocalPart();
 
-        if (DEFAULT_TOP_LEVEL_TAG.equals(localName)) {
+        if (topLevelTags.contains(localName)) {
             insideParagraph = false;
 
-        } else if (DEFAULT_ANNOTATIONS_TAGS.contains(localName)) {
+        } else if (annotationsTags.contains(localName)) {
             currentLength = offset - this.currentStartingPosition;
             data.add(Triple.of(localName, currentStartingPosition, currentLength));
 
@@ -92,7 +85,7 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
         String text = reader.getText();
         accumulator.append(text);
         if (insideParagraph) {
-            continuoum.append(text);
+            continuum.append(text);
             offset += text.length();
         }
     }
@@ -103,8 +96,8 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
         return text;
     }
 
-    public String getContinuoum() {
-        return continuoum.toString();
+    public String getContinuum() {
+        return continuum.toString();
     }
 
     private String getAttributeValue(XMLStreamReader reader, String attributeName) {
