@@ -52,7 +52,7 @@ The material can be expressed as:
  - the final chemical form (e.g. LaFe03NaCl2),
  - in chemical form with substitutions La(1-x)Fe(x),
  - with natural name ``HDoped Ba111 serie``, ``iron-based pnictide``
- - with abbreviations like ``TMMP``
+ - with abbreviations like ``(TMTSF) 2 PF 6``
  - with series definition ``ba1111 serie`` or ``11 series FeSe``
 
 
@@ -60,8 +60,19 @@ There are few more annotation information that should be followed for materials:
  - Material type and name like ``type II Diract semimetal`` should be annotated as one single entity,
  - The description of a material, like ``electron-doped high-transition-temperature (Tc) iron-based pnictide`` should be annotated as one single annotation
     for example ``The <supercon>electron-doped high-transition-temperature (Tc) iron-based pnictide</supercon> superconductor <supercon>LaFeAsO1−xHx</supercon> has a unique phase diagram:``
- - Material that are not superconductor like ``non-intercalated PdTe 2`` should not annotated
- - Materials that are declared as non superconductors (e.g. ``XYZ showed no superconductivity``) should not be annotated
+ - Material that are not superconductor should not be annotated. Example, NiCrAl-CuBe is just a piston-cylinder-type cell, used for the experiment:
+    ::
+
+        The pressure was applied by using NiCrAl-CuBe hybrid piston-cylinder-type cells.
+
+    or, for example:
+    ::
+
+        While (i) were seen in non-intercalated PdTe 2 , (ii) are new and therefore originate from the intercalated Cu atoms.
+
+
+ - Materials that are declared as non-superconductors should not be annotated, example:
+    ::
 
 
 Value substitution
@@ -85,7 +96,7 @@ For multiple values, the whole string should be annotated (see `issue #1 <https:
 
 - ``<substitution>0.5 < x < 0.9</substitution>``
 
-- ``<substitution>x varying from 0.5 to 0.9</substitution>``
+- ``<substitution>x varying from 0.5 to 0.9</substitution>`` (In this case `varying` is not important, but because x is there, annotators should try to catch the variable name)
 
 - ``<substitution>x =0.40 and 0.44</substitution>``
 
@@ -112,6 +123,14 @@ example:
 For this properties the general principles are:
  - discrete or relatives values for example ``remains unchanged``, ``is increating`` are ignored
  - critical pressure and any other property that is not a temperature are ignored
+
+For multiple values, the whole string should be annotated as for `substitutions`:
+
+- ``<propertyValue>from 1 K to 2K</propertyValue>``
+
+- ``<propertyValue>less than 2K</propertyValue>``
+
+- ``<propertyValue>0.40 and 0.44 K</propertyValue>``
 
 
 Special cases and questions
@@ -147,4 +166,4 @@ They therefore can be annotated using the ``<shape>`` tag:
 
 Critical Pressure
 -----------------
-Critical pressure should be annotated as ``<propertyValue>`` but they should not be annotated for the time being.
+Critical pressure would be also a ``<propertyValue>`` but for the time being should not be annotated.
