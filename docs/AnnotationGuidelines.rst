@@ -65,14 +65,13 @@ There are few more annotation information that should be followed for materials:
 
         The pressure was applied by using NiCrAl-CuBe hybrid piston-cylinder-type cells.
 
-    or, for example:
-    ::
-
-        While (i) were seen in non-intercalated PdTe 2 , (ii) are new and therefore originate from the intercalated Cu atoms.
-
 
  - Materials that are declared as non-superconductors should not be annotated, example:
     ::
+
+        The material XYZ show no superconductor properties.
+
+
 
 
 Value substitution
