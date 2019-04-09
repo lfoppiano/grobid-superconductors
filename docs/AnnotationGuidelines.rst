@@ -15,24 +15,60 @@ The evaluation corpus is partitioned automatically as 20% of the total corpus.
 Annotations
 ===========
 
-In this page we are describing the guidelines for annotating superconductor papers. This is a living document that is updated directly as we go along.
+In this page we are describing the guidelines for annotating superconductor papers.
+The Goal of this annotation exercise is to produce models allowing extraction of superconductor materials, critical temperatures and their value.
+This is a living document that is updated directly as we go along with the project.
+
+The component to be annotated are:
+ - superconductor material
+ - value substitution
+ - property value
+ - critical temperature expressions
+ - other properties
+
+They are detailed in the next sections
+
+General principles
+------------------
+Here a list of general principles that should be followed by annotating:
+
+- At this stage of the process, the annotator should ignore the deep meaning of the context, for example if a *normal* word is used as reference for a superconductor it should not be annotated, for example
+    ::
+
+        The material XYZ has tc 34K. Such wafer, show interesting characteristics at 22K.
+
+  where ``wafer`` should not be annotated, even though it refers to ``XYZ``.
+
+- In case of doubt is better to 1) not annotate or 2) comment out the sentence, specifying the reason (use standard XML comment ``<!-- -->``)
+
+- In general, annotators should bear in mind that an additional cascade model can be applied to the result of the extraction for that specific annotation. For example the `quantities recognition <http://github.com/kermitt2/grobid-quantities>`_ can be applied to the extracted results of ``property values`` or ``substitution``.
 
 
 superconductor material
 -----------------------
 
-Identify a superconductor material in the chemical form (e.g. LaFe03NaCl2), with substitutions La(1-x)Fe(x), or with natural name HDoped Ba111 serie.
-It uses the tag ``<supercon>``
+Identify a superconductor material. This annotation are identified by the tag ``<supercon>``.
+The material can be expressed as:
+ - the final chemical form (e.g. LaFe03NaCl2),
+ - in chemical form with substitutions La(1-x)Fe(x),
+ - with natural name ``HDoped Ba111 serie``, ``iron-based pnictide``
+ - with abbreviations like ``TMMP``
+ - with series definition ``ba1111 serie`` or ``11 series FeSe``
 
-Example:
-::
+
+There are few more annotation information that should be followed for materials:
+ - Material type and name like ``type II Diract semimetal`` should be annotated as one single entity,
+ - The description of a material, like ``electron-doped high-transition-temperature (Tc) iron-based pnictide`` should be annotated as one single annotation
+    for example ``The <supercon>electron-doped high-transition-temperature (Tc) iron-based pnictide</supercon> superconductor <supercon>LaFeAsO1−xHx</supercon> has a unique phase diagram:``
+ - Material that are not superconductor like ``non-intercalated PdTe 2`` should not annotated
+ - Materials that are declared as non superconductors (e.g. ``XYZ showed no superconductivity``) should not be annotated
 
 
 Value substitution
 ------------------
 
-Identify substitution of values, useful to identify values of x/y which are appearing as substituion in tables or material names.
-It's identified by the tag ``<substitution>``
+Identify substitution of values; used to identify numeric values whose variables (``x``, ``y`` or other letters) are appearing as substitution. The goal is to be able to use the values to complete material names ore table lookups.
+This information should be identified by the tag ``<substitution>``.
 
 For example:
 ::
@@ -43,36 +79,72 @@ should be annotated:
 ::
   For <substitution>x=0.44</substitution>, Curie-Weiss-like behavior, which implies AF [...]
 
+For multiple values, the whole string should be annotated (see `issue #1 <https://github.com/lfoppiano/grobid-superconductors-data/issues/1>`_), for example:
+
+- ``<substitution>x = 0.5, 0.3</substitution>``
+
+- ``<substitution>0.5 < x < 0.9</substitution>``
+
+- ``<substitution>x varying from 0.5 to 0.9</substitution>``
+
+- ``<substitution>x =0.40 and 0.44</substitution>``
+
 
 Critical temperature expressions
 --------------------------------
-represent the critical temperature and any expression of it (e.g. high-critical-temperature, etc.. )
-Some baskc rules:
-   * Adjectives applied to critical temperature should not be annotated (e.g. ``higher Tc``, should be annotated as ``higher <tc>Tc</tc>``)
-   * A sentence like ``the critical temperature (Tc)`` should be annotated with multples tokens like: ``the <tc>critical temperature</tc> (<tc>Tc</tc>)``
+Represent the critical temperature and any expression of it (e.g. high-critical-temperature, etc.. ). Expressed using the ``<tc>`` tag.
 
-It uses the tag ``<tc>``
+Sometimes ``tc`` is used to identify ``Curie Temperature``, which still refer to a temperature but with a different meaning.
+Papers authors usually provide this information which can be used to avoid recognising critical temperature incorrectly.
+
+Some basic rules:
+   * Adjectives applied to critical temperature should be annotated, for example: ``high Tc cuprate``, ``maximum Tc`` or ``higher Tc`` having the adjective describing the temperature included in the annotation,
+   * A sentence like ``the critical temperature (Tc)`` should be annotated with multiples tokens like: ``the <tc>critical temperature</tc> (<tc>Tc</tc>)``,
+   * implicit description of critical temperature, like ``superconducts``, ``shows superconductor properties`` should be annotated as well
 
 Value of properties
 -------------------
-Identify the value of a property of a superconductor material
+Identify the value of a property of a superconductor material using the tag ``<propertyValue>``.
 example:
 ::
   maximum Tc that exceeds <propertyValue>45K</propertyValue> at a pressure of 3.0 GPa.
 
-It uses the tag ``<propertyValue>``
-
-Special cases and questions:
-****************************
-
-* type II Diract semimetal should be annotated? To be asked Takano-san teams
-* "high Tc cuprate" should not be annotated because is just a general term
+For this properties the general principles are:
+ - discrete or relatives values for example ``remains unchanged``, ``is increating`` are ignored
+ - critical pressure and any other property that is not a temperature are ignored
 
 
-For example
+Special cases and questions
+---------------------------
+
+N/A
+
+Future work and improvements
+============================
+
+Results and additional information
+----------------------------------
+
+All information that are not numeric, thus important because referring to special properties or results of mentioned materials, should be excluded for the time being. They can be annotated anyway as ``<propertyOther>``, for example:
 ::
-  <p>The electron-doped <tc>high-transition-temperature</tc> (<tc>Tc</tc>) iron-based pnictide superconductor <supercon>LaFeAsO1−xHx</supercon> has a unique phase diagram: Superconducting (SC) double domes are sandwiched by antiferromagnetic phases at ambient pressure and they turn into a single dome with a maximum Tc that exceeds <propertyValue>45K</propertyValue> at a pressure of 3.0 GPa. We studied whether spin fluctuations are involved in increasing <tc>Tc</tc> under a pressure of 3.0 GPa by using the 75 As nuclear magnetic resonance (NMR) technique. The 75 As-NMR results for the powder samples show that <tc>Tc</tc> increases up to <propertyValue>48 K</propertyValue> without the influence of spin fluctuations. This fact indicates that spin fluctuations are not involved in raising <tc>Tc</tc>, which implies that other factors, such as orbital degrees of freedom, may be important for achieving a high <tc>Tc</tc> of almost <propertyValue>50 K</propertyValue>.</p>
-  <p>The phase diagram of the electron-doped <tc>hightransition-temperature</tc> (<tc>T c</tc> ) iron-based pnictide <supercon>LaFeAsO 1−x H x</supercon> (<supercon>H-doped La1111 series<supercon>) is unique owing to the capability of electron doping: (i) It exhibits a superconducting (SC) phase with double domes covering a wide H-doping range from <substitution>x = 0.05</substitution> to <substitution>x = 0.44</substitution> 1 , (ii) the SC phase is sandwiched by antiferromagnetic (AF) phases appearing in heavily and poorly electron-doped regimes [see Fig. 1(a)] 2 , and (iii) the application of pressure transforms the double domes into a single dome 1, 3 . Intriguingly, upon applying pressure, the minimum <tc>T c</tc> at ambient pressure becomes the maximum <tc>T c</tc> of over <propertyValue>45 K</propertyValue> 1 , as shown by the solid arrow in Figs. 1(a) and 4 as described in detail below.</p>
+
+    and the <tc>maximum T c</tc> <propertyOther>occurs close to the phase boundary</propertyOther>
 
 
+Material shape
+--------------
 
+Sometimes material mentioned in previous sentences, are referred by adjective such a shapes
+::
+
+    The 75 As-NMR results for the powder samples show that
+
+They therefore can be annotated using the ``<shape>`` tag:
+::
+
+    The 75 As-NMR results for the <shape>powder samples</shape> show that
+
+
+Critical Pressure
+-----------------
+Critical pressure should be annotated as ``<propertyValue>`` but they should not be annotated for the time being.
