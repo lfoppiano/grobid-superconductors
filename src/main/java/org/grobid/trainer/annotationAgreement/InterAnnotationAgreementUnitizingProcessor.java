@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,15 +55,18 @@ public class InterAnnotationAgreementUnitizingProcessor {
         for (final File file : refFiles) {
             String fileNameWithoutInputDirectory = file.getAbsolutePath().replace(directories.get(0).getAbsolutePath(), "");
 
-            List<File> files = new ArrayList<>();
-            files.add(file);
-            for (int j = 1; j < directories.size(); j++) {
-                File fileB = Paths.get(directories.get(j).getAbsolutePath(), fileNameWithoutInputDirectory).toFile();
-                if (!fileB.exists()) {
-                    LOGGER.warn("The file " + fileNameWithoutInputDirectory + " cannot be found in the " + directories.get(j).getAbsolutePath() + ". Skipping!");
-                    break;
+            List<InputStream> files = new ArrayList<>();
+            String absolutePath = "";//For debugging in case of exception
+            try {
+                files.add(new FileInputStream(file));
+                for (int j = 1; j < directories.size(); j++) {
+                    absolutePath = directories.get(j).getAbsolutePath();
+                    File fileB = Paths.get(absolutePath, fileNameWithoutInputDirectory).toFile();
+                    files.add(new FileInputStream(fileB));
                 }
-                files.add(fileB);
+            } catch (FileNotFoundException e) {
+                LOGGER.warn("The file " + fileNameWithoutInputDirectory + " cannot be found in the " + absolutePath + ". Skipping!");
+                break;
             }
 
             UnitizedStudyWrapper wrappedStudy = new UnitizedStudyWrapper(files);

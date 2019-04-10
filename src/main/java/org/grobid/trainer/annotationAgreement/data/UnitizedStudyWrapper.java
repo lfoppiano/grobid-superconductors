@@ -11,6 +11,8 @@ import org.grobid.trainer.stax.StaxUtils;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,21 +28,27 @@ public class UnitizedStudyWrapper {
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
-    private List<File> filenames = new ArrayList<>();
+    private List<InputStream> filenames = new ArrayList<>();
 
     private List<String> continuums = new ArrayList<>();
 
     private UnitizingAnnotationStudy study;
 
-    public UnitizedStudyWrapper(List<File> filenames) {
-
+    /**
+     * Initialise the Unitized study and load the list of files. These files are supposed to be part of the same
+     * annotated document, each file is a version produced by a different annotator.
+     * <p>
+     * If there are parsing problems or one of the files has a different text, the process is interrupted with an exception.
+     **/
+    public UnitizedStudyWrapper(List<InputStream> filenames) {
         String firstContinuum = null;
-        for (File file : filenames) {
+
+        for (InputStream file : filenames) {
             try {
                 AnnotationExtractionStaxHandler handler = new AnnotationExtractionStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
                         ANNOTATION_DEFAULT_TAGS);
 
-                XMLStreamReader2 reader = inputFactory.createXMLStreamReader(file);
+                XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(file);
                 StaxUtils.traverse(reader, handler);
 
                 this.filenames.add(file);
@@ -75,7 +83,7 @@ public class UnitizedStudyWrapper {
                 }
 
             } catch (XMLStreamException e) {
-                throw new RuntimeException("Annotation XML not well formed, fix it before re-try", e);
+                throw new RuntimeException("Annotation XML not well formed, fix it before re-trying. ", e);
             }
         }
 
@@ -115,7 +123,7 @@ public class UnitizedStudyWrapper {
     }
 
     /**
-     * Returns matrices by rater
+     * Returns matrices by pairwise agreement between annotators
      */
     public List<InterAnnotationAgreementPairwiseComparisonEntry> getPairwiseRaterAgreementMatrices() {
 
@@ -125,11 +133,12 @@ public class UnitizedStudyWrapper {
             for (int idx2 = idx1 + 1; idx2 < this.filenames.size(); idx2++) {
                 UnitizingAnnotationStudy localStudy = new UnitizingAnnotationStudy(2, (int) study.getContinuumLength());
 
+                // this is a workaround !!
                 for (IUnitizingAnnotationUnit annotation : study.getUnits()) {
-                    if (annotation.getRaterIdx() != idx1 && annotation.getRaterIdx() != idx2) {
-                        continue;
-                    } else {
-                        localStudy.addUnit(annotation.getOffset(), annotation.getLength(), annotation.getRaterIdx(), annotation.getCategory());
+                    if (annotation.getRaterIdx() == idx1) {
+                        localStudy.addUnit(annotation.getOffset(), annotation.getLength(), 0, annotation.getCategory());
+                    } else if (annotation.getRaterIdx() == idx2) {
+                        localStudy.addUnit(annotation.getOffset(), annotation.getLength(), 1, annotation.getCategory());
                     }
                 }
 

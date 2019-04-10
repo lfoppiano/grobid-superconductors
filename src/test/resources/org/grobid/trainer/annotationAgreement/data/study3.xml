@@ -1,0 +1,10 @@
+<tei xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:id="_0" />
+        <encodingDesc/>
+    </teiHeader>
+    <text xml:lang="en">
+        <p>This is a sentence with one <supercon>annotation</supercon>.</p>
+        <p>This is another sentence with another <propertyValue>annotation</propertyValue>.</p>
+    </text>
+</tei>
