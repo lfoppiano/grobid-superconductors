@@ -57,9 +57,10 @@ The material can be expressed as:
 
 
 There are few more annotation information that should be followed for materials:
- - Material type and name like ``type II Diract semimetal`` should be annotated as one single entity,
+ - Material type and name like ``type II Diract semimetal`` should be annotated as one single entity
  - The description of a material, like ``electron-doped high-transition-temperature (Tc) iron-based pnictide`` should be annotated as one single annotation
-    for example ``The <supercon>electron-doped high-transition-temperature (Tc) iron-based pnictide</supercon> superconductor <supercon>LaFeAsO1−xHx</supercon> has a unique phase diagram:``
+    for example ``The <supercon>electron-doped high-transition-temperature (Tc) iron-based pnictide</supercon>
+    superconductor <supercon>LaFeAsO1−xHx</supercon> has a unique phase diagram:``
  - Material that are not superconductor should not be annotated. Example, NiCrAl-CuBe is just a piston-cylinder-type cell, used for the experiment:
     ::
 
@@ -118,11 +119,12 @@ Value of properties
 Identify the value of a property of a superconductor material using the tag ``<propertyValue>``.
 example:
 ::
+
   maximum Tc that exceeds <propertyValue>45K</propertyValue> at a pressure of 3.0 GPa.
 
 For this properties the general principles are:
  - discrete or relatives values for example ``remains unchanged``, ``is increating`` are ignored
- - critical pressure and any other property that is not a temperature are ignored
+ - critical pressure and any other property that is not a temperature are ignored (for the moment)
 
 For multiple values, the whole string should be annotated as for `substitutions`:
 
@@ -132,11 +134,26 @@ For multiple values, the whole string should be annotated as for `substitutions`
 
 - ``<propertyValue>0.40 and 0.44 K</propertyValue>``
 
+additionally the following sentence:
+::
+
+    [..] because AF fluctuations remain in a lower doping range than x = 0.14 and unfortunately x = 0.14 is nearly the highest level of F doping. [..]
+
+should be annotated as follow (note that information about the ranges are also included):
+::
+
+    [..] because AF fluctuations remain in a <substitution>lower doping range than x = 0.14</substitution> and unfortunately <substitution>x = 0.14 is nearly the highest level</substitution> of F doping. [..]
+
 
 Special cases and questions
 ---------------------------
 
-N/A
+In a sentence like
+::
+
+    While certain experiments indicated an unexpected type-I superconducting phase, other experiments revealed formation of vortices under the application of magnetic fields.
+
+In this case the ``type-I superconducting phase`` should not be annotated, as does not relate to a superconductor material nor to a critical temperature.
 
 Future work and improvements
 ============================
