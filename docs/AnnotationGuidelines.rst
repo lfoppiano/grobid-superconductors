@@ -48,19 +48,37 @@ superconductor material
 -----------------------
 
 Identify a superconductor material. This annotation are identified by the tag ``<supercon>``.
-The material can be expressed as:
- - the final chemical form (e.g. LaFe03NaCl2),
- - in chemical form with substitutions La(1-x)Fe(x),
- - with natural name ``HDoped Ba111 serie``, ``iron-based pnictide``
- - with abbreviations like ``(TMTSF) 2 PF 6``
- - with series definition ``ba1111 serie`` or ``11 series FeSe``
+
+The material can be expressed as follow:
+ - final chemical form (e.g. ``LaFe03NaCl2``),
+ - chemical form with substitutions, like ``La(1-x)Fe(x)``,
+ - serie definition for example ``ba1111 serie``, ``11 series FeSe``, ``HDoped Ba111 serie``
+ - with complete or partial abbreviations like ``(TMTSF) 2 PF 6``
+ - doping rates ``4% Hdoped sample``, ``14% Cu doped sample``
+ - the mention ``pnictide`` alone should be annotated only when the material refers to a Critical Temperature or superconductivity:
+  ::
+
+        for investigating the magnetic properties of <supercon>pnictides</supercon> with <tc>T c</tc> in the
+        range of <propertyValue>45-50 K</propertyValue>
 
 
-There are few more annotation information that should be followed for materials:
+  lastly, the mention `pcnictide` means a generic definition like ``other pcnictide``, only `pnictide` should be annotated
+
+
+Other examples:
+ - ``the series`` when they refer to a serie of superconductor materials, e.g. ``At first sight, <supercon>the series</supercon> seems to be free from the antiferromagnetism;`` (in this case ``the series`` refers to a superconductor material in the previous sentence).
+ - The description of a material, like ``electron-doped high-transition-temperature (Tc) iron-based pnictide`` should be annotated as one single annotation. for example
+ ::
+
+    The <supercon>electron-doped high-transition-temperature (Tc) iron-based pnictide superconductor</supercon>
+    <supercon>LaFeAsO1−xHx</supercon> has a unique phase diagram:
+
+The annotation boundaries should follow these additional guidelines:
+ - articles should not be included in ``the electron-based hight Tc material`` the article ``the`` should not be annotated
+ - ``superconductor`` / ``superconductors`` should be included in the annotation (for example ``iron-based superconductor``)
  - Material type and name like ``type II Diract semimetal`` should be annotated as one single entity
- - The description of a material, like ``electron-doped high-transition-temperature (Tc) iron-based pnictide`` should be annotated as one single annotation
-    for example ``The <supercon>electron-doped high-transition-temperature (Tc) iron-based pnictide</supercon>
-    superconductor <supercon>LaFeAsO1−xHx</supercon> has a unique phase diagram:``
+
+What should not be annotated:
  - Material that are not superconductor should not be annotated. Example, NiCrAl-CuBe is just a piston-cylinder-type cell, used for the experiment:
     ::
 
@@ -81,14 +99,17 @@ This information should be identified by the tag ``<substitution>``.
 
 For example:
 ::
+
   For x=0.44, Curie-Weiss-like behavior, which implies AF [...]
 
 
 should be annotated:
 ::
-  For <substitution>x=0.44</substitution>, Curie-Weiss-like behavior, which implies AF [...]
 
-For multiple values, the whole string should be annotated (see `issue #1 <https://github.com/lfoppiano/grobid-superconductors-data/issues/1>`_), for example:
+    For <substitution>x=0.44</substitution>, Curie-Weiss-like behavior, which implies AF [...]
+
+
+**Multiple values, ranges or intervals** the whole string should be annotated (see `issue #1 <https://github.com/lfoppiano/grobid-superconductors-data/issues/1>`_), for example:
 
 - ``<substitution>x = 0.5, 0.3</substitution>``
 
@@ -98,21 +119,28 @@ For multiple values, the whole string should be annotated (see `issue #1 <https:
 
 - ``<substitution>x =0.40 and 0.44</substitution>``
 
+In case of doping or composition, where the value and the variable / compound are given, like ``4% Cu``, ``14% Hdoped`` etc.. they should be annotated as such.
+In case of ``4% Hdoped sample``, it should be annotated with a double layer ``<substitution>4% Hdoped</substitution>`` and 4% <supercon>Hdoped sample</supercon> but as these cases
+are not supported at this stage, the solution is to annotate the whole as ``<supercon>``, like ``<supercon>4% Hdoped sample</supercon>``.
 
-Critical temperature expressions
+Critical Temperature expressions
 --------------------------------
 Represent the critical temperature and any expression of it (e.g. high-critical-temperature, etc.. ). Expressed using the ``<tc>`` tag.
 
-Sometimes ``tc`` is used to identify ``Curie Temperature``, which still refer to a temperature but with a different meaning.
+Sometimes the expression ``tc`` or ``Tc`` is used to identify ``Curie Temperature``, which still refer to a temperature but with a different meaning.
 Papers authors usually provide this information which can be used to avoid recognising critical temperature incorrectly.
+This expression should not be annotated with the ``<tc>`` tag.
 
-Some basic rules:
-   * Adjectives applied to critical temperature should be annotated, for example: ``high Tc cuprate``, ``maximum Tc`` or ``higher Tc`` having the adjective describing the temperature included in the annotation,
-   * A sentence like ``the critical temperature (Tc)`` should be annotated with multiples tokens like: ``the <tc>critical temperature</tc> (<tc>Tc</tc>)``,
-   * implicit description of critical temperature, like ``superconducts``, ``shows superconductor properties`` should be annotated as well
-   * When the critical temperature is not directly referred as a property but an entity related to other materials should not be annotated, here an example:
-     ::
-        The conventional nature of the temperature dependence is also found in case [..]
+The critical temperature should be annotated in the following way:
+   * adjectives and verbs applied to critical temperature should be annotated and included in the annotation, for example: [adjectives] ``<tc>high Tc cuprate</tc>``, ``<tc>maximum Tc</tc>``, ``<tc>higher Tc</tc>`` [verbs] ``increasing Tc``, ``suppression of Tc``, ``raising Tc``, etc..
+   * sentences like ``the critical temperature (Tc)`` should have the two ``mentions`` of critical temperature (``tc`` and ``critical temperature``) annotated as two separated annotations, like: ``the <tc>critical temperature</tc> (<tc>Tc</tc>)``,
+   * implicit description of critical temperature or superconductivity should be annotated as well, for example ``superconducts``, ``shows superconductor properties``
+
+Cases not to be annotated as Tc:
+   * when the critical temperature is not directly referred as a property but an entity related to other materials should not be annotated,
+   for example: ``The conventional nature of the temperature dependence is also found in case [..]``
+   * when the temperature is referring to other aspect than the superconductivity ``The spin-fluctuation-mediated mechanism is a major candidate for the high-T c mechanism.``
+   * when the mention ``Tc`` is referred to something else, for example  ``higher Tc phase`` is referring to the phase, not to the superconductivity
 
 Value of properties
 -------------------
