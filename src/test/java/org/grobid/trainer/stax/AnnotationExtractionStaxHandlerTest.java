@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -54,5 +56,18 @@ public class AnnotationExtractionStaxHandlerTest {
 
         assertThat(continuum.substring(offset2, offset2 + length2), is("annotation"));
         assertThat(annotation2, is("propertyValue"));
+    }
+
+    @Test
+    public void testHandler_testMissingTags() throws Exception {
+        InputStream inputStream = this.getClass().getResourceAsStream("1609.04957.superconductors.tei.xml");
+
+        XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
+
+        StaxUtils.traverse(reader, target);
+
+        List<Triple<String, Integer, Integer>> data = target.getData();
+        assertThat(data, hasSize(71));
+        assertThat(data.stream().filter(t -> t.getLeft().equals("substitution")).collect(Collectors.toList()), hasSize(1));
     }
 }
