@@ -82,6 +82,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
             String name;
 
+            Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
             for (int n = 0; n < refFiles.length; n++) {
                 File thefile = refFiles[n];
                 name = thefile.getName();
@@ -106,7 +107,6 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 int q = 0;
                 BufferedReader bis = new BufferedReader(
                         new InputStreamReader(new FileInputStream(theRawFile), UTF_8));
-                Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                 StringBuilder output = new StringBuilder();
                 String line;
                 while ((line = bis.readLine()) != null) {
@@ -128,6 +128,8 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                         if (tag == null || StringUtils.length(StringUtils.trim(tag)) == 0) {
                             output.append("\n");
                             writer.write(output.toString() + "\n");
+                            writer.flush();
+                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                             output = new StringBuilder();
                             continue;
                         }
@@ -199,8 +201,8 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         GrobidProperties.getInstance();
 
         Trainer trainer = new SuperconductorsTrainer();
-//        AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
-        AbstractTrainer.runTraining(trainer);
-        AbstractTrainer.runEvaluation(trainer);
+        AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
+//        AbstractTrainer.runTraining(trainer);
+//        AbstractTrainer.runEvaluation(trainer);
     }
 }

@@ -89,24 +89,24 @@ public class AggregatedProcessing {
                 int superconductorLayoutTokenHigherOffset = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset()
                         + superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getText().length();
 
-                int superconductorCentroidOffset = superconductorLayoutTokenHigherOffset - superconductorLayoutTokenLowerOffset;
+                double superconductorCentroidOffset = ((double) (superconductorLayoutTokenHigherOffset + superconductorLayoutTokenLowerOffset)) / 2.0;
 
                 Quantity quantityT1 = o1.getLeft();
                 int t1LowerLayoutTokenOffset = quantityT1.getLayoutTokens().get(0).getOffset();
                 int t1HigherLayoutTokenOffset = quantityT1.getLayoutTokens().get(quantityT1.getLayoutTokens().size() - 1).getOffset()
                         + quantityT1.getLayoutTokens().get(quantityT1.getLayoutTokens().size() - 1).getText().length();
 
-                int t1CentroidOffset = t1HigherLayoutTokenOffset - t1LowerLayoutTokenOffset;
+                double t1CentroidOffset = ((double) (t1HigherLayoutTokenOffset + t1LowerLayoutTokenOffset)) / 2.0;
 
                 Quantity quantityT2 = o2.getLeft();
                 int t2LowerLayoutTokenOffset = quantityT2.getLayoutTokens().get(0).getOffset();
                 int t2HigherLayoutTokenOffset = quantityT2.getLayoutTokens().get(quantityT2.getLayoutTokens().size() - 1).getOffset()
                         + quantityT2.getLayoutTokens().get(quantityT2.getLayoutTokens().size() - 1).getText().length();
 
-                int t2CentroidOffset = t2HigherLayoutTokenOffset - t2LowerLayoutTokenOffset;
+                double t2CentroidOffset = ((double) (t2HigherLayoutTokenOffset + t2LowerLayoutTokenOffset)) / 2.0;
 
-                int distanceT1Supercon = Math.abs(t1CentroidOffset - superconductorCentroidOffset);
-                int distanceT2Supercon = Math.abs(t2CentroidOffset - superconductorCentroidOffset);
+                double distanceT1Supercon = Math.abs(t1CentroidOffset - superconductorCentroidOffset);
+                double distanceT2Supercon = Math.abs(t2CentroidOffset - superconductorCentroidOffset);
 
                 if (distanceT1Supercon > distanceT2Supercon) {
                     return 1;
@@ -159,8 +159,11 @@ public class AggregatedProcessing {
                 })
                 .collect(Collectors.toList());
 
-        Tokenizer tokenizer = new EnglishTokenizer();
-        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
+//        Tokenizer tokenizer = new EnglishTokenizer();
+//        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
+
+        List<List<Token>> sentences = new ArrayList<>();
+        sentences.add(tokensNlp4j);
 
         int superconductorOffsetLower = superconductor.getLayoutTokens().get(0).getOffset();
         int superconductorOffsetHigher = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset();
@@ -267,10 +270,7 @@ public class AggregatedProcessing {
                 // searching for Tc
                 while (it.hasNext()) {
                     LayoutToken token = it.next();
-                    if (StringUtils.equalsAny(token.getText(), "temperature")) {
-                        QuantifiedObject quantifiedObject = new QuantifiedObject(token.getText());
-                        temperature.setQuantifiedObject(quantifiedObject);
-                    } else if (it.nextIndex() < temperatureWindow.size() - 1 && (token.getText().equalsIgnoreCase("tc") || ((token.getText().equalsIgnoreCase("t")) && it.nextIndex() + 1 < temperatureWindow.size() && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("c"))))) {
+                    if (it.nextIndex() < temperatureWindow.size() - 1 && (token.getText().equalsIgnoreCase("tc") || ((token.getText().equalsIgnoreCase("t")) && it.nextIndex() + 1 < temperatureWindow.size() && (temperatureWindow.get(it.nextIndex() + 1).getText().equalsIgnoreCase("c"))))) {
                         String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
                         QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
                         temperature.setQuantifiedObject(quantifiedObject);
@@ -278,6 +278,20 @@ public class AggregatedProcessing {
                         String rawName = LayoutTokensUtil.toText(Arrays.asList(token, temperatureWindow.get(it.nextIndex()), temperatureWindow.get(it.nextIndex() + 1)));
                         QuantifiedObject quantifiedObject = new QuantifiedObject(rawName, "Critical Temperature");
                         temperature.setQuantifiedObject(quantifiedObject);
+                    }
+                }
+
+                //Try again with more generitc terms
+                if(temperature.getQuantifiedObject()== null) {
+                    it = temperatureWindow.listIterator();
+
+                    // searching for Tc
+                    while (it.hasNext()) {
+                        LayoutToken token = it.next();
+                        if (StringUtils.equalsAny(token.getText(), "temperature")) {
+                            QuantifiedObject quantifiedObject = new QuantifiedObject(token.getText());
+                            temperature.setQuantifiedObject(quantifiedObject);
+                        }
                     }
                 }
             }
@@ -294,7 +308,7 @@ public class AggregatedProcessing {
                 quantity = temperature.getQuantityAtomic();
                 List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
 
-                extremities = getExtremitiesAsIndex(tokens, layoutTokens.get(0).getOffset(), layoutTokens.get(layoutTokens.size() - 1).getOffset());
+                extremities = getExtremitiesAsIndex(tokens, layoutTokens.get(0).getOffset(), layoutTokens.get(layoutTokens.size() - 1).getOffset(), 10);
 
 
                 break;
@@ -303,7 +317,7 @@ public class AggregatedProcessing {
                     Quantity quantityBase = temperature.getQuantityBase();
                     Quantity quantityRange = temperature.getQuantityRange();
 
-                    extremities = getExtremitiesAsIndex(tokens, quantityBase.getLayoutTokens().get(0).getOffset(), quantityRange.getLayoutTokens().get(quantityRange.getLayoutTokens().size() - 1).getOffset());
+                    extremities = getExtremitiesAsIndex(tokens, quantityBase.getLayoutTokens().get(0).getOffset(), quantityRange.getLayoutTokens().get(quantityRange.getLayoutTokens().size() - 1).getOffset(), 10);
                 } else {
                     Quantity quantityTmp;
                     if (temperature.getQuantityBase() == null) {
@@ -312,7 +326,7 @@ public class AggregatedProcessing {
                         quantityTmp = temperature.getQuantityBase();
                     }
 
-                    extremities = getExtremitiesAsIndex(tokens, quantityTmp.getLayoutTokens().get(0).getOffset(), quantityTmp.getLayoutTokens().get(0).getOffset());
+                    extremities = getExtremitiesAsIndex(tokens, quantityTmp.getLayoutTokens().get(0).getOffset(), quantityTmp.getLayoutTokens().get(0).getOffset(), 10);
                 }
 
                 break;
@@ -322,7 +336,7 @@ public class AggregatedProcessing {
                     Quantity quantityLeast = temperature.getQuantityLeast();
                     Quantity quantityMost = temperature.getQuantityMost();
 
-                    extremities = getExtremitiesAsIndex(tokens, quantityLeast.getLayoutTokens().get(0).getOffset(), quantityMost.getLayoutTokens().get(quantityMost.getLayoutTokens().size() - 1).getOffset());
+                    extremities = getExtremitiesAsIndex(tokens, quantityLeast.getLayoutTokens().get(0).getOffset(), quantityMost.getLayoutTokens().get(quantityMost.getLayoutTokens().size() - 1).getOffset(), 10);
                 } else {
                     Quantity quantityTmp;
                     if (temperature.getQuantityLeast() == null) {
@@ -331,16 +345,16 @@ public class AggregatedProcessing {
                         quantityTmp = temperature.getQuantityLeast();
                     }
 
-                    extremities = getExtremitiesAsIndex(tokens, quantityTmp.getLayoutTokens().get(0).getOffset(), quantityTmp.getLayoutTokens().get(quantityTmp.getLayoutTokens().size() - 1).getOffset());
+                    extremities = getExtremitiesAsIndex(tokens, quantityTmp.getLayoutTokens().get(0).getOffset(), quantityTmp.getLayoutTokens().get(quantityTmp.getLayoutTokens().size() - 1).getOffset(), 10);
                 }
                 break;
 
             case CONJUNCTION:
                 List<Quantity> quantityList = temperature.getQuantityList();
                 if (quantityList.size() > 1) {
-                    extremities = getExtremitiesAsIndex(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset());
+                    extremities = getExtremitiesAsIndex(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset(), 10);
                 } else {
-                    extremities = getExtremitiesAsIndex(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(0).getLayoutTokens().get(0).getOffset());
+                    extremities = getExtremitiesAsIndex(tokens, quantityList.get(0).getLayoutTokens().get(0).getOffset(), quantityList.get(0).getLayoutTokens().get(0).getOffset(), 10);
                 }
 
                 break;
@@ -348,7 +362,7 @@ public class AggregatedProcessing {
         return extremities;
     }
 
-    public static int WINDOW_TC = 20;
+    public static int WINDOW_TC = Integer.MAX_VALUE;
 
     /* We work with offsets (so no need to increase by size of the text) and we return indexes in the token list */
     protected Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int centroidOffsetLower, int centroidOffsetHigher) {

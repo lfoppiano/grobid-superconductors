@@ -85,6 +85,7 @@ public class AbbreviationsTrainer extends AbstractTrainer {
 
             String name;
 
+            Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
             for (int n = 0; n < refFiles.length; n++) {
                 File thefile = refFiles[n];
                 name = thefile.getName();
@@ -109,7 +110,7 @@ public class AbbreviationsTrainer extends AbstractTrainer {
                 int q = 0;
                 BufferedReader bis = new BufferedReader(
                         new InputStreamReader(new FileInputStream(theRawFile), UTF_8));
-                Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+
                 StringBuilder output = new StringBuilder();
                 String line;
                 while ((line = bis.readLine()) != null) {
@@ -131,6 +132,8 @@ public class AbbreviationsTrainer extends AbstractTrainer {
                         if (tag == null || StringUtils.length(StringUtils.trim(tag)) == 0) {
                             output.append("\n");
                             writer.write(output.toString() + "\n");
+                            writer.flush();
+                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                             output = new StringBuilder();
                             continue;
                         }
