@@ -159,11 +159,11 @@ public class AggregatedProcessing {
                 })
                 .collect(Collectors.toList());
 
-//        Tokenizer tokenizer = new EnglishTokenizer();
-//        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
+        Tokenizer tokenizer = new EnglishTokenizer();
+        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
 
-        List<List<Token>> sentences = new ArrayList<>();
-        sentences.add(tokensNlp4j);
+//        List<List<Token>> sentences = new ArrayList<>();
+//        sentences.add(tokensNlp4j);
 
         int superconductorOffsetLower = superconductor.getLayoutTokens().get(0).getOffset();
         int superconductorOffsetHigher = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset();
