@@ -1,21 +1,56 @@
 Annotation Guidelines
 #####################
 
-Getting started
-===============
+Introduction
+============
 
-The first step of the annotation process is to generate pre-annotated data from unlabeled documents based on the current models.
-The annotation work then consists of manually checking the produced annotations and adding the missing one.
-It is very important not to modify the text content in these generated files, not adding spaces or other characters, but only adding or moving XML tags.
-
-When the training data has been manually corrected, move the file under the repository ``resouces/dataset/{model}/corpus/`` for made them available for training.
-The evaluation corpus is partitioned automatically as 20% of the total corpus.
+This document describes the convention an guidelines for the annotation of training data modeling information encoded in superconductor scientific papers. The goal is to produce high quality training data for applying TDM processes machine learning based in this sub domain of material science.
+The Grobid-based training circle follow the MATTER approach: Model, Annotate, Train, Test, Evaluate, Revise (Pustejouvsky et all, 2012). We assume the Modeling phase has already been finalised. This document focuses on the Annotation phase, leaving Train, Test and Evaluation to the already implemented Grobid framework.
 
 
-Annotations
-===========
+Annotation Workflow
+*******************
 
-In this page we are describing the guidelines for annotating superconductor papers.
+In this section we describe more in detail the annotation circle from the Grobid point of view, documenting the operations to be done at each stop of the chain. The circle identify the following steps:
+ - Pre-annotation
+ - Correction
+ - Training & Evaluation
+ - Review
+
+The rough workflow is the following, we use the current available model to generate pre-annotated data, which are corrected and cross-checked (each annotators correct new files and review others' annotation files). Once the data is corrected and cross-checked, it's used for training, testing and evaluation.
+
+**Pre-annotation**: The first step of the annotation process is to generate pre-annotated data from unlabeled documents based on the current models. Starting from identified documents in PDF, Text or XML, the goal is to process these files using the currently available model (which could perform well or badly depending on how far it is in the development circle).
+
+Assuming that the tool has been installed correctly, data can be pre-annotated using the following command:
+::
+
+   java -jar build/libs/grobid-supeconductors-*.onejar.jar trainingGeneration -m superconductors -dIn path/input/pdf -dOut path/output/generated resources/config/config.yml
+
+The data is read from the `path/input/pdf` directory and written in `path/output/generated`. The default path in grobid-superconductor is `resources/dataset/${model}/corpus`. Inside this directory there are three main input sub-directories: `pdf` or `txt` or `xml` containing the source pdf, text or XML respectively. The output sub-directories are `generated` containing the semi-automatic generated files, `staging` as intermediary directory, used as buffer for the data waiting for cross-validation, and `final` for the document that has been corrected and cross-validated.
+
+**Correction**: The annotation work then consists of manually checking the produced annotations and adding the missing one. It is very important not to modify the text content in these generated files, not adding spaces or other characters, but only adding or moving XML tags. During correction is it common to discover new cases not covered by the current documentation, the approach is to log such lack of information the Github tracking system and follow the discussion there. Written discussion can be further linked in this documentation for the future, in order to provide access ot the discusssion and facilitate the understanding whatever outcome.
+
+**Training / Evaluation**: The corrected data should be moved under ``resouces/dataset/{model}/corpus/`` for made them available for training. The evaluation phase is automatically performed using about 20% of the total corpus.
+The unit of training (or so called instance of training) is the paragraph: each training file is split into several paragraphs, and these are randomly assigned to training or evaluation on the 80/20 probability rate.
+
+**Review**: At end of each iteration, we will review the evaluation improvements (or regressions) and plan new changes or new batch of documents to be corrected in the next iteration.
+
+
+Superconductor information model
+================================
+
+In this section we describe the component characterising the superconductor domain, how it was modelled. We used SuperCon as reference point, since it's a well established manually extracted database, used by the current users and researchers in superconductor materials.
+
+.. figure:: images/model-1.png
+   :alt: superconductor model schema 1
+
+The schema above illustrate the model, the blue boxes (Material and Tc) identify the key element of the model. Researchers in superconductor are working to find new materials and their critical temperature, or new critical temperature for existing materials (under new conditions).
+
+A Material is classified according to certain "classes" like for example: cuprate, ion-based, ferromagnetic depending on their composition. Often these information are also described in papers (though sparsely scattered information). A Material sample is the practical instance used to discover new characteristics. It can be a combination of multiple materials or a combination of different doping rates. Sample are also characterised by their crystal structure (mono-crystal, polycrystal, etc..) and by their shape (wire, thin film, etc).
+
+A sample is then tested in laboratory under certain conditions of pressure and magnetisation, which, combined or alone represent the condition or experimental condition under where the superconductivity is measured.
+
+
 The Goal of this annotation exercise is to produce models allowing extraction of superconductor materials, critical temperatures and their value.
 This is a living document that is updated directly as we go along with the project.
 
@@ -26,7 +61,14 @@ The component to be annotated are:
  - critical temperature expressions
  - other properties
 
-They are detailed in the next sections
+
+
+
+Guidelines
+==========
+
+This section provides the annotation guidelines and recommendation for the superconductor domain. The section is divided in three parts. The introduction provides a general description of the information of interest, followed by a detailed description for each information, with examples. In a separate section are described all the excluded or particular items of interests.
+
 
 General principles
 ------------------
