@@ -1,4 +1,4 @@
-package org.grobid.trainer.stax;
+package org.grobid.trainer.stax.handler;
 
 import org.codehaus.stax2.XMLStreamReader2;
 

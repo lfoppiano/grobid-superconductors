@@ -23,10 +23,10 @@ logging:
   appenders:
     - type: console
     - type: file
-      threshold: INFO
+      threshold: DEBUG
       logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-      currentLogFilename: /tmp/grobid-superconductors.log
-      archivedLogFilenamePattern: /tmp/grobid-superconductors-%d{yyyy-MM-dd}-%i.log.gz
+      currentLogFilename: logs/grobid-superconductors.log
+      archivedLogFilenamePattern: logs/grobid-superconductors-%d{yyyy-MM-dd}-%i.log.gz
       archivedFileCount: 7
       timeZone: UTC
       maxFileSize: 10MB

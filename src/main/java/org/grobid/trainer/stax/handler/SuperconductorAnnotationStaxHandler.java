@@ -1,8 +1,12 @@
-package org.grobid.trainer.stax;
+package org.grobid.trainer.stax.handler;
 
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.exceptions.GrobidException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,34 +18,39 @@ import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
  * This class takes in account the top level tag and the list of the annotation tags.
  * <p>
  * For example the tag of the paragraph and the list of annotation to be extracted
  */
-public class AnnotationExtractionStaxHandler implements StaxParserContentHandler {
+public class SuperconductorAnnotationStaxHandler implements StaxParserContentHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationExtractionStaxHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorAnnotationStaxHandler.class);
 
     private StringBuilder accumulator = new StringBuilder();
 
     private boolean insideParagraph = false;
-    private int offset = 0;
-    private Integer currentStartingPosition = -1;
-    private Integer currentLength = 0;
 
     private List<String> annotationsTags;
     private List<String> topLevelTags;
 
-    private StringBuilder continuum = new StringBuilder();
+    private String currentTag;
 
-    private List<Triple<String, Integer, Integer>> data = new ArrayList<>();
+    private List<Pair<String, String>> labeled = new ArrayList<>();
 
-    public AnnotationExtractionStaxHandler(List<String> topLevelTags, List<String> annotationsTags) {
+    public SuperconductorAnnotationStaxHandler(List<String> topLevelTags, List<String> annotationsTags) {
         this.topLevelTags = topLevelTags;
         this.annotationsTags = annotationsTags;
+    }
+
+    public SuperconductorAnnotationStaxHandler() {
+        this.topLevelTags = TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
+        this.annotationsTags = ANNOTATION_DEFAULT_TAGS;
     }
 
     @Override
@@ -60,7 +69,12 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
             insideParagraph = true;
 
         } else if (annotationsTags.contains(localName)) {
-            this.currentStartingPosition = offset;
+            String text = getAccumulatedText();
+            writeData(text, getTag("other"));
+
+            accumulator.setLength(0);
+
+            this.currentTag = localName;
         }
     }
 
@@ -70,24 +84,22 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
 
         if (topLevelTags.contains(localName)) {
             insideParagraph = false;
+            labeled.add(ImmutablePair.of("\n", null));
 
         } else if (annotationsTags.contains(localName)) {
-            currentLength = offset - this.currentStartingPosition;
-            data.add(Triple.of(localName, currentStartingPosition, currentLength));
-
-            currentLength = 0;
-            currentStartingPosition = -1;
+            String text = getAccumulatedText();
+            writeData(text, getTag(localName));
         }
+    }
+
+    private String getTag(String localName) {
+        return "<" + localName + ">";
     }
 
     @Override
     public void onCharacter(XMLStreamReader2 reader) {
         String text = reader.getText();
         accumulator.append(text);
-        if (insideParagraph) {
-            continuum.append(text);
-            offset += text.length();
-        }
     }
 
     private String getText(XMLStreamReader2 reader) {
@@ -96,8 +108,8 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
         return text;
     }
 
-    public String getContinuum() {
-        return continuum.toString();
+    public String getAccumulatedText() {
+        return trim(accumulator.toString());
     }
 
     private String getAttributeValue(XMLStreamReader reader, String attributeName) {
@@ -118,11 +130,33 @@ public class AnnotationExtractionStaxHandler implements StaxParserContentHandler
         return data;
     }
 
-    public List<Triple<String, Integer, Integer>> getData() {
-        return data;
+    private void writeData(String text, String label) {
+
+        List<String> tokens = null;
+        try {
+            tokens = DeepAnalyzer.getInstance().tokenize(text);
+        } catch (Exception e) {
+            throw new GrobidException("Fail to tokenize:, " + text, e);
+        }
+        boolean begin = true;
+        for (String token : tokens) {
+            String content = trim(token);
+            if (isNotEmpty(content)) {
+                if (begin && (!label.equals("<other>"))) {
+                    labeled.add(ImmutablePair.of(content, "I-" + label));
+                    begin = false;
+                } else {
+                    labeled.add(ImmutablePair.of(content, label));
+                }
+            }
+
+            begin = false;
+        }
+        accumulator.setLength(0);
     }
 
-    public void setData(List<Triple<String, Integer, Integer>> data) {
-        this.data = data;
+
+    public List<Pair<String, String>> getLabeled() {
+        return labeled;
     }
 }

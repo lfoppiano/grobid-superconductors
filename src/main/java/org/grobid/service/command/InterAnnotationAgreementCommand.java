@@ -35,7 +35,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     private final static String OUTPUT_DIRECTORY = "Output directory";
     private final static String MODE = "Method of calculation";
     public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("p");
-    public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("supercon", "tc", "substitution", "propertyValue");
+    public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc", "sample", "tcValue", "pressure", "magnetisation", "shape", "class");
 
 
     public InterAnnotationAgreementCommand() {

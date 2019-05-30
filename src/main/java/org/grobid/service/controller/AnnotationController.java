@@ -1,5 +1,6 @@
 package org.grobid.service.controller;
 
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.OutputResponse;
 import org.grobid.core.engines.AggregatedProcessing;
@@ -50,9 +51,10 @@ public class AnnotationController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("application/json")
     @POST
-    public String processPDF(final InputStream inputStream) {
+    public String processPDF(@FormDataParam("input") InputStream uploadedInputStream,
+                             @FormDataParam("input") FormDataContentDisposition fileDetail) {
         long start = System.currentTimeMillis();
-        OutputResponse extractedEntities = aggregatedProcessing.process(inputStream);
+        OutputResponse extractedEntities = aggregatedProcessing.process(uploadedInputStream);
         long end = System.currentTimeMillis();
 
         extractedEntities.setRuntime(end - start);
@@ -65,8 +67,10 @@ public class AnnotationController {
     @POST
     public String processTextSuperconductors(@FormDataParam("text") String text) {
 
+        String textPreprocessed = text.replace("\r\n", "\n");
+
         long start = System.currentTimeMillis();
-        OutputResponse extractedEntities = aggregatedProcessing.process(text);
+        OutputResponse extractedEntities = aggregatedProcessing.process(textPreprocessed);
         long end = System.currentTimeMillis();
 
         extractedEntities.setRuntime(end - start);

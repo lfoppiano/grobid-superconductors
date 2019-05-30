@@ -19,6 +19,9 @@ public class Superconductor {
     private OffsetPosition offsets = null;
     private Measurement criticalTemperatureMeasurement = null;
 
+    //Temporary solution for the demo
+    private String type;
+
     public List<BoundingBox> getBoundingBoxes() {
         return boundingBoxes;
     }
@@ -87,6 +90,14 @@ public class Superconductor {
         json.append("{ ");
         json.append("\"name\":" + "\"" + encodedName + "\"");
         started = true;
+
+        if (type != null) {
+            if (!started) {
+                started = true;
+            } else
+                json.append(", ");
+            json.append("\"type\" : \"" + getType() + "\"");
+        }
 
         if (offsets != null) {
             if (getOffsetStart() != -1) {
@@ -191,5 +202,14 @@ public class Superconductor {
 
     public void setCriticalTemperatureMeasurement(Measurement criticalTemperatureMeasurement) {
         this.criticalTemperatureMeasurement = criticalTemperatureMeasurement;
+    }
+
+    public void setType(String type) {
+
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 }

@@ -3,18 +3,15 @@ package org.grobid.trainer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.engines.AbbreviationsModels;
-import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.Pair;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.sax.AbbreviationsAnnotationSaxHandler;
-import org.grobid.trainer.sax.SuperconductorsAnnotationSaxHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

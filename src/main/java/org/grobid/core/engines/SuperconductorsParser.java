@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -28,8 +27,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTOR_OTHER;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTOR_VALUE_NAME;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 @Singleton
 public class SuperconductorsParser extends AbstractParser {
@@ -293,7 +291,7 @@ public class SuperconductorsParser extends AbstractParser {
             String clusterContent = LayoutTokensUtil.toText(cluster.concatTokens()).trim();
             List<BoundingBox> boundingBoxes = null;
 
-            if (!clusterLabel.equals(SUPERCONDUCTOR_OTHER))
+            if (!clusterLabel.equals(SUPERCONDUCTORS_OTHER))
                 boundingBoxes = BoundingBoxCalculator.calculate(cluster.concatTokens());
 
             String text = LayoutTokensUtil.toText(tokens);
@@ -319,15 +317,43 @@ public class SuperconductorsParser extends AbstractParser {
 
             Superconductor superconductor = null;
 
-            if (clusterLabel.equals(SUPERCONDUCTOR_VALUE_NAME)) {
+            if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor = new Superconductor();
+                superconductor.setType("material");
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(pos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
-            } else if (clusterLabel.equals(SUPERCONDUCTOR_OTHER)) {
+            } else if(clusterLabel.equals(SUPERCONDUCTORS_CLASS)) {
+                superconductor = new Superconductor();
+                superconductor.setType("class");
+                superconductor.setName(clusterContent);
+                superconductor.setLayoutTokens(theTokens);
+                superconductor.setBoundingBoxes(boundingBoxes);
+                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetEnd(endPos);
+                resultList.add(superconductor);
+            } else if(clusterLabel.equals(SUPERCONDUCTORS_SAMPLE)) {
+                superconductor = new Superconductor();
+                superconductor.setType("sample");
+                superconductor.setName(clusterContent);
+                superconductor.setLayoutTokens(theTokens);
+                superconductor.setBoundingBoxes(boundingBoxes);
+                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetEnd(endPos);
+                resultList.add(superconductor);
+            } else if(clusterLabel.equals(SUPERCONDUCTORS_TC)) {
+                superconductor = new Superconductor();
+                superconductor.setType("tc");
+                superconductor.setName(clusterContent);
+                superconductor.setLayoutTokens(theTokens);
+                superconductor.setBoundingBoxes(boundingBoxes);
+                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetEnd(endPos);
+                resultList.add(superconductor);
+            } else if (clusterLabel.equals(SUPERCONDUCTORS_OTHER)) {
 
             } else {
                 LOGGER.error("Warning: unexpected label in quantity parser: " + clusterLabel.getLabel() + " for " + clusterContent);

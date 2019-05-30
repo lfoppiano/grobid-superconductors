@@ -1,15 +1,16 @@
-package org.grobid.trainer.stax;
+package org.grobid.trainer.stax.handler;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;

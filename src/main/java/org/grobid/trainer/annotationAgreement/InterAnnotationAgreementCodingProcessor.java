@@ -1,20 +1,24 @@
 package org.grobid.trainer.annotationAgreement;
 
+import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.codehaus.stax2.XMLStreamReader2;
 import org.dkpro.statistics.agreement.coding.CodingAnnotationStudy;
 import org.dkpro.statistics.agreement.coding.ICodingAnnotationStudy;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.trainer.sax.SuperconductorsAnnotationSaxHandler;
+import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.handler.SuperconductorAnnotationStaxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.*;
+import javax.xml.stream.XMLStreamException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +29,8 @@ import java.util.stream.Collectors;
 public class InterAnnotationAgreementCodingProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InterAnnotationAgreementCodingProcessor.class);
+
+    private WstxInputFactory inputFactory = new WstxInputFactory();
 
     public InterAnnotationAgreementCodingProcessor() {
 
@@ -65,18 +71,17 @@ public class InterAnnotationAgreementCodingProcessor {
             List<List<String>> labelsOfLabels = input
                     .stream()
                     .map(inputStream -> {
-                        SuperconductorsAnnotationSaxHandler handler = new SuperconductorsAnnotationSaxHandler();
+                        SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler();
 
                         try {
-                            SAXParser p = spf.newSAXParser();
-                            p.parse(inputStream, handler);
-
-                            List<Pair<String, String>> labeled1 = handler.getLabeledResult();
+                            XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
+                            StaxUtils.traverse(reader, handler);
+                            List<Pair<String, String>> labeled1 = handler.getLabeled();
 
 
                             return labeled1.stream().map(Pair::getRight).collect(Collectors.toList());
 
-                        } catch (ParserConfigurationException | IOException | SAXException e) {
+                        } catch (XMLStreamException e) {
                             throw new GrobidException("Error parsing XML ", e);
                         }
                     })

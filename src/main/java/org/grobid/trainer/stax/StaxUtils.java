@@ -1,6 +1,7 @@
 package org.grobid.trainer.stax;
 
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.trainer.stax.handler.StaxParserContentHandler;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;

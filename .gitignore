@@ -6,3 +6,4 @@ out
 annotated/*
 doc/*
 docs/_build/*
+logs/*

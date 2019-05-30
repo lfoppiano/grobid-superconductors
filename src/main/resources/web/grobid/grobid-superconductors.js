@@ -17,8 +17,6 @@ var grobid = (function ($) {
 
 
         // Transformers to HTML
-
-
         function defineBaseURL(ext) {
             var baseUrl = null;
             if ($(location).attr('href').indexOf("index.html") != -1)
@@ -82,6 +80,7 @@ var grobid = (function ($) {
                 $("#divRestI").hide();
                 $("#divDoc").hide();
                 $("#divDemo").hide();
+                $('#requestResult').hide();
                 return false;
             });
             $("#rest").click(function () {
@@ -113,21 +112,7 @@ var grobid = (function ($) {
                 $("#divAbout").hide();
                 $("#divRestI").hide();
                 $("#divDemo").hide();
-                return false;
-            });
-            $("#demo").click(function () {
-                $("#demo").attr('class', 'section-active');
-                $("#rest").attr('class', 'section-not-active');
-                $("#about").attr('class', 'section-not-active');
-                $("#doc").attr('class', 'section-not-active');
-
-                $("#subTitle").html("Demo");
-                $("#subTitle").show();
-
-                $("#divDemo").show();
-                $("#divDoc").hide();
-                $("#divAbout").hide();
-                $("#divRestI").hide();
+                $('#requestResult').hide();
                 return false;
             });
         });
@@ -163,6 +148,7 @@ var grobid = (function ($) {
             superconMap = new Array();
 
             $('#infoResult').html('<font color="grey">Requesting server...</font>');
+            $('#requestResult').show();
             $('#requestResult').html('');
 
             if (selected == 'processSuperconductorsText') {
@@ -190,6 +176,7 @@ var grobid = (function ($) {
                 xhr.open('POST', url, true);
 
                 var nbPages = -1;
+                $('#requestResult').show();
 
                 // display the local PDF
                 if ((document.getElementById("input").files[0].type == 'application/pdf') ||
@@ -322,6 +309,7 @@ var grobid = (function ($) {
 
         function annotateTextAsHtml(inputText, annotationList) {
             var newString = "";
+            console.log("'" + inputText + "'");
             var lastMaxIndex = inputText.length;
             if (annotationList) {
                 var pos = 0; // current position in the text
@@ -333,7 +321,12 @@ var grobid = (function ($) {
                         var endUnit = -1;
                         var start = parseInt(currentAnnotation.offsetStart, 10);
                         var end = parseInt(currentAnnotation.offsetEnd, 10);
+
                         var type = currentAnnotation.type;
+
+                        if (currentAnnotation.type === "superconductor") {
+                            type = currentAnnotation.obj.type;
+                        }
                         if ((startUnit !== -1) && ((startUnit === end) || (startUnit === end + 1)))
                             end = endUnit;
                         if ((endUnit !== -1) && ((endUnit === start) || (endUnit + 1 === start)))
@@ -425,7 +418,7 @@ var grobid = (function ($) {
                 var offsets;
 
                 if (temperature.type === 'value') {
-                    let quantity = temperature.quantity;
+                    var quantity = temperature.quantity;
                     offsets = extractOffsetsFromAtomic(quantity);
 
                 } else if (temperature.type === 'interval') {
@@ -470,7 +463,7 @@ var grobid = (function ($) {
             //var string = responseJson.text;
 
             display += '<tr style="background-color:#FFF;">';
-            var superconductors = responseJson.superconductors;
+            // var superconductors = responseJson.superconductors;
 
             annotationList = [];
 
@@ -492,6 +485,8 @@ var grobid = (function ($) {
             // Custom for measurements
             addAnnotations(responseJson.superconductors, 'superconductor', annotationList);
             var temperaturesList = adjustTemperatureObjcts(responseJson.temperatures);
+
+            addAnnotations(responseJson.other, 'superconductor', annotationList);
 
             addAnnotations(temperaturesList, 'measurement', annotationList);
             addAnnotations(responseJson.abbreviations, 'abbreviation', annotationList);
@@ -811,7 +806,7 @@ var grobid = (function ($) {
             var annotation = annotationsMap[localAnnotationID];
             var string = "";
             if (annotation.type === 'superconductor') {
-                string = toHtmlSemiconductor(annotation.obj, -1);
+                string = toHtmlSuperconductor(annotation.obj, -1);
             } else if (annotation.type === 'measurement') {
                 string = toHtmlMeasurement(annotation.obj, -1)
             } else if (annotation.type === 'abbreviation') {
@@ -829,8 +824,6 @@ var grobid = (function ($) {
             var pageIndex = $(this).attr('page');
             var localID = $(this).attr('id');
 
-            // console.log('viewQuanityPDF ' + pageIndex + ' / ' + localID);
-
             var ind1 = localID.indexOf('-');
             var ind2 = localID.indexOf('-', ind1 + 1);
             var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, ind2));
@@ -842,7 +835,7 @@ var grobid = (function ($) {
             }
             var string = "";
             if (type === 'superconductor') {
-                string = toHtmlSemiconductor(map[localMeasurementNumber], $(this).position().top);
+                string = toHtmlSuperconductor(map[localMeasurementNumber], $(this).position().top);
             } else if (type === 'abbreviation') {
                 string = toHtmlAbbreviation(map[localMeasurementNumber], $(this).position().top);
             } else if (type === 'quantity') {
@@ -869,19 +862,20 @@ var grobid = (function ($) {
 
 
         // Transformation to HTML
-        function toHtmlSemiconductor(superconductor, topPos) {
+        function toHtmlSuperconductor(superconductor, topPos) {
             var string = "";
             var first = true;
 
             colorLabel = 'superconductor';
             var name = superconductor.name;
+            var type = superconductor.type;
 
-            string += "<div class='info-sense-box " + colorLabel + "'";
+            string += "<div class='info-sense-box " + type + "'";
             if (topPos !== -1)
                 string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
 
             string += ">";
-            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>Material</h2>";
+            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "</h2>";
 
             string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
                 "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
@@ -1042,9 +1036,9 @@ var grobid = (function ($) {
                 substance = quantityMost.quantified;
 
             string += "<div class='info-sense-box " + colorLabel + "'";
-            if (topPos != -1)
+            if (topPos !== -1)
                 string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
-            string += "><h2 style='color:#FFF;padding-left:10px;font-size:16;'>" + measurementType;
+            string += "><h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + measurementType;
             string += "</h2>";
             string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
                 "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
@@ -1128,7 +1122,7 @@ var grobid = (function ($) {
                     string += "<div class='info-sense-box " + colorLabel + "'";
                     if (topPos != -1)
                         string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
-                    string += "><h2 style='color:#FFF;padding-left:10px;font-size:16;'>" + measurementType;
+                    string += "><h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + measurementType;
                     string += "</h2>";
                     first = false;
                 }
@@ -1194,16 +1188,16 @@ var grobid = (function ($) {
 
             if (selected === 'processSuperconductorsText') {
                 createInputTextArea();
-                //$('#consolidateBlock').show();
                 setBaseUrl('processSuperconductorsText');
+                $('#requestResult').hide();
             } else if (selected === 'annotateSuperconductorsPDF') {
                 createInputFile(selected);
-                //$('#consolidateBlock').hide();
                 setBaseUrl('annotateSuperconductorsPDF');
+                $('#requestResult').hide();
             }
         }
 
-        function createInputFile(selected) {
+        function createInputFile() {
             $('#textInputDiv').hide();
             $('#fileInputDiv').show();
 
@@ -1235,10 +1229,9 @@ var grobid = (function ($) {
         }
 
         var examples = [
-            "Uranium compounds U6X (X 1⁄4 Mn, Fe, Co, and Ni) are superconductors with relatively high superconducting (SC) transition temperatures Tc among the uranium-based compounds. Contrary to other uranium-based heavy-fermion systems including ferromagnetic superconductors, 5f electrons in U6X compounds exhibit an itinerant nature even at room temperature, and do not exhibit magnetic ground states. The SC properties are consistent with the conventional one: for instance, the full-gap superconductivity of U6Co (Tc 1⁄4 2:33 K) has been indicated by the penetration depth, nuclear spin–lattice relaxation rate 1=T1, and more recently, by specific heat measurements. Thus, at present, these compounds are good reference systems for the uranium-based unconventional superconductors. ",
-            "We report X-ray diffraction, magnetization and transport measurements for polycrystalline samples of the new layered superconductor Bi4−xAgxO4S3 (0 < x < 0.2). The superconducting transition temperature (TC) decreases gradually and finally suppressed when x < 0.10. Accordingly, the resistivity changes from a metallic behavior for x < 0.1 to a semiconductor-like behavior for x > 0.1. The analysis of Seebeck coefficient shows there are two types of electron-like carriers dominate at different temperature regions, indicative of a multiband effect responsible for the transport properties. The suppression of superconductivity and the increased resistivity can be attributed to a shift of the Fermi level to the lower-energy side upon doping, which reduces the density of states at EF. Further, our result indicates the superconductivity in Bi4O4S3 is intrinsic and the dopant Ag prefers to enter the BiS2 layers, which may essentially modify the electronic structure.",
-            "The flux line lattice (FLL) that is established in the mixed state of a type-II superconductor leads to a distinctive field distribution in the sample. The positive muon can be employed as an extremely sensitive probe of local magnetic environments and directly measures the distribution of fields associated with the FLL. Time-reversal symmetry breaking (TRSB) is an extremely rare phenomenon, which has only been reported for a handful of unconventional superconductors: the candidate chiral p-wave superconductor Sr2RuO4, the heavy fermion superconductors UPt3 and (U;Th)Be13, the filled skutterudites (Pr; La) (Ru; Os) 4Sb12, PrPt4Ge12 and centrosymmetric LaNiGa2, and recently the caged-type superconductor Lu5Rh6Sn18. μSR studies have been carried out on many other noncentrosymmetric superconductors (NCSs), including Ca(Ir; Pt)Si3, La(Rh; Pt; Pd; Ir)Si3, Mg10Ir19B16, and Re3W. No spontaneous magnetization has been observed in these materials, implying that the superconductivity in these systems occurs predominantly in a spinsinglet channel.",
-            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics."]
+            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.", "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
+
+        ]
 
     }
 

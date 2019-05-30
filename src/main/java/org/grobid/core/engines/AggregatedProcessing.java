@@ -572,13 +572,17 @@ public class AggregatedProcessing {
 
     public OutputResponse process(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
+
+        List<Superconductor> supercon1_ = superconductorsNames.stream().filter(s -> s.getType().equals("material") || s.getType().equals("class")).collect(Collectors.toList());
+        List<Superconductor> supercon3_ = superconductorsNames.stream().filter(s -> s.getType().equals("sample") && !s.getType().equals("tc")).collect(Collectors.toList());
+
         List<Measurement> process = quantityParser.process(tokens);
         List<Measurement> temperatures = filterTemperature(process);
         List<Measurement> temperatureList = markCriticalTemperatures(temperatures, tokens);
         List<Abbreviation> abbreviationsList = abbreviationsParser.process(tokens);
 
-        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(superconductorsNames, temperatureList, tokens);
+        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(supercon1_, temperatureList, tokens);
 
-        return new OutputResponse(linkedSuperconductors, temperatureList, abbreviationsList);
+        return new OutputResponse(linkedSuperconductors, temperatureList, abbreviationsList, supercon3_);
     }
 }

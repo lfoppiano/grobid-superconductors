@@ -1,6 +1,5 @@
 package org.grobid.service;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Module;
 import com.hubspot.dropwizard.guicier.GuiceBundle;
 import io.dropwizard.Application;
@@ -12,6 +11,7 @@ import org.grobid.service.command.InterAnnotationAgreementCommand;
 import org.grobid.service.command.TrainingGenerationCommand;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class GrobidSuperconductorsApplication extends Application<GrobidSuperconductorsConfiguration> {
@@ -27,7 +27,7 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
     }
 
     private List<? extends Module> getGuiceModules() {
-        return Lists.newArrayList(new SuperconductorsServiceModule());
+        return Arrays.asList(new SuperconductorsServiceModule());
     }
 
     @Override

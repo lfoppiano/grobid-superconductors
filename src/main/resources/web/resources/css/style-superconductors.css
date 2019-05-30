@@ -2,6 +2,23 @@
     background-color: #0e90d2;
 }
 
+.info-sense-box.material {
+    background-color: #2262d2;
+}
+
+.info-sense-box.class {
+    background-color: #d27059;
+}
+
+.info-sense-box.tc {
+    background-color: #8880d2;
+}
+
+.info-sense-box.sample {
+    background-color: #5bd2b2;
+}
+
+
 .info-sense-box.abbreviation {
     background-color: #b92c28;
 }
@@ -21,4 +38,21 @@
 
 .label.measurement {
     background-color: #356635;
+}
+
+
+.label.material {
+    background-color: #2262d2;
+}
+
+.label.class {
+    background-color: #d27059;
+}
+
+.label.tc {
+    background-color: #8880d2;
+}
+
+.label.sample {
+    background-color: #5bd2b2;
 }

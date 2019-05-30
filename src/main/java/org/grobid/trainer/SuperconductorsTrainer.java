@@ -1,26 +1,31 @@
 package org.grobid.trainer;
 
+import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
-import org.grobid.trainer.sax.SuperconductorsAnnotationSaxHandler;
+import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.handler.SuperconductorAnnotationStaxHandler;
 
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
  * @author Patrice Lopez
  */
 public class SuperconductorsTrainer extends AbstractTrainer {
 
+    private WstxInputFactory inputFactory = new WstxInputFactory();
 
     public SuperconductorsTrainer() {
         super(SuperconductorsModels.SUPERCONDUCTORS);
@@ -42,7 +47,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "staging");
+            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "staging2");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -84,17 +89,16 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
             Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
             for (int n = 0; n < refFiles.length; n++) {
-                File thefile = refFiles[n];
-                name = thefile.getName();
+                File theFile = refFiles[n];
+                name = theFile.getName();
                 LOGGER.info(name);
 
-                SuperconductorsAnnotationSaxHandler handler = new SuperconductorsAnnotationSaxHandler();
+                SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
+                        Arrays.asList("material", "tc", "sample", "class"));
+                XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(theFile);
+                StaxUtils.traverse(reader, handler);
 
-                //get a new instance of parser
-                SAXParser p = spf.newSAXParser();
-                p.parse(thefile, handler);
-
-                List<Pair<String, String>> labeled = handler.getLabeledResult();
+                List<Pair<String, String>> labeled = handler.getLabeled();
 
                 // we can now add the features
                 // we open the featured file

@@ -16,22 +16,28 @@ public class OutputResponse {
     private List<Measurement> temperatures;
     private List<Abbreviation> abbreviations;
 
+    private List<Superconductor> other;
+
     public OutputResponse() {
         superconductors = new ArrayList<>();
         temperatures = new ArrayList<>();
         abbreviations = new ArrayList<>();
+        other = new ArrayList<>();
     }
 
-    public OutputResponse(List<Superconductor> superconductorList, List<Measurement> temperatures, List<Abbreviation> abbreviations) {
+    public OutputResponse(List<Superconductor> superconductorList, List<Measurement> temperatures,
+                          List<Abbreviation> abbreviations, List<Superconductor> other) {
         this.superconductors = superconductorList;
         this.temperatures = temperatures;
         this.abbreviations = abbreviations;
+        this.other = other;
     }
 
     public OutputResponse extendEntities(OutputResponse other) {
         this.superconductors.addAll(other.getSuperconductors());
         this.abbreviations.addAll(other.getAbbreviations());
         this.temperatures.addAll(other.getTemperatures());
+        this.other.addAll(other.getOther());
 
         return this;
     }
@@ -112,6 +118,19 @@ public class OutputResponse {
             jsonBuilder.append("]");
         }
 
+        if (isNotEmpty(getSuperconductors())) {
+            jsonBuilder.append(", \"other\" : [ ");
+            first = true;
+            for (Superconductor other : getOther()) {
+                if (first)
+                    first = false;
+                else
+                    jsonBuilder.append(", ");
+                jsonBuilder.append(other.toJson());
+            }
+            jsonBuilder.append("]");
+        }
+
         if (isNotEmpty(getTemperatures())) {
             jsonBuilder.append(", \"temperatures\": [");
             first = true;
@@ -141,5 +160,13 @@ public class OutputResponse {
         jsonBuilder.append("}");
 
         return jsonBuilder.toString();
+    }
+
+    public List<Superconductor> getOther() {
+        return other;
+    }
+
+    public void setOther(List<Superconductor> other) {
+        this.other = other;
     }
 }
