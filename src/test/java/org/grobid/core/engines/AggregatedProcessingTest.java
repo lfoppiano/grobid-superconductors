@@ -42,6 +42,7 @@ public class AggregatedProcessingTest {
         Superconductor superconductor = new Superconductor();
         superconductor.setName("BaClE2");
         superconductor.setLayoutTokens(Arrays.asList(tokens.get(8), tokens.get(9)));
+        superconductor.setType("material");
 
         Measurement temperature = new Measurement();
         temperature.setType(UnitUtilities.Measurement_Type.VALUE);
