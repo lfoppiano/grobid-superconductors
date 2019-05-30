@@ -1,8 +1,9 @@
-11:02:10.169 [main] INFO org.grobid.trainer.AbstractTrainer - 4 files
-11:02:10.169 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081113707.superconductors.tei.xml
-11:02:10.350 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081024716.superconductors.tei.xml
-11:02:10.508 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081103706.superconductors.tei.xml
-11:02:10.579 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081033701.superconductors.tei.xml
+11:20:44.495 [main] INFO org.grobid.trainer.AbstractTrainer - sourcePathLabel: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/resources/dataset/superconductors/corpus/staging2
+11:20:44.495 [main] INFO org.grobid.trainer.AbstractTrainer - outputPath for training data: /Users/lfoppiano/development/projects/grobid/grobid-home/tmp/superconductors3226142684581442298.train
+11:20:44.495 [main] INFO org.grobid.trainer.AbstractTrainer - outputPath for evaluation data: /Users/lfoppiano/development/projects/grobid/grobid-home/tmp/superconductors4603825508660759235.test
+11:20:44.563 [main] INFO org.grobid.trainer.AbstractTrainer - 2 files
+11:20:44.565 [main] INFO org.grobid.trainer.AbstractTrainer - 1609.04957.superconductors.tei.xml
+11:20:44.978 [main] INFO org.grobid.trainer.AbstractTrainer - 1903.04321.superconductors.tei.xml
 	epsilon: 1.0E-6
 	window: 20
 	nb max iterations: 2000
@@ -11,46 +12,45 @@
 * Load training data
 * Initialize the model
 * Summary
-    nb train:    63
-    nb labels:   3
-    nb blocks:   66296
-    nb features: 198894
+    nb train:    16
+    nb labels:   9
+    nb blocks:   32974
+    nb features: 296838
 * Train the model with l-bfgs
 * Save the model
 * Done
-Model for org.grobid.core.GrobidModels$1@25bbe1b6 created in 30264 ms
-11:02:40.401 [main] INFO org.grobid.trainer.AbstractTrainer - sourcePathLabel: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/resources/dataset/superconductors/evaluation/staging
-11:02:40.401 [main] INFO org.grobid.trainer.AbstractTrainer - outputPath for training data: /Users/lfoppiano/development/nims/projects/grobid/grobid-home/tmp/superconductors3496449518797658528.test
-11:02:40.401 [main] INFO org.grobid.trainer.AbstractTrainer - 1 files
-11:02:40.402 [main] INFO org.grobid.trainer.AbstractTrainer - JPS081054708.superconductors.tei.xml
-11:02:40.499 [main] INFO org.grobid.core.jni.WapitiModel - Loading model: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti (size: 1174375)
-[Wapiti] Loading model: "/Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti"
-Model path: /Users/lfoppiano/development/nims/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti
-Labeling took: 223 ms
+11:21:29.417 [main] INFO org.grobid.core.jni.WapitiModel - Loading model: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti (size: 580290)
+[Wapiti] Loading model: "/Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti"
+Model path: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/models/superconductors/model.wapiti
+Labeling took: 101 ms
 
 ===== Token-level results =====
 
 
 label                accuracy     precision    recall       f1
 
-<supercon>           98.61        84.42        85.28        84.85
+<class>              99.43        100          60           75
+<material>           99.5         94.29        86.84        90.41
+<sample>             99.15        86.36        67.86        76
+<tc>                 99.86        93.55        100          96.67
 
-all fields           98.61        84.42        85.28        84.85   (micro average)
-                     98.61        84.42        85.28        84.85   (macro average)
+all fields           99.49        93           80.87        86.51   (micro average)
+                     99.49        93.55        78.67        84.52   (macro average)
 
 ===== Field-level results =====
 
 label                accuracy     precision    recall       f1
 
-<supercon>           72.94        66.67        56.25        61.02
+<class>              97.44        100          60           75
+<material>           94.87        90           75           81.82
+<sample>             93.59        25           33.33        28.57
+<tc>                 97.44        92.86        92.86        92.86
 
-all fields           72.94        66.67        56.25        61.02   (micro average)
-                     72.94        66.67        56.25        61.02   (macro average)
+all fields           95.83        83.87        76.47        80      (micro average)
+                     95.83        76.96        65.3         69.56   (macro average)
 
 ===== Instance-level results =====
 
-Total expected instances:   22
-Correct instances:          15
-Instance-level recall:      68.18
-
-Evaluation for org.grobid.core.GrobidModels$1@25bbe1b6 model is realized in 435 ms
+Total expected instances:   5
+Correct instances:          2
+Instance-level recall:      40
