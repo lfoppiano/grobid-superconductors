@@ -20,7 +20,7 @@ public class SuperconductorsTrainingFormatter {
             int end = superconductor.getOffsetEnd();
 
             String name = superconductor.getName();
-            Element supercon = teiElement("supercon");
+            Element supercon = teiElement(superconductor.getType());
             supercon.appendChild(name);
 
             int initPos = pos;

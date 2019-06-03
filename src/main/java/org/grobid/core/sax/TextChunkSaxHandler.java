@@ -21,6 +21,7 @@ public class TextChunkSaxHandler extends DefaultHandler {
     // corresponding text, e.g. figure
 
     private boolean accumule = true;
+    private boolean retrievedTitle = false;
 
     public List<String> chunks = null;
 
@@ -64,9 +65,15 @@ public class TextChunkSaxHandler extends DefaultHandler {
         if (accumule) {
             if (qName.equals("p") || qName.equals("paragraph")) {
                 if (chunks == null)
-                    chunks = new ArrayList<String>();
+                    chunks = new ArrayList<>();
                 chunks.add(getText());
                 accumulator.setLength(0);
+            } else if (qName.equals("title") && !retrievedTitle) {
+                if (chunks == null)
+                    chunks = new ArrayList<>();
+                chunks.add(getText());
+                accumulator.setLength(0);
+                retrievedTitle = true;
             }
         }
         if ((filters != null) && filters.equals(qName)) {
@@ -82,6 +89,8 @@ public class TextChunkSaxHandler extends DefaultHandler {
             accumule = true;
 
         if (qName.equals("p") || qName.equals("paragraph")) {
+            accumulator.setLength(0);
+        } else if (qName.equals("title")) {
             accumulator.setLength(0);
         }
 
