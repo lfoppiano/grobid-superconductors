@@ -15,7 +15,6 @@ public class SuperconductorsTrainingFormatter {
         int pos = 0;
         for (Superconductor superconductor : superconductorList) {
 
-
             int start = superconductor.getOffsetStart();
             int end = superconductor.getOffsetEnd();
 

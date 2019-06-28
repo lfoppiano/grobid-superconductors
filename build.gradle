@@ -23,7 +23,7 @@ apply plugin: 'application'
 
 group = "org.grobid"
 
-description = """TBA"""
+description = """Grobid module for extraction of superconductor information from scientific related literature"""
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -49,7 +49,7 @@ ext {
 dependencies {
     //Tests
     testCompile 'junit:junit:4.12'
-    testCompile 'org.easymock:easymock:3.4'
+    testCompile 'org.easymock:easymock:4.0.2'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 
     //GROBID
@@ -74,7 +74,7 @@ dependencies {
     compile 'org.apache.commons:commons-collections4:4.1'
     compile 'org.apache.commons:commons-lang3:3.6'
     compile 'commons-logging:commons-logging:1.2'
-    compile 'commons-io:commons-io:2.5'
+    compile 'commons-io:commons-io:2.6'
     compile 'commons-pool:commons-pool:1.6'
 
     //Dropwizard

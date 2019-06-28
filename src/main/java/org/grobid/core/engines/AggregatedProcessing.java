@@ -282,7 +282,7 @@ public class AggregatedProcessing {
                 }
 
                 //Try again with more generitc terms
-                if(temperature.getQuantifiedObject()== null) {
+                if (temperature.getQuantifiedObject() == null) {
                     it = temperatureWindow.listIterator();
 
                     // searching for Tc
@@ -391,7 +391,7 @@ public class AggregatedProcessing {
         return new ImmutablePair(start, end);
     }
 
-    private List<Measurement> filterTemperature(List<Measurement> process) {
+    public List<Measurement> filterTemperature(List<Measurement> process) {
         List<Measurement> temperatures = process.stream().filter(measurement -> {
             switch (measurement.getType()) {
                 case VALUE:
@@ -413,6 +413,30 @@ public class AggregatedProcessing {
         }).collect(Collectors.toList());
 
         return temperatures;
+    }
+
+    public static List<Measurement> filterMeasurements(List<Measurement> process, List<UnitUtilities.Unit_Type> typesToBeKept) {
+        List<Measurement> filteredMeasurements = process.stream().filter(measurement -> {
+            switch (measurement.getType()) {
+                case VALUE:
+                    return typesToBeKept.contains(measurement.getQuantityAtomic().getType());
+                case CONJUNCTION:
+                    return measurement.getQuantityList()
+                            .stream().anyMatch(quantity -> typesToBeKept.contains(quantity.getType()));
+                case INTERVAL_BASE_RANGE:
+                    return typesToBeKept.contains(measurement.getQuantityBase().getType()) ||
+                            typesToBeKept.contains(measurement.getQuantityRange().getType());
+
+                case INTERVAL_MIN_MAX:
+                    return (measurement.getQuantityMost() != null && typesToBeKept.contains(measurement.getQuantityMost().getType())) ||
+                            (measurement.getQuantityLeast() != null && typesToBeKept.contains(measurement.getQuantityLeast().getType()));
+
+            }
+
+            return false;
+        }).collect(Collectors.toList());
+
+        return filteredMeasurements;
     }
 
     public OutputResponse process(String text) {
