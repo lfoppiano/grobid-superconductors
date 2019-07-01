@@ -2,7 +2,7 @@ package org.grobid.trainer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.grobid.core.engines.AbbreviationsModels;
+import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.Pair;
@@ -23,7 +23,7 @@ public class AbbreviationsTrainer extends AbstractTrainer {
 
 
     public AbbreviationsTrainer() {
-        super(AbbreviationsModels.ABBREVIATIONS);
+        super(SuperconductorsModels.ABBREVIATIONS);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
         window = 20;

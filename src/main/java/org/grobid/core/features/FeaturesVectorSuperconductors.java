@@ -106,13 +106,13 @@ public class FeaturesVectorSuperconductors {
         res.append(" " + wordShapeTrimmed);
 
         //Font status
-        res.append(" " + fontStatus);
+//        res.append(" " + fontStatus);
 
         //Font size
-        res.append(" " + fontSize);
+//        res.append(" " + fontSize);
 
         //Is known compound / substance from chemspot
-        res.append(" " + chemspotCompound);
+//        res.append(" " + chemspotCompound);
 
         // label - for training data (1)
         if (label != null)
@@ -169,7 +169,7 @@ public class FeaturesVectorSuperconductors {
             featuresVector.punctType = "DOT";
         } else if (string.equals(",")) {
             featuresVector.punctType = "COMMA";
-        } else if (string.equals("-")) {
+        } else if (string.equals("-") || string.equals("−")) {
             featuresVector.punctType = "HYPHEN";
         } else if (string.equals("\"") || string.equals("\'") || string.equals("`")) {
             featuresVector.punctType = "QUOTE";
@@ -189,23 +189,23 @@ public class FeaturesVectorSuperconductors {
 
         //featuresVector.isPartOfUnitPattern = isUnitPattern;
 
-        if (token.getBold()) featuresVector.bold = true;
+//        if (token.getBold()) featuresVector.bold = true;
 
-        if (token.getItalic()) featuresVector.italic = true;
+//        if (token.getItalic()) featuresVector.italic = true;
 
-        if (StringUtils.equals(previousToken.getFont(), token.getFont())) {
-            featuresVector.fontStatus = "SAMEFONT";
-        } else {
-            featuresVector.fontStatus = "DIFFERENTFONT";
-        }
+//        if (StringUtils.equals(previousToken.getFont(), token.getFont())) {
+//            featuresVector.fontStatus = "SAMEFONT";
+//        } else {
+//            featuresVector.fontStatus = "DIFFERENTFONT";
+//        }
 
-        if (previousToken.fontSize < token.fontSize) {
-            featuresVector.fontSize = "HIGHERFONT";
-        } else if (previousToken.fontSize == token.fontSize) {
-            featuresVector.fontSize = "SAMEFONTSIZE";
-        } else {
-            featuresVector.fontSize = "LOWERFONT";
-        }
+//        if (previousToken.fontSize < token.fontSize) {
+//            featuresVector.fontSize = "HIGHERFONT";
+//        } else if (previousToken.fontSize == token.fontSize) {
+//            featuresVector.fontSize = "SAMEFONTSIZE";
+//        } else {
+//            featuresVector.fontSize = "LOWERFONT";
+//        }
 
         featuresVector.shadowNumber = TextUtilities.shadowNumbers(string);
 
@@ -214,7 +214,7 @@ public class FeaturesVectorSuperconductors {
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
 
         // Chemspot
-        featuresVector.chemspotCompound = compoundType;
+//        featuresVector.chemspotCompound = compoundType;
 
         return featuresVector;
     }

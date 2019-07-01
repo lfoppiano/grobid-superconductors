@@ -26,6 +26,7 @@ public class SuperconductorsTrainingFormatterTest {
     public void testTrainingData_value() throws Exception {
         List<Superconductor> superconductorList = new ArrayList<>();
         Superconductor superconductor = new Superconductor();
+        superconductor.setType("material");
         superconductor.setOffsetStart(19);
         superconductor.setOffsetEnd(30);
         superconductor.setName("(TMTSF)2PF6");
@@ -35,6 +36,6 @@ public class SuperconductorsTrainingFormatterTest {
         superconductorList.add(superconductor);
 
         Element out = target.trainingExtraction(superconductorList, text);
-        assertThat(out.toXML(), is("<p xmlns=\"http://www.tei-c.org/ns/1.0\">The Bechgaard salt <supercon>(TMTSF)2PF6</supercon> (TMTSF = tetra- methyltetraselenafulvalene) was</p>"));
+        assertThat(out.toXML(), is("<p xmlns=\"http://www.tei-c.org/ns/1.0\">The Bechgaard salt <material>(TMTSF)2PF6</material> (TMTSF = tetra- methyltetraselenafulvalene) was</p>"));
     }
 }

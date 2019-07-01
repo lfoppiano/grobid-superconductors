@@ -26,9 +26,10 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.grobid.core.engines.SuperconductorsModels.ABBREVIATIONS;
 import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
-import static org.grobid.core.engines.label.AbbreviationsTaggingLabels.ABBREVIATION_OTHER;
-import static org.grobid.core.engines.label.AbbreviationsTaggingLabels.ABBREVIATION_VALUE_NAME;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.ABBREVIATION_OTHER;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.ABBREVIATION_VALUE_NAME;
 
 @Singleton
 public class AbbreviationsParser extends AbstractParser {
@@ -49,7 +50,7 @@ public class AbbreviationsParser extends AbstractParser {
 
     @Inject
     public AbbreviationsParser() {
-        super(AbbreviationsModels.ABBREVIATIONS);
+        super(ABBREVIATIONS);
     }
 
     public Pair<String, List<Abbreviation>> generateTrainingData(List<LayoutToken> layoutTokens) {
@@ -214,7 +215,7 @@ public class AbbreviationsParser extends AbstractParser {
     public List<Abbreviation> extractResults(List<LayoutToken> tokens, String result) {
         List<Abbreviation> resultList = new ArrayList<>();
 
-        TaggingTokenClusteror clusteror = new TaggingTokenClusteror(AbbreviationsModels.ABBREVIATIONS, result, tokens);
+        TaggingTokenClusteror clusteror = new TaggingTokenClusteror(ABBREVIATIONS, result, tokens);
         List<TaggingTokenCluster> clusters = clusteror.cluster();
 
         int pos = 0; // position in term of characters for creating the offsets

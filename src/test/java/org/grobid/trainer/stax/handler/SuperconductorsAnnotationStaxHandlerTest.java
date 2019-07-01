@@ -48,7 +48,7 @@ public class SuperconductorsAnnotationStaxHandlerTest {
         assertThat(labeled.get(0).getLeft(), is("The"));
         assertThat(labeled.get(0).getRight(), is("<other>"));
 
-        System.out.println(Arrays.toString(labeled.toArray()));
+//        System.out.println(Arrays.toString(labeled.toArray()));
 
     }
 

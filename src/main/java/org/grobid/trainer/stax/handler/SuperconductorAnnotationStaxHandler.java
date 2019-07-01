@@ -83,6 +83,8 @@ public class SuperconductorAnnotationStaxHandler implements StaxParserContentHan
         final String localName = reader.getName().getLocalPart();
 
         if (topLevelTags.contains(localName)) {
+            String text = getAccumulatedText();
+            writeData(text, getTag("other"));
             insideParagraph = false;
             labeled.add(ImmutablePair.of("\n", null));
 

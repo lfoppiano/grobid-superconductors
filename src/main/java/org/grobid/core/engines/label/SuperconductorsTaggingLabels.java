@@ -13,13 +13,10 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
     private static final String SUPERCONDUCTORS_CLASS_LABEL = "<class>";
     private static final String SUPERCONDUCTORS_MATERIAL_LABEL = "<material>";
     private static final String SUPERCONDUCTORS_SAMPLE_LABEL = "<sample>";
-
     private static final String SUPERCONDUCTORS_TC_LABEL = "<tc>";
     private static final String SUPERCONDUCTORS_TC_VALUE_LABEL = "<tcValue>";
-
     private static final String SUPERCONDUCTORS_PRESSURE_LABEL = "<pressure>";
     private static final String SUPERCONDUCTORS_MAGNETISATION_LABEL = "<magnetisation>";
-
     private static final String SUPERCONDUCTORS_SHAPE_LABEL = "<shape>";
 
     public static final TaggingLabel SUPERCONDUCTORS_CLASS = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_CLASS_LABEL);
@@ -33,8 +30,14 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
 
     public static final TaggingLabel SUPERCONDUCTORS_OTHER = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, OTHER_LABEL);
 
+    private static final String ABBREVIATION_NAME_LABEL = "<acronym>";
+
+    public static final TaggingLabel ABBREVIATION_VALUE_NAME = new TaggingLabelImpl(SuperconductorsModels.ABBREVIATIONS, ABBREVIATION_NAME_LABEL);
+    public static final TaggingLabel ABBREVIATION_OTHER = new TaggingLabelImpl(SuperconductorsModels.ABBREVIATIONS, OTHER_LABEL);
+
+
     static {
-        //Quantity
+        //Superconductor
         register(SUPERCONDUCTORS_CLASS);
         register(SUPERCONDUCTORS_MATERIAL);
         register(SUPERCONDUCTORS_SHAPE);
@@ -44,5 +47,10 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         register(SUPERCONDUCTORS_TC_PRESSURE);
         register(SUPERCONDUCTORS_TC_MAGNETISATION);
         register(SUPERCONDUCTORS_OTHER);
+
+        //Abbreviation
+        register(ABBREVIATION_VALUE_NAME);
+        register(ABBREVIATION_OTHER);
+
     }
 }

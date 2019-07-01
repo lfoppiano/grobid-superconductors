@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class SuperconductorsModels {
 
+    public static final GrobidModel ABBREVIATIONS = GrobidModels.modelFor("abbreviations");
     public static final GrobidModel SUPERCONDUCTORS = GrobidModels.modelFor("superconductors");
 
 }

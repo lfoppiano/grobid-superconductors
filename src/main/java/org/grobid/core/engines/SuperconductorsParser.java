@@ -35,7 +35,7 @@ public class SuperconductorsParser extends AbstractParser {
 
     private static volatile SuperconductorsParser instance;
     public static final String NONE_CHEMSPOT_TYPE = "NONE";
-    private ChemspotClient chemspotClient;
+//    private ChemspotClient chemspotClient;
 
     public static SuperconductorsParser getInstance(ChemspotClient chemspotClient) {
         if (instance == null) {
@@ -51,7 +51,7 @@ public class SuperconductorsParser extends AbstractParser {
     @Inject
     public SuperconductorsParser(ChemspotClient chemspotClient) {
         super(SuperconductorsModels.SUPERCONDUCTORS);
-        this.chemspotClient = chemspotClient;
+//        this.chemspotClient = chemspotClient;
         instance = this;
     }
 
@@ -71,14 +71,15 @@ public class SuperconductorsParser extends AbstractParser {
         ).collect(Collectors.toList());
 
 
-        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
-        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
+//        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+//        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
 //        mentions.stream().forEach(m -> System.out.println(">>>>>> " + m.getText() + " --> " + m.getType().name()));
 
         try {
             // string representation of the feature matrix for CRF lib
-            ress = addFeatures(layoutTokensNormalised, listChemspotEntities);
+//            ress = addFeatures(layoutTokensNormalised, listChemspotEntities);
+            ress = addFeatures(layoutTokensNormalised);
 
             String res = null;
             try {
@@ -128,16 +129,15 @@ public class SuperconductorsParser extends AbstractParser {
         // list of textual tokens of the selected segment
         //List<String> texts = getTexts(tokenizationParts);
 
-        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
-        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
-
+//        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+//        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
         if (isEmpty(layoutTokensNormalised))
             return new ArrayList<>();
 
         try {
             // string representation of the feature matrix for CRF lib
-            String ress = addFeatures(layoutTokensNormalised, listChemspotEntities);
+            String ress = addFeatures(layoutTokensNormalised);// , listChemspotEntities);
 
             if (StringUtils.isEmpty(ress))
                 return entities;
@@ -239,7 +239,7 @@ public class SuperconductorsParser extends AbstractParser {
 
 
     @SuppressWarnings({"UnusedParameters"})
-    private String addFeatures(List<LayoutToken> tokens, List<String> chemspotEntities) {
+    private String addFeatures(List<LayoutToken> tokens) {//, List<String> chemspotEntities) {
         StringBuilder result = new StringBuilder();
         try {
             LayoutToken previous = new LayoutToken();
@@ -259,7 +259,7 @@ public class SuperconductorsParser extends AbstractParser {
                 }
 
                 FeaturesVectorSuperconductors featuresVector =
-                        FeaturesVectorSuperconductors.addFeatures(token, null, previous, chemspotEntities.get(index));
+                        FeaturesVectorSuperconductors.addFeatures(token, null, null, null);
                 result.append(featuresVector.printVector());
                 result.append("\n");
                 previous = token;
@@ -326,7 +326,7 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setOffsetStart(pos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
-            } else if(clusterLabel.equals(SUPERCONDUCTORS_CLASS)) {
+            } else if (clusterLabel.equals(SUPERCONDUCTORS_CLASS)) {
                 superconductor = new Superconductor();
                 superconductor.setType("class");
                 superconductor.setName(clusterContent);
@@ -335,7 +335,7 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setOffsetStart(pos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
-            } else if(clusterLabel.equals(SUPERCONDUCTORS_SAMPLE)) {
+            } else if (clusterLabel.equals(SUPERCONDUCTORS_SAMPLE)) {
                 superconductor = new Superconductor();
                 superconductor.setType("sample");
                 superconductor.setName(clusterContent);
@@ -344,7 +344,7 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setOffsetStart(pos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
-            } else if(clusterLabel.equals(SUPERCONDUCTORS_TC)) {
+            } else if (clusterLabel.equals(SUPERCONDUCTORS_TC)) {
                 superconductor = new Superconductor();
                 superconductor.setType("tc");
                 superconductor.setName(clusterContent);
