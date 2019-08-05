@@ -32,7 +32,7 @@ public class AggregatedProcessingTest {
         mockAbbreviationsParser = EasyMock.createMock(AbbreviationsParser.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new AggregatedProcessing(mockSuperconductorsParser, mockAbbreviationsParser, mockQuantityParser);
+        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser);
     }
 
     @Test

@@ -49,7 +49,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "staging2");
+            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "staging");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -94,7 +94,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                        Arrays.asList("material", "tc", "sample", "class"));
+                        Arrays.asList("material", "tc", "tcValue", "class"));
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
@@ -168,8 +168,6 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         GrobidProperties.getInstance();
 
         Trainer trainer = new SuperconductorsTrainer();
-        AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
-//        AbstractTrainer.runTraining(trainer);
-//        AbstractTrainer.runEvaluation(trainer);
+        AbstractTrainer.runTraining(trainer);
     }
 }

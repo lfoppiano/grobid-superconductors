@@ -29,7 +29,7 @@ public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSu
         //Services
         binder.bind(ChemspotClient.class);
         binder.bind(SuperconductorsParser.class);
-        binder.bind(AbbreviationsParser.class);
+//        binder.bind(AbbreviationsParser.class);
         binder.bind(AggregatedProcessing.class);
 
         //REST

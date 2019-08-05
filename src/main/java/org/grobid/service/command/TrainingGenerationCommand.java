@@ -4,9 +4,11 @@ import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
+import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
+import org.grobid.core.engines.training.TrainingOutputFormat;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.ChemspotClient;
@@ -24,6 +26,7 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
     private final static String OUTPUT_DIRECTORY = "Output directory";
     private final static String RECURSIVE = "recursive";
     private final static String MODEL_NAME = "model";
+    private final static String OUTPUT_FORMAT = "outputFormat";
 
 
     public TrainingGenerationCommand() {
@@ -52,6 +55,13 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
                 .required(true)
 //                .choices(SuperconductorsModels.getList())
                 .help("Model for which to create training data");
+
+        subparser.addArgument("-f")
+                .dest(OUTPUT_FORMAT)
+                .type(String.class)
+                .required(false)
+                .setDefault("xml")
+                .help("Output format (TSV, XML)");
     }
 
     @Override
@@ -78,11 +88,13 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
         String inputDirectory = namespace.get(INPUT_DIRECTORY);
         String outputDirectory = namespace.get(OUTPUT_DIRECTORY);
         String modelName = namespace.get(MODEL_NAME);
+        String outputFormat = namespace.get(OUTPUT_FORMAT);
 
         ChemspotClient chemspotClient = new ChemspotClient(configuration);
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory, outputDirectory);
+            new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory, outputDirectory,
+                    TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)));
         } else {
             System.out.println(super.getDescription());
         }

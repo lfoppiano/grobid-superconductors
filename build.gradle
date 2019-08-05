@@ -37,12 +37,20 @@ repositories {
     mavenCentral()
     jcenter()
     maven { url "https://dl.bintray.com/rookies/maven" }
+    maven { url "http://oss.jfrog.org/artifactory/libs-snapshot" }
+    maven { url "http://oss.jfrog.org/artifactory/libs-release" }
 }
 
 ext {
     // treating them separately, these jars will be flattened into grobid-core.jar on installing,
     // to avoid missing dependencies from the projects that include grobid-core (see 'jar' taskin grobid-core)
     localLibs = []
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'javax.measure:unit-api:2.0-SNAPSHOT'
+    }
 }
 
 
@@ -53,14 +61,16 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 
     //GROBID
-    compile 'org.grobid:grobid-core:0.5.5'
-    compile 'org.grobid:grobid-trainer:0.5.5'
+    compile 'org.grobid:grobid-core:0.5.6-SNAPSHOT'
+    compile 'org.grobid:grobid-trainer:0.5.6-SNAPSHOT'
     
     compile('org.grobid:grobid-quantities:0.5.2-SNAPSHOT') {
         transitive = false
     }
 
+
     // grobid-quantities specific dependencies
+    compile 'tech.units:indriya:1.3'
     compile group: 'si.uom', name: 'si-units-java8', version: '0.9'
     compile group: 'si.uom', name: 'si-quantity', version: '0.9'
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
@@ -68,6 +78,7 @@ dependencies {
     compile group: 'systems.uom', name: 'systems-unicode-java8', version: '0.9'
     compile group: 'systems.uom', name: 'systems-quantity', version: '0.9'
     compile group: 'systems.uom', name: 'systems-common', version: '0.9'
+
     compile group: 'com.googlecode.clearnlp', name: 'clearnlp', version: '1.3.1'
 
     //Apache commons

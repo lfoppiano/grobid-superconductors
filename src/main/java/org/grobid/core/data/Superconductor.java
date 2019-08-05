@@ -2,6 +2,8 @@ package org.grobid.core.data;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.fasterxml.jackson.core.util.BufferRecyclers;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.OffsetPosition;
@@ -12,12 +14,16 @@ import java.util.List;
 
 public class Superconductor {
 
+    public static final String SOURCE_QUANTITIES = "quantities";
+    public static final String SOURCE_SUPERCONDUCTORS = "superconductors";
+
     private String name;
 
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
     private List<LayoutToken> layoutTokens = new ArrayList<>();
     private OffsetPosition offsets = null;
     private Measurement criticalTemperatureMeasurement = null;
+    private String source = "";
 
     //Temporary solution for the demo
     private String type;
@@ -163,13 +169,13 @@ public class Superconductor {
                 Unit criticalUnit = null;
                 StringBuilder temperature = new StringBuilder();
 
-                if(criticalTemperatureMeasurement.getQuantityMost() != null &&
+                if (criticalTemperatureMeasurement.getQuantityMost() != null &&
                         criticalTemperatureMeasurement.getQuantityLeast() != null) {
                     Quantity tcL = criticalTemperatureMeasurement.getQuantityLeast();
                     Quantity tcM = criticalTemperatureMeasurement.getQuantityMost();
 
                     criticalUnit = tcL.getRawUnit();
-                    temperature.append(tcL.getRawValue()). append(" < Tc < ").append(tcM.getRawValue());
+                    temperature.append(tcL.getRawValue()).append(" < Tc < ").append(tcM.getRawValue());
 
                 } else if (criticalTemperatureMeasurement.getQuantityLeast() != null) {
                     Quantity tc = criticalTemperatureMeasurement.getQuantityLeast();
@@ -211,5 +217,37 @@ public class Superconductor {
 
     public String getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Superconductor that = (Superconductor) o;
+
+        return new EqualsBuilder()
+                .append(name, that.name)
+                .append(offsets, that.offsets)
+                .append(type, that.type)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(name)
+                .append(offsets)
+                .append(type)
+                .toHashCode();
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

@@ -2,7 +2,6 @@ package org.grobid.core.engines.training;
 
 import nu.xom.Element;
 import org.grobid.core.data.Superconductor;
-import org.grobid.core.main.LibraryLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,13 +11,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SuperconductorsTrainingFormatterTest {
+public class SuperconductorsTrainingTSVFormatterTest {
 
-    SuperconductorsTrainingFormatter target;
+    SuperconductorsTrainingTSVFormatter target;
 
     @Before
     public void setUp() throws Exception {
-        target = new SuperconductorsTrainingFormatter();
+        target = new SuperconductorsTrainingTSVFormatter();
 //        LibraryLoader.load();
     }
 
@@ -35,7 +34,8 @@ public class SuperconductorsTrainingFormatterTest {
 
         superconductorList.add(superconductor);
 
-        Element out = target.trainingExtraction(superconductorList, text);
-        assertThat(out.toXML(), is("<p xmlns=\"http://www.tei-c.org/ns/1.0\">The Bechgaard salt <material>(TMTSF)2PF6</material> (TMTSF = tetra- methyltetraselenafulvalene) was</p>"));
+        String out = target.trainingExtraction(superconductorList, text, 1);
+
+        System.out.println(out);
     }
 }

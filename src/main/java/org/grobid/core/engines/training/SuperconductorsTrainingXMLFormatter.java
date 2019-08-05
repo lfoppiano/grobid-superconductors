@@ -1,13 +1,33 @@
 package org.grobid.core.engines.training;
 
+import nu.xom.Attribute;
 import nu.xom.Element;
+import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
 import org.grobid.core.data.Superconductor;
+import org.grobid.core.document.xml.XmlBuilderUtils;
+import org.grobid.core.utilities.TeiUtils;
 
 import java.util.List;
 
 import static org.grobid.core.document.xml.XmlBuilderUtils.teiElement;
 
-public class SuperconductorsTrainingFormatter {
+public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutputFormattter {
+
+    @Override
+    public String format(List<Pair<List<Superconductor>, String>> labeledTextList, int id) {
+        Element textNode = teiElement("text");
+        textNode.addAttribute(new Attribute("xml:lang", "http://www.w3.org/XML/1998/namespace", "en"));
+
+        for (Pair<List<Superconductor>, String> labeledText : labeledTextList) {
+            textNode.appendChild(trainingExtraction(labeledText.getLeft(), labeledText.getRight()));
+        }
+
+        Element quantityDocumentRoot = TeiUtils.getTeiHeader(id);
+        quantityDocumentRoot.appendChild(textNode);
+
+        return XmlBuilderUtils.toXml(quantityDocumentRoot);
+    }
 
     protected Element trainingExtraction(List<Superconductor> superconductorList, String text) {
         Element p = teiElement("p");
@@ -47,5 +67,4 @@ public class SuperconductorsTrainingFormatter {
 
         return p;
     }
-
 }

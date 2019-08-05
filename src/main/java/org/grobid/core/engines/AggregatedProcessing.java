@@ -44,20 +44,17 @@ public class AggregatedProcessing {
     private EngineParsers parsers;
 
     private SuperconductorsParser superconductorsParser;
-    private AbbreviationsParser abbreviationsParser;
     private QuantityParser quantityParser;
 
 
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser, AbbreviationsParser abbreviationsParser, QuantityParser quantityParser) {
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser) {
         this.superconductorsParser = superconductorsParser;
-        this.abbreviationsParser = abbreviationsParser;
         this.quantityParser = quantityParser;
     }
 
     @Inject
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser, AbbreviationsParser abbreviationsParser) {
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser) {
         this.superconductorsParser = superconductorsParser;
-        this.abbreviationsParser = abbreviationsParser;
         this.quantityParser = QuantityParser.getInstance(true);
     }
 
@@ -603,10 +600,9 @@ public class AggregatedProcessing {
         List<Measurement> process = quantityParser.process(tokens);
         List<Measurement> temperatures = filterTemperature(process);
         List<Measurement> temperatureList = markCriticalTemperatures(temperatures, tokens);
-        List<Abbreviation> abbreviationsList = abbreviationsParser.process(tokens);
 
         List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(supercon1_, temperatureList, tokens);
 
-        return new OutputResponse(linkedSuperconductors, temperatureList, abbreviationsList, supercon3_);
+        return new OutputResponse(linkedSuperconductors, temperatureList, new ArrayList<>(), supercon3_);
     }
 }

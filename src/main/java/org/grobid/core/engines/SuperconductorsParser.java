@@ -353,6 +353,15 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setOffsetStart(pos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
+            } else if (clusterLabel.equals(SUPERCONDUCTORS_TC_VALUE)) {
+                superconductor = new Superconductor();
+                superconductor.setType("tcValue");
+                superconductor.setName(clusterContent);
+                superconductor.setLayoutTokens(theTokens);
+                superconductor.setBoundingBoxes(boundingBoxes);
+                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetEnd(endPos);
+                resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_OTHER)) {
 
             } else {
