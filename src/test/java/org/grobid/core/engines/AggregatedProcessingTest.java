@@ -36,7 +36,7 @@ public class AggregatedProcessingTest {
     }
 
     @Test
-    public void test1() throws Exception {
+    public void testAggregation() throws Exception {
         String text = "The Tc of the BaClE2 is 30K";
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         Superconductor superconductor = new Superconductor();
@@ -58,15 +58,14 @@ public class AggregatedProcessingTest {
         temperature.setAtomicQuantity(quantity);
 
         EasyMock.expect(mockSuperconductorsParser.process(tokens)).andReturn(Arrays.asList(superconductor));
-        EasyMock.expect(mockAbbreviationsParser.process(tokens)).andReturn(Collections.emptyList());
         EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature));
 
-        EasyMock.replay(mockSuperconductorsParser, mockAbbreviationsParser, mockQuantityParser);
+        EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
         OutputResponse response = target.process(tokens);
 //        System.out.println(response.toJson());
 
-        EasyMock.verify(mockSuperconductorsParser, mockAbbreviationsParser, mockQuantityParser);
+        EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 
     }
 

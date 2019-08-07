@@ -34,8 +34,8 @@ public class SuperconductorsTrainingTSVFormatterTest {
 
         superconductorList.add(superconductor);
 
-        String out = target.trainingExtraction(superconductorList, text, 1);
-
-        System.out.println(out);
+//        String out = target.trainingExtraction(superconductorList, text, 1);
+//
+//        System.out.println(out);
     }
 }

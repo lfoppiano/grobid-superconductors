@@ -129,6 +129,7 @@ public class SuperconductorsParserTrainingData {
                 if (!StringUtils.endsWith(text, " ")) {
                     textAggregation.append(" ");
                 }
+                textAggregation.append("\n");
 
                 Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(text);
                 List<Measurement> measurements = quantityParser.process(text);

@@ -79,7 +79,7 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
             Engine.getEngine(true);
             LibraryLoader.load();
         } catch (final Exception exp) {
-            System.err.println("Grobid initialisation failed, cannot find Grobid Home. Please use the option -gH to specify in the command.");
+            System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
             exp.printStackTrace();
 
             System.exit(-1);
