@@ -319,7 +319,7 @@ public class SuperconductorsParser extends AbstractParser {
 
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor = new Superconductor();
-                superconductor.setType("material");
+                superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
@@ -328,7 +328,7 @@ public class SuperconductorsParser extends AbstractParser {
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_CLASS)) {
                 superconductor = new Superconductor();
-                superconductor.setType("class");
+                superconductor.setType(SUPERCONDUCTORS_CLASS_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
@@ -337,7 +337,7 @@ public class SuperconductorsParser extends AbstractParser {
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_SAMPLE)) {
                 superconductor = new Superconductor();
-                superconductor.setType("sample");
+                superconductor.setType(SUPERCONDUCTORS_SAMPLE_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
@@ -346,7 +346,7 @@ public class SuperconductorsParser extends AbstractParser {
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_TC)) {
                 superconductor = new Superconductor();
-                superconductor.setType("tc");
+                superconductor.setType(SUPERCONDUCTORS_TC_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
@@ -355,7 +355,7 @@ public class SuperconductorsParser extends AbstractParser {
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_TC_VALUE)) {
                 superconductor = new Superconductor();
-                superconductor.setType("tcValue");
+                superconductor.setType(SUPERCONDUCTORS_TC_VALUE_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);

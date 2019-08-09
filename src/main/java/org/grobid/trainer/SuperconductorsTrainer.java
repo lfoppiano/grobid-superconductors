@@ -1,6 +1,7 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import org.apache.commons.dbutils.AbstractQueryRunner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,7 +16,11 @@ import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.SuperconductorAnnotationStaxHandler;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -141,25 +146,6 @@ public class SuperconductorsTrainer extends AbstractTrainer {
     }
 
     /**
-     * Dispatch the example to the training or test data, based on the split ration and the drawing of
-     * a random number
-     */
-    private Writer dispatchExample(Writer writerTraining, Writer writerEvaluation, double splitRatio) {
-        Writer writer = null;
-        if ((writerTraining == null) && (writerEvaluation != null)) {
-            writer = writerEvaluation;
-        } else if ((writerTraining != null) && (writerEvaluation == null)) {
-            writer = writerTraining;
-        } else {
-            if (Math.random() <= splitRatio)
-                writer = writerTraining;
-            else
-                writer = writerEvaluation;
-        }
-        return writer;
-    }
-
-    /**
      * Command line execution. Assuming grobid-home is in ../grobid-home.
      *
      * @param args Command line arguments.
@@ -168,6 +154,21 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         GrobidProperties.getInstance();
 
         Trainer trainer = new SuperconductorsTrainer();
+
+        GrobidProperties.getInstance();
+
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+
+        String nFoldCrossValidationReport = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
+            writer.write(nFoldCrossValidationReport);
+            writer.write("\n");
+        } catch (IOException e) {
+            throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
+        }
+
         AbstractTrainer.runTraining(trainer);
     }
 }

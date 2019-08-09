@@ -10,14 +10,15 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         super();
     }
 
-    private static final String SUPERCONDUCTORS_CLASS_LABEL = "<class>";
-    private static final String SUPERCONDUCTORS_MATERIAL_LABEL = "<material>";
-    private static final String SUPERCONDUCTORS_SAMPLE_LABEL = "<sample>";
-    private static final String SUPERCONDUCTORS_TC_LABEL = "<tc>";
-    private static final String SUPERCONDUCTORS_TC_VALUE_LABEL = "<tcValue>";
-    private static final String SUPERCONDUCTORS_PRESSURE_LABEL = "<pressure>";
-    private static final String SUPERCONDUCTORS_MAGNETISATION_LABEL = "<magnetisation>";
-    private static final String SUPERCONDUCTORS_SHAPE_LABEL = "<shape>";
+    public static final String SUPERCONDUCTORS_CLASS_LABEL = "<class>";
+    public static final String SUPERCONDUCTORS_MATERIAL_LABEL = "<material>";
+    public static final String SUPERCONDUCTORS_SAMPLE_LABEL = "<sample>";
+    public static final String SUPERCONDUCTORS_TC_LABEL = "<tc>";
+    public static final String SUPERCONDUCTORS_TC_VALUE_LABEL = "<tcValue>";
+    public static final String SUPERCONDUCTORS_PRESSURE_LABEL = "<pressure>";
+    public static final String SUPERCONDUCTORS_MAGNETISATION_LABEL = "<magnetisation>";
+    public static final String SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL = "<measurementMethod>";
+    public static final String SUPERCONDUCTORS_SHAPE_LABEL = "<shape>";
 
     public static final TaggingLabel SUPERCONDUCTORS_CLASS = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_CLASS_LABEL);
     public static final TaggingLabel SUPERCONDUCTORS_MATERIAL = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_MATERIAL_LABEL);
@@ -27,6 +28,7 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
     public static final TaggingLabel SUPERCONDUCTORS_TC_VALUE = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_TC_VALUE_LABEL);
     public static final TaggingLabel SUPERCONDUCTORS_TC_PRESSURE = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_PRESSURE_LABEL);
     public static final TaggingLabel SUPERCONDUCTORS_TC_MAGNETISATION = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_MAGNETISATION_LABEL);
+    public static final TaggingLabel SUPERCONDUCTORS_MEASUREMENT_METHOD = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL);
 
     public static final TaggingLabel SUPERCONDUCTORS_OTHER = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, OTHER_LABEL);
 

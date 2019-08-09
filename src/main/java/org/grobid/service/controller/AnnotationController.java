@@ -49,7 +49,7 @@ public class AnnotationController {
 
     @Path("annotateSuperconductorsPDF")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
     public String processPDF(@FormDataParam("input") InputStream uploadedInputStream,
                              @FormDataParam("input") FormDataContentDisposition fileDetail) {
