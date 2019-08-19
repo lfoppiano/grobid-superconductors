@@ -40,10 +40,32 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         window = 20;
     }
 
+
+    /**
+     * Dispatch the example to the training or test data, based on the split ration and the drawing of
+     * a random number
+     *
+     * @deprecated use AbstractTrainer.dispatchExample() instead. This will be removed in next release.
+     */
+    @Deprecated
+    private Writer dispatchExample(Writer writerTraining, Writer writerEvaluation, double splitRatio) {
+        Writer writer = null;
+        if ((writerTraining == null) && (writerEvaluation != null)) {
+            writer = writerEvaluation;
+        } else if ((writerTraining != null) && (writerEvaluation == null)) {
+            writer = writerTraining;
+        } else {
+            if (Math.random() <= splitRatio)
+                writer = writerTraining;
+            else
+                writer = writerEvaluation;
+        }
+        return writer;
+    }
+
     /**
      * Add the selected features to the model training
      */
-
     public int createCRFPPData(final File corpusDir,
                                final File trainingOutputPath,
                                final File evalOutputPath,
@@ -155,19 +177,19 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         Trainer trainer = new SuperconductorsTrainer();
 
-        GrobidProperties.getInstance();
-
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-
-        String nFoldCrossValidationReport = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
-
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
-            writer.write(nFoldCrossValidationReport);
-            writer.write("\n");
-        } catch (IOException e) {
-            throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
-        }
+//        GrobidProperties.getInstance();
+//
+//        Date date = new Date();
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+//
+//        String nFoldCrossValidationReport = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
+//
+//        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
+//            writer.write(nFoldCrossValidationReport);
+//            writer.write("\n");
+//        } catch (IOException e) {
+//            throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
+//        }
 
         AbstractTrainer.runTraining(trainer);
     }
