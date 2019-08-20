@@ -80,7 +80,7 @@ public class GrobidQuantitiesClient {
             }
 
         } catch (UnknownHostException e) {
-            LOGGER.warn("Chemspot is unreachable. Ignoring it. ");
+            LOGGER.warn("Grobid quantities is unreachable. Ignoring it. ");
         } catch (IOException e) {
             LOGGER.error("Something generically bad happened. ", e);
         }

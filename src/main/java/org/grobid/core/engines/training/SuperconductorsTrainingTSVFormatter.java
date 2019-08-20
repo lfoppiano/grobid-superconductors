@@ -4,12 +4,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Superconductor;
+import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.layout.LayoutToken;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.wipo.analyzers.wipokr.utils.StringUtil.isBlank;
+import static org.wipo.analyzers.wipokr.utils.StringUtil.*;
 
 public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutputFormattter {
 
@@ -75,28 +76,31 @@ public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutpu
 
             if (layoutTokenEnd < superconductorElement.getOffsetStart()) {
                 paragraphAccumulator.append("_").append("\t");
-            } else if (layoutTokenStart >= superconductorElement.getOffsetStart()
-                    && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
-                paragraphAccumulator.append(superconductorElement.getType()).append("[").append(annotationId.get()).append("]").append("\t");
-            } else if (layoutTokenStart > superconductorElement.getOffsetEnd()) {
-                if (superconductorIdx < superconductorList.size() - 1) {
-                    annotationId.incrementAndGet();
-                    superconductorIdx++;
-                    superconductorElement = superconductorList.get(superconductorIdx);
+            } else {
+                String type = substring(superconductorElement.getType(), 1, length(superconductorElement.getType()) - 1);
+                if (layoutTokenStart >= superconductorElement.getOffsetStart()
+                        && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
+                    paragraphAccumulator.append(type).append("[").append(annotationId.get()).append("]").append("\t");
+                } else if (layoutTokenStart > superconductorElement.getOffsetEnd()) {
+                    if (superconductorIdx < superconductorList.size() - 1) {
+                        annotationId.incrementAndGet();
+                        superconductorIdx++;
+                        superconductorElement = superconductorList.get(superconductorIdx);
 
-                    if (layoutTokenEnd < superconductorElement.getOffsetStart()) {
-                        paragraphAccumulator.append("_").append("\t");
-                    } else if (layoutTokenStart >= superconductorElement.getOffsetStart()
-                            && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
-                        paragraphAccumulator.append(superconductorElement.getType()).append("[").append(annotationId.get()).append("]").append("\t");
+                        if (layoutTokenEnd < superconductorElement.getOffsetStart()) {
+                            paragraphAccumulator.append("_").append("\t");
+                        } else if (layoutTokenStart >= superconductorElement.getOffsetStart()
+                                && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
+                            paragraphAccumulator.append(type).append("[").append(annotationId.get()).append("]").append("\t");
+                        } else {
+                            paragraphAccumulator.append("_").append("\t");
+                        }
                     } else {
                         paragraphAccumulator.append("_").append("\t");
                     }
                 } else {
                     paragraphAccumulator.append("_").append("\t");
                 }
-            } else {
-                paragraphAccumulator.append("_").append("\t");
             }
 
             paragraphAccumulator.append("\n");

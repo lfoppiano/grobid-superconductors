@@ -39,6 +39,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.grobid.core.engines.AggregatedProcessing.filterMeasurements;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 public class SuperconductorsParserTrainingData {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParserTrainingData.class);
@@ -152,9 +153,9 @@ public class SuperconductorsParserTrainingData {
 
                     String type = measurementData.getRight();
                     if (StringUtils.equals("temperature", type)) {
-                        type = "tcValue";
+                        type = SUPERCONDUCTORS_TC_VALUE_LABEL;
                     } else if (StringUtils.equals("magnetic field strength", type)) {
-                        type = "magnetisation";
+                        type = SUPERCONDUCTORS_MAGNETISATION_LABEL;
                     }
                     superconductor.setType(type);
                     superconductor.setName(text.substring(superconductor.getOffsetStart(), superconductor.getOffsetEnd()));

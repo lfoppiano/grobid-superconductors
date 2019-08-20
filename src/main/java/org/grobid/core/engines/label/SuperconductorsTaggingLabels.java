@@ -26,8 +26,8 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
     public static final TaggingLabel SUPERCONDUCTORS_SAMPLE = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_SAMPLE_LABEL);
     public static final TaggingLabel SUPERCONDUCTORS_TC = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_TC_LABEL);
     public static final TaggingLabel SUPERCONDUCTORS_TC_VALUE = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_TC_VALUE_LABEL);
-    public static final TaggingLabel SUPERCONDUCTORS_TC_PRESSURE = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_PRESSURE_LABEL);
-    public static final TaggingLabel SUPERCONDUCTORS_TC_MAGNETISATION = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_MAGNETISATION_LABEL);
+    public static final TaggingLabel SUPERCONDUCTORS_PRESSURE = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_PRESSURE_LABEL);
+    public static final TaggingLabel SUPERCONDUCTORS_MAGNETISATION = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_MAGNETISATION_LABEL);
     public static final TaggingLabel SUPERCONDUCTORS_MEASUREMENT_METHOD = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL);
 
     public static final TaggingLabel SUPERCONDUCTORS_OTHER = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, OTHER_LABEL);
@@ -46,8 +46,8 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         register(SUPERCONDUCTORS_SAMPLE);
         register(SUPERCONDUCTORS_TC);
         register(SUPERCONDUCTORS_TC_VALUE);
-        register(SUPERCONDUCTORS_TC_PRESSURE);
-        register(SUPERCONDUCTORS_TC_MAGNETISATION);
+        register(SUPERCONDUCTORS_PRESSURE);
+        register(SUPERCONDUCTORS_MAGNETISATION);
         register(SUPERCONDUCTORS_OTHER);
 
         //Abbreviation
