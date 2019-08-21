@@ -12,6 +12,9 @@ import org.grobid.core.utilities.UnitUtilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
+import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
+
 public class Superconductor {
 
     public static final String SOURCE_QUANTITIES = "quantities";
@@ -102,7 +105,7 @@ public class Superconductor {
                 started = true;
             } else
                 json.append(", ");
-            json.append("\"type\" : \"" + getType() + "\"");
+            json.append("\"type\" : \"" + substring(getType(), 1, length(getType()) - 1) + "\"");
         }
 
         if (offsets != null) {

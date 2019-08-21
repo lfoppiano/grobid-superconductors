@@ -1,4 +1,8 @@
-.info-sense-box.superconductor {
+.info-sense-box.abbreviation {
+    background-color: #b92c28;
+}
+
+.info-sense-box.me_method {
     background-color: #0e90d2;
 }
 
@@ -7,52 +11,114 @@
 }
 
 .info-sense-box.class {
-    background-color: #d27059;
+    background-color: #d22f09;
 }
 
 .info-sense-box.tc {
-    background-color: #8880d2;
+    background-color: #ffe294;
 }
 
 .info-sense-box.sample {
     background-color: #5bd2b2;
 }
 
-
-.info-sense-box.abbreviation {
-    background-color: #b92c28;
-}
-
-.info-sense-box.measurement {
+.info-sense-box.temperature {
     background-color: #356635;
 }
 
-
-.label.superconductor {
-    background-color: #0e90d2;
+.info-sense-box.temperature-tc {
+    background-color: #83ff83;
 }
+
+.info-sense-box.magnetisation {
+    background-color: #20bd4e;
+}
+
+.info-sense-box.pressure {
+    background-color: #92d983;
+}
+
 
 .label.abbreviation {
     background-color: #b92c28;
 }
 
-.label.measurement {
-    background-color: #356635;
+.label.me_method {
+    background-color: #0e90d2;
 }
-
 
 .label.material {
     background-color: #2262d2;
 }
 
 .label.class {
-    background-color: #d27059;
+    background-color: #d22f09;
 }
 
 .label.tc {
-    background-color: #8880d2;
+    background-color: #ffe294;
 }
 
 .label.sample {
     background-color: #5bd2b2;
 }
+
+.label.temperature {
+    background-color: #356635;
+}
+
+.label.temperature-tc {
+    background-color: #83ff83;
+}
+
+.label.magnetisation {
+    background-color: #20bd4e;
+}
+
+.label.pressure {
+    background-color: #92d983;
+}
+
+
+
+.area.abbreviation {
+    border-color: #b92c28 !important;
+}
+
+.area.me_method {
+    border-color: #0e90d2 !important;
+}
+
+.area.material {
+    border-color: #2262d2 !important;
+}
+
+.area.class {
+    border-color: #d22f09 !important;
+}
+
+.area.tc {
+    border-color: #ffe294 !important;
+}
+
+.area.sample {
+    border-color: #5bd2b2 !important;
+}
+
+.area.temperature {
+    border-color: #356635 !important;
+}
+
+.area.temperature-tc {
+    border-color: #83ff83 !important;
+}
+
+.area.magnetisation {
+    border-color: #20bd4e !important;
+}
+
+.area.pressure {
+    border-color: #92d983 !important;
+}
+
+

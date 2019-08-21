@@ -1,6 +1,5 @@
 package org.grobid.core.features;
 
-import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.TextUtilities;
 
@@ -27,10 +26,14 @@ public class FeaturesVectorSuperconductors {
     public String punctType = null;
 
     //    public String blockStatus = null; // one of BLOCKSTART, BLOCKIN, BLOCKEND
-//    public String lineStatus = null; // one of LINESTART, LINEIN, LINEEND
-//    public String alignmentStatus = null; // one of ALIGNEDLEFT, INDENTED, CENTERED - applied to the whole line
+    //    public String lineStatus = null; // one of LINESTART, LINEIN, LINEEND
+    //    public String alignmentStatus = null; // one of ALIGNEDLEFT, INDENTED, CENTERED - applied to the whole line
     public String fontStatus = null; // one of NEWFONT, SAMEFONT
     public String fontSize = null; // one of HIGHERFONT, SAMEFONTSIZE, LOWERFONT
+
+    public boolean superscript = false;
+    public boolean subscript = false;
+
     public boolean bold = false;
     public boolean italic = false;
     //    public boolean rotation = false;

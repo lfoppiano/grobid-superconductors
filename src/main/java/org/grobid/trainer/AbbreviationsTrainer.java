@@ -178,7 +178,7 @@ public class AbbreviationsTrainer extends AbstractTrainer {
      * Dispatch the example to the training or test data, based on the split ration and the drawing of
      * a random number
      */
-    private Writer dispatchExample(Writer writerTraining, Writer writerEvaluation, double splitRatio) {
+    public Writer dispatchExample(Writer writerTraining, Writer writerEvaluation, double splitRatio) {
         Writer writer = null;
         if ((writerTraining == null) && (writerEvaluation != null)) {
             writer = writerEvaluation;

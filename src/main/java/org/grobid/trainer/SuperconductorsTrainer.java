@@ -48,7 +48,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
      * @deprecated use AbstractTrainer.dispatchExample() instead. This will be removed in next release.
      */
     @Deprecated
-    private Writer dispatchExample(Writer writerTraining, Writer writerEvaluation, double splitRatio) {
+    public Writer dispatchExample(Writer writerTraining, Writer writerEvaluation, double splitRatio) {
         Writer writer = null;
         if ((writerTraining == null) && (writerEvaluation != null)) {
             writer = writerEvaluation;

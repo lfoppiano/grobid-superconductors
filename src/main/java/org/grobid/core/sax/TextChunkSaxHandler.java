@@ -1,5 +1,7 @@
 package org.grobid.core.sax;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -17,13 +19,13 @@ public class TextChunkSaxHandler extends DefaultHandler {
 
     StringBuffer accumulator = new StringBuffer(); // Accumulate parsed text
 
-    private List<String> filters = null; // the name of an element for filtering out the
+    private List<String> filteredTags = new ArrayList<>(); // the name of an element for filtering out the
     // corresponding text, e.g. figure
 
     private boolean accumule = true;
     private boolean retrievedTitle = false;
 
-    public List<String> chunks = null;
+    public List<String> chunks = new ArrayList<>();
 
     public TextChunkSaxHandler() {
     }
@@ -35,14 +37,12 @@ public class TextChunkSaxHandler extends DefaultHandler {
     }
 
     public void setFilter(List<String> filt) {
-        filters = filt;
+        filteredTags = filt;
         accumule = false;
     }
 
-    public void addFilter(String filt) {
-        if (filters == null)
-            filters = new ArrayList<String>();
-        filters.add(filt);
+    public void addFilteredTag(String filt) {
+        filteredTags.add(filt);
         accumule = false;
     }
 
@@ -55,7 +55,7 @@ public class TextChunkSaxHandler extends DefaultHandler {
         text = text.replace("\n", " ");
         text = text.replace("\t", " ");
         text = text.replace(" ", " ");
-        // the last one is a special "large" space missed by the regex "\\p{Space}+" bellow
+        // the last one is a special "large" space missed by the regex "\\p{Space}+" below
         text = text.replaceAll("\\p{Space}+", " ");
         return text;
     }
@@ -64,29 +64,26 @@ public class TextChunkSaxHandler extends DefaultHandler {
             throws SAXException {
         if (accumule) {
             if (qName.equals("p") || qName.equals("paragraph")) {
-                if (chunks == null)
-                    chunks = new ArrayList<>();
-                chunks.add(getText());
+                CollectionUtils.addIgnoreNull(chunks, StringUtils.trimToNull(getText()));
                 accumulator.setLength(0);
             } else if (qName.equals("title") && !retrievedTitle) {
-                if (chunks == null)
-                    chunks = new ArrayList<>();
-                chunks.add(getText());
+                CollectionUtils.addIgnoreNull(chunks, StringUtils.trimToNull(getText()));
                 accumulator.setLength(0);
                 retrievedTitle = true;
             }
         }
-        if ((filters != null) && filters.equals(qName)) {
+        if (filteredTags.contains(qName)) {
             accumule = true;
         }
     }
 
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts) throws SAXException {
-        if ((filters != null) && filters.equals(qName)) {
+        if (filteredTags.contains(qName)) {
             accumule = false;
-        } else
+        } else {
             accumule = true;
+        }
 
         if (qName.equals("p") || qName.equals("paragraph")) {
             accumulator.setLength(0);

@@ -543,7 +543,7 @@ var grobid = (function ($) {
 
         function setupAnnotations(response) {
             // TBD: we must check/wait that the corresponding PDF page is rendered at this point
-            if ((response == null) || (response.length == 0)) {
+            if ((response == null) || (0 === response.length)) {
                 $('#infoResult')
                     .html("<font color='red'>Error encountered while receiving the server's answer: response is empty.</font>");
                 return;
@@ -563,10 +563,9 @@ var grobid = (function ($) {
                 // hey bro, this must be asynchronous to avoid blocking the brothers
                 superconductors.forEach(function (superconductor, superconIdx) {
                     superconMap[superconIdx] = superconductor;
+                    var entity_type = superconductor['type'];
 
-                    //var theId = measurement.type;
                     var theUrl = null;
-                    //var theUrl = annotation.url;
                     var pos = superconductor.boundingBoxes;
                     if ((pos != null) && (pos.length > 0)) {
                         pos.forEach(function (thePos, positionIdx) {
@@ -576,7 +575,7 @@ var grobid = (function ($) {
                                 page_height = pageInfo[pageNumber - 1].page_height;
                                 page_width = pageInfo[pageNumber - 1].page_width;
                             }
-                            annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx);
+                            annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, entity_type);
                         });
                     }
                 });
@@ -643,13 +642,20 @@ var grobid = (function ($) {
 
                     var quantityType = null;
                     if (quantities) {
-                        var quantityMap = new Array();
+                        var quantityMap = [];
                         for (var currentQuantityIndex = 0; currentQuantityIndex < quantities.length; currentQuantityIndex++) {
                             var quantity = quantities[currentQuantityIndex];
                             quantity['quantified'] = substance;
                             quantityMap[currentQuantityIndex] = quantity;
                             if (quantityType == null)
                                 quantityType = quantity.type;
+
+                            if (quantityType === 'temperature') {
+                                if (substance != null && substance['normalizedName'] === 'Critical Temperature') {
+                                    quantityType = 'temperature-tc';
+                                    quantity.type = quantityType;
+                                }
+                            }
                         }
                     }
 
@@ -667,14 +673,14 @@ var grobid = (function ($) {
                                 page_height = pageInfo[pageNumber - 1].page_height;
                                 page_width = pageInfo[pageNumber - 1].page_width;
                             }
-                            annotateQuantity(quantityType, thePos, theUrl, page_height, page_width, n, m);
+                            annotateQuantity(thePos, theUrl, page_height, page_width, n, m, quantityType);
                         });
                     }
                 });
             }
         }
 
-        function annotateQuantity(theId, thePos, theUrl, page_height, page_width, measurementIndex, positionIndex) {
+        function annotateQuantity(thePos, theUrl, page_height, page_width, measurementIndex, positionIndex, type) {
             var page = thePos.p;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);
@@ -689,15 +695,11 @@ var grobid = (function ($) {
             var width = thePos.w * scale_x + 1;
             var height = thePos.h * scale_y + 1;
 
-            //make clickable the area
-            theId = "" + theId;
-            if (theId)
-                theId = theId.replace(" ", "_");
             var element = document.createElement("a");
             var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
                 y + "px; left:" + x + "px;";
-            element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor(theId) + ";");
-            element.setAttribute("class", theId);
+            element.setAttribute("style", attributes + "border:2px solid;");
+            element.setAttribute("class", 'area' + ' ' + type);
             element.setAttribute("id", 'annot_quantity-' + measurementIndex + '-' + positionIndex);
             element.setAttribute("page", page);
 
@@ -713,7 +715,7 @@ var grobid = (function ($) {
             }, viewEntityPDF);
         }
 
-        function annotateAbbreviation(thePos, theUrl, page_height, page_width, superconIdx, positionIdx) {
+        function annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, type) {
             var page = thePos.p;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);
@@ -733,45 +735,8 @@ var grobid = (function ($) {
             var element = document.createElement("a");
             var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
                 y + "px; left:" + x + "px;";
-            element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor('volume') + ";");
-            element.setAttribute("class", 'volume');
-            element.setAttribute("id", 'annot_abbreviation-' + superconIdx + '-' + positionIdx);
-            element.setAttribute("page", page);
-
-            pageDiv.append(element);
-
-            $('#annot_abbreviation-' + superconIdx + '-' + positionIdx).bind('hover', {
-                'type': 'abbreviation',
-                'map': abbreviationsMap
-            }, viewEntityPDF);
-            $('#annot_abbreviation-' + superconIdx + '-' + positionIdx).bind('click', {
-                'type': 'abbreviation',
-                'map': abbreviationsMap
-            }, viewEntityPDF);
-        }
-
-        function annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx) {
-            var page = thePos.p;
-            var pageDiv = $('#page-' + page);
-            var canvas = pageDiv.children('canvas').eq(0);
-            //var canvas = pageDiv.find('canvas').eq(0);;
-
-            var canvasHeight = canvas.height();
-            var canvasWidth = canvas.width();
-            var scale_x = canvasHeight / page_height;
-            var scale_y = canvasWidth / page_width;
-
-            var x = thePos.x * scale_x - 1;
-            var y = thePos.y * scale_y - 1;
-            var width = thePos.w * scale_x + 1;
-            var height = thePos.h * scale_y + 1;
-
-            //make clickable the area
-            var element = document.createElement("a");
-            var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
-                y + "px; left:" + x + "px;";
-            element.setAttribute("style", attributes + "border:2px solid; border-color: " + getColor('area') + ";");
-            element.setAttribute("class", 'area');
+            element.setAttribute("style", attributes + "border:2px solid;");
+            element.setAttribute("class", 'area' + ' ' + type);
             element.setAttribute("id", 'annot_supercon-' + superconIdx + '-' + positionIdx);
             element.setAttribute("page", page);
 
@@ -842,10 +807,12 @@ var grobid = (function ($) {
                 var quantityMap = map[localMeasurementNumber];
                 var measurementType = null;
 
-                if (map.length == 1) {
+                console.log(quantityMap.length);
+                console.log(quantityMap.length === 1);
+                if (quantityMap.length === 1) {
                     measurementType = "Atomic value";
                     string = toHtml(quantityMap, measurementType, $(this).position().top);
-                } else if (quantityMap.length == 2) {
+                } else if (quantityMap.length === 2) {
                     measurementType = "Interval";
                     string = intervalToHtml(quantityMap, measurementType, $(this).position().top);
                 } else {
@@ -1208,24 +1175,6 @@ var grobid = (function ($) {
         function createInputTextArea() {
             $('#fileInputDiv').hide();
             $('#textInputDiv').show();
-        }
-
-        var mapColor = {
-            'area': '#87A1A8',
-            'volume': '#c43c35',
-            'velocity': '#c43c35',
-            'fraction': '#c43c35',
-            'length': '#01A9DB',
-            'time': '#f89406',
-            'mass': '#c43c35',
-            'temperature': '#398739',
-            'frequency': '#8904B1;',
-            'concentration': '#31B404'
-        };
-
-        /* return a color based on the quantity type */
-        function getColor(type) {
-            return mapColor[type];
         }
 
         var examples = [
