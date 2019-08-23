@@ -120,10 +120,6 @@ configurations {
     compile.exclude group: "org.slf4j", module: "slf4j-jdk14"
     compile.exclude group: 'org.slf4j', module: "slf4j-log4j12"
     compile.exclude group: 'log4j', module: "log4j"
-//    compile.exclude group: 'org.glassfish.jersey.core', module: 'jersey-media-multipart'
-//    compile.exclude group: 'org.glassfish.jersey.inject', module: 'jersey-hk2'
-//    compile.exclude group: 'org.glassfish.jersey.containers', module: 'jersey-container-grizzly2-servlet'
-//    compile.exclude group: 'org.glassfish.jersey.containers', module: 'jersey-container-servlet-core'
 }
 
 configurations.all {

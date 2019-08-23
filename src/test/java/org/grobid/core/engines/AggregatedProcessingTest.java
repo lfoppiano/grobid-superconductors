@@ -1,5 +1,10 @@
 package org.grobid.core.engines;
 
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
@@ -12,7 +17,10 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.UnitUtilities;
 import org.junit.Before;
 import org.junit.Test;
+import shadedwipo.org.apache.commons.io.FileUtils;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,14 +36,12 @@ public class AggregatedProcessingTest {
     AggregatedProcessing target;
 
     SuperconductorsParser mockSuperconductorsParser;
-    AbbreviationsParser mockAbbreviationsParser;
     QuantityParser mockQuantityParser;
 
     @Before
     public void setUp() throws Exception {
 
         mockSuperconductorsParser = EasyMock.createMock(SuperconductorsParser.class);
-        mockAbbreviationsParser = EasyMock.createMock(AbbreviationsParser.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
         target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser);
@@ -155,7 +161,7 @@ public class AggregatedProcessingTest {
 
         List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, new ArrayList<>());
 
-        assertThat(measurements, hasSize(0));
+        assertThat(measurements, hasSize(1));
     }
 
     @Test
@@ -243,6 +249,32 @@ public class AggregatedProcessingTest {
         assertThat(measurements, hasSize(1));
         assertThat(measurements.get(0).getQuantifiedObject(), is(not(nullValue())));
         assertThat(measurements.get(0).getQuantifiedObject().getNormalizedName(), is("Critical Temperature"));
+
+    }
+
+    public void testNLP4j() throws Exception {
+
+        Tokenizer tokenizer = new EnglishTokenizer();
+        String inputFile = "/Users/lfoppiano/development/projects/sentence-segmentation/data/pdf_raw_text.txt";
+        String output = "/Users/lfoppiano/development/projects/sentence-segmentation/data/pdf-nlp4j-output.txt";
+
+        String[] lines = FileUtils.readFileToString(new File(inputFile)).split("\n");
+
+        List<String> outputLines = new ArrayList<>();
+
+        for (String line : lines) {
+            List<Token> tokens = tokenizer.tokenize(line);
+            List<List<Token>> sentences = tokenizer.segmentize(tokens);
+
+            for (List<Token> sentence : sentences) {
+                int firstOffset = sentence.get(0).getStartOffset();
+                int endOffset = sentence.get(sentence.size() - 1).getEndOffset();
+                outputLines.add(line.substring(firstOffset, endOffset));
+            }
+        }
+
+        FileUtils.writeLines(new File(output), outputLines);
+
 
     }
 
