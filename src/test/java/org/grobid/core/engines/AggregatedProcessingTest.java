@@ -255,8 +255,8 @@ public class AggregatedProcessingTest {
     public void testNLP4j() throws Exception {
 
         Tokenizer tokenizer = new EnglishTokenizer();
-        String inputFile = "/Users/lfoppiano/development/projects/sentence-segmentation/data/pdf_raw_text.txt";
-        String output = "/Users/lfoppiano/development/projects/sentence-segmentation/data/pdf-nlp4j-output.txt";
+        String inputFile = "/Users/lfoppiano/development/projects/sentence-segmentation/data/pdf2_raw_text.txt";
+        String output = "/Users/lfoppiano/development/projects/sentence-segmentation/data/pdf2-nlp4j-output.txt";
 
         String[] lines = FileUtils.readFileToString(new File(inputFile)).split("\n");
 

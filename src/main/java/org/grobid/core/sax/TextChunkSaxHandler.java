@@ -36,13 +36,13 @@ public class TextChunkSaxHandler extends DefaultHandler {
         }
     }
 
-    public void setFilter(List<String> filt) {
-        filteredTags = filt;
+    public void setFilter(List<String> filters) {
+        filteredTags = filters;
         accumule = false;
     }
 
-    public void addFilteredTag(String filt) {
-        filteredTags.add(filt);
+    public void addFilteredTag(String tag) {
+        filteredTags.add(tag);
         accumule = false;
     }
 

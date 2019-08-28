@@ -12,31 +12,26 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 public class OutputResponse {
 
     private long runtime;
-    private List<Superconductor> superconductors;
-    private List<Measurement> temperatures;
-    private List<Abbreviation> abbreviations;
+    private List<Superconductor> entities;
+    private List<Measurement> measurements;
 
     private List<Superconductor> other;
 
     public OutputResponse() {
-        superconductors = new ArrayList<>();
-        temperatures = new ArrayList<>();
-        abbreviations = new ArrayList<>();
+        entities = new ArrayList<>();
+        measurements = new ArrayList<>();
         other = new ArrayList<>();
     }
 
-    public OutputResponse(List<Superconductor> superconductorList, List<Measurement> temperatures,
-                          List<Abbreviation> abbreviations, List<Superconductor> other) {
-        this.superconductors = superconductorList;
-        this.temperatures = temperatures;
-        this.abbreviations = abbreviations;
+    public OutputResponse(List<Superconductor> superconductorList, List<Measurement> measurements, List<Superconductor> other) {
+        this.entities = superconductorList;
+        this.measurements = measurements;
         this.other = other;
     }
 
     public OutputResponse extendEntities(OutputResponse other) {
-        this.superconductors.addAll(other.getSuperconductors());
-        this.abbreviations.addAll(other.getAbbreviations());
-        this.temperatures.addAll(other.getTemperatures());
+        this.entities.addAll(other.getEntities());
+        this.measurements.addAll(other.getMeasurements());
         this.other.addAll(other.getOther());
 
         return this;
@@ -44,28 +39,20 @@ public class OutputResponse {
 
     private List<Page> pages;
 
-    public List<Superconductor> getSuperconductors() {
-        return superconductors;
+    public List<Superconductor> getEntities() {
+        return entities;
     }
 
-    public void setSuperconductors(List<Superconductor> superconductors) {
-        this.superconductors = superconductors;
+    public void setEntities(List<Superconductor> entities) {
+        this.entities = entities;
     }
 
-    public List<Measurement> getTemperatures() {
-        return temperatures;
+    public List<Measurement> getMeasurements() {
+        return measurements;
     }
 
-    public void setTemperatures(List<Measurement> temperatures) {
-        this.temperatures = temperatures;
-    }
-
-    public List<Abbreviation> getAbbreviations() {
-        return abbreviations;
-    }
-
-    public void setAbbreviations(List<Abbreviation> abbreviations) {
-        this.abbreviations = abbreviations;
+    public void setMeasurements(List<Measurement> measurements) {
+        this.measurements = measurements;
     }
 
     public long getRuntime() {
@@ -105,10 +92,10 @@ public class OutputResponse {
             jsonBuilder.append("]");
         }
 
-        if (isNotEmpty(getSuperconductors())) {
-            jsonBuilder.append(", \"superconductors\" : [ ");
+        if (isNotEmpty(getEntities())) {
+            jsonBuilder.append(", \"entities\" : [ ");
             first = true;
-            for (Superconductor superconductor : getSuperconductors()) {
+            for (Superconductor superconductor : getEntities()) {
                 if (first)
                     first = false;
                 else
@@ -118,7 +105,7 @@ public class OutputResponse {
             jsonBuilder.append("]");
         }
 
-        if (isNotEmpty(getSuperconductors())) {
+        if (isNotEmpty(getEntities())) {
             jsonBuilder.append(", \"other\" : [ ");
             first = true;
             for (Superconductor other : getOther()) {
@@ -131,28 +118,15 @@ public class OutputResponse {
             jsonBuilder.append("]");
         }
 
-        if (isNotEmpty(getTemperatures())) {
-            jsonBuilder.append(", \"temperatures\": [");
+        if (isNotEmpty(getMeasurements())) {
+            jsonBuilder.append(", \"measurements\": [");
             first = true;
-            for (Measurement temperature : getTemperatures()) {
+            for (Measurement temperature : getMeasurements()) {
                 if (!first)
                     jsonBuilder.append(", ");
                 else
                     first = false;
                 jsonBuilder.append(temperature.toJson());
-            }
-            jsonBuilder.append("]");
-        }
-
-        if (isNotEmpty(getAbbreviations())) {
-            jsonBuilder.append(", \"abbreviations\": [");
-            first = true;
-            for (Abbreviation abbreviation : getAbbreviations()) {
-                if (!first)
-                    jsonBuilder.append(", ");
-                else
-                    first = false;
-                jsonBuilder.append(abbreviation.toJson());
             }
             jsonBuilder.append("]");
         }

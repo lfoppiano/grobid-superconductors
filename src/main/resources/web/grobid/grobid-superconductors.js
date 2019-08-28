@@ -10,16 +10,15 @@ var grobid = (function ($) {
         var responseJson = null;
 
         // for associating several quantities to a measurement
-        var superconMap = new Array();
-        var measurementMap = new Array();
-        var abbreviationsMap = new Array();
-        var annotationsMap = new Array();
+        var superconMap = [];
+        var measurementMap = [];
+        var annotationsMap = [];
 
 
         // Transformers to HTML
         function defineBaseURL(ext) {
             var baseUrl = null;
-            if ($(location).attr('href').indexOf("index.html") != -1)
+            if ($(location).attr('href').indexOf("index.html") !== -1)
                 baseUrl = $(location).attr('href').replace("index.html", ext);
             else
                 baseUrl = $(location).attr('href') + ext;
@@ -145,13 +144,13 @@ var grobid = (function ($) {
             var selected = $('#selectedService option:selected').attr('value');
             var urlLocal = $('#gbdForm').attr('action');
 
-            superconMap = new Array();
+            superconMap = [];
 
             $('#infoResult').html('<font color="grey">Requesting server...</font>');
             $('#requestResult').show();
             $('#requestResult').html('');
 
-            if (selected == 'processSuperconductorsText') {
+            if (selected === 'processSuperconductorsText') {
                 var formData = new FormData();
                 formData.append("text", $('#inputTextArea').val());
 
@@ -159,12 +158,12 @@ var grobid = (function ($) {
                     type: 'POST',
                     url: urlLocal,
                     data: formData,
-                    success: SubmitSuccesfulText,
+                    success: onSuccessText,
                     error: AjaxError,
                     contentType: false,
                     processData: false
                 });
-            } else if (selected == 'annotateSuperconductorsPDF') {
+            } else if (selected === 'annotateSuperconductorsPDF') {
                 // we will have JSON annotations to be layered on the PDF
 
                 // request for the annotation information
@@ -179,7 +178,7 @@ var grobid = (function ($) {
                 $('#requestResult').show();
 
                 // display the local PDF
-                if ((document.getElementById("input").files[0].type == 'application/pdf') ||
+                if ((document.getElementById("input").files[0].type === 'application/pdf') ||
                     (document.getElementById("input").files[0].name.endsWith(".pdf")) ||
                     (document.getElementById("input").files[0].name.endsWith(".PDF")))
                     var reader = new FileReader();
@@ -294,12 +293,10 @@ var grobid = (function ($) {
                 reader.readAsArrayBuffer(document.getElementById("input").files[0]);
 
                 xhr.onreadystatechange = function (e) {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
                         var response = e.target.response;
-                        //var response = JSON.parse(xhr.responseText);
-                        //console.log(response);
                         setupAnnotations(response);
-                    } else if (xhr.status != 200) {
+                    } else if (xhr.status !== 200) {
                         AjaxError2("Response " + xhr.status + ": ");
                     }
                 };
@@ -324,9 +321,11 @@ var grobid = (function ($) {
 
                         var type = currentAnnotation.type;
 
-                        if (currentAnnotation.type === "superconductor") {
+                        // Entities has sub-types
+                        if (currentAnnotation.type === "entity") {
                             type = currentAnnotation.obj.type;
                         }
+
                         if ((startUnit !== -1) && ((startUnit === end) || (startUnit === end + 1)))
                             end = endUnit;
                         if ((endUnit !== -1) && ((endUnit === start) || (endUnit + 1 === start)))
@@ -437,11 +436,23 @@ var grobid = (function ($) {
             return temperatures;
         }
 
-        function SubmitSuccesfulText(responseText, statusText) {
+        function flagCriticalTemperature(quantity, substance) {
+            var quantityType = quantity.type;
+
+            if (quantityType === 'temperature') {
+                if (substance != null && substance['normalizedName'] === 'Critical Temperature') {
+                    quantityType = 'temperature-tc';
+                    quantity.type = quantityType;
+                }
+            }
+            return quantityType;
+        }
+
+        function onSuccessText(responseText, statusText) {
             responseJson = responseText;
             //console.log(responseJson);
             $('#infoResult').html('');
-            if ((responseJson == null) || (responseJson.length == 0)) {
+            if ((responseJson == null) || (responseJson.length === 0)) {
                 $('#requestResult')
                     .html("<font color='red'>Error encountered while receiving the server's answer: response is empty.</font>");
                 return;
@@ -463,7 +474,6 @@ var grobid = (function ($) {
             //var string = responseJson.text;
 
             display += '<tr style="background-color:#FFF;">';
-            // var superconductors = responseJson.superconductors;
 
             annotationList = [];
 
@@ -483,13 +493,12 @@ var grobid = (function ($) {
             }
 
             // Custom for measurements
-            addAnnotations(responseJson.superconductors, 'superconductor', annotationList);
-            var temperaturesList = adjustTemperatureObjcts(responseJson.temperatures);
+            addAnnotations(responseJson['entities'], 'entity', annotationList);
+            var temperaturesList = adjustTemperatureObjcts(responseJson.measurements);
 
-            addAnnotations(responseJson.other, 'superconductor', annotationList);
+            addAnnotations(responseJson.other, 'entity', annotationList);
 
             addAnnotations(temperaturesList, 'measurement', annotationList);
-            addAnnotations(responseJson.abbreviations, 'abbreviation', annotationList);
 
             annotationList = annotationList.sort(function (a, b) {
                 if (a.offsetStart > b.offsetStart) return 1;
@@ -557,11 +566,11 @@ var grobid = (function ($) {
             var page_height = 0.0;
             var page_width = 0.0;
 
-            // Superconductors
-            var superconductors = json.superconductors;
-            if (superconductors) {
+            // Entities (Materials, Tc expressions etc...
+            var entities = json.entities;
+            if (entities) {
                 // hey bro, this must be asynchronous to avoid blocking the brothers
-                superconductors.forEach(function (superconductor, superconIdx) {
+                entities.forEach(function (superconductor, superconIdx) {
                     superconMap[superconIdx] = superconductor;
                     var entity_type = superconductor['type'];
 
@@ -575,43 +584,18 @@ var grobid = (function ($) {
                                 page_height = pageInfo[pageNumber - 1].page_height;
                                 page_width = pageInfo[pageNumber - 1].page_width;
                             }
-                            annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, entity_type);
-                        });
-                    }
-                });
-            }
-
-            // Abbreviations
-            var abbreviations = json.abbreviations;
-            if (abbreviations) {
-                // hey bro, this must be asynchronous to avoid blocking the brothers
-                abbreviations.forEach(function (abbreviation, abbreviationIdx) {
-                    abbreviationsMap[abbreviationIdx] = abbreviation;
-
-                    //var theId = measurement.type;
-                    var theUrl = null;
-                    //var theUrl = annotation.url;
-                    var pos = abbreviation.boundingBoxes;
-                    if ((pos != null) && (pos.length > 0)) {
-                        pos.forEach(function (thePos, positionIdx) {
-                            // get page information for the annotation
-                            var pageNumber = thePos.p;
-                            if (pageInfo[pageNumber - 1]) {
-                                page_height = pageInfo[pageNumber - 1].page_height;
-                                page_width = pageInfo[pageNumber - 1].page_width;
-                            }
-                            annotateAbbreviation(thePos, theUrl, page_height, page_width, abbreviationIdx, positionIdx);
+                            annotateEntity(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, entity_type);
                         });
                     }
                 });
             }
 
 
-            // Temperatures
-            var temperatures = json.temperatures;
-            if (temperatures) {
+            // Measurements
+            var measurements = json.measurements;
+            if (measurements) {
                 // hey bro, this must be asynchronous to avoid blocking the brothers
-                temperatures.forEach(function (measurement, n) {
+                measurements.forEach(function (measurement, n) {
                     var measurementType = measurement.type;
                     var quantities = [];
                     var substance = measurement.quantified;
@@ -647,15 +631,7 @@ var grobid = (function ($) {
                             var quantity = quantities[currentQuantityIndex];
                             quantity['quantified'] = substance;
                             quantityMap[currentQuantityIndex] = quantity;
-                            if (quantityType == null)
-                                quantityType = quantity.type;
-
-                            if (quantityType === 'temperature') {
-                                if (substance != null && substance['normalizedName'] === 'Critical Temperature') {
-                                    quantityType = 'temperature-tc';
-                                    quantity.type = quantityType;
-                                }
-                            }
+                            quantityType = flagCriticalTemperature(quantity, substance);
                         }
                     }
 
@@ -715,7 +691,7 @@ var grobid = (function ($) {
             }, viewEntityPDF);
         }
 
-        function annotateSuperconductor(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, type) {
+        function annotateEntity(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, type) {
             var page = thePos.p;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);
@@ -743,11 +719,11 @@ var grobid = (function ($) {
             pageDiv.append(element);
 
             $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('hover', {
-                'type': 'superconductor',
+                'type': 'entity',
                 'map': superconMap
             }, viewEntityPDF);
             $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('click', {
-                'type': 'superconductor',
+                'type': 'entity',
                 'map': superconMap
             }, viewEntityPDF);
         }
@@ -770,12 +746,10 @@ var grobid = (function ($) {
 
             var annotation = annotationsMap[localAnnotationID];
             var string = "";
-            if (annotation.type === 'superconductor') {
-                string = toHtmlSuperconductor(annotation.obj, -1);
+            if (annotation.type === 'entity') {
+                string = toHtmlEntity(annotation.obj, -1);
             } else if (annotation.type === 'measurement') {
                 string = toHtmlMeasurement(annotation.obj, -1)
-            } else if (annotation.type === 'abbreviation') {
-                string = toHtmlAbbreviation(annotation.obj, -1)
             }
 
             $('#detailed_annot-0-0').html(string);
@@ -792,23 +766,19 @@ var grobid = (function ($) {
             var ind1 = localID.indexOf('-');
             var ind2 = localID.indexOf('-', ind1 + 1);
             var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, ind2));
-            //var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, localID.length));
+
             if ((map[localMeasurementNumber] === null) || (map[localMeasurementNumber].length === 0)) {
                 // this should never be the case
                 console.log("Error for visualising annotation with id " + localMeasurementNumber
                     + ", empty list of measurement");
             }
             var string = "";
-            if (type === 'superconductor') {
-                string = toHtmlSuperconductor(map[localMeasurementNumber], $(this).position().top);
-            } else if (type === 'abbreviation') {
-                string = toHtmlAbbreviation(map[localMeasurementNumber], $(this).position().top);
+            if (type === 'entity') {
+                string = toHtmlEntity(map[localMeasurementNumber], $(this).position().top);
             } else if (type === 'quantity') {
                 var quantityMap = map[localMeasurementNumber];
                 var measurementType = null;
 
-                console.log(quantityMap.length);
-                console.log(quantityMap.length === 1);
                 if (quantityMap.length === 1) {
                     measurementType = "Atomic value";
                     string = toHtml(quantityMap, measurementType, $(this).position().top);
@@ -821,7 +791,7 @@ var grobid = (function ($) {
                 }
             }
             if (type === null || string === "") {
-                console.log("Error in viewing annotation, type unknown");
+                console.log("Error in viewing annotation, type unknown or null: " + type);
             }
 
             $('#detailed_annot-' + pageIndex).html(string).show();
@@ -829,13 +799,13 @@ var grobid = (function ($) {
 
 
         // Transformation to HTML
-        function toHtmlSuperconductor(superconductor, topPos) {
+        function toHtmlEntity(entity, topPos) {
             var string = "";
             var first = true;
 
-            colorLabel = 'superconductor';
-            var name = superconductor.name;
-            var type = superconductor.type;
+            colorLabel = entity.type;
+            var name = entity.name;
+            var type = entity.type;
 
             string += "<div class='info-sense-box " + type + "'";
             if (topPos !== -1)
@@ -851,37 +821,8 @@ var grobid = (function ($) {
                 string += "<p>name: <b>" + name + "</b></p>";
             }
 
-            if (superconductor.tc) {
-                string += "<p>Tc: <b>" + superconductor.tc + "</b></p>";
-            }
-
-            string += "</td></tr>";
-            string += "</table></div>";
-
-            string += "</div>";
-
-            return string;
-        }
-
-        function toHtmlAbbreviation(abbreviation, topPos) {
-            var string = "";
-            var first = true;
-
-            colorLabel = 'abbreviation';
-            var name = abbreviation.name;
-
-            string += "<div class='info-sense-box " + colorLabel + "'";
-            if (topPos != -1)
-                string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
-
-            string += ">";
-            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>Abbreviation</h2>";
-
-            string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
-                "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
-
-            if (name) {
-                string += "<p>name: <b>" + name + "</b></p>";
+            if (entity.tc) {
+                string += "<p>Tc: <b>" + entity.tc + "</b></p>";
             }
 
             string += "</td></tr>";

@@ -1,6 +1,5 @@
 package org.grobid.core.data;
 
-import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.fasterxml.jackson.core.util.BufferRecyclers;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -91,11 +90,10 @@ public class Superconductor {
     }
 
     public String toJson() {
-        JsonStringEncoder encoder = BufferRecyclers.getJsonStringEncoder();
         StringBuilder json = new StringBuilder();
         boolean started = false;
 
-        String encodedName = new String(encoder.quoteAsString(new String(encoder.encodeAsUTF8(name))));
+        String encodedName = new String(BufferRecyclers.quoteAsJsonUTF8(name));
         json.append("{ ");
         json.append("\"name\":" + "\"" + encodedName + "\"");
         started = true;
@@ -141,8 +139,9 @@ public class Superconductor {
         if (criticalTemperatureMeasurement != null) {
             if (criticalTemperatureMeasurement.getType() == UnitUtilities.Measurement_Type.VALUE) {
                 Quantity tc = criticalTemperatureMeasurement.getQuantityAtomic();
-                Unit criticalUnit = criticalTemperatureMeasurement.getQuantityAtomic().getRawUnit();
-                json.append(", \"tc\":\"" + tc.getRawValue() + " " + criticalUnit.getRawName() + "\"");
+                Unit tcUnit = criticalTemperatureMeasurement.getQuantityAtomic().getRawUnit();
+                String tcString = new String(BufferRecyclers.quoteAsJsonUTF8(tc.getRawValue() + " " + tcUnit.getRawName()));
+                json.append(", \"tc\":\"" + tcString + "\"");
             } else if (criticalTemperatureMeasurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_BASE_RANGE)) {
 
                 Unit criticalUnit = null;

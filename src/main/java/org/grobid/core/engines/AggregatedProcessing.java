@@ -1,8 +1,6 @@
 package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
-import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
-import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,17 +47,20 @@ public class AggregatedProcessing {
 
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
+    private SentenceSegmenter sentenceSegmenter;
+    private MeasurementOperations measurementOperations;
 
 
     public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
+        this.sentenceSegmenter = new SentenceSegmenter();
+        this.measurementOperations = new MeasurementOperations();
     }
 
     @Inject
     public AggregatedProcessing(SuperconductorsParser superconductorsParser) {
-        this.superconductorsParser = superconductorsParser;
-        this.quantityParser = QuantityParser.getInstance(true);
+        this(superconductorsParser, QuantityParser.getInstance(true));
     }
 
     private List<Superconductor> linkSuperconductorsWithTc(List<Superconductor> superconductors, List<Measurement> measurements, List<LayoutToken> tokens) {
@@ -73,7 +74,7 @@ public class AggregatedProcessing {
                         && StringUtils.equalsIgnoreCase("Critical temperature", measurement.getQuantifiedObject().getNormalizedName()))
                 .collect(Collectors.toList());
 
-        List<Pair<Quantity, Measurement>> criticalTemperaturesFlatten = flattenTemperatures(criticalTemperatures);
+        List<Pair<Quantity, Measurement>> criticalTemperaturesFlatten = MeasurementOperations.flattenMeasurements(criticalTemperatures);
 
         List<Measurement> assignedTemperature = new ArrayList<>();
 
@@ -82,7 +83,7 @@ public class AggregatedProcessing {
             Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesAsIndex(tokens,
                     layoutTokensSupercon.get(0).getOffset(), layoutTokensSupercon.get(layoutTokensSupercon.size() - 1).getOffset());
 
-            extremitiesSuperconductor = adjustExtremities(extremitiesSuperconductor, superconductor, tokens);
+            extremitiesSuperconductor = adjustExtremities(extremitiesSuperconductor, superconductor.getLayoutTokens(), tokens);
 
             List<Pair<Quantity, Measurement>> criticalTemperaturesFlattenSorted
                     = criticalTemperaturesFlatten.stream().sorted((o1, o2) -> {
@@ -148,33 +149,19 @@ public class AggregatedProcessing {
     /**
      * we reduce the window if going on a separate sentence
      **/
-    private Pair<Integer, Integer> adjustExtremities(Pair<Integer, Integer> extremitiesSuperconductor, Superconductor superconductor, List<LayoutToken> tokens) {
+    private Pair<Integer, Integer> adjustExtremities(Pair<Integer, Integer> extremitiesSuperconductor, List<LayoutToken> entityLayoutTokens, List<LayoutToken> tokens) {
 
-        List<Token> tokensNlp4j = tokens
-                .stream()
-                .map(token -> {
-                    Token token1 = new Token(token.getText());
-                    token1.setStartOffset(token.getOffset());
-                    token1.setEndOffset(token.getOffset() + token.getText().length());
-                    return token1;
-                })
-                .collect(Collectors.toList());
+        List<List<LayoutToken>> sentences = this.sentenceSegmenter.getSentences(tokens);
 
-        Tokenizer tokenizer = new EnglishTokenizer();
-        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
-
-//        List<List<Token>> sentences = new ArrayList<>();
-//        sentences.add(tokensNlp4j);
-
-        int superconductorOffsetLower = superconductor.getLayoutTokens().get(0).getOffset();
-        int superconductorOffsetHigher = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset();
+        int superconductorOffsetLower = entityLayoutTokens.get(0).getOffset();
+        int superconductorOffsetHigher = entityLayoutTokens.get(entityLayoutTokens.size() - 1).getOffset();
 
         //In which sentence is the superconductor?
-        Optional<List<Token>> superconductorSentenceOptional = sentences
+        Optional<List<LayoutToken>> superconductorSentenceOptional = sentences
                 .stream()
                 .filter(sentence -> {
-                    int startOffset = sentence.get(0).getStartOffset();
-                    int endOffset = sentence.get(sentence.size() - 1).getEndOffset();
+                    int startOffset = sentence.get(0).getOffset();
+                    int endOffset = sentence.get(sentence.size() - 1).getOffset();
 
                     return superconductorOffsetHigher < endOffset && superconductorOffsetLower > startOffset;
                 })
@@ -185,11 +172,11 @@ public class AggregatedProcessing {
             return extremitiesSuperconductor;
         }
 
-        List<Token> superconductorSentence = superconductorSentenceOptional.get();
+        List<LayoutToken> superconductorSentence = superconductorSentenceOptional.get();
 
 
-        int startSentenceOffset = superconductorSentence.get(0).getStartOffset();
-        int endSentenceOffset = superconductorSentence.get(superconductorSentence.size() - 1).getStartOffset();
+        int startSentenceOffset = superconductorSentence.get(0).getOffset();
+        int endSentenceOffset = superconductorSentence.get(superconductorSentence.size() - 1).getOffset();
 
         //Get the layout tokens they correspond
         Optional<LayoutToken> first = tokens.stream().filter(layoutToken -> layoutToken.getOffset() == startSentenceOffset).findFirst();
@@ -212,145 +199,6 @@ public class AggregatedProcessing {
         }
 
         return new ImmutablePair<>(newStart, newEnd);
-    }
-
-    private List<Pair<Quantity, Measurement>> flattenTemperatures(List<Measurement> criticalTemperatures) {
-        List<Pair<Quantity, Measurement>> criticalTemperaturesFlatten = new ArrayList<>();
-
-        for (Measurement measurement : criticalTemperatures) {
-            if (measurement.getType().equals(UnitUtilities.Measurement_Type.VALUE)) {
-                criticalTemperaturesFlatten.add(new ImmutablePair<>(measurement.getQuantityAtomic(), measurement));
-            } else if (measurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_BASE_RANGE)) {
-                List<Pair<Quantity, Measurement>> list = new ArrayList<>();
-
-                if (measurement.getQuantityBase() != null) {
-                    list.add(new ImmutablePair<>(measurement.getQuantityBase(), measurement));
-                }
-
-                if (measurement.getQuantityRange() != null) {
-                    list.add(new ImmutablePair<>(measurement.getQuantityRange(), measurement));
-                }
-
-                criticalTemperaturesFlatten.addAll(list);
-
-            } else if (measurement.getType().equals(UnitUtilities.Measurement_Type.INTERVAL_MIN_MAX)) {
-                List<Pair<Quantity, Measurement>> list = new ArrayList<>();
-                if (measurement.getQuantityMost() != null) {
-                    list.add(new ImmutablePair<>(measurement.getQuantityMost(), measurement));
-                }
-
-                if (measurement.getQuantityLeast() != null) {
-                    list.add(new ImmutablePair<>(measurement.getQuantityLeast(), measurement));
-                }
-
-                criticalTemperaturesFlatten.addAll(list);
-            } else if (measurement.getType().equals(UnitUtilities.Measurement_Type.CONJUNCTION)) {
-                List<Pair<Quantity, Measurement>> collect = measurement.getQuantityList()
-                        .stream()
-                        .map(q -> new ImmutablePair<>(q, measurement))
-                        .collect(Collectors.toList());
-
-                criticalTemperaturesFlatten.addAll(collect);
-            }
-        }
-        return criticalTemperaturesFlatten;
-    }
-
-    protected List<Measurement> markCriticalTemperatures(List<Measurement> temperatures, List<LayoutToken> tokens, List<Pair<String, List<LayoutToken>>> tcExpressionList) {
-        MeasurementOperations measurementOperations = new MeasurementOperations();
-
-        if (CollectionUtils.isEmpty(tcExpressionList)) {
-            tcExpressionList.add(new ImmutablePair<>("Tc", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("Tc")));
-            tcExpressionList.add(new ImmutablePair<>("tc", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("tc")));
-            tcExpressionList.add(new ImmutablePair<>("T c", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("T c")));
-            tcExpressionList.add(new ImmutablePair<>("t c", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("t c")));
-        }
-
-
-        List<Pair<String, List<LayoutToken>>> closedTcExpressionList = new ArrayList<>();
-//        closedTcExpressionList.add(new ImmutablePair<>("at", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("at")));
-//        closedTcExpressionList.add(new ImmutablePair<>("around", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("around")));
-        closedTcExpressionList.add(new ImmutablePair<>("superconducts at", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconducts at")));
-        closedTcExpressionList.add(new ImmutablePair<>("superconducts around", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconducts around")));
-        closedTcExpressionList.add(new ImmutablePair<>("superconductivity at", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconductivity at")));
-        closedTcExpressionList.add(new ImmutablePair<>("superconductivity around", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconductivity around")));
-
-        outer: for (Measurement temperature : temperatures) {
-            Pair<Integer, Integer> extremities = measurementOperations.calculateQuantityExtremities(tokens, temperature, 0);
-
-            // Check that the lower index is at least two tokens before cause I will get to check them in the following for
-//            if (extremities == null || (extremities.getRight() > 1 && extremities.getLeft() < tokens.size())) {
-            if (extremities == null) {
-                continue;
-            }
-
-            // Now I'm searching a bit everywhere... ideally
-
-            //Searching for more constrained expressions
-            for (Pair<String, List<LayoutToken>> tcExpression : closedTcExpressionList) {
-                String tcString = tcExpression.getLeft();
-
-                List<LayoutToken> tcLayoutTokens = tcExpression.getRight();
-                String tcExpressionAsString = LayoutTokensUtil.toText(tcLayoutTokens);
-                int size = tcLayoutTokens.size();
-
-                int comparisonIndex = extremities.getLeft() - 1;
-                if (comparisonIndex - size >= 0) {
-                    String subString = LayoutTokensUtil.toText(tokens.subList(comparisonIndex - size, comparisonIndex));
-                    if (StringUtils.equals(tcExpressionAsString, subString)) {
-                        QuantifiedObject quantifiedObject = new QuantifiedObject(subString, "Critical Temperature");
-                        temperature.setQuantifiedObject(quantifiedObject);
-                        continue outer;
-                    }
-                }
-            }
-
-            //Searching for more general expression extracted from the paper
-
-            for (Pair<String, List<LayoutToken>> tcExpression : tcExpressionList) {
-                String tcString = tcExpression.getLeft();
-                List<LayoutToken> tcLayoutTokens = tcExpression.getRight();
-                String tcExpressionAsString = LayoutTokensUtil.toText(tcLayoutTokens);
-
-                // from the temperature to the back
-                for (int i = extremities.getLeft() - 1; i >= 0; i--) {
-                    LayoutToken current = tokens.get(i);
-
-                    int size = tcLayoutTokens.size();
-
-                    // Make sure I don't go out of bound
-                    if (i >= size) {
-                        String subString = LayoutTokensUtil.toText(tokens.subList(i - size, i));
-
-                        if (StringUtils.equals(tcExpressionAsString, subString)) {
-                            QuantifiedObject quantifiedObject = new QuantifiedObject(subString, "Critical Temperature");
-                            temperature.setQuantifiedObject(quantifiedObject);
-                            continue outer;
-                        }
-                    }
-                }
-
-
-                //From the temperature forward
-                for (int i = extremities.getRight() + 1; i < tokens.size(); i++) {
-                    int size = tcLayoutTokens.size();
-
-                    // Make sure I don't go out of bound
-                    if (i + size < tokens.size()) {
-                        String subString = LayoutTokensUtil.toText(tokens.subList(i, i + size));
-
-                        if (StringUtils.equals(tcExpressionAsString, subString)) {
-                            QuantifiedObject quantifiedObject = new QuantifiedObject(subString, "Critical Temperature");
-                            temperature.setQuantifiedObject(quantifiedObject);
-                            continue outer;
-                        }
-
-                    }
-                }
-            }
-        }
-
-        return temperatures;
     }
 
     public static int WINDOW_TC = Integer.MAX_VALUE;
@@ -385,53 +233,6 @@ public class AggregatedProcessing {
         return new ImmutablePair<>(start, end);
     }
 
-    public List<Measurement> filterTemperature(List<Measurement> process) {
-        List<Measurement> temperatures = process.stream().filter(measurement -> {
-            switch (measurement.getType()) {
-                case VALUE:
-                    return UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityAtomic().getType());
-                case CONJUNCTION:
-                    return measurement.getQuantityList()
-                            .stream().anyMatch(quantity -> UnitUtilities.Unit_Type.TEMPERATURE.equals(quantity.getType()));
-                case INTERVAL_BASE_RANGE:
-                    return UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityBase().getType()) ||
-                            UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityRange().getType());
-
-                case INTERVAL_MIN_MAX:
-                    return (measurement.getQuantityMost() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityMost().getType())) ||
-                            (measurement.getQuantityLeast() != null && UnitUtilities.Unit_Type.TEMPERATURE.equals(measurement.getQuantityLeast().getType()));
-
-            }
-
-            return false;
-        }).collect(Collectors.toList());
-
-        return temperatures;
-    }
-
-    public static List<Measurement> filterMeasurements(List<Measurement> process, List<UnitUtilities.Unit_Type> typesToBeKept) {
-        List<Measurement> filteredMeasurements = process.stream().filter(measurement -> {
-            switch (measurement.getType()) {
-                case VALUE:
-                    return typesToBeKept.contains(measurement.getQuantityAtomic().getType());
-                case CONJUNCTION:
-                    return measurement.getQuantityList()
-                            .stream().anyMatch(quantity -> typesToBeKept.contains(quantity.getType()));
-                case INTERVAL_BASE_RANGE:
-                    return typesToBeKept.contains(measurement.getQuantityBase().getType()) ||
-                            typesToBeKept.contains(measurement.getQuantityRange().getType());
-
-                case INTERVAL_MIN_MAX:
-                    return (measurement.getQuantityMost() != null && typesToBeKept.contains(measurement.getQuantityMost().getType())) ||
-                            (measurement.getQuantityLeast() != null && typesToBeKept.contains(measurement.getQuantityLeast().getType()));
-
-            }
-
-            return false;
-        }).collect(Collectors.toList());
-
-        return filteredMeasurements;
-    }
 
     public OutputResponse process(String text) {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
@@ -445,11 +246,9 @@ public class AggregatedProcessing {
 
         OutputResponse outputResponse = new OutputResponse();
         List<Superconductor> superconductorNamesList = new ArrayList<>();
-        outputResponse.setSuperconductors(superconductorNamesList);
+        outputResponse.setEntities(superconductorNamesList);
         List<Measurement> temperaturesList = new ArrayList<>();
-        outputResponse.setTemperatures(temperaturesList);
-        List<Abbreviation> abbreviationList = new ArrayList<>();
-        outputResponse.setAbbreviations(abbreviationList);
+        outputResponse.setMeasurements(temperaturesList);
 
         Document doc = null;
         File file = null;
@@ -523,7 +322,7 @@ public class AggregatedProcessing {
                     TaggingTokenClusteror clusteror = new TaggingTokenClusteror(GrobidModels.FULLTEXT, fulltextTaggedRawResult,
                             layoutTokenization.getTokenization(), true);
 
-                    //Iterate and exclude figures and tables
+                    //Iterate and exclude figures, tables, equations and citation markers
                     for (TaggingTokenCluster cluster : Iterables.filter(clusteror.cluster(),
                             new TaggingTokenClusteror
                                     .LabelTypeExcludePredicate(TaggingLabels.TABLE_MARKER, TaggingLabels.EQUATION, TaggingLabels.CITATION_MARKER,
@@ -588,6 +387,107 @@ public class AggregatedProcessing {
         return outputResponse;
     }
 
+    protected List<Measurement> markCriticalTemperatures(List<Measurement> temperatures, List<LayoutToken> tokens, List<Pair<String, List<LayoutToken>>> tcExpressionList) {
+        MeasurementOperations measurementOperations = new MeasurementOperations();
+
+        if (CollectionUtils.isEmpty(tcExpressionList)) {
+            tcExpressionList.add(new ImmutablePair<>("Tc", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("Tc")));
+            tcExpressionList.add(new ImmutablePair<>("tc", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("tc")));
+            tcExpressionList.add(new ImmutablePair<>("T c", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("T c")));
+            tcExpressionList.add(new ImmutablePair<>("t c", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("t c")));
+        }
+
+
+        List<Pair<String, List<LayoutToken>>> closedTcExpressionList = new ArrayList<>();
+//        closedTcExpressionList.add(new ImmutablePair<>("at", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("at")));
+//        closedTcExpressionList.add(new ImmutablePair<>("around", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("around")));
+        closedTcExpressionList.add(new ImmutablePair<>("superconducts at", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconducts at")));
+        closedTcExpressionList.add(new ImmutablePair<>("superconducts around", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconducts around")));
+        closedTcExpressionList.add(new ImmutablePair<>("superconductivity at", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconductivity at")));
+        closedTcExpressionList.add(new ImmutablePair<>("superconductivity around", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconductivity around")));
+
+        outer:
+        for (Measurement temperature : temperatures) {
+            Pair<Integer, Integer> extremities = measurementOperations.calculateQuantityExtremities(tokens, temperature, 0);
+
+//            extremities = adjustExtremities(extremities, MeasurementOperations, tokens);
+
+            // Check that the lower index is at least two tokens before cause I will get to check them in the following for
+//            if (extremities == null || (extremities.getRight() > 1 && extremities.getLeft() < tokens.size())) {
+            if (extremities == null) {
+                continue;
+            }
+
+            // Now I'm searching a bit everywhere... ideally
+
+            //Searching for more constrained expressions
+            for (Pair<String, List<LayoutToken>> tcExpression : closedTcExpressionList) {
+                String tcString = tcExpression.getLeft();
+
+                List<LayoutToken> tcLayoutTokens = tcExpression.getRight();
+                String tcExpressionAsString = LayoutTokensUtil.toText(tcLayoutTokens);
+                int size = tcLayoutTokens.size();
+
+                int comparisonIndex = extremities.getLeft() - 1;
+                if (comparisonIndex - size >= 0) {
+                    String subString = LayoutTokensUtil.toText(tokens.subList(comparisonIndex - size, comparisonIndex));
+                    if (StringUtils.equals(tcExpressionAsString, subString)) {
+                        QuantifiedObject quantifiedObject = new QuantifiedObject(subString, "Critical Temperature");
+                        temperature.setQuantifiedObject(quantifiedObject);
+                        continue outer;
+                    }
+                }
+            }
+
+            //Searching for more general expression extracted from the paper
+
+            for (Pair<String, List<LayoutToken>> tcExpression : tcExpressionList) {
+                String tcString = tcExpression.getLeft();
+                List<LayoutToken> tcLayoutTokens = tcExpression.getRight();
+                String tcExpressionAsString = LayoutTokensUtil.toText(tcLayoutTokens);
+
+                // from the temperature to the back
+                for (int i = extremities.getLeft() - 1; i >= 0; i--) {
+                    LayoutToken current = tokens.get(i);
+
+                    int size = tcLayoutTokens.size();
+
+                    // Make sure I don't go out of bound
+                    if (i >= size) {
+                        String subString = LayoutTokensUtil.toText(tokens.subList(i - size, i));
+
+                        if (StringUtils.equals(tcExpressionAsString, subString)) {
+                            QuantifiedObject quantifiedObject = new QuantifiedObject(subString, "Critical Temperature");
+                            temperature.setQuantifiedObject(quantifiedObject);
+                            continue outer;
+                        }
+                    }
+                }
+
+
+                //From the temperature forward
+//                for (int i = extremities.getRight() + 1; i < tokens.size(); i++) {
+//                    int size = tcLayoutTokens.size();
+//
+//                    // Make sure I don't go out of bound
+//                    if (i + size < tokens.size()) {
+//                        String subString = LayoutTokensUtil.toText(tokens.subList(i, i + size));
+//
+//                        if (StringUtils.equals(tcExpressionAsString, subString)) {
+//                            QuantifiedObject quantifiedObject = new QuantifiedObject(subString, "Critical Temperature");
+//                            temperature.setQuantifiedObject(quantifiedObject);
+//                            continue outer;
+//                        }
+//
+//                    }
+//                }
+            }
+        }
+
+        return temperatures;
+    }
+
+
     public OutputResponse process(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
@@ -604,12 +504,12 @@ public class AggregatedProcessing {
                 .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
                 .collect(Collectors.toList());
 
-        List<Measurement> process = quantityParser.process(tokens);
-        List<Measurement> temperatures = filterTemperature(process);
+        List<Measurement> measurements = quantityParser.process(tokens);
+        List<Measurement> temperatures = measurementOperations.filterMeasurements(measurements, Arrays.asList(UnitUtilities.Unit_Type.TEMPERATURE));
         List<Measurement> temperatureList = markCriticalTemperatures(temperatures, tokens, tcExpressionList);
 
         List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
 
-        return new OutputResponse(linkedSuperconductors, temperatureList, new ArrayList<>(), new ArrayList<>());
+        return new OutputResponse(linkedSuperconductors, temperatureList, new ArrayList<>());
     }
 }

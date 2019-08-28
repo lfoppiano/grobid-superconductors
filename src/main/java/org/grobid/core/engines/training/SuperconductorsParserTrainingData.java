@@ -20,6 +20,7 @@ import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.sax.TextChunkSaxHandler;
 import org.grobid.core.utilities.ChemspotClient;
+import org.grobid.core.utilities.MeasurementOperations;
 import org.grobid.core.utilities.UnitUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,6 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
-import static org.grobid.core.engines.AggregatedProcessing.filterMeasurements;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 public class SuperconductorsParserTrainingData {
@@ -47,6 +47,7 @@ public class SuperconductorsParserTrainingData {
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
     private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> superconductorsTrainingXMLFormatter = new HashMap<>();
+    private MeasurementOperations measurementOperations;
 
 
     public SuperconductorsParserTrainingData(ChemspotClient chemspotClient) {
@@ -58,6 +59,7 @@ public class SuperconductorsParserTrainingData {
         superconductorsTrainingXMLFormatter.put(TrainingOutputFormat.TSV, new SuperconductorsTrainingTSVFormatter());
         superconductorsTrainingXMLFormatter.put(TrainingOutputFormat.XML, new SuperconductorsTrainingXMLFormatter());
         this.quantityParser = quantityParser;
+        this.measurementOperations = new MeasurementOperations();
     }
 
     private void writeOutput(File file,
@@ -118,6 +120,7 @@ public class SuperconductorsParserTrainingData {
             SAXParserFactory spf = SAXParserFactory.newInstance();
 
             TextChunkSaxHandler handler = new TextChunkSaxHandler();
+            handler.addFilteredTag("ref");
 
             //get a new instance of parser
             SAXParser p = spf.newSAXParser();
@@ -134,7 +137,7 @@ public class SuperconductorsParserTrainingData {
 
                 Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(text);
                 List<Measurement> measurements = quantityParser.process(text);
-                List<Measurement> filteredMeasurements = filterMeasurements(measurements,
+                List<Measurement> filteredMeasurements = measurementOperations.filterMeasurements(measurements,
                         Arrays.asList(UnitUtilities.Unit_Type.TEMPERATURE, UnitUtilities.Unit_Type.MAGNETIC_FIELD_STRENGTH, UnitUtilities.Unit_Type.PRESSURE)
                 );
 

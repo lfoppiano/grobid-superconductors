@@ -7,12 +7,18 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.grobid.service.command.InterAnnotationAgreementCommand;
 import org.grobid.service.command.TrainingGenerationCommand;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+
+import static javax.servlet.FilterRegistration.*;
 
 public class GrobidSuperconductorsApplication extends Application<GrobidSuperconductorsConfiguration> {
     private static final String RESOURCES = "/service";
@@ -44,6 +50,19 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
 
     @Override
     public void run(GrobidSuperconductorsConfiguration configuration, Environment environment) {
+        // Enable CORS headers
+        final FilterRegistration.Dynamic cors =
+                environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+        // Configure CORS parameters
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+
         environment.jersey().setUrlPattern(RESOURCES + "/*");
     }
 }
