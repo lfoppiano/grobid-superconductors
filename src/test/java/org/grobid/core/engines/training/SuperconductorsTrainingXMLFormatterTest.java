@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -18,14 +19,13 @@ public class SuperconductorsTrainingXMLFormatterTest {
     @Before
     public void setUp() throws Exception {
         target = new SuperconductorsTrainingXMLFormatter();
-//        LibraryLoader.load();
     }
 
     @Test
     public void testTrainingData_value() throws Exception {
         List<Superconductor> superconductorList = new ArrayList<>();
         Superconductor superconductor = new Superconductor();
-        superconductor.setType("material");
+        superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         superconductor.setOffsetStart(19);
         superconductor.setOffsetEnd(30);
         superconductor.setName("(TMTSF)2PF6");
