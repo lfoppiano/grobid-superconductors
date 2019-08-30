@@ -632,6 +632,10 @@ var grobid = (function ($) {
                             quantity['quantified'] = substance;
                             quantityMap[currentQuantityIndex] = quantity;
                             quantityType = flagCriticalTemperature(quantity, substance);
+
+                            if(quantityType !== undefined) {
+                                break;
+                            }
                         }
                     }
 
@@ -649,6 +653,8 @@ var grobid = (function ($) {
                                 page_height = pageInfo[pageNumber - 1].page_height;
                                 page_width = pageInfo[pageNumber - 1].page_width;
                             }
+                            console.log(m);
+                            console.log(n);
                             annotateQuantity(thePos, theUrl, page_height, page_width, n, m, quantityType);
                         });
                     }
@@ -657,6 +663,7 @@ var grobid = (function ($) {
         }
 
         function annotateQuantity(thePos, theUrl, page_height, page_width, measurementIndex, positionIndex, type) {
+            console.log(type);
             var page = thePos.p;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);

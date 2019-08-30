@@ -21,6 +21,7 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.sax.TextChunkSaxHandler;
 import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.MeasurementOperations;
+import org.grobid.core.utilities.MeasurementUtils;
 import org.grobid.core.utilities.UnitUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +138,7 @@ public class SuperconductorsParserTrainingData {
 
                 Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(text);
                 List<Measurement> measurements = quantityParser.process(text);
-                List<Measurement> filteredMeasurements = measurementOperations.filterMeasurements(measurements,
+                List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurements(measurements,
                         Arrays.asList(UnitUtilities.Unit_Type.TEMPERATURE, UnitUtilities.Unit_Type.MAGNETIC_FIELD_STRENGTH, UnitUtilities.Unit_Type.PRESSURE)
                 );
 

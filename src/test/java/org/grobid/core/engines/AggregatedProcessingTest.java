@@ -1,13 +1,10 @@
 package org.grobid.core.engines;
 
-import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
 import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
@@ -19,11 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 import shadedwipo.org.apache.commons.io.FileUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -193,6 +188,50 @@ public class AggregatedProcessingTest {
         quantity.setParsedUnit(parsedUnit);
 
         quantity.setLayoutTokens(Arrays.asList(tokens.get(11), tokens.get(12)));
+        temperature.setAtomicQuantity(quantity);
+
+//        List<Pair<String, List<LayoutToken>>> tcExpressionList = extractedEntities.stream()
+//                .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
+//                .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
+//                .collect(Collectors.toList());
+
+
+        List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, new ArrayList<>());
+
+        assertThat(measurements, hasSize(1));
+        assertThat(measurements.get(0).getQuantifiedObject(), is(not(nullValue())));
+        assertThat(measurements.get(0).getQuantifiedObject().getNormalizedName(), is("Critical Temperature"));
+    }
+
+    @Test
+    public void testMarkTemperature_noExpressions_MultiSentence_match_shouldWork() {
+        String text = "We are explaining some important notions. The material BaClE2 superconducts at 30K. What about going for a beer? ";
+
+        List<Superconductor> extractedEntities = new ArrayList<>();
+
+        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+        Superconductor superconductor = new Superconductor();
+        superconductor.setName("BaClE2");
+        superconductor.setLayoutTokens(tokens.subList(17, 20));
+        superconductor.setType("material");
+        extractedEntities.add(superconductor);
+
+//        Superconductor tcExpression = new Superconductor();
+//        tcExpression.setName("Tc");
+//        tcExpression.setLayoutTokens(Arrays.asList(tokens.get(2)));
+//        tcExpression.setType("tc");
+//        extractedEntities.add(tcExpression);
+
+        Measurement temperature = new Measurement();
+        temperature.setType(UnitUtilities.Measurement_Type.VALUE);
+        Quantity quantity = new Quantity("30", new Unit("K"));
+        Unit parsedUnit = new Unit("K");
+        UnitDefinition parsedUnitDefinition = new UnitDefinition();
+        parsedUnitDefinition.setType(UnitUtilities.Unit_Type.TEMPERATURE);
+        parsedUnit.setUnitDefinition(parsedUnitDefinition);
+        quantity.setParsedUnit(parsedUnit);
+
+        quantity.setLayoutTokens(tokens.subList(24, 26));
         temperature.setAtomicQuantity(quantity);
 
 //        List<Pair<String, List<LayoutToken>>> tcExpressionList = extractedEntities.stream()

@@ -11,6 +11,8 @@ import org.grobid.core.utilities.TeiUtils;
 import java.util.List;
 
 import static org.grobid.core.document.xml.XmlBuilderUtils.teiElement;
+import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
+import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
 
 public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutputFormattter {
 
@@ -39,7 +41,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
             int end = superconductor.getOffsetEnd();
 
             String name = superconductor.getName();
-            Element supercon = teiElement(superconductor.getType());
+            Element supercon = teiElement(substring(superconductor.getType(), 1, length(superconductor.getType()) - 1));
             supercon.appendChild(name);
 
             int initPos = pos;
