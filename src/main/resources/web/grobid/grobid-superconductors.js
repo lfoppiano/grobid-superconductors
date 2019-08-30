@@ -306,7 +306,7 @@ var grobid = (function ($) {
 
         function annotateTextAsHtml(inputText, annotationList) {
             var newString = "";
-            console.log("'" + inputText + "'");
+            // console.log("'" + inputText + "'");
             var lastMaxIndex = inputText.length;
             if (annotationList) {
                 var pos = 0; // current position in the text
@@ -450,7 +450,6 @@ var grobid = (function ($) {
 
         function onSuccessText(responseText, statusText) {
             responseJson = responseText;
-            //console.log(responseJson);
             $('#infoResult').html('');
             if ((responseJson == null) || (responseJson.length === 0)) {
                 $('#requestResult')
@@ -653,8 +652,6 @@ var grobid = (function ($) {
                                 page_height = pageInfo[pageNumber - 1].page_height;
                                 page_width = pageInfo[pageNumber - 1].page_width;
                             }
-                            console.log(m);
-                            console.log(n);
                             annotateQuantity(thePos, theUrl, page_height, page_width, n, m, quantityType);
                         });
                     }
@@ -663,7 +660,6 @@ var grobid = (function ($) {
         }
 
         function annotateQuantity(thePos, theUrl, page_height, page_width, measurementIndex, positionIndex, type) {
-            console.log(type);
             var page = thePos.p;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);
