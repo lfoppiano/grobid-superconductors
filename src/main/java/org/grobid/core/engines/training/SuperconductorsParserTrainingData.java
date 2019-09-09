@@ -1,5 +1,6 @@
 package org.grobid.core.engines.training;
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -12,26 +13,19 @@ import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Quantity;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
+import org.grobid.core.engines.GrobidPDFEngine;
 import org.grobid.core.engines.QuantityParser;
 import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.sax.TextChunkSaxHandler;
-import org.grobid.core.utilities.ChemspotClient;
-import org.grobid.core.utilities.MeasurementOperations;
-import org.grobid.core.utilities.MeasurementUtils;
-import org.grobid.core.utilities.UnitUtilities;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -41,14 +35,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
+import static org.grobid.core.utilities.QuantityOperations.getContainingOffset;
+import static org.grobid.core.utilities.QuantityOperations.getOffset;
 
 public class SuperconductorsParserTrainingData {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParserTrainingData.class);
 
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
-    private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> superconductorsTrainingXMLFormatter = new HashMap<>();
-    private MeasurementOperations measurementOperations;
+    private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> trainingOutputFormatters = new HashMap<>();
 
 
     public SuperconductorsParserTrainingData(ChemspotClient chemspotClient) {
@@ -57,10 +52,9 @@ public class SuperconductorsParserTrainingData {
 
     public SuperconductorsParserTrainingData(SuperconductorsParser parser, QuantityParser quantityParser) {
         superconductorsParser = parser;
-        superconductorsTrainingXMLFormatter.put(TrainingOutputFormat.TSV, new SuperconductorsTrainingTSVFormatter());
-        superconductorsTrainingXMLFormatter.put(TrainingOutputFormat.XML, new SuperconductorsTrainingXMLFormatter());
+        trainingOutputFormatters.put(TrainingOutputFormat.TSV, new SuperconductorsTrainingTSVFormatter());
+        trainingOutputFormatters.put(TrainingOutputFormat.XML, new SuperconductorsTrainingXMLFormatter());
         this.quantityParser = quantityParser;
-        this.measurementOperations = new MeasurementOperations();
     }
 
     private void writeOutput(File file,
@@ -97,130 +91,144 @@ public class SuperconductorsParserTrainingData {
     }
 
     private void createTrainingPDF(File file, String outputDirectory, TrainingOutputFormat outputFormat, int id) {
-        Document teiDoc = null;
+        Document document = null;
         try {
             GrobidAnalysisConfig config =
                     new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
                             .build();
-            teiDoc = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
+            document = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
         } catch (Exception e) {
             throw new GrobidException("Cannot create training data because GROBID Fulltext model failed on the PDF: " + file.getPath(), e);
         }
-        if (teiDoc == null) {
+        if (document == null) {
             return;
         }
 
-        String teiXML = teiDoc.getTei();
-
         StringBuilder textAggregation = new StringBuilder();
         StringBuilder features = new StringBuilder();
-        List<Pair<List<Superconductor>, String>> labeledTextList = new ArrayList<>();
+        List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
-        try {
-            // get a factory for SAX parser
-            SAXParserFactory spf = SAXParserFactory.newInstance();
+        GrobidPDFEngine.processDocument(document, layoutTokens -> {
 
-            TextChunkSaxHandler handler = new TextChunkSaxHandler();
-            handler.addFilteredTag("ref");
+            List<LayoutToken> normalisedLayoutTokens = LayoutTokensUtil.dehyphenize(layoutTokens)
+                    .stream()
+                    .map(m -> {
+                        m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
+                        m.setText(StringUtils.replace(m.getText(), "\n", " "));
+                        return m;
+                    })
+                    .collect(Collectors.toList());
 
-            //get a new instance of parser
-            SAXParser p = spf.newSAXParser();
-            p.parse(new InputSource(new StringReader(teiXML)), handler);
 
-            List<String> chunks = handler.getChunks();
+            String text = LayoutTokensUtil.toText(normalisedLayoutTokens);
 
-            for (String text : chunks) {
-                textAggregation.append(text);
-                if (!StringUtils.endsWith(text, " ")) {
-                    textAggregation.append(" ");
-                }
-                textAggregation.append("\n");
+            textAggregation.append(text);
+            if (!StringUtils.endsWith(text, " ")) {
+                textAggregation.append(" ");
+            }
 
-                Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(text);
-                List<Measurement> measurements = quantityParser.process(text);
-                List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurements(measurements,
-                        Arrays.asList(UnitUtilities.Unit_Type.TEMPERATURE, UnitUtilities.Unit_Type.MAGNETIC_FIELD_STRENGTH, UnitUtilities.Unit_Type.PRESSURE)
-                );
+            textAggregation.append("\n");
 
-                features.append(stringListPair.getLeft());
-                features.append("\n");
-                features.append("\n");
+            Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(normalisedLayoutTokens);
+            List<Measurement> measurements = quantityParser.process(normalisedLayoutTokens);
+            List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurements(measurements,
+                    Arrays.asList(
+                            UnitUtilities.Unit_Type.TEMPERATURE,
+                            UnitUtilities.Unit_Type.MAGNETIC_FIELD_STRENGTH,
+                            UnitUtilities.Unit_Type.PRESSURE
+                    )
+            );
 
-                //With the hammer!
-                List<Superconductor> measurementsAdapted = filteredMeasurements.stream().map(m -> {
-                    Triple<Integer, Integer, String> measurementData = calculateQuantityExtremitiesOffsetsAndType(m);
+            features.append(stringListPair.getLeft());
+            features.append("\n");
+            features.append("\n");
 
-                    Superconductor superconductor = new Superconductor();
-                    superconductor.setOffsetStart(measurementData.getLeft());
-                    superconductor.setOffsetEnd(measurementData.getMiddle());
-                    superconductor.setSource(Superconductor.SOURCE_QUANTITIES);
+            List<Superconductor> measurementsAdapted = filteredMeasurements
+                    .stream()
+                    .map(m -> {
+                        OffsetPosition offset = QuantityOperations.getContainingOffset(QuantityOperations.getOffset(m));
 
-                    String type = measurementData.getRight();
-                    if (StringUtils.equals("temperature", type)) {
-                        type = SUPERCONDUCTORS_TC_VALUE_LABEL;
-                    } else if (StringUtils.equals("magnetic field strength", type)) {
-                        type = SUPERCONDUCTORS_MAGNETISATION_LABEL;
-                    }
-                    superconductor.setType(type);
-                    superconductor.setName(text.substring(superconductor.getOffsetStart(), superconductor.getOffsetEnd()));
+                        Superconductor superconductor = new Superconductor();
+                        superconductor.setOffsetStart(offset.start);
+                        superconductor.setOffsetEnd(offset.end);
+                        superconductor.setSource(Superconductor.SOURCE_QUANTITIES);
 
-                    return superconductor;
-                }).filter(s -> StringUtils.isNotEmpty(s.getType())).collect(Collectors.toList());
+                        String type = lowerCase(QuantityOperations.getType(m).getName());
+                        if (StringUtils.equals("temperature", type)) {
+                            type = SUPERCONDUCTORS_TC_VALUE_LABEL;
+                        } else if (StringUtils.equals("magnetic field strength", type)) {
+                            type = SUPERCONDUCTORS_MAGNETISATION_LABEL;
+                        }
+                        superconductor.setType(type);
 
-                List<Superconductor> superconductorList = stringListPair.getRight();
-                superconductorList.addAll(measurementsAdapted);
+                        List<LayoutToken> quantityLayoutTokens = normalisedLayoutTokens
+                                .stream()
+                                .filter(l -> l.getOffset() >= superconductor.getOffsetStart()
+                                        && l.getOffset() < superconductor.getOffsetEnd())
+                                .collect(Collectors.toList());
 
-                List<Superconductor> sortedEntities = superconductorList.stream().sorted((o1, o2) -> {
+                        String name = LayoutTokensUtil.toText(quantityLayoutTokens);
+                        superconductor.setName(name);
 
-                    if (o1.getOffsetStart() > o2.getOffsetStart()) {
-                        return 1;
-                    } else if (o1.getOffsetStart() < o2.getOffsetStart()) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }).collect(Collectors.toList());
+                        return superconductor;
+                    })
+                    .filter(s -> StringUtils.isNotEmpty(s.getType()))
+                    .collect(Collectors.toList());
+
+            List<Superconductor> superconductorList = stringListPair.getRight();
+            superconductorList.addAll(measurementsAdapted);
+            List<Superconductor> sortedEntities = pruneOverlappingAnnotations(superconductorList);
+
+            Pair<List<Superconductor>, List<LayoutToken>> labeleledText = Pair.of(sortedEntities, normalisedLayoutTokens);
+            labeledTextList.add(labeleledText);
+
+        });
+
+        String labelledTextOutput = trainingOutputFormatters.get(outputFormat).format(labeledTextList, id);
+
+        writeOutput(file, outputDirectory, labelledTextOutput, features.toString(), textAggregation.toString(), outputFormat.toString());
+    }
+
+
+    /**
+     * Remove overlapping annotations - grobid-quantities has lower priority in this context
+     **/
+    private List<Superconductor> pruneOverlappingAnnotations(List<Superconductor> superconductorList) {
+        //Sorting by offsets
+        List<Superconductor> sortedEntities = superconductorList
+                .stream()
+                .sorted(Comparator.comparingInt(Superconductor::getOffsetStart))
+                .collect(Collectors.toList());
 
 //                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());
 
-                List<Superconductor> toBeRemoved = new ArrayList<>();
+        List<Superconductor> toBeRemoved = new ArrayList<>();
 
-                Superconductor previous = null;
-                boolean first = true;
-                for (Superconductor current : sortedEntities) {
+        Superconductor previous = null;
+        boolean first = true;
+        for (Superconductor current : sortedEntities) {
 
-                    if (first) {
-                        first = false;
-                        previous = current;
+            if (first) {
+                first = false;
+                previous = current;
+            } else {
+                if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
+                    System.out.println("Overlapping. " + current.getName() + " <" + current.getType() + "> with " + previous.getName() + " <" + previous.getType() + ">");
+
+                    if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
+                        toBeRemoved.add(previous);
+                    } else if (previous.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
+                        toBeRemoved.add(previous);
                     } else {
-                        if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
-                            System.out.println("Overlapping. " + current.getName() + " <" + current.getType() + "> with " + previous.getName() + " <" + previous.getType() + ">");
-
-                            if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-                                toBeRemoved.add(previous);
-                            } else if (previous.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-                                toBeRemoved.add(previous);
-                            } else {
-                                toBeRemoved.add(previous);
-                            }
-                        }
-                        previous = current;
+                        toBeRemoved.add(previous);
                     }
                 }
-
-                sortedEntities.removeAll(toBeRemoved);
-
-                Pair<List<Superconductor>, String> labeleledText = new ImmutablePair<>(sortedEntities, text);
-                labeledTextList.add(labeleledText);
+                previous = current;
             }
-
-        } catch (Exception e) {
-            throw new GrobidException("Cannot create training data because input XML file can not be parsed: ", e);
         }
 
-        String labelledTextOutput = superconductorsTrainingXMLFormatter.get(outputFormat).format(labeledTextList, id);
-
-        writeOutput(file, outputDirectory, labelledTextOutput, features.toString(), textAggregation.toString(), outputFormat.toString());
+        sortedEntities.removeAll(toBeRemoved);
+        return sortedEntities;
     }
 
     /**
@@ -270,232 +278,6 @@ public class SuperconductorsParserTrainingData {
         } catch (final Exception exp) {
             throw new GrobidException("An exception occured while running Grobid batch.", exp);
         }
-    }
-
-
-    /**
-     * Returns the offsets and the type of the measurement (pressure, temperature)
-     **/
-    public Triple<Integer, Integer, String> calculateQuantityExtremitiesOffsetsAndType(Measurement measurements) {
-        Quantity quantity = null;
-        Triple<Integer, Integer, String> extremities = null;
-        switch (measurements.getType()) {
-            case VALUE:
-                quantity = measurements.getQuantityAtomic();
-                List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
-
-                int quantityStart = layoutTokens.get(0).getOffset();
-                int quantityEnd = quantityStart + quantity.getRawValue().length();
-//                layoutTokens.get(layoutTokens.size() - 1).getOffset()
-//                        + layoutTokens.get(layoutTokens.size() - 1).getText().length();
-
-                if (quantity.getRawUnit() != null) {
-                    List<LayoutToken> unitLayoutTokens = quantity.getRawUnit().getLayoutTokens();
-                    int unitStart = unitLayoutTokens.get(0).getOffset();
-                    int unitEnd = unitStart + quantity.getRawUnit().getRawName().length();
-
-                    if (unitStart < quantityStart) {
-                        quantityStart = unitStart;
-                    } else if (unitEnd > quantityEnd) {
-                        quantityEnd = unitEnd;
-                    }
-                }
-
-
-                extremities = ImmutableTriple.of(quantityStart, quantityEnd, lowerCase(quantity.getType().getName()));
-
-                break;
-            case INTERVAL_BASE_RANGE:
-                if (measurements.getQuantityBase() != null && measurements.getQuantityRange() != null) {
-                    Quantity quantityBase = measurements.getQuantityBase();
-                    Quantity quantityRange = measurements.getQuantityRange();
-
-                    String type = "";
-                    if (quantityBase.getType() != null) {
-                        type = lowerCase(quantityBase.getType().getName());
-                    }
-
-                    int quantityRangeBaseStart = quantityBase.getLayoutTokens().get(0).getOffset();
-                    int quantityRangeRangeStart = quantityRange.getLayoutTokens().get(0).getOffset();
-                    if (quantityRangeBaseStart > quantityRangeRangeStart) {
-                        quantityBase = measurements.getQuantityRange();
-                        quantityRange = measurements.getQuantityBase();
-                    }
-
-                    int quantityRangeStart = quantityBase.getLayoutTokens().get(0).getOffset();
-                    int quantityRangeEnd = quantityRangeStart + quantityRange.getRawValue().length();
-
-
-                    // adjust base
-
-                    if (quantityBase.getRawUnit() != null) {
-                        List<LayoutToken> quantityBaseTokens = quantityBase.getRawUnit().getLayoutTokens();
-                        int unitBaseStart = quantityBaseTokens.get(0).getOffset();
-                        int unitBaseEnd = unitBaseStart + quantityBase.getRawUnit().getRawName().length();
-
-                        if (unitBaseStart < quantityRangeStart) {
-                            quantityRangeStart = unitBaseStart;
-                        } else if (unitBaseEnd > quantityRangeEnd) {
-                            quantityRangeEnd = unitBaseEnd;
-                        }
-
-                    }
-
-                    //adjust range
-
-                    if (quantityRange.getRawUnit() != null) {
-                        List<LayoutToken> quantityRangeTokens = quantityRange.getRawUnit().getLayoutTokens();
-                        int unitRangeStart = quantityRangeTokens.get(0).getOffset();
-                        int unitRangeEnd = quantityRangeStart + quantityRange.getRawUnit().getRawName().length();
-
-                        if (unitRangeStart < quantityRangeStart) {
-                            quantityRangeStart = unitRangeStart;
-                        } else if (unitRangeEnd > quantityRangeEnd) {
-                            quantityRangeEnd = unitRangeEnd;
-                        }
-                    }
-
-                    extremities = ImmutableTriple.of(quantityRangeStart, quantityRangeEnd, type);
-
-                } else {
-                    Quantity quantityTmp;
-                    if (measurements.getQuantityBase() == null) {
-                        quantityTmp = measurements.getQuantityRange();
-
-                    } else {
-                        quantityTmp = measurements.getQuantityBase();
-                    }
-
-                    int quantityTmpStart = quantityTmp.getLayoutTokens().get(0).getOffset();
-                    int quantityTmpEnd = quantityTmpStart + quantityTmp.getRawValue().length();
-
-                    if (quantityTmp.getRawUnit() != null) {
-                        List<LayoutToken> quantityTmpTokens = quantityTmp.getRawUnit().getLayoutTokens();
-                        int unitTmpStart = quantityTmpTokens.get(0).getOffset();
-                        int unitTmpEnd = unitTmpStart + quantityTmp.getRawUnit().getRawName().length();
-
-                        if (unitTmpStart < quantityTmpStart) {
-                            quantityTmpStart = unitTmpStart;
-                        } else if (unitTmpEnd > quantityTmpEnd) {
-                            quantityTmpEnd = unitTmpEnd;
-                        }
-
-                    }
-
-                    String type = "";
-                    if (quantityTmp.getType() != null) {
-                        type = lowerCase(quantityTmp.getType().getName());
-                    }
-
-                    extremities = ImmutableTriple.of(quantityTmpStart, quantityTmpEnd, type);
-                }
-
-                break;
-
-            case INTERVAL_MIN_MAX:
-                if (measurements.getQuantityLeast() != null && measurements.getQuantityMost() != null) {
-                    Quantity quantityLeast = measurements.getQuantityLeast();
-                    Quantity quantityMost = measurements.getQuantityMost();
-                    String type = "";
-                    if (quantityLeast.getType() != null) {
-                        type = lowerCase(quantityLeast.getType().getName());
-                    }
-
-                    int quantityIntervalLeastStart = quantityLeast.getLayoutTokens().get(0).getOffset();
-                    int quantityIntervalMostStart = quantityMost.getLayoutTokens().get(0).getOffset();
-                    if (quantityIntervalLeastStart > quantityIntervalMostStart) {
-                        quantityMost = measurements.getQuantityLeast();
-                        quantityLeast = measurements.getQuantityMost();
-                    }
-
-                    int quantityIntervalStart = quantityLeast.getLayoutTokens().get(0).getOffset();
-                    int quantityIntervalEnd = quantityIntervalStart + quantityMost.getRawValue().length();
-
-                    if (quantityLeast.getRawUnit() != null) {
-                        List<LayoutToken> quantityLeastTokens = quantityLeast.getRawUnit().getLayoutTokens();
-                        int unitLeastStart = quantityLeastTokens.get(0).getOffset();
-                        int unitLeastEnd = unitLeastStart + quantityLeast.getRawUnit().getRawName().length();
-
-                        if (unitLeastStart < quantityIntervalStart) {
-                            quantityIntervalStart = unitLeastStart;
-                        } else if (unitLeastEnd > quantityIntervalEnd) {
-                            quantityIntervalEnd = unitLeastEnd;
-                        }
-                    }
-
-                    if (quantityMost.getRawUnit() != null) {
-                        List<LayoutToken> quantityMostTokens = quantityLeast.getRawUnit().getLayoutTokens();
-                        int unitMostStart = quantityMostTokens.get(0).getOffset();
-                        int unitMostEnd = unitMostStart + quantityMost.getRawUnit().getRawName().length();
-
-                        if (unitMostStart < quantityIntervalStart) {
-                            quantityIntervalStart = unitMostStart;
-                        } else if (unitMostEnd > quantityIntervalEnd) {
-                            quantityIntervalEnd = unitMostEnd;
-                        }
-
-                    }
-
-                    extremities = ImmutableTriple.of(quantityIntervalStart, quantityIntervalEnd, type);
-                } else {
-                    Quantity quantityTmp;
-
-                    if (measurements.getQuantityLeast() == null) {
-                        quantityTmp = measurements.getQuantityMost();
-                    } else {
-                        quantityTmp = measurements.getQuantityLeast();
-                    }
-
-
-                    int quantityTmpStart = quantityTmp.getLayoutTokens().get(0).getOffset();
-                    int quantityTmpEnd = quantityTmpStart + quantityTmp.getRawValue().length();
-
-                    if (quantityTmp.getRawUnit() != null) {
-                        List<LayoutToken> quantityTmpTokens = quantityTmp.getRawUnit().getLayoutTokens();
-                        int unitTmpStart = quantityTmpTokens.get(0).getOffset();
-                        int unitTmpEnd = unitTmpStart + quantityTmp.getRawUnit().getRawName().length();
-
-                        if (unitTmpStart < quantityTmpStart) {
-                            quantityTmpStart = unitTmpStart;
-                        } else if (unitTmpEnd > quantityTmpEnd) {
-                            quantityTmpEnd = unitTmpEnd;
-                        }
-
-                    }
-
-                    String type = "";
-                    if (quantityTmp.getType() != null) {
-                        type = lowerCase(quantityTmp.getType().getName());
-                    }
-
-                    extremities = ImmutableTriple.of(quantityTmpStart, quantityTmpEnd, type);
-                }
-                break;
-
-            case CONJUNCTION:
-                List<Quantity> quantityList = measurements.getQuantityList();
-                String type = "";
-                if (isNotEmpty(quantityList)) {
-                    if (quantityList.get(0).getType() != null) {
-                        type = lowerCase(quantityList.get(0).getType().getName());
-                    }
-                }
-
-                if (quantityList.size() > 1) {
-                    extremities = ImmutableTriple.of(quantityList.get(0).getLayoutTokens().get(0).getOffset(),
-                            quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getOffset() +
-                                    quantityList.get(quantityList.size() - 1).getLayoutTokens().get(0).getText().length(),
-                            type);
-                } else {
-                    extremities = ImmutableTriple.of(quantityList.get(0).getLayoutTokens().get(0).getOffset(),
-                            quantityList.get(0).getLayoutTokens().get(0).getOffset() +
-                                    quantityList.get(0).getLayoutTokens().get(0).getText().length(),
-                            type);
-                }
-
-                break;
-        }
-        return extremities;
     }
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {

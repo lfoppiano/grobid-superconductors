@@ -57,6 +57,9 @@ public class SuperconductorsParser extends AbstractParser {
 
     public Pair<String, List<Superconductor>> generateTrainingData(List<LayoutToken> layoutTokens) {
 
+        if(isEmpty(layoutTokens))
+            return Pair.of("", new ArrayList<>());
+
         List<Superconductor> measurements = new ArrayList<>();
         String ress = null;
 
@@ -259,7 +262,7 @@ public class SuperconductorsParser extends AbstractParser {
                 }
 
                 FeaturesVectorSuperconductors featuresVector =
-                        FeaturesVectorSuperconductors.addFeatures(token, null, null, null);
+                        FeaturesVectorSuperconductors.addFeatures(token, null, previous, null);
                 result.append(featuresVector.printVector());
                 result.append("\n");
                 previous = token;
@@ -279,7 +282,7 @@ public class SuperconductorsParser extends AbstractParser {
         TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.SUPERCONDUCTORS, result, tokens);
         List<TaggingTokenCluster> clusters = clusteror.cluster();
 
-        int pos = 0; // position in term of characters for creating the offsets
+//        int pos = 0; // position in term of characters for creating the offsets
 
         for (TaggingTokenCluster cluster : clusters) {
             if (cluster == null) {
@@ -294,72 +297,53 @@ public class SuperconductorsParser extends AbstractParser {
             if (!clusterLabel.equals(SUPERCONDUCTORS_OTHER))
                 boundingBoxes = BoundingBoxCalculator.calculate(cluster.concatTokens());
 
-            String text = LayoutTokensUtil.toText(tokens);
-            if ((pos < text.length() - 1) && (text.charAt(pos) == ' '))
-                pos += 1;
-            int endPos = pos;
-            boolean start = true;
-            for (LayoutToken token : theTokens) {
-                if (token.getText() != null) {
-                    if (start && token.getText().equals(" ")) {
-                        pos++;
-                        endPos++;
-                        continue;
-                    }
-                    if (start)
-                        start = false;
-                    endPos += token.getText().length();
-                }
-            }
+//            OffsetPosition calculatedOffset = calculateOffsets(tokens, theTokens, pos);
+//            pos = calculatedOffset.start;
+//            int endPos = calculatedOffset.end;
 
-            if ((endPos > 0) && (endPos <= text.length()) && (text.charAt(endPos - 1) == ' '))
-                endPos--;
+            int startPos = theTokens.get(0).getOffset();
+            int endPos = startPos + clusterContent.length();
 
-            Superconductor superconductor = null;
+            Superconductor superconductor = new Superconductor();
 
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
-                superconductor = new Superconductor();
                 superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
-                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_CLASS)) {
-                superconductor = new Superconductor();
                 superconductor.setType(SUPERCONDUCTORS_CLASS_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
-                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_SAMPLE)) {
-                superconductor = new Superconductor();
                 superconductor.setType(SUPERCONDUCTORS_SAMPLE_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
-                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_TC)) {
-                superconductor = new Superconductor();
                 superconductor.setType(SUPERCONDUCTORS_TC_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
-                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_TC_VALUE)) {
-                superconductor = new Superconductor();
                 superconductor.setType(SUPERCONDUCTORS_TC_VALUE_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
-                superconductor.setOffsetStart(pos);
+                superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_OTHER)) {
@@ -368,9 +352,37 @@ public class SuperconductorsParser extends AbstractParser {
                 LOGGER.error("Warning: unexpected label in quantity parser: " + clusterLabel.getLabel() + " for " + clusterContent);
             }
 
-            pos = endPos;
+//            pos = endPos;
         }
 
         return resultList;
+    }
+
+    protected OffsetPosition calculateOffsets(List<LayoutToken> tokens, List<LayoutToken> theTokens, int pos) {
+        String text = LayoutTokensUtil.toText(tokens);
+        // ignore spaces at the beginning
+        if ((pos < text.length() - 1) && (text.charAt(pos) == ' '))
+            pos += 1;
+        int endPos = pos;
+        boolean start = true;
+
+        for (LayoutToken token : theTokens) {
+            if (token.getText() != null) {
+                if (start && token.getText().equals(" ")) {
+                    pos++;
+                    endPos++;
+                    continue;
+                }
+                if (start)
+                    start = false;
+                endPos += token.getText().length();
+            }
+        }
+
+        //Remove the space at the end
+        if ((endPos > 0) && (endPos <= text.length()) && (text.charAt(endPos - 1) == ' '))
+            endPos--;
+
+        return new OffsetPosition(pos, endPos);
     }
 }

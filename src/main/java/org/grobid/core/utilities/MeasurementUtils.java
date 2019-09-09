@@ -181,8 +181,8 @@ public class MeasurementUtils {
     /**
      * Return the offset of the measurement - useful for matching into sentences or lexicons
      */
-    public static Pair<Integer, Integer> calculateExtremitiesAsOffsets(Measurement measurement) {
-        List<Pair<Integer, Integer>> offsets = new ArrayList<>();
+    public static OffsetPosition calculateExtremitiesAsOffsets(Measurement measurement) {
+        List<OffsetPosition> offsets = new ArrayList<>();
 
         switch (measurement.getType()) {
             case VALUE:

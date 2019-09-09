@@ -22,7 +22,10 @@ import org.grobid.core.layout.LayoutTokenization;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.IOUtilities;
+import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.MeasurementUtils;
+import org.grobid.core.utilities.UnitUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -267,8 +271,6 @@ public class AggregatedProcessing {
 
 
     public OutputResponse process(InputStream inputStream) {
-        parsers = new EngineParsers();
-
         OutputResponse outputResponse = new OutputResponse();
         List<Superconductor> superconductorNamesList = new ArrayList<>();
         outputResponse.setEntities(superconductorNamesList);
@@ -277,8 +279,6 @@ public class AggregatedProcessing {
 
         Document doc = null;
         File file = null;
-
-        OutputResponse response = new OutputResponse();
 
         try {
             file = IOUtilities.writeInputFile(inputStream);
@@ -289,112 +289,7 @@ public class AggregatedProcessing {
                     DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
-            // In the following, we process the relevant textual content of the document
-
-            // for refining the process based on structures, we need to filter
-            // segment of interest (e.g. header, body, annex) and possibly apply
-            // the corresponding model to further filter by structure types
-
-            // from the header, we are interested in title, abstract and keywords
-            SortedSet<DocumentPiece> documentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
-            if (documentParts != null) {
-                org.apache.commons.lang3.tuple.Pair<String, List<LayoutToken>> headerStruct = parsers.getHeaderParser().getSectionHeaderFeatured(doc, documentParts, true);
-                List<LayoutToken> tokenizationHeader = headerStruct.getRight();
-                String header = headerStruct.getLeft();
-                String labeledResult = null;
-                if ((header != null) && (header.trim().length() > 0)) {
-                    labeledResult = parsers.getHeaderParser().label(header);
-
-                    BiblioItem resHeader = new BiblioItem();
-                    //parsers.getHeaderParser().processingHeaderSection(false, doc, resHeader);
-                    resHeader.generalResultMapping(doc, labeledResult, tokenizationHeader);
-
-                    // title
-                    List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
-                    if (titleTokens != null) {
-                        outputResponse.extendEntities(process(titleTokens));
-                    }
-
-                    // abstract
-                    List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
-                    if (abstractTokens != null) {
-                        outputResponse.extendEntities(process(abstractTokens));
-                    }
-
-                    // keywords
-                    List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
-                    if (keywordTokens != null) {
-                        outputResponse.extendEntities(process(keywordTokens));
-                    }
-                }
-            }
-
-            // we can process all the body, in the future figure and table could be the
-            // object of more refined processing
-            documentParts = doc.getDocumentPart(SegmentationLabels.BODY);
-            if (documentParts != null) {
-                org.apache.commons.lang3.tuple.Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, documentParts);
-
-                String fulltextTaggedRawResult = null;
-                if (featSeg != null) {
-                    String featureText = featSeg.getLeft();
-                    LayoutTokenization layoutTokenization = featSeg.getRight();
-
-                    if (StringUtils.isNotEmpty(featureText)) {
-                        fulltextTaggedRawResult = parsers.getFullTextParser().label(featureText);
-                    }
-
-                    TaggingTokenClusteror clusteror = new TaggingTokenClusteror(GrobidModels.FULLTEXT, fulltextTaggedRawResult,
-                            layoutTokenization.getTokenization(), true);
-
-                    //Iterate and exclude figures, tables, equations and citation markers
-                    for (TaggingTokenCluster cluster : Iterables.filter(clusteror.cluster(),
-                            new TaggingTokenClusteror
-                                    .LabelTypeExcludePredicate(TaggingLabels.TABLE_MARKER, TaggingLabels.EQUATION, TaggingLabels.CITATION_MARKER,
-                                    TaggingLabels.FIGURE_MARKER, TaggingLabels.EQUATION_MARKER, TaggingLabels.EQUATION_LABEL))) {
-
-                        if (cluster.getTaggingLabel().equals(TaggingLabels.FIGURE)) {
-                            //apply the figure model to only get the caption
-                            final Figure processedFigure = parsers.getFigureParser()
-                                    .processing(cluster.concatTokens(), cluster.getFeatureBlock());
-
-                            List<LayoutToken> tokens = processedFigure.getCaptionLayoutTokens();
-
-                            outputResponse.extendEntities(process(tokens));
-
-                        } else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
-                            //apply the table model to only get the caption/description
-                            final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
-                            List<LayoutToken> tokens = processedTable.getFullDescriptionTokens();
-
-                            outputResponse.extendEntities(process(tokens));
-                        } else {
-                            final List<LabeledTokensContainer> labeledTokensContainers = cluster.getLabeledTokensContainers();
-
-                            // extract all the layout tokens from the cluster as a list
-                            List<LayoutToken> tokens = labeledTokensContainers.stream()
-                                    .map(LabeledTokensContainer::getLayoutTokens)
-                                    .flatMap(List::stream)
-                                    .collect(Collectors.toList());
-
-                            outputResponse.extendEntities(process(tokens));
-
-                        }
-
-                    }
-                }
-            }
-
-            // we don't process references (although reference titles could be relevant)
-            // acknowledgement?
-
-            // we can process annexes
-            documentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
-            if (documentParts != null) {
-
-                List<LayoutToken> tokens = doc.getTokenizationParts(documentParts, doc.getTokenizations());
-                outputResponse.extendEntities(process(tokens));
-            }
+            GrobidPDFEngine.processDocument(doc, l -> outputResponse.extendEntities(process(l)));
 
             List<Page> pages = new ArrayList<>();
             for (org.grobid.core.layout.Page page : doc.getPages()) {

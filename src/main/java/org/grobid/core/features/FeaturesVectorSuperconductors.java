@@ -1,5 +1,6 @@
 package org.grobid.core.features;
 
+import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.TextUtilities;
 
@@ -24,24 +25,14 @@ public class FeaturesVectorSuperconductors {
     // one of NOPUNCT, OPENBRACKET, ENDBRACKET, DOT, COMMA, HYPHEN, QUOTE, PUNCT (default)
     // OPENQUOTE, ENDQUOTE
     public String punctType = null;
-
-    //    public String blockStatus = null; // one of BLOCKSTART, BLOCKIN, BLOCKEND
-    //    public String lineStatus = null; // one of LINESTART, LINEIN, LINEEND
-    //    public String alignmentStatus = null; // one of ALIGNEDLEFT, INDENTED, CENTERED - applied to the whole line
     public String fontStatus = null; // one of NEWFONT, SAMEFONT
     public String fontSize = null; // one of HIGHERFONT, SAMEFONTSIZE, LOWERFONT
-
-    public boolean superscript = false;
-    public boolean subscript = false;
+    public String fontStyle = null;   // one of BASELINE (default), SUPERSCRIPT, SUBSCRIPT
 
     public boolean bold = false;
     public boolean italic = false;
-    //    public boolean rotation = false;
-    public boolean containDash = false;
 
-    public String chemspotCompound = null;
-
-//    public boolean isPartOfUnitPattern = false;
+    public String chemicalCompound = null;
 
     public String shadowNumber = null; // Convert digits to “0”
 
@@ -109,13 +100,19 @@ public class FeaturesVectorSuperconductors {
         res.append(" " + wordShapeTrimmed);
 
         //Font status
-//        res.append(" " + fontStatus);
+        res.append(" " + fontStatus);
 
         //Font size
-//        res.append(" " + fontSize);
+        res.append(" " + fontSize);
 
-        //Is known compound / substance from chemspot
-//        res.append(" " + chemspotCompound);
+        res.append(" " + bold);
+
+        res.append(" " + italic);
+
+        res.append(" " + fontStyle);
+
+        // value returned by a chemical recognitor
+        res.append(" " + chemicalCompound);
 
         // label - for training data (1)
         if (label != null)
@@ -188,27 +185,33 @@ public class FeaturesVectorSuperconductors {
         if (featuresVector.punctType == null)
             featuresVector.punctType = "NOPUNCT";
 
-//        featuresVector.isKnownUnitToken = isUnitToken;
+        if (token.getBold())
+            featuresVector.bold = true;
 
-        //featuresVector.isPartOfUnitPattern = isUnitPattern;
+        if (token.getItalic())
+            featuresVector.italic = true;
 
-//        if (token.getBold()) featuresVector.bold = true;
+        if (StringUtils.equals(previousToken.getFont(), token.getFont())) {
+            featuresVector.fontStatus = "SAMEFONT";
+        } else {
+            featuresVector.fontStatus = "DIFFERENTFONT";
+        }
 
-//        if (token.getItalic()) featuresVector.italic = true;
+        if (previousToken.fontSize < token.fontSize) {
+            featuresVector.fontSize = "HIGHERFONT";
+        } else if (previousToken.fontSize == token.fontSize) {
+            featuresVector.fontSize = "SAMEFONTSIZE";
+        } else {
+            featuresVector.fontSize = "LOWERFONT";
+        }
 
-//        if (StringUtils.equals(previousToken.getFont(), token.getFont())) {
-//            featuresVector.fontStatus = "SAMEFONT";
-//        } else {
-//            featuresVector.fontStatus = "DIFFERENTFONT";
-//        }
-
-//        if (previousToken.fontSize < token.fontSize) {
-//            featuresVector.fontSize = "HIGHERFONT";
-//        } else if (previousToken.fontSize == token.fontSize) {
-//            featuresVector.fontSize = "SAMEFONTSIZE";
-//        } else {
-//            featuresVector.fontSize = "LOWERFONT";
-//        }
+        if(token.isSuperscript()) {
+            featuresVector.fontStyle = "SUPERSCRIPT";
+        } else if (token.isSubscript()) {
+            featuresVector.fontStyle = "SUBSCRIPT";
+        } else {
+            featuresVector.fontStyle = "BASELINE";
+        }
 
         featuresVector.shadowNumber = TextUtilities.shadowNumbers(string);
 
@@ -216,8 +219,8 @@ public class FeaturesVectorSuperconductors {
 
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
 
-        // Chemspot
-//        featuresVector.chemspotCompound = compoundType;
+        // Chemical compound
+        featuresVector.chemicalCompound = compoundType;
 
         return featuresVector;
     }
