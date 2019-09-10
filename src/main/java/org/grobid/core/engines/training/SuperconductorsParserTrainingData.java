@@ -30,10 +30,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 import static org.grobid.core.utilities.QuantityOperations.getContainingOffset;
 import static org.grobid.core.utilities.QuantityOperations.getOffset;
@@ -94,8 +96,8 @@ public class SuperconductorsParserTrainingData {
         Document document = null;
         try {
             GrobidAnalysisConfig config =
-                    new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                            .build();
+                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                    .build();
             document = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
         } catch (Exception e) {
             throw new GrobidException("Cannot create training data because GROBID Fulltext model failed on the PDF: " + file.getPath(), e);
@@ -111,14 +113,27 @@ public class SuperconductorsParserTrainingData {
         GrobidPDFEngine.processDocument(document, layoutTokens -> {
 
             List<LayoutToken> normalisedLayoutTokens = LayoutTokensUtil.dehyphenize(layoutTokens)
-                    .stream()
-                    .map(m -> {
-                        m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
-                        m.setText(StringUtils.replace(m.getText(), "\n", " "));
-                        return m;
-                    })
-                    .collect(Collectors.toList());
+                .stream()
+                .map(m -> {
+                    m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
+                    m.setText(StringUtils.replace(m.getText(), "\n", " "));
+                    return m;
+                })
+                .collect(Collectors.toList());
 
+            // Trying to fix the eventual offset mismatches
+
+            IntStream
+                .range(1, normalisedLayoutTokens.size())
+                .forEach(i -> {
+                    int expectedFollowingOffset = normalisedLayoutTokens.get(i - 1).getOffset()
+                        + StringUtils.length(normalisedLayoutTokens.get(i - 1).getText());
+
+                    if (expectedFollowingOffset != normalisedLayoutTokens.get(i).getOffset()) {
+                        LOGGER.debug("Correcting offset " + i + " from " + normalisedLayoutTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
+                        normalisedLayoutTokens.get(i).setOffset(expectedFollowingOffset);
+                    }
+                });
 
             String text = LayoutTokensUtil.toText(normalisedLayoutTokens);
 
@@ -132,11 +147,11 @@ public class SuperconductorsParserTrainingData {
             Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(normalisedLayoutTokens);
             List<Measurement> measurements = quantityParser.process(normalisedLayoutTokens);
             List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurements(measurements,
-                    Arrays.asList(
-                            UnitUtilities.Unit_Type.TEMPERATURE,
-                            UnitUtilities.Unit_Type.MAGNETIC_FIELD_STRENGTH,
-                            UnitUtilities.Unit_Type.PRESSURE
-                    )
+                Arrays.asList(
+                    UnitUtilities.Unit_Type.TEMPERATURE,
+                    UnitUtilities.Unit_Type.MAGNETIC_FIELD_STRENGTH,
+                    UnitUtilities.Unit_Type.PRESSURE
+                )
             );
 
             features.append(stringListPair.getLeft());
@@ -144,36 +159,36 @@ public class SuperconductorsParserTrainingData {
             features.append("\n");
 
             List<Superconductor> measurementsAdapted = filteredMeasurements
-                    .stream()
-                    .map(m -> {
-                        OffsetPosition offset = QuantityOperations.getContainingOffset(QuantityOperations.getOffset(m));
+                .stream()
+                .map(m -> {
+                    OffsetPosition offset = QuantityOperations.getContainingOffset(QuantityOperations.getOffset(m));
 
-                        Superconductor superconductor = new Superconductor();
-                        superconductor.setOffsetStart(offset.start);
-                        superconductor.setOffsetEnd(offset.end);
-                        superconductor.setSource(Superconductor.SOURCE_QUANTITIES);
+                    Superconductor superconductor = new Superconductor();
+                    superconductor.setOffsetStart(offset.start);
+                    superconductor.setOffsetEnd(offset.end);
+                    superconductor.setSource(Superconductor.SOURCE_QUANTITIES);
 
-                        String type = lowerCase(QuantityOperations.getType(m).getName());
-                        if (StringUtils.equals("temperature", type)) {
-                            type = SUPERCONDUCTORS_TC_VALUE_LABEL;
-                        } else if (StringUtils.equals("magnetic field strength", type)) {
-                            type = SUPERCONDUCTORS_MAGNETISATION_LABEL;
-                        }
-                        superconductor.setType(type);
+                    String type = lowerCase(QuantityOperations.getType(m).getName());
+                    if (StringUtils.equals("temperature", type)) {
+                        type = SUPERCONDUCTORS_TC_VALUE_LABEL;
+                    } else if (StringUtils.equals("magnetic field strength", type)) {
+                        type = SUPERCONDUCTORS_MAGNETISATION_LABEL;
+                    }
+                    superconductor.setType(type);
 
-                        List<LayoutToken> quantityLayoutTokens = normalisedLayoutTokens
-                                .stream()
-                                .filter(l -> l.getOffset() >= superconductor.getOffsetStart()
-                                        && l.getOffset() < superconductor.getOffsetEnd())
-                                .collect(Collectors.toList());
+                    List<LayoutToken> quantityLayoutTokens = normalisedLayoutTokens
+                        .stream()
+                        .filter(l -> l.getOffset() >= superconductor.getOffsetStart()
+                            && l.getOffset() < superconductor.getOffsetEnd())
+                        .collect(Collectors.toList());
 
-                        String name = LayoutTokensUtil.toText(quantityLayoutTokens);
-                        superconductor.setName(name);
+                    String name = LayoutTokensUtil.toText(quantityLayoutTokens);
+                    superconductor.setName(name);
 
-                        return superconductor;
-                    })
-                    .filter(s -> StringUtils.isNotEmpty(s.getType()))
-                    .collect(Collectors.toList());
+                    return superconductor;
+                })
+                .filter(s -> StringUtils.isNotEmpty(s.getType()))
+                .collect(Collectors.toList());
 
             List<Superconductor> superconductorList = stringListPair.getRight();
             superconductorList.addAll(measurementsAdapted);
@@ -196,9 +211,9 @@ public class SuperconductorsParserTrainingData {
     private List<Superconductor> pruneOverlappingAnnotations(List<Superconductor> superconductorList) {
         //Sorting by offsets
         List<Superconductor> sortedEntities = superconductorList
-                .stream()
-                .sorted(Comparator.comparingInt(Superconductor::getOffsetStart))
-                .collect(Collectors.toList());
+            .stream()
+            .sorted(Comparator.comparingInt(Superconductor::getOffsetStart))
+            .collect(Collectors.toList());
 
 //                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());
 
@@ -255,8 +270,8 @@ public class SuperconductorsParserTrainingData {
             }
 
             List<File> refFiles = Arrays.stream(Objects.requireNonNull(path.listFiles())).filter(
-                    file -> file.getName().endsWith(".pdf") || file.getName().endsWith(".PDF"))
-                    .collect(Collectors.toList());
+                file -> file.getName().endsWith(".pdf") || file.getName().endsWith(".PDF"))
+                .collect(Collectors.toList());
 
             LOGGER.info(refFiles.size() + " files to be processed.");
 
@@ -269,7 +284,7 @@ public class SuperconductorsParserTrainingData {
                     createTrainingPDF(file, outputDirectory, outputFormat, n);
                 } catch (final Exception exp) {
                     LOGGER.error("An error occured while processing the following pdf: "
-                            + file.getPath(), exp);
+                        + file.getPath(), exp);
                 }
                 n++;
             }

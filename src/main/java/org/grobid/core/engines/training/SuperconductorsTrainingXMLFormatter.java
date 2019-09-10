@@ -3,6 +3,7 @@ package org.grobid.core.engines.training;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
 import org.grobid.core.data.Superconductor;
@@ -36,7 +37,6 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
     protected Element trainingExtraction(List<Superconductor> superconductorList, List<LayoutToken> tokens) {
         Element p = teiElement("p");
 //        int pos = 0;
-
 //        String text = LayoutTokensUtil.toText(tokens);
 
         int startOffset = 0;
@@ -52,17 +52,15 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 
             String name = superconductor.getName();
             // remove < and > from the material name \o/
-            Element supercon = teiElement(
-                substring(superconductor.getType(), 1, length(superconductor.getType()) - 1));
+            Element supercon = teiElement(prepareType(superconductor.getType()));
             supercon.appendChild(name);
 
-            String contentBefore = LayoutTokensUtil.toText(
-                LayoutTokensUtil.subListByOffset(tokens, startPosition, start));
+            String contentBefore = LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition, start));
             p.appendChild(contentBefore);
-            if(LayoutTokensUtil.toText(
-                LayoutTokensUtil.subListByOffset(tokens, start,  start+2)).equals(" ")) {
-                p.appendChild(" ");
-            }
+//            if(LayoutTokensUtil.toText(
+//                LayoutTokensUtil.subListByOffset(tokens, start,  start+2)).equals(" ")) {
+//                p.appendChild(" ");
+//            }
 
 //            int initPos = pos;
 //            int firstPos = pos;
@@ -84,14 +82,20 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 //            }
 
             p.appendChild(supercon);
-
-                startPosition = end;
+            startPosition = end;
         }
 //        p.appendChild(text.substring(pos));
 
-        p.appendChild(
-            LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition)));
+        p.appendChild(StringUtils.trim(LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition))));
 
         return p;
+    }
+
+    private String prepareType(String type) {
+        String typeReturn = type;
+        if(StringUtils.startsWithIgnoreCase(type, "<")) {
+            typeReturn = substring(type, 1, length(type) - 1);
+        }
+        return typeReturn;
     }
 }
