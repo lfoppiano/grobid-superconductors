@@ -110,19 +110,19 @@ public class SuperconductorsParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, layoutTokens -> {
+        GrobidPDFEngine.processDocument(document, normalisedLayoutTokens -> {
 
-            List<LayoutToken> normalisedLayoutTokens = LayoutTokensUtil.dehyphenize(layoutTokens)
-                .stream()
-                .map(m -> {
-                    m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
-                    m.setText(StringUtils.replace(m.getText(), "\n", " "));
-                    return m;
-                })
-                .collect(Collectors.toList());
-
-            // Trying to fix the eventual offset mismatches
-
+//            List<LayoutToken> normalisedLayoutTokens = LayoutTokensUtil.dehyphenize(layoutTokens)
+//                .stream()
+//                .map(m -> {
+//                    m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
+//                    m.setText(StringUtils.replace(m.getText(), "\n", " "));
+//                    return m;
+//                })
+//                .collect(Collectors.toList());
+//
+//            // Trying to fix the eventual offset mismatches
+//
             IntStream
                 .range(1, normalisedLayoutTokens.size())
                 .forEach(i -> {
@@ -130,8 +130,8 @@ public class SuperconductorsParserTrainingData {
                         + StringUtils.length(normalisedLayoutTokens.get(i - 1).getText());
 
                     if (expectedFollowingOffset != normalisedLayoutTokens.get(i).getOffset()) {
-                        LOGGER.debug("Correcting offset " + i + " from " + normalisedLayoutTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
-                        normalisedLayoutTokens.get(i).setOffset(expectedFollowingOffset);
+                        LOGGER.warn("Crossvalidating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
+//                        normalisedLayoutTokens.get(i).setOffset(expectedFollowingOffset);
                     }
                 });
 

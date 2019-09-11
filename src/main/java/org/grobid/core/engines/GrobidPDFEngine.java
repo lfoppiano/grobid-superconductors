@@ -13,11 +13,15 @@ import org.grobid.core.document.DocumentPiece;
 import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
+import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.layout.LayoutTokenization;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
+import org.grobid.core.utilities.LayoutTokensUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -28,6 +32,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 public class GrobidPDFEngine {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GrobidPDFEngine.class);
 
     private static final List<TaggingLabel> EXCLUDED_TAGGING_LABELS = Arrays.asList(
         TaggingLabels.TABLE_MARKER, TaggingLabels.CITATION_MARKER, TaggingLabels.FIGURE_MARKER,
@@ -75,9 +80,9 @@ public class GrobidPDFEngine {
                 List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
                 if (isNotEmpty(abstractTokens)) {
                     Pair<String, List<LayoutToken>> abstractTokenPostProcessed = parsers.getFullTextParser().processShort(abstractTokens, doc);
-                    List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(abstractTokenPostProcessed.getRight());
-                    addSpaceAtTheEnd(abstractTokens, normalisedLayoutTokens);
-                    outputLayoutTokens.add(normalisedLayoutTokens);
+                    List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
+                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
+                    outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
                 }
 
                 // keywords
@@ -126,7 +131,7 @@ public class GrobidPDFEngine {
                             outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                         } else {
                             if (isNotEmpty(outputBodyLayoutTokens)) {
-                                outputLayoutTokens.add(outputBodyLayoutTokens);
+                                outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
                                 outputBodyLayoutTokens = new ArrayList<>();
                             }
                             outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
@@ -137,18 +142,13 @@ public class GrobidPDFEngine {
                         //apply the table model to only get the caption/description
                         final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
                         List<LayoutToken> tokens = processedTable.getFullDescriptionTokens();
-
                         List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(tokens);
 
-//                        if (shouldAttachedToPreviousChunk(normalisedLayoutTokens)) {
-//                            outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
-//                        } else {
                         if (isNotEmpty(outputBodyLayoutTokens)) {
                             outputLayoutTokens.add(outputBodyLayoutTokens);
                             outputBodyLayoutTokens = new ArrayList<>();
                         }
                         outputLayoutTokens.add(normalisedLayoutTokens);
-//                        }
                         previousCluster = cluster;
 
                     } else {
@@ -162,22 +162,21 @@ public class GrobidPDFEngine {
                                 .collect(Collectors.toList());
 
                             Pair<String, List<LayoutToken>> body = parsers.getFullTextParser().processShortNew(tokens, doc);
-                            List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(body.getRight());
-
-                            addSpaceAtTheEnd(tokens, normalisedLayoutTokens);
+                            List<LayoutToken> restructuredTokens = body.getRight();
+                            addSpaceAtTheEnd(tokens, restructuredTokens);
+                            List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(restructuredTokens);
 
                             if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
-//                                    outputLayoutTokens.add(outputBodyLayoutTokens);
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
-//                                outputLayoutTokens.add(normalisedLayoutTokens);
                             } else {
                                 // is new paragraph?
                                 if (isNewParagraph(previousCluster, outputBodyLayoutTokens)) {
 
                                     if (isNotEmpty(outputBodyLayoutTokens)) {
-                                        outputLayoutTokens.add(outputBodyLayoutTokens);
+
+                                        outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
                                         outputBodyLayoutTokens = new ArrayList<>();
                                     }
                                 }
@@ -190,12 +189,9 @@ public class GrobidPDFEngine {
                 }
 
                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                    outputLayoutTokens.add(outputBodyLayoutTokens);
+                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
                 }
             }
-            // process the body
-            outputLayoutTokens.stream().forEach(closure::accept);
-
             // we don't process references (although reference titles could be relevant)
             // acknowledgement?
 
@@ -206,12 +202,14 @@ public class GrobidPDFEngine {
                 List<LayoutToken> tokens = Document.getTokenizationParts(documentParts, doc.getTokenizations());
                 Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShortNew(tokens, doc);
                 if (annex != null) {
-                    List<LayoutToken> cleaned = normaliseAndCleanup(annex.getRight());
-                    addSpaceAtTheEnd(tokens, cleaned);
-
-                    closure.accept(cleaned);
+                    List<LayoutToken> restructuredLayoutTokens = annex.getRight();
+                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
+                    outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
                 }
             }
+
+            // process
+            outputLayoutTokens.stream().forEach(closure::accept);
         }
     }
 
@@ -249,12 +247,14 @@ public class GrobidPDFEngine {
     private static void addSpaceAtTheEnd(List<LayoutToken> originalLayoutTokens, List<LayoutToken> normalisedLayoutTokens) {
         if (isEmpty(originalLayoutTokens) || isEmpty(normalisedLayoutTokens)) return;
 
-        if (Iterables.getLast(originalLayoutTokens).getText().equals(" ") && !Iterables.getLast(normalisedLayoutTokens).getText().equals(" ")) {
+        if (Iterables.getLast(originalLayoutTokens).getText().equals(" ")
+            && !Iterables.getLast(normalisedLayoutTokens).getText().equals(" ")) {
             LayoutToken copyLastToken = new LayoutToken(Iterables.getLast(originalLayoutTokens));
+
             copyLastToken.setX(-1);
             copyLastToken.setY(-1);
-            copyLastToken.setOffset(copyLastToken.getOffset() + copyLastToken.getText().length());
             copyLastToken.setText(" ");
+            copyLastToken.setOffset(copyLastToken.getOffset() + copyLastToken.getText().length());
 
             normalisedLayoutTokens.add(copyLastToken);
         }
@@ -271,14 +271,22 @@ public class GrobidPDFEngine {
     /**
      * transform breaklines in spaces and remove duplicated spaces
      */
-    protected static List<LayoutToken> normaliseAndCleanup(List<LayoutToken> bodyLayouts) {
-        if (isEmpty(bodyLayouts)) {
+    protected static List<LayoutToken> normaliseAndCleanup(List<LayoutToken> layoutTokens) {
+        if (isEmpty(layoutTokens)) {
             return new ArrayList<>();
         }
 
-        bodyLayouts.stream()
-            .forEach(l -> l.setText(l.getText().replace("\n\r", " ").replace("\n", " ")));
+        //De-hypenisation and converting break lines with spaces.
+        List<LayoutToken> bodyLayouts = LayoutTokensUtil.dehyphenize(layoutTokens)
+            .stream()
+            .map(m -> {
+                m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
+                m.setText(StringUtils.replace(m.getText(), "\n", " "));
+                return m;
+            })
+            .collect(Collectors.toList());
 
+        //Removing duplicated spaces
         List<LayoutToken> cleanedTokens = IntStream
             .range(0, bodyLayouts.size())
             .filter(i -> (
@@ -289,6 +297,19 @@ public class GrobidPDFEngine {
             )
             .mapToObj(bodyLayouts::get)
             .collect(Collectors.toList());
+
+        // Correcting offsets after having removed certain tokens
+        IntStream
+            .range(1, cleanedTokens.size())
+            .forEach(i -> {
+                int expectedFollowingOffset = cleanedTokens.get(i - 1).getOffset()
+                    + StringUtils.length(cleanedTokens.get(i - 1).getText());
+
+                if (expectedFollowingOffset != cleanedTokens.get(i).getOffset()) {
+                    LOGGER.warn("Correcting offsets " + i + " from " + cleanedTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
+                    cleanedTokens.get(i).setOffset(expectedFollowingOffset);
+                }
+            });
 
         return cleanedTokens;
     }

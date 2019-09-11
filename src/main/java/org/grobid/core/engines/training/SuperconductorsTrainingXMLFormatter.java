@@ -11,10 +11,12 @@ import org.grobid.core.document.xml.XmlBuilderUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.TeiUtils;
+import org.grobid.core.utilities.TextUtilities;
 
 import java.util.List;
 
 import static org.grobid.core.document.xml.XmlBuilderUtils.teiElement;
+import static org.grobid.core.utilities.TextUtilities.restrictedPunctuations;
 import static org.wipo.analyzers.wipokr.utils.StringUtil.*;
 
 public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutputFormattter {
@@ -36,13 +38,6 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 
     protected Element trainingExtraction(List<Superconductor> superconductorList, List<LayoutToken> tokens) {
         Element p = teiElement("p");
-//        int pos = 0;
-//        String text = LayoutTokensUtil.toText(tokens);
-
-        int startOffset = 0;
-        if (CollectionUtils.isNotEmpty(tokens)) {
-            startOffset = tokens.get(0).getOffset();
-        }
 
         int startPosition = 0;
         for (Superconductor superconductor : superconductorList) {
@@ -57,36 +52,16 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 
             String contentBefore = LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition, start));
             p.appendChild(contentBefore);
-//            if(LayoutTokensUtil.toText(
-//                LayoutTokensUtil.subListByOffset(tokens, start,  start+2)).equals(" ")) {
-//                p.appendChild(" ");
-//            }
-
-//            int initPos = pos;
-//            int firstPos = pos;
-//            while (pos < text.length()) {
-//                if (pos == start) {
-//                    if (initPos == firstPos) {
-//                        p.appendChild(text.substring(firstPos, start));
-//                    } else {
-//                        supercon.appendChild(text.substring(initPos, start));
-//                    }
-//
-//                    pos = end;
-//                    initPos = pos;
-//                }
-
-//                if (pos >= end)
-//                    break;
-//                pos++;
-//            }
-
             p.appendChild(supercon);
             startPosition = end;
         }
-//        p.appendChild(text.substring(pos));
+        String textStripEnd = StringUtils.stripEnd(LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition)), null);
 
-        p.appendChild(StringUtils.trim(LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition))));
+        //If the last chunk starts with punctuation, I trim the space
+        if(StringUtils.containsAny(StringUtils.substring(StringUtils.trim(textStripEnd), 0, 1), restrictedPunctuations)) {
+            textStripEnd = StringUtils.trim(textStripEnd);
+        }
+        p.appendChild(textStripEnd);
 
         return p;
     }
