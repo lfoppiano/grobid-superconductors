@@ -161,7 +161,7 @@ public class GrobidPDFEngine {
                                 .flatMap(List::stream)
                                 .collect(Collectors.toList());
 
-                            Pair<String, List<LayoutToken>> body = parsers.getFullTextParser().processShortNew(tokens, doc);
+                            Pair<String, List<LayoutToken>> body = parsers.getFullTextParser().processShort(tokens, doc);
                             List<LayoutToken> restructuredTokens = body.getRight();
                             addSpaceAtTheEnd(tokens, restructuredTokens);
                             List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(restructuredTokens);
@@ -200,7 +200,7 @@ public class GrobidPDFEngine {
             if (documentParts != null) {
 
                 List<LayoutToken> tokens = Document.getTokenizationParts(documentParts, doc.getTokenizations());
-                Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShortNew(tokens, doc);
+                Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShort(tokens, doc);
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
                     addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
