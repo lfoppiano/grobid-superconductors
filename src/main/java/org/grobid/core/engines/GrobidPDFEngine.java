@@ -35,7 +35,7 @@ public class GrobidPDFEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrobidPDFEngine.class);
 
     private static final List<TaggingLabel> EXCLUDED_TAGGING_LABELS = Arrays.asList(
-        TaggingLabels.TABLE_MARKER, TaggingLabels.CITATION_MARKER, TaggingLabels.FIGURE_MARKER,
+        TaggingLabels.TABLE_MARKER, TaggingLabels.TABLE, TaggingLabels.CITATION_MARKER, TaggingLabels.FIGURE_MARKER,
         TaggingLabels.EQUATION_MARKER, TaggingLabels.EQUATION, TaggingLabels.EQUATION_LABEL
     );
 
@@ -168,6 +168,7 @@ public class GrobidPDFEngine {
 
                             if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
+                                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
                             } else {
