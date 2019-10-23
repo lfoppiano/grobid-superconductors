@@ -126,31 +126,32 @@ public class GrobidPDFEngine {
 
                         List<LayoutToken> tokens = processedFigure.getCaptionLayoutTokens();
                         List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(tokens);
-
-                        if (!isNewParagraphFigureCaption(previousCluster, normalisedLayoutTokens)) {
-                            outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
-                        } else {
-                            if (isNotEmpty(outputBodyLayoutTokens)) {
-                                outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
-                                outputBodyLayoutTokens = new ArrayList<>();
+                        if(isNotEmpty(normalisedLayoutTokens)) {
+                            if (!isNewParagraphFigureCaption(previousCluster, normalisedLayoutTokens)) {
+                                outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
+                            } else {
+                                if (isNotEmpty(outputBodyLayoutTokens)) {
+                                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
+                                    outputBodyLayoutTokens = new ArrayList<>();
+                                }
+                                outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                             }
-                            outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
+                            previousCluster = cluster;
                         }
-                        previousCluster = cluster;
 
                     } else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
                         //apply the table model to only get the caption/description
                         final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
                         List<LayoutToken> tokens = processedTable.getFullDescriptionTokens();
                         List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(tokens);
-
-                        if (isNotEmpty(outputBodyLayoutTokens)) {
-                            outputLayoutTokens.add(outputBodyLayoutTokens);
-                            outputBodyLayoutTokens = new ArrayList<>();
+                        if(isNotEmpty(normalisedLayoutTokens)) {
+                            if (isNotEmpty(outputBodyLayoutTokens)) {
+                                outputLayoutTokens.add(outputBodyLayoutTokens);
+                                outputBodyLayoutTokens = new ArrayList<>();
+                            }
+                            outputLayoutTokens.add(normalisedLayoutTokens);
+                            previousCluster = cluster;
                         }
-                        outputLayoutTokens.add(normalisedLayoutTokens);
-                        previousCluster = cluster;
-
                     } else {
                         if (EXCLUDED_TAGGING_LABELS.contains(cluster.getTaggingLabel())) {
                             previousCluster = cluster;
@@ -166,25 +167,27 @@ public class GrobidPDFEngine {
                             addSpaceAtTheEnd(tokens, restructuredTokens);
                             List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(restructuredTokens);
 
-                            if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
-                                if (isNotEmpty(outputBodyLayoutTokens)) {
-                                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
-                                    outputBodyLayoutTokens = new ArrayList<>();
-                                }
-                            } else {
-                                // is new paragraph?
-                                if (isNewParagraph(previousCluster, outputBodyLayoutTokens)) {
-
+                            if(isNotEmpty(normalisedLayoutTokens)) {
+                                if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
                                     if (isNotEmpty(outputBodyLayoutTokens)) {
-
                                         outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
                                         outputBodyLayoutTokens = new ArrayList<>();
                                     }
-                                }
+                                } else {
+                                    // is new paragraph?
+                                    if (isNewParagraph(previousCluster, outputBodyLayoutTokens)) {
 
-                                outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
+                                        if (isNotEmpty(outputBodyLayoutTokens)) {
+
+                                            outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
+                                            outputBodyLayoutTokens = new ArrayList<>();
+                                        }
+                                    }
+
+                                    outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
+                                }
+                                previousCluster = cluster;
                             }
-                            previousCluster = cluster;
                         }
                     }
                 }
@@ -219,13 +222,12 @@ public class GrobidPDFEngine {
      */
     public static boolean isNewParagraph(TaggingTokenCluster previousCluster, List<LayoutToken> layoutTokenAccumulator) {
         return (previousCluster != null
-            && (
-            !MARKER_LABELS.contains(previousCluster.getTaggingLabel())
+            && (!MARKER_LABELS.contains(previousCluster.getTaggingLabel())
                 && previousCluster.getTaggingLabel() != TaggingLabels.TABLE
                 && previousCluster.getTaggingLabel() != TaggingLabels.FIGURE
                 && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION
                 && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION_LABEL
-        )
+            )
         )
             || isEmpty(layoutTokenAccumulator);
     }
