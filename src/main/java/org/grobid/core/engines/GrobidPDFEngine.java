@@ -79,6 +79,7 @@ public class GrobidPDFEngine {
                 // abstract
                 List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
                 if (isNotEmpty(abstractTokens)) {
+                    abstractTokens = BiblioItem.cleanAbstractLayoutTokens(abstractTokens);
                     Pair<String, List<LayoutToken>> abstractTokenPostProcessed = parsers.getFullTextParser().processShort(abstractTokens, doc);
                     List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
                     addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
