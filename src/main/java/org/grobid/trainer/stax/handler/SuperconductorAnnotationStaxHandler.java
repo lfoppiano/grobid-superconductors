@@ -68,7 +68,7 @@ public class SuperconductorAnnotationStaxHandler implements StaxParserContentHan
         if (topLevelTags.contains(localName)) {
             insideParagraph = true;
 
-        } else if (annotationsTags.contains(localName)) {
+        } else if (annotationsTags.contains(localName) && insideParagraph) {
             String text = getAccumulatedText();
             writeData(text, getTag("other"));
 
@@ -101,7 +101,9 @@ public class SuperconductorAnnotationStaxHandler implements StaxParserContentHan
     @Override
     public void onCharacter(XMLStreamReader2 reader) {
         String text = reader.getText();
-        accumulator.append(text);
+        if(insideParagraph) {
+            accumulator.append(text);
+        }
     }
 
     private String getText(XMLStreamReader2 reader) {

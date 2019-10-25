@@ -1,15 +1,12 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import org.apache.commons.dbutils.AbstractQueryRunner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.features.FeaturesVectorSuperconductors;
-import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
@@ -102,7 +99,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
             // then we convert the tei files into the usual CRF label format
             // we process all tei files in the output directory
             File[] refFiles = adaptedCorpusDir.listFiles((dir, name) ->
-                    name.toLowerCase().endsWith(".tei") || name.toLowerCase().endsWith(".tei.xml")
+                name.toLowerCase().endsWith(".tei") || name.toLowerCase().endsWith(".tei.xml")
             );
 
             if (refFiles == null) {
@@ -121,7 +118,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                        Arrays.asList("material", "tc", "tcValue", "class"));
+                    Arrays.asList("material", "tc", "tcValue", "class", "me_method"));
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
@@ -130,14 +127,14 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 // we can now add the features
                 // we open the featured file
                 File theRawFile = new File(adaptedCorpusDir + File.separator +
-                        name.replace(".tei.xml", ".features.txt"));
+                    name.replace(".tei.xml", ".features.txt"));
                 if (!theRawFile.exists()) {
                     LOGGER.warn("Raw file " + theRawFile + " does not exist. Please have a look!");
                     continue;
                 }
                 int q = 0;
                 BufferedReader bis = new BufferedReader(
-                        new InputStreamReader(new FileInputStream(theRawFile), UTF_8));
+                    new InputStreamReader(new FileInputStream(theRawFile), UTF_8));
                 String line;
                 while ((line = bis.readLine()) != null) {
                     int ii = line.indexOf('\t');
@@ -212,8 +209,6 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         GrobidProperties.getInstance();
 
         Trainer trainer = new SuperconductorsTrainer();
-
-        GrobidProperties.getInstance();
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");

@@ -35,7 +35,8 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     private final static String OUTPUT_DIRECTORY = "Output directory";
     private final static String MODE = "Method of calculation";
     public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("p");
-    public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc", "sample", "tcValue", "pressure", "magnetisation", "shape", "class");
+    public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc", "sample",
+        "tcValue", "pressure", "magnetisation", "me_method", "shape", "class");
 
 
     public InterAnnotationAgreementCommand() {
@@ -47,18 +48,18 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
         super.configure(subparser);
 
         subparser.addArgument("-dIn")
-                .dest(INPUT_DIRECTORY)
-                .type(String.class)
-                .required(true)
-                .help("Input directory");
+            .dest(INPUT_DIRECTORY)
+            .type(String.class)
+            .required(true)
+            .help("Input directory");
 
         subparser.addArgument("-m")
-                .dest(MODE)
-                .type(String.class)
-                .choices(InterAnnotationAgreementType.CODING, InterAnnotationAgreementType.UNITIZING)
-                .setDefault(InterAnnotationAgreementType.UNITIZING)
-                .required(false)
-                .help("Method of calculation.");
+            .dest(MODE)
+            .type(String.class)
+            .choices(InterAnnotationAgreementType.CODING, InterAnnotationAgreementType.UNITIZING)
+            .setDefault(InterAnnotationAgreementType.UNITIZING)
+            .required(false)
+            .help("Method of calculation.");
     }
 
     @Override
@@ -69,7 +70,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
         InterAnnotationAgreementType mode = namespace.get(MODE);
 
         System.out.println("Calculating IAA between the following directories: " +
-                Arrays.stream(directories).map(f -> f.getAbsolutePath()).collect(Collectors.joining(", \n")));
+            Arrays.stream(directories).map(f -> f.getAbsolutePath()).collect(Collectors.joining(", \n")));
 
         if (mode.equals(InterAnnotationAgreementType.CODING)) {
 
@@ -92,25 +93,25 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             new ReliabilityMatrixPrinter().print(System.out, study);
         } else {
             InterAnnotationAgreementUnitizingProcessor iiaProcessor
-                    = new InterAnnotationAgreementUnitizingProcessor(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                    ANNOTATION_DEFAULT_TAGS);
+                = new InterAnnotationAgreementUnitizingProcessor(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
+                ANNOTATION_DEFAULT_TAGS);
 
             List<UnitizedStudyWrapper> studies = iiaProcessor.extractAnnotations(Arrays.asList(directories));
 
             // General evaluation
             System.out.println("== General evaluation (considering all the annotators) ==");
             double averageAlpha = studies.stream()
-                    .mapToDouble(UnitizedStudyWrapper::getAgreement).summaryStatistics().getAverage();
+                .mapToDouble(UnitizedStudyWrapper::getAgreement).summaryStatistics().getAverage();
             System.out.println("Krippendorf alpha agreements: " + averageAlpha);
 
             // Evaluation by category
             System.out.println("Krippendorf alpha agreement by category: ");
 
             Map<String, Double> averageByCategory = studies.stream()
-                    .map(UnitizedStudyWrapper::getAgreementByCategory)
-                    .flatMap(m -> m.entrySet().stream())
-                    .collect(Collectors.groupingBy(Map.Entry::getKey,
-                            Collectors.averagingDouble(Map.Entry::getValue)));
+                .map(UnitizedStudyWrapper::getAgreementByCategory)
+                .flatMap(m -> m.entrySet().stream())
+                .collect(Collectors.groupingBy(Map.Entry::getKey,
+                    Collectors.averagingDouble(Map.Entry::getValue)));
 
             averageByCategory.forEach((c, d) -> {
                 System.out.println(c + ": " + d);
@@ -118,17 +119,17 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
             // Pairwise evaluation
             Map<Pair<Integer, Integer>, Double> pairwiseAverage = studies
-                    .stream()
-                    .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.averagingDouble(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementAverage)));
+                .stream()
+                .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
+                .flatMap(Collection::stream)
+                .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.averagingDouble(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementAverage)));
 
             // Pairwise matrix
             Map<Pair<Integer, Integer>, List<InterAnnotationAgreementPairwiseComparisonEntry>> collect = studies
-                    .stream()
-                    .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.toList()));
+                .stream()
+                .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
+                .flatMap(Collection::stream)
+                .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.toList()));
 
             collect.forEach((k, v) -> {
                 System.out.println();
@@ -141,11 +142,11 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
                 System.out.println("Agreement by categories: ");
                 Map<String, Double> collect1 = v
-                        .stream()
-                        .map(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementByCategory)
-                        .flatMap(m -> m.entrySet().stream())
-                        .collect(Collectors.groupingBy(Map.Entry::getKey,
-                                Collectors.averagingDouble(Map.Entry::getValue)));
+                    .stream()
+                    .map(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementByCategory)
+                    .flatMap(m -> m.entrySet().stream())
+                    .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        Collectors.averagingDouble(Map.Entry::getValue)));
 
                 collect1.keySet().forEach(a -> {
                     System.out.println(a + ": " + collect1.get(a));
