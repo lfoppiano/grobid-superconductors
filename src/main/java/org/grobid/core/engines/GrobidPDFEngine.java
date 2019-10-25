@@ -35,7 +35,7 @@ public class GrobidPDFEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrobidPDFEngine.class);
 
     private static final List<TaggingLabel> EXCLUDED_TAGGING_LABELS = Arrays.asList(
-        TaggingLabels.TABLE_MARKER, TaggingLabels.TABLE, TaggingLabels.CITATION_MARKER, TaggingLabels.FIGURE_MARKER,
+        TaggingLabels.TABLE_MARKER, TaggingLabels.CITATION_MARKER, TaggingLabels.FIGURE_MARKER,
         TaggingLabels.EQUATION_MARKER, TaggingLabels.EQUATION, TaggingLabels.EQUATION_LABEL
     );
 
@@ -120,14 +120,16 @@ public class GrobidPDFEngine {
                 for (TaggingTokenCluster cluster : clusteror.cluster()) {
                     final List<LabeledTokensContainer> labeledTokensContainers = cluster.getLabeledTokensContainers();
 
-                    if (cluster.getTaggingLabel().equals(TaggingLabels.FIGURE)) {
+                    if (EXCLUDED_TAGGING_LABELS.contains(cluster.getTaggingLabel())) {
+                        previousCluster = cluster;
+                    } else if (cluster.getTaggingLabel().equals(TaggingLabels.FIGURE)) {
                         //apply the figure model to only get the caption
                         final Figure processedFigure = parsers.getFigureParser()
                             .processing(cluster.concatTokens(), cluster.getFeatureBlock());
 
                         List<LayoutToken> tokens = processedFigure.getCaptionLayoutTokens();
                         List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(tokens);
-                        if(isNotEmpty(normalisedLayoutTokens)) {
+                        if (isNotEmpty(normalisedLayoutTokens)) {
                             if (!isNewParagraphFigureCaption(previousCluster, normalisedLayoutTokens)) {
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                             } else {
@@ -140,12 +142,23 @@ public class GrobidPDFEngine {
                             previousCluster = cluster;
                         }
 
-                    } else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
+                    } /*else if (cluster.getTaggingLabel().equals(TaggingLabels.TABLE)) {
                         //apply the table model to only get the caption/description
                         final Table processedTable = parsers.getTableParser().processing(cluster.concatTokens(), cluster.getFeatureBlock());
                         List<LayoutToken> tokens = processedTable.getFullDescriptionTokens();
                         List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(tokens);
                         if(isNotEmpty(normalisedLayoutTokens)) {
+                            *//*
+                            if (!isNewParagraphTableCaption(previousCluster, normalisedLayoutTokens)) {
+                                outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
+                            } else {
+                                if (isNotEmpty(outputBodyLayoutTokens)) {
+                                    outputLayoutTokens.add(outputBodyLayoutTokens);
+                                    outputBodyLayoutTokens = new ArrayList<>();
+                                }
+                                outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
+                            }
+                             *//*
                             if (isNotEmpty(outputBodyLayoutTokens)) {
                                 outputLayoutTokens.add(outputBodyLayoutTokens);
                                 outputBodyLayoutTokens = new ArrayList<>();
@@ -153,44 +166,40 @@ public class GrobidPDFEngine {
                             outputLayoutTokens.add(normalisedLayoutTokens);
                             previousCluster = cluster;
                         }
-                    } else {
-                        if (EXCLUDED_TAGGING_LABELS.contains(cluster.getTaggingLabel())) {
-                            previousCluster = cluster;
-                        } else {
-                            // extract all the layout tokens from the cluster as a list
-                            List<LayoutToken> tokens = labeledTokensContainers.stream()
-                                .map(LabeledTokensContainer::getLayoutTokens)
-                                .flatMap(List::stream)
-                                .collect(Collectors.toList());
+                    } */ else {
+                        // extract all the layout tokens from the cluster as a list
+                        List<LayoutToken> tokens = labeledTokensContainers.stream()
+                            .map(LabeledTokensContainer::getLayoutTokens)
+                            .flatMap(List::stream)
+                            .collect(Collectors.toList());
 
-                            Pair<String, List<LayoutToken>> body = parsers.getFullTextParser().processShort(tokens, doc);
-                            List<LayoutToken> restructuredTokens = body.getRight();
-                            addSpaceAtTheEnd(tokens, restructuredTokens);
-                            List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(restructuredTokens);
+                        Pair<String, List<LayoutToken>> body = parsers.getFullTextParser().processShort(tokens, doc);
+                        List<LayoutToken> restructuredTokens = body.getRight();
+                        addSpaceAtTheEnd(tokens, restructuredTokens);
+                        List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(restructuredTokens);
 
-                            if(isNotEmpty(normalisedLayoutTokens)) {
-                                if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
+                        if (isNotEmpty(normalisedLayoutTokens)) {
+                            if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
+                                if (isNotEmpty(outputBodyLayoutTokens)) {
+                                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
+                                    outputBodyLayoutTokens = new ArrayList<>();
+                                }
+                            } else {
+                                // is new paragraph?
+                                if (isNewParagraph(previousCluster, normalisedLayoutTokens)) {
+
                                     if (isNotEmpty(outputBodyLayoutTokens)) {
                                         outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
                                         outputBodyLayoutTokens = new ArrayList<>();
                                     }
-                                } else {
-                                    // is new paragraph?
-                                    if (isNewParagraph(previousCluster, outputBodyLayoutTokens)) {
-
-                                        if (isNotEmpty(outputBodyLayoutTokens)) {
-
-                                            outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
-                                            outputBodyLayoutTokens = new ArrayList<>();
-                                        }
-                                    }
-
-                                    outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                                 }
-                                previousCluster = cluster;
+
+                                outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                             }
+                            previousCluster = cluster;
                         }
                     }
+
                 }
 
                 if (isNotEmpty(outputBodyLayoutTokens)) {
@@ -221,23 +230,86 @@ public class GrobidPDFEngine {
     /**
      * Check if to create a new paragraphs - applied to the PARAGRAPH label
      */
-    public static boolean isNewParagraph(TaggingTokenCluster previousCluster, List<LayoutToken> layoutTokenAccumulator) {
-        return (previousCluster != null
+    public static boolean isNewParagraph(TaggingTokenCluster previousCluster, List<LayoutToken> currentClusterLayoutTokens) {
+
+        // create a new paragraph when:
+        // previous cluster is not empty  -> I don't need a new paragraph at the beginning
+        // previous cluster is not a marker, a table, a figure, an equation or equation label  -> they might be actual text.
+        boolean contentResult = (previousCluster != null
             && (!MARKER_LABELS.contains(previousCluster.getTaggingLabel())
-                && previousCluster.getTaggingLabel() != TaggingLabels.TABLE
-                && previousCluster.getTaggingLabel() != TaggingLabels.FIGURE
-                && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION
-                && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION_LABEL
-            )
+//            && previousCluster.getTaggingLabel() != TaggingLabels.TABLE
+            && previousCluster.getTaggingLabel() != TaggingLabels.FIGURE
+            && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION
+            && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION_LABEL
         )
-            || isEmpty(layoutTokenAccumulator);
+        ) || isEmpty(currentClusterLayoutTokens);
+
+        return contentResult;
+
+        // working with coordinates.
+
+//        LabeledTokensContainer lastContainer = Iterables.getLast(previousCluster.getLabeledTokensContainers());
+//        for (int x = lastContainer.getLayoutTokens().size() - 1; x >= 0; x--) {
+//            if(lastContainer.getLayoutTokens().get(x).getText())
+//        }
+//        LayoutToken lastClusterLastLayoutToken = Iterables.getLast(.getLayoutTokens());
+//        double lastClusterLastTokenYCoordinate = lastClusterLastLayoutToken.getY();
+//        double lastClusterLastTokenPage = lastClusterLastLayoutToken.getPage();
+//
+//        LayoutToken currentClusterFirstLayoutToken = Iterables.getFirst(currentClusterLayoutTokens, new LayoutToken());
+//        double currentClusterFirstTokenYCoordinate = currentClusterFirstLayoutToken.getY();
+//        double currentClusterFirstTokenPage = currentClusterFirstLayoutToken.getPage();
+//
+//        if (currentClusterFirstTokenPage != lastClusterLastTokenPage ||
+//            lastClusterLastTokenYCoordinate > currentClusterFirstTokenYCoordinate) {
+//            return contentResult;
+//        } else {
+//            return lastClusterLastTokenYCoordinate != currentClusterFirstTokenYCoordinate;
+//        }
+    }
+
+    /**
+     * Check if to create a new paragraphs - applied to the TABLE label
+     */
+    public static boolean isNewParagraphTableCaption(TaggingTokenCluster previousCluster, List<LayoutToken> currentClusterLayoutTokens) {
+
+        boolean contentResult = previousCluster != null
+            &&
+            (
+                !MARKER_LABELS.contains(previousCluster.getTaggingLabel())
+                    && (previousCluster.getTaggingLabel() != TaggingLabels.FIGURE
+                    && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION
+                    && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION_LABEL
+                )
+            ) || isEmpty(currentClusterLayoutTokens);
+
+        if (previousCluster == null) {
+            return contentResult;
+        }
+
+        // working with coordinates.
+        LayoutToken lastClusterLastLayoutToken = Iterables.getLast(Iterables.getLast(previousCluster.getLabeledTokensContainers()).getLayoutTokens());
+        double lastClusterLastTokenYCoordinate = lastClusterLastLayoutToken.getY();
+        double lastClusterLastTokenPage = lastClusterLastLayoutToken.getPage();
+
+        LayoutToken currentClusterFirstLayoutToken = Iterables.getFirst(currentClusterLayoutTokens, new LayoutToken());
+        double currentClusterFirstTokenYCoordinate = currentClusterFirstLayoutToken.getY();
+        double currentClusterFirstTokenPage = currentClusterFirstLayoutToken.getPage();
+
+        if (currentClusterFirstTokenPage != lastClusterLastTokenPage ||
+            lastClusterLastTokenYCoordinate > currentClusterFirstTokenYCoordinate) {
+            return contentResult;
+        } else {
+            return lastClusterLastTokenYCoordinate != currentClusterFirstTokenYCoordinate;
+        }
     }
 
     /**
      * Check if to create a new paragraphs - applied to the FIGURE label
      */
-    public static boolean isNewParagraphFigureCaption(TaggingTokenCluster previousCluster, List<LayoutToken> outputBodyLayoutTokens) {
-        return previousCluster != null
+    public static boolean isNewParagraphFigureCaption(TaggingTokenCluster previousCluster, List<LayoutToken> currentClusterLayoutTokens) {
+
+        boolean contentResult = previousCluster != null
             &&
             (
                 !MARKER_LABELS.contains(previousCluster.getTaggingLabel())
@@ -245,7 +317,21 @@ public class GrobidPDFEngine {
                     && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION
                     && previousCluster.getTaggingLabel() != TaggingLabels.EQUATION_LABEL
                 )
-            ) || isEmpty(outputBodyLayoutTokens);
+            ) || isEmpty(currentClusterLayoutTokens);
+
+        if (previousCluster == null) {
+            return contentResult;
+        }
+
+        // working with coordinates.
+        double lastClusterLastTokenYCoordinate = Iterables.getLast(Iterables.getLast(previousCluster.getLabeledTokensContainers()).getLayoutTokens()).getY();
+        double currentClusterFirstTokenYCoordinate = Iterables.getFirst(currentClusterLayoutTokens, new LayoutToken()).getY();
+
+        if (lastClusterLastTokenYCoordinate > currentClusterFirstTokenYCoordinate) {
+            return contentResult;
+        } else {
+            return lastClusterLastTokenYCoordinate != currentClusterFirstTokenYCoordinate;
+        }
     }
 
     private static void addSpaceAtTheEnd(List<LayoutToken> originalLayoutTokens, List<LayoutToken> normalisedLayoutTokens) {
