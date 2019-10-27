@@ -118,7 +118,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                    Arrays.asList("material", "tc", "tcValue", "class", "me_method"));
+                    Arrays.asList("material", "tc", "class", "me_method"));
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
