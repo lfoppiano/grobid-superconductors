@@ -55,6 +55,7 @@ public class AggregatedProcessing {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
         this.sentenceSegmenter = new SentenceSegmenter();
+        parsers = new EngineParsers();
     }
 
     @Inject
