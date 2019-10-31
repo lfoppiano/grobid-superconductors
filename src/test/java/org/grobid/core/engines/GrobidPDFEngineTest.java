@@ -5,6 +5,7 @@ import org.grobid.core.analyzers.GrobidAnalyzer;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public class GrobidPDFEngineTest {
         assertThat(GrobidPDFEngine.isNewParagraph(previousCluster, Arrays.asList(new LayoutToken(""))), is(false));
     }
 
-    @Test
+    @Ignore("Not needed anymore, as the tables are threated as paragraphs")
     public void testIsNewParagraph_afterTable() throws Exception {
         TaggingTokenCluster previousCluster = new TaggingTokenCluster(TaggingLabels.TABLE);
         assertThat(GrobidPDFEngine.isNewParagraph(previousCluster, Arrays.asList(new LayoutToken(""))), is(false));
@@ -70,7 +71,7 @@ public class GrobidPDFEngineTest {
         assertThat(GrobidPDFEngine.isNewParagraph(previousCluster, Arrays.asList(new LayoutToken(""))), is(false));
     }
 
-    @Test
+    @Ignore("Not needed anymore")
     public void testIsNewParagraphFigureCaption_afterTable() throws Exception {
         TaggingTokenCluster previousCluster = new TaggingTokenCluster(TaggingLabels.TABLE);
         assertThat(GrobidPDFEngine.isNewParagraph(previousCluster, Arrays.asList(new LayoutToken(""))), is(false));

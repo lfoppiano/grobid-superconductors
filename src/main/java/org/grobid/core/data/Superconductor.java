@@ -70,6 +70,7 @@ public class Superconductor {
         }
     }
 
+    /** Return the end offset (usually excluded) **/
     public void setOffsetEnd(int end) {
         if (!hasOffset()) {
             offsets = new OffsetPosition();
