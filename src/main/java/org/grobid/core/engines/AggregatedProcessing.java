@@ -188,7 +188,7 @@ public class AggregatedProcessing {
         //In which sentence is the entity?
         Optional<List<LayoutToken>> entitySentenceOptional = sentences
                 .stream()
-                .filter(sentence -> CollectionUtils.isNotEmpty(sentence))
+                .filter(CollectionUtils::isNotEmpty)
                 .filter(sentence -> {
                     int sentenceStartOffset = Iterables.getFirst(sentence, null).getOffset();
                     int sentenceEndOffset = Iterables.getLast(sentence).getOffset();

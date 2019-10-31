@@ -1,10 +1,12 @@
 package org.grobid.core.engines;
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Superconductor;
+import org.grobid.core.data.chemDataExtractor.Span;
 import org.grobid.core.data.chemspot.Mention;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
@@ -35,23 +38,23 @@ public class SuperconductorsParser extends AbstractParser {
 
     private static volatile SuperconductorsParser instance;
     public static final String NONE_CHEMSPOT_TYPE = "NONE";
-//    private ChemspotClient chemspotClient;
+    private ChemDataExtractionClient chemicalAnnotator;
 
-    public static SuperconductorsParser getInstance(ChemspotClient chemspotClient) {
+    public static SuperconductorsParser getInstance(ChemDataExtractionClient chemspotClient) {
         if (instance == null) {
             getNewInstance(chemspotClient);
         }
         return instance;
     }
 
-    private static synchronized void getNewInstance(ChemspotClient chemspotClient) {
+    private static synchronized void getNewInstance(ChemDataExtractionClient chemspotClient) {
         instance = new SuperconductorsParser(chemspotClient);
     }
 
     @Inject
-    public SuperconductorsParser(ChemspotClient chemspotClient) {
+    public SuperconductorsParser(ChemDataExtractionClient chemicalAnnotator) {
         super(SuperconductorsModels.SUPERCONDUCTORS);
-//        this.chemspotClient = chemspotClient;
+        this.chemicalAnnotator = chemicalAnnotator;
         instance = this;
     }
 
@@ -74,15 +77,14 @@ public class SuperconductorsParser extends AbstractParser {
         ).collect(Collectors.toList());
 
 
-//        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
-//        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
+        List<Span> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+        List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
 //        mentions.stream().forEach(m -> System.out.println(">>>>>> " + m.getText() + " --> " + m.getType().name()));
 
         try {
             // string representation of the feature matrix for CRF lib
-//            ress = addFeatures(layoutTokensNormalised, listChemspotEntities);
-            ress = addFeatures(layoutTokensNormalised);
+            ress = addFeatures(layoutTokensNormalised, listAnnotations);
 
             String res = null;
             try {
@@ -132,15 +134,15 @@ public class SuperconductorsParser extends AbstractParser {
         // list of textual tokens of the selected segment
         //List<String> texts = getTexts(tokenizationParts);
 
-//        List<Mention> mentions = chemspotClient.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
-//        List<String> listChemspotEntities = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
+        List<Span> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+        List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
         if (isEmpty(layoutTokensNormalised))
             return new ArrayList<>();
 
         try {
             // string representation of the feature matrix for CRF lib
-            String ress = addFeatures(layoutTokensNormalised);// , listChemspotEntities);
+            String ress = addFeatures(layoutTokensNormalised, listAnnotations);
 
             if (StringUtils.isEmpty(ress))
                 return entities;
@@ -163,22 +165,23 @@ public class SuperconductorsParser extends AbstractParser {
         return entities;
     }
 
-    protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Mention> mentions) {
-        List<String> isChemspotMention = new ArrayList<>();
+    protected List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Span> mentions) {
+        List<Boolean> isChemicalEntity = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(mentions)) {
-            tokens.stream().forEach(t -> isChemspotMention.add(NONE_CHEMSPOT_TYPE));
+            tokens.stream().forEach(t -> isChemicalEntity.add(Boolean.FALSE));
 
-            return isChemspotMention;
+            return isChemicalEntity;
         }
 
-        int globalOffset = 0;
-        if (CollectionUtils.isNotEmpty(tokens)) {
-            globalOffset = tokens.get(0).getOffset();
-        }
+        mentions = mentions.stream()
+            .sorted(Comparator.comparingInt(Span::getStart))
+            .collect(Collectors.toList());
+
+        int globalOffset = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
 
         int mentionId = 0;
-        Mention mention = mentions.get(mentionId);
+        Span mention = mentions.get(mentionId);
 
         for (LayoutToken token : tokens) {
             //normalise the offsets
@@ -186,33 +189,33 @@ public class SuperconductorsParser extends AbstractParser {
             int mentionEnd = globalOffset + mention.getEnd();
 
             if (token.getOffset() < mentionStart) {
-                isChemspotMention.add(NONE_CHEMSPOT_TYPE);
+                isChemicalEntity.add(Boolean.FALSE);
                 continue;
             } else {
                 if (token.getOffset() >= mentionStart
                         && token.getOffset() + length(token.getText()) <= mentionEnd) {
-                    isChemspotMention.add(mention.getType().name());
+                    isChemicalEntity.add(true);
                     continue;
                 }
 
                 if (mentionId == mentions.size() - 1) {
-                    isChemspotMention.add(NONE_CHEMSPOT_TYPE);
+                    isChemicalEntity.add(Boolean.FALSE);
                     break;
                 } else {
-                    isChemspotMention.add(NONE_CHEMSPOT_TYPE);
+                    isChemicalEntity.add(Boolean.FALSE);
                     mentionId++;
                     mention = mentions.get(mentionId);
                 }
             }
         }
-        if (tokens.size() > isChemspotMention.size()) {
+        if (tokens.size() > isChemicalEntity.size()) {
 
-            for (int counter = isChemspotMention.size(); counter < tokens.size(); counter++) {
-                isChemspotMention.add(NONE_CHEMSPOT_TYPE);
+            for (int counter = isChemicalEntity.size(); counter < tokens.size(); counter++) {
+                isChemicalEntity.add(Boolean.FALSE);
             }
         }
 
-        return isChemspotMention;
+        return isChemicalEntity;
     }
 
     /**
@@ -242,7 +245,7 @@ public class SuperconductorsParser extends AbstractParser {
 
 
     @SuppressWarnings({"UnusedParameters"})
-    private String addFeatures(List<LayoutToken> tokens) {//, List<String> chemspotEntities) {
+    private String addFeatures(List<LayoutToken> tokens, List<Boolean> isChemicalEntity) {
         StringBuilder result = new StringBuilder();
         try {
             LayoutToken previous = new LayoutToken();
@@ -262,7 +265,7 @@ public class SuperconductorsParser extends AbstractParser {
                 }
 
                 FeaturesVectorSuperconductors featuresVector =
-                        FeaturesVectorSuperconductors.addFeatures(token, null, previous, null);
+                        FeaturesVectorSuperconductors.addFeatures(token, null, previous, isChemicalEntity.get(index).toString());
                 result.append(featuresVector.printVector());
                 result.append("\n");
                 previous = token;
@@ -358,6 +361,8 @@ public class SuperconductorsParser extends AbstractParser {
         return resultList;
     }
 
+    /** Tests on this method are failing ... use at your own risk! **/
+    @Deprecated
     protected OffsetPosition calculateOffsets(List<LayoutToken> tokens, List<LayoutToken> theTokens, int pos) {
         String text = LayoutTokensUtil.toText(tokens);
         // ignore spaces at the beginning

@@ -6,6 +6,7 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     private String grobidHome;
     private String chemspotUrl;
+    private String chemDataExtractorUrl;
     private String grobidQuantitiesUrl;
 
     public String getGrobidHome() {
@@ -30,5 +31,13 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setGrobidQuantitiesUrl(String grobidQuantitiesUrl) {
         this.grobidQuantitiesUrl = grobidQuantitiesUrl;
+    }
+
+    public String getChemDataExtractorUrl() {
+        return chemDataExtractorUrl;
+    }
+
+    public void setChemDataExtractorUrl(String chemDataExtractorUrl) {
+        this.chemDataExtractorUrl = chemDataExtractorUrl;
     }
 }

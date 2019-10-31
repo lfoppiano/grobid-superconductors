@@ -11,6 +11,7 @@ import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
 import org.grobid.core.engines.training.TrainingOutputFormat;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
+import org.grobid.core.utilities.ChemDataExtractionClient;
 import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -53,7 +54,6 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
                 .dest(MODEL_NAME)
                 .type(String.class)
                 .required(true)
-//                .choices(SuperconductorsModels.getList())
                 .help("Model for which to create training data");
 
         subparser.addArgument("-f")
@@ -90,7 +90,7 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
         String modelName = namespace.get(MODEL_NAME);
         String outputFormat = namespace.get(OUTPUT_FORMAT);
 
-        ChemspotClient chemspotClient = new ChemspotClient(configuration);
+        ChemDataExtractionClient chemspotClient = new ChemDataExtractionClient(configuration);
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory, outputDirectory,

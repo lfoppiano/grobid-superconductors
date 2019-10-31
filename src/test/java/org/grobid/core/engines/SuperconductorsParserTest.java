@@ -46,6 +46,11 @@ public class SuperconductorsParserTest {
                 "compounds, where 14 group elements Si, Ge, and Sn forming the\n" +
                 "framework with polyhedral cages are partially substituted with\n" +
                 "lower valent elements such as ");
+
+        tokens.stream().forEach(l -> {
+            l.setOffset(l.getOffset() + 372);
+        });
+
         List<Span> mentions = Arrays.asList(new Span(70, 72, "Si"), new Span(74, 76, "Ge"));
         List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
 
@@ -58,6 +63,11 @@ public class SuperconductorsParserTest {
                 "compounds, where 14 group elements Si, Ge, and Sn forming the\n" +
                 "framework with polyhedral cages are partially substituted with\n" +
                 "lower valent elements such as ");
+
+        tokens.stream().forEach(l -> {
+            l.setOffset(l.getOffset() + 372);
+        });
+
         List<Span> mentions = Arrays.asList(new Span(29, 44, "Zintl compounds"), new Span(70, 72, "Si"), new Span(74, 76, "Ge"));
         List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
 
@@ -86,6 +96,10 @@ public class SuperconductorsParserTest {
                 "compounds, where 14 group elements Si Ge, and Sn forming the\n" +
                 "framework with polyhedral cages are partially substituted with\n" +
                 "lower valent elements such as ");
+
+        tokens.stream().forEach(l -> {
+            l.setOffset(l.getOffset() + 372);
+        });
 
         List<Span> mentions = Arrays.asList(new Span(70, 72, "Si"), new Span(73, 75, "Ge"));
         List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);

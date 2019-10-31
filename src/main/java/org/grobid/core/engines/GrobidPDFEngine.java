@@ -396,7 +396,7 @@ public class GrobidPDFEngine {
                     + StringUtils.length(cleanedTokens.get(i - 1).getText());
 
                 if (expectedFollowingOffset != cleanedTokens.get(i).getOffset()) {
-                    LOGGER.warn("Correcting offsets " + i + " from " + cleanedTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
+                    LOGGER.debug("Correcting offsets " + i + " from " + cleanedTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
                     cleanedTokens.get(i).setOffset(expectedFollowingOffset);
                 }
             });

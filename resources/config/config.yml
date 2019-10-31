@@ -1,6 +1,8 @@
 grobidHome: ../grobid-home
 
 chemspotUrl: http://falcon.nims.go.jp/chemspot
+chemDataExtractorUrl: http://falcon.nims.go.jp/cde
+#chemDataExtractorUrl: http://localhost:8076
 
 grobidQuantitiesUrl: http://falcon.nims.go.jp/quantities
 
@@ -20,6 +22,11 @@ server:
 
 logging:
   level: INFO
+
+  # Logger-specific levels.
+  loggers:
+    org.grobid.core.data.normalization.QuantityNormalizer: "OFF"
+
   appenders:
     - type: console
     - type: file
@@ -29,5 +36,6 @@ logging:
       archivedLogFilenamePattern: logs/grobid-superconductors-%d{yyyy-MM-dd}-%i.log.gz
       archivedFileCount: 7
       timeZone: UTC
-      maxFileSize: 10MB
+      maxFileSize: 50MB
+
 timeZone: UTC
