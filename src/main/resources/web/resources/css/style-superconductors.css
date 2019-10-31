@@ -10,6 +10,10 @@
     background-color: #2262d2;
 }
 
+.info-sense-box.material-tc {
+    background-color: #50ced2;
+}
+
 .info-sense-box.class {
     background-color: #d22f09;
 }
@@ -91,6 +95,10 @@
 
 .area.material {
     border-color: #2262d2 !important;
+}
+
+.area.material-tc {
+    border-color: #50ced2 !important;
 }
 
 .area.class {

@@ -632,7 +632,7 @@ var grobid = (function ($) {
                             quantityMap[currentQuantityIndex] = quantity;
                             quantityType = flagCriticalTemperature(quantity, substance);
 
-                            if(quantityType !== undefined) {
+                            if (quantityType !== undefined) {
                                 break;
                             }
                         }
@@ -715,7 +715,11 @@ var grobid = (function ($) {
             var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
                 y + "px; left:" + x + "px;";
             element.setAttribute("style", attributes + "border:2px solid;");
-            element.setAttribute("class", 'area' + ' ' + type);
+            if (superconMap[superconIdx].type === 'material' && superconMap[superconIdx].tc) {
+                element.setAttribute("class", 'area material-tc');
+            } else {
+                element.setAttribute("class", 'area' + ' ' + type);
+            }
             element.setAttribute("id", 'annot_supercon-' + superconIdx + '-' + positionIdx);
             element.setAttribute("page", page);
 
@@ -810,7 +814,7 @@ var grobid = (function ($) {
             var name = entity.name;
             var type = entity.type;
 
-            string += "<div class='info-sense-box " + type + "'";
+            string += "<div class='info-sense-box ___TYPE___'";
             if (topPos !== -1)
                 string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
 
@@ -826,7 +830,9 @@ var grobid = (function ($) {
 
             if (entity.tc) {
                 string += "<p>Tc: <b>" + entity.tc + "</b></p>";
+                string = string.replace("___TYPE___", "material-tc");
             }
+            string = string.replace("___TYPE___", type);
 
             string += "</td></tr>";
             string += "</table></div>";
