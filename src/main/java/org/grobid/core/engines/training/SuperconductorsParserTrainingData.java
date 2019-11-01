@@ -106,19 +106,12 @@ public class SuperconductorsParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, normalisedLayoutTokens -> {
+        GrobidPDFEngine.processDocument(document, preprocessedLayoutToken -> {
 
-//            List<LayoutToken> normalisedLayoutTokens = LayoutTokensUtil.dehyphenize(layoutTokens)
-//                .stream()
-//                .map(m -> {
-//                    m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
-//                    m.setText(StringUtils.replace(m.getText(), "\n", " "));
-//                    return m;
-//                })
-//                .collect(Collectors.toList());
-//
-//            // Trying to fix the eventual offset mismatches
-//
+            // re-tokenise now
+            final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(preprocessedLayoutToken);
+
+            // Trying to fix the eventual offset mismatches by rewrite offsets
             IntStream
                 .range(1, normalisedLayoutTokens.size())
                 .forEach(i -> {
@@ -126,7 +119,7 @@ public class SuperconductorsParserTrainingData {
                         + StringUtils.length(normalisedLayoutTokens.get(i - 1).getText());
 
                     if (expectedFollowingOffset != normalisedLayoutTokens.get(i).getOffset()) {
-                        LOGGER.warn("Crossvalidating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
+                        throw new RuntimeException("Crossvalidating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
 //                        normalisedLayoutTokens.get(i).setOffset(expectedFollowingOffset);
                     }
                 });
