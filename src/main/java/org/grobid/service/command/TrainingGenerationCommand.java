@@ -2,6 +2,7 @@ package org.grobid.service.command;
 
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +63,14 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
                 .required(false)
                 .setDefault("xml")
                 .help("Output format (TSV, XML)");
+
+        subparser.addArgument("-r")
+            .dest(RECURSIVE)
+            .type(Boolean.class)
+            .required(false)
+            .setDefault(false)
+            .help("Process recursively")
+            .action(Arguments.storeTrue());
     }
 
     @Override
@@ -89,12 +98,13 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
         String outputDirectory = namespace.get(OUTPUT_DIRECTORY);
         String modelName = namespace.get(MODEL_NAME);
         String outputFormat = namespace.get(OUTPUT_FORMAT);
+        Boolean recursive = namespace.get(RECURSIVE);
 
         ChemDataExtractionClient chemspotClient = new ChemDataExtractionClient(configuration);
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory, outputDirectory,
-                    TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)));
+                    TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)), recursive);
         } else {
             System.out.println(super.getDescription());
         }

@@ -1,16 +1,12 @@
 package org.grobid.core.engines.training;
 
-import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
+import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Measurement;
-import org.grobid.core.data.Quantity;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.GrobidPDFEngine;
@@ -26,6 +22,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -33,12 +32,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
-import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
-import static org.grobid.core.utilities.QuantityOperations.getContainingOffset;
-import static org.grobid.core.utilities.QuantityOperations.getOffset;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_MAGNETISATION_LABEL;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
 
 public class SuperconductorsParserTrainingData {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParserTrainingData.class);
@@ -252,10 +248,11 @@ public class SuperconductorsParserTrainingData {
     @SuppressWarnings({"UnusedParameters"})
     public int createTrainingBatch(String inputDirectory,
                                    String outputDirectory,
-                                   TrainingOutputFormat outputFormat) {
+                                   TrainingOutputFormat outputFormat,
+                                   boolean recursive) {
         try {
-            File path = new File(inputDirectory);
-            if (!path.exists()) {
+            Path inputDirectoryPath = Paths.get(inputDirectory);
+            if (!Files.exists(inputDirectoryPath)) {
                 throw new GrobidException("Cannot create training data because input directory can not be accessed: " + inputDirectory);
             }
 
@@ -265,12 +262,16 @@ public class SuperconductorsParserTrainingData {
             }
 
             // we process all pdf files in the directory
-            if (!path.isDirectory()) {
+            if (!Files.isDirectory(inputDirectoryPath)) {
                 throw new GrobidException("The input path should be a directory.");
             }
 
-            List<File> refFiles = Arrays.stream(Objects.requireNonNull(path.listFiles())).filter(
-                file -> file.getName().endsWith(".pdf") || file.getName().endsWith(".PDF"))
+            int maxDept = recursive ? Integer.MAX_VALUE : 1;
+
+            List<File> refFiles = Files.walk(inputDirectoryPath, maxDept)
+                .filter(path -> Files.isRegularFile(path)
+                    && (StringUtils.endsWithIgnoreCase(path.getFileName().toString(), ".pdf")))
+                .map(Path::toFile)
                 .collect(Collectors.toList());
 
             LOGGER.info(refFiles.size() + " files to be processed.");
