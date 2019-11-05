@@ -69,10 +69,10 @@ public class AggregatedProcessing {
 
 
         List<Measurement> criticalTemperatures = measurements
-                .stream()
-                .filter(measurement -> measurement.getQuantifiedObject() != null
-                        && StringUtils.equalsIgnoreCase("Critical temperature", measurement.getQuantifiedObject().getNormalizedName()))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(measurement -> measurement.getQuantifiedObject() != null
+                && StringUtils.equalsIgnoreCase("Critical temperature", measurement.getQuantifiedObject().getNormalizedName()))
+            .collect(Collectors.toList());
 
         List<Pair<Quantity, Measurement>> criticalTemperaturesFlatten = MeasurementUtils.flattenMeasurements(criticalTemperatures);
 
@@ -81,29 +81,29 @@ public class AggregatedProcessing {
         for (Superconductor superconductor : superconductors) {
             List<LayoutToken> layoutTokensSupercon = superconductor.getLayoutTokens();
             Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesAsIndex(tokens,
-                    layoutTokensSupercon.get(0).getOffset(), layoutTokensSupercon.get(layoutTokensSupercon.size() - 1).getOffset());
+                layoutTokensSupercon.get(0).getOffset(), layoutTokensSupercon.get(layoutTokensSupercon.size() - 1).getOffset());
 
             extremitiesSuperconductor = adjustExtremities(extremitiesSuperconductor, superconductor.getLayoutTokens(), tokens);
 
             List<Pair<Quantity, Measurement>> criticalTemperaturesFlattenSorted
-                    = criticalTemperaturesFlatten.stream().sorted((o1, o2) -> {
+                = criticalTemperaturesFlatten.stream().sorted((o1, o2) -> {
                 int superconductorLayoutTokenLowerOffset = superconductor.getLayoutTokens().get(0).getOffset();
                 int superconductorLayoutTokenHigherOffset = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset()
-                        + superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getText().length();
+                    + superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getText().length();
 
                 double superconductorCentroidOffset = ((double) (superconductorLayoutTokenHigherOffset + superconductorLayoutTokenLowerOffset)) / 2.0;
 
                 Quantity quantityT1 = o1.getLeft();
                 int t1LowerLayoutTokenOffset = quantityT1.getLayoutTokens().get(0).getOffset();
                 int t1HigherLayoutTokenOffset = quantityT1.getLayoutTokens().get(quantityT1.getLayoutTokens().size() - 1).getOffset()
-                        + quantityT1.getLayoutTokens().get(quantityT1.getLayoutTokens().size() - 1).getText().length();
+                    + quantityT1.getLayoutTokens().get(quantityT1.getLayoutTokens().size() - 1).getText().length();
 
                 double t1CentroidOffset = ((double) (t1HigherLayoutTokenOffset + t1LowerLayoutTokenOffset)) / 2.0;
 
                 Quantity quantityT2 = o2.getLeft();
                 int t2LowerLayoutTokenOffset = quantityT2.getLayoutTokens().get(0).getOffset();
                 int t2HigherLayoutTokenOffset = quantityT2.getLayoutTokens().get(quantityT2.getLayoutTokens().size() - 1).getOffset()
-                        + quantityT2.getLayoutTokens().get(quantityT2.getLayoutTokens().size() - 1).getText().length();
+                    + quantityT2.getLayoutTokens().get(quantityT2.getLayoutTokens().size() - 1).getText().length();
 
                 double t2CentroidOffset = ((double) (t2HigherLayoutTokenOffset + t2LowerLayoutTokenOffset)) / 2.0;
 
@@ -133,9 +133,9 @@ public class AggregatedProcessing {
                 int temperatureOffsetStart = criticalTemperatureLayoutTokens.get(0).getOffset();
                 int temperatureOffsetEnd = criticalTemperatureLayoutTokens.get(criticalTemperatureLayoutTokens.size() - 1).getOffset();
                 if ((temperatureOffsetStart < offsetWindowStart && temperatureOffsetEnd >= offsetWindowStart)
-                        || (temperatureOffsetEnd > offsetWindowEnd && temperatureOffsetStart <= offsetWindowEnd)
-                        || (temperatureOffsetStart >= offsetWindowStart && temperatureOffsetEnd < offsetWindowEnd)
-                        || (temperatureOffsetStart > offsetWindowStart && temperatureOffsetEnd <= offsetWindowEnd)) {
+                    || (temperatureOffsetEnd > offsetWindowEnd && temperatureOffsetStart <= offsetWindowEnd)
+                    || (temperatureOffsetStart >= offsetWindowStart && temperatureOffsetEnd < offsetWindowEnd)
+                    || (temperatureOffsetStart > offsetWindowStart && temperatureOffsetEnd <= offsetWindowEnd)) {
                     superconductor.setCriticalTemperatureMeasurement(criticalTemperature.getRight());
                     assignedTemperature.add(criticalTemperature.getRight());
                     break;
@@ -155,15 +155,15 @@ public class AggregatedProcessing {
 
         //In which sentence is the entity?
         Optional<List<LayoutToken>> entitySentenceOptional = sentences
-                .stream()
-                .filter(CollectionUtils::isNotEmpty)
-                .filter(sentence -> {
-                    int sentenceStartOffset = Iterables.getFirst(sentence, null).getOffset();
-                    int sentenceEndOffset = Iterables.getLast(sentence).getOffset();
+            .stream()
+            .filter(CollectionUtils::isNotEmpty)
+            .filter(sentence -> {
+                int sentenceStartOffset = Iterables.getFirst(sentence, null).getOffset();
+                int sentenceEndOffset = Iterables.getLast(sentence).getOffset();
 
-                    return entityOffsetStart > sentenceStartOffset && entityOffsetEnd < sentenceEndOffset;
-                })
-                .findFirst();
+                return entityOffsetStart > sentenceStartOffset && entityOffsetEnd < sentenceEndOffset;
+            })
+            .findFirst();
 
         if (!entitySentenceOptional.isPresent()) {
             return Pair.of(0, tokens.size() - 1);
@@ -187,15 +187,15 @@ public class AggregatedProcessing {
 
         //In which sentence is the entity?
         Optional<List<LayoutToken>> entitySentenceOptional = sentences
-                .stream()
-                .filter(CollectionUtils::isNotEmpty)
-                .filter(sentence -> {
-                    int sentenceStartOffset = Iterables.getFirst(sentence, null).getOffset();
-                    int sentenceEndOffset = Iterables.getLast(sentence).getOffset();
+            .stream()
+            .filter(CollectionUtils::isNotEmpty)
+            .filter(sentence -> {
+                int sentenceStartOffset = Iterables.getFirst(sentence, null).getOffset();
+                int sentenceEndOffset = Iterables.getLast(sentence).getOffset();
 
-                    return entityOffsetEnd < sentenceEndOffset && entityOffsetStart > sentenceStartOffset;
-                })
-                .findFirst();
+                return entityOffsetEnd < sentenceEndOffset && entityOffsetStart > sentenceStartOffset;
+            })
+            .findFirst();
 
 
         if (!entitySentenceOptional.isPresent()) {
@@ -244,9 +244,9 @@ public class AggregatedProcessing {
         int end = tokens.size() - 1;
 
         List<LayoutToken> centralTokens = tokens.stream()
-                .filter(layoutToken -> layoutToken.getOffset() == centroidOffsetLower
-                        || (layoutToken.getOffset() > centroidOffsetLower && layoutToken.getOffset() < centroidOffsetHigher))
-                .collect(Collectors.toList());
+            .filter(layoutToken -> layoutToken.getOffset() == centroidOffsetLower
+                || (layoutToken.getOffset() > centroidOffsetLower && layoutToken.getOffset() < centroidOffsetHigher))
+            .collect(Collectors.toList());
 
         if (isNotEmpty(centralTokens)) {
             int centroidLayoutTokenIndexStart = tokens.indexOf(centralTokens.get(0));
@@ -284,10 +284,10 @@ public class AggregatedProcessing {
         try {
             file = IOUtilities.writeInputFile(inputStream);
             GrobidAnalysisConfig config =
-                    new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                            .build();
+                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                    .build();
             DocumentSource documentSource =
-                    DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
+                DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
             GrobidPDFEngine.processDocument(doc, l -> outputResponse.extendEntities(process(l)));
@@ -328,6 +328,11 @@ public class AggregatedProcessing {
         closedTcExpressionList.add(new ImmutablePair<>("superconductivity at", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconductivity at")));
         closedTcExpressionList.add(new ImmutablePair<>("superconductivity around", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("superconductivity around")));
 
+        // Expressions that mark a temperature as NON-Tc
+        List<Pair<String, List<LayoutToken>>> closedNotTcExpressionList = new ArrayList<>();
+        closedNotTcExpressionList.add(new ImmutablePair<>("higher", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("higher")));
+        closedNotTcExpressionList.add(new ImmutablePair<>("lower", DeepAnalyzer.getInstance().tokenizeWithLayoutToken("lower")));
+
         List<Pair<Integer, Integer>> sentencesAsIndex = sentenceSegmenter.getSentencesAsIndex(tokens);
         List<Pair<Integer, Integer>> sentencesAsOffsetsPairs = sentenceSegmenter.getSentencesAsOffsetsPairs(tokens);
 
@@ -350,6 +355,24 @@ public class AggregatedProcessing {
             }
 
             Pair<Integer, Integer> sentenceBoundaryIndexes = sentencesAsIndex.get(sentenceNumber);
+
+            // check if there is any non-TC expressions after the temperature:
+            for (Pair<String, List<LayoutToken>> notTcExpression : closedNotTcExpressionList) {
+                String nonTcString = notTcExpression.getLeft();
+
+                List<LayoutToken> nonTcLayoutTokens = notTcExpression.getRight();
+                String nonTcExpressionAsString = LayoutTokensUtil.toText(nonTcLayoutTokens);
+                int nonTcExpressionSize = nonTcLayoutTokens.size();
+                int indexTokenAfterToCompare = extremities.getRight() + 1;
+
+                if (indexTokenAfterToCompare + nonTcExpressionSize < sentenceBoundaryIndexes.getRight()) {
+                    String subString = LayoutTokensUtil.toText(tokens.subList(indexTokenAfterToCompare, indexTokenAfterToCompare + nonTcExpressionSize + 1));
+                    if (StringUtils.equals(nonTcExpressionAsString, StringUtils.trim(subString))) {
+                        temperature.setQuantifiedObject(null);
+                        continue outer;
+                    }
+                }
+            }
 
             //Searching for more constrained expressions just before the temperature
             for (Pair<String, List<LayoutToken>> tcExpression : closedTcExpressionList) {
@@ -402,17 +425,17 @@ public class AggregatedProcessing {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
         List<Superconductor> namedEntitiesList = superconductorsNames.stream()
-                .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
-                        || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
-                        || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
-                        || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
-                )
-                .collect(Collectors.toList());
+            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
+                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
+                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
+                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
+            )
+            .collect(Collectors.toList());
 
         List<Pair<String, List<LayoutToken>>> tcExpressionList = superconductorsNames.stream()
-                .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
-                .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
-                .collect(Collectors.toList());
+            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
+            .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
+            .collect(Collectors.toList());
 
         List<Measurement> measurements = quantityParser.process(tokens);
         List<Measurement> temperatures = MeasurementUtils.filterMeasurements(measurements, Arrays.asList(UnitUtilities.Unit_Type.TEMPERATURE));
