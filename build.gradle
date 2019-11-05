@@ -105,7 +105,10 @@ dependencies {
     //Misc
     compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
     compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.3'
-
+    compile 'javax.activation:activation:1.1.1'
+    compile 'javax.xml.bind:jaxb-api:2.3.0'
+    compile 'com.sun.xml.bind:jaxb-core:2.3.0'
+    compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
 
     compile 'org.dkpro.statistics:dkpro-statistics:2.1.0'
     compile 'org.dkpro.statistics:dkpro-statistics-agreement:2.1.0'
