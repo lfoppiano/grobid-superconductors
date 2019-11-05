@@ -511,8 +511,8 @@ public class AggregatedProcessing {
         List<Span> spansFromSuperconductors = namedEntitiesList.stream()
             .map(s -> {
                 List<LayoutToken> layoutTokens = s.getLayoutTokens();
-                Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesAsIndex(tokens,
-                    layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset());
+                Pair<Integer, Integer> extremitiesSuperconductor = MeasurementUtils.getExtremitiesAsIndex(tokens,
+                    layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
                 return new Span(s.getName(), s.getType(), s.getOffsetStart(), s.getOffsetEnd(),
                     extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
             })
@@ -528,8 +528,8 @@ public class AggregatedProcessing {
                         Quantity quantity = pair.getLeft();
 
                         List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
-                        Pair<Integer, Integer> extremitiesQuantityAsIndex = getExtremitiesAsIndex(tokens,
-                            layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset());
+                        Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils.getExtremitiesAsIndex(tokens,
+                            layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
 
                         return new Span(quantity.getRawValue(), quantity.getType().toString(), quantity.getOffsetStart(), quantity.getOffsetEnd(),
                             extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight());

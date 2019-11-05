@@ -55,7 +55,7 @@ public class MeasurementUtils {
      * <p>
      * The returned are (start, end) with end excluded (same as usual java stuff).
      */
-    protected static Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int startOffset, int endOffset) {
+    public static Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int startOffset, int endOffset) {
 
         if (isEmpty(tokens)) {
             return Pair.of(0, 0);
