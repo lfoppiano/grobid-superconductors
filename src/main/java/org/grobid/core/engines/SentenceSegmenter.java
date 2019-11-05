@@ -10,7 +10,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.layout.LayoutToken;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,24 +25,52 @@ public class SentenceSegmenter {
 
     public List<List<Token>> getSentences(List<LayoutToken> tokens) {
         List<Token> tokensNlp4j = tokens
-                .stream()
-                .map(token -> {
-                    Token token1 = new Token(token.getText());
-                    token1.setStartOffset(token.getOffset());
-                    token1.setEndOffset(token.getOffset() + token.getText().length());
-                    return token1;
-                })
-                .collect(Collectors.toList());
+            .stream()
+            .map(token -> {
+                Token token1 = new Token(token.getText());
+                token1.setStartOffset(token.getOffset());
+                token1.setEndOffset(token.getOffset() + token.getText().length());
+                return token1;
+            })
+            .collect(Collectors.toList());
 
-        return tokenizer.segmentize(tokensNlp4j);
+        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
+
+        List<List<Token>> fixedSentences = new ArrayList<>();
+
+        // Fixing sentences
+        for (int i = 0; i < sentences.size(); i++) {
+            List<Token> sentence = new ArrayList<>(sentences.get(i));
+            if (CollectionUtils.isNotEmpty(sentence)) {
+                if (StringUtils.isNotBlank(sentence.get(0).getWordForm())
+                    && !Character.isUpperCase(sentence.get(0).getWordForm().charAt(0))
+                    && fixedSentences.size() > 0) {
+
+                    fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
+
+                } else if (CollectionUtils.size(sentence) == 1 && StringUtils.isBlank(sentence.get(0).getWordForm())) {
+                    fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
+                } else if (StringUtils.isBlank(sentence.get(0).getWordForm())) {
+                    if (sentence.size() == 1) {
+                        fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
+                    } else if (!Character.isUpperCase(sentence.get(1).getWordForm().charAt(0))) {
+                        fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
+                    }
+                } else {
+                    fixedSentences.add(sentence);
+                }
+            }
+        }
+
+        return fixedSentences;
     }
 
     public List<Pair<Integer, Integer>> getSentencesAsOffsetsPairs(List<LayoutToken> tokens) {
         List<List<Token>> sentences = getSentences(tokens);
 
         return sentences.stream()
-                .map(s -> Pair.of(s.get(0).getStartOffset(), Iterables.getLast(s).getStartOffset()))
-                .collect(Collectors.toList());
+            .map(s -> Pair.of(s.get(0).getStartOffset(), Iterables.getLast(s).getStartOffset()))
+            .collect(Collectors.toList());
 
     }
 
@@ -52,7 +79,7 @@ public class SentenceSegmenter {
      * the Right() element will be exclusive, as any java stuff.
      */
     public List<Pair<Integer, Integer>> getSentencesAsIndex(List<LayoutToken> tokens) {
-        if(CollectionUtils.isEmpty(tokens)) {
+        if (CollectionUtils.isEmpty(tokens)) {
             return new ArrayList<>();
         }
 
