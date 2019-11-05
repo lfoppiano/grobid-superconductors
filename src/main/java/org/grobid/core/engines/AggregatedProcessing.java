@@ -5,23 +5,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
 import org.grobid.core.document.Document;
-import org.grobid.core.document.DocumentPiece;
 import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
-import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
-import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.layout.LayoutTokenization;
-import org.grobid.core.tokenization.LabeledTokensContainer;
-import org.grobid.core.tokenization.TaggingTokenCluster;
-import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.IOUtilities;
 import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.MeasurementUtils;
@@ -34,8 +26,8 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -234,12 +226,14 @@ public class AggregatedProcessing {
     public static int WINDOW_TC = Integer.MAX_VALUE;
 
     /* We work with offsets (so no need to increase by size of the text) and we return indexes in the token list */
-    protected Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int centroidOffsetLower, int centroidOffsetHigher) {
+    protected Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int centroidOffsetLower,
+                                                           int centroidOffsetHigher) {
         return getExtremitiesAsIndex(tokens, centroidOffsetLower, centroidOffsetHigher, WINDOW_TC);
     }
 
 
-    protected Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int centroidOffsetLower, int centroidOffsetHigher, int windowlayoutTokensSize) {
+    protected Pair<Integer, Integer> getExtremitiesAsIndex(List<LayoutToken> tokens, int centroidOffsetLower,
+                                                           int centroidOffsetHigher, int windowlayoutTokensSize) {
         int start = 0;
         int end = tokens.size() - 1;
 
@@ -264,19 +258,19 @@ public class AggregatedProcessing {
     }
 
 
-    public OutputResponse process(String text) {
+    public PDFAnnotationResponse process(String text) {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
-        return process(tokens);
+        return annotate(tokens);
     }
 
 
-    public OutputResponse process(InputStream inputStream) {
-        OutputResponse outputResponse = new OutputResponse();
+    public PDFAnnotationResponse annotate(InputStream inputStream) {
+        PDFAnnotationResponse PDFAnnotationResponse = new PDFAnnotationResponse();
         List<Superconductor> superconductorNamesList = new ArrayList<>();
-        outputResponse.setEntities(superconductorNamesList);
+        PDFAnnotationResponse.setEntities(superconductorNamesList);
         List<Measurement> temperaturesList = new ArrayList<>();
-        outputResponse.setMeasurements(temperaturesList);
+        PDFAnnotationResponse.setMeasurements(temperaturesList);
 
         Document doc = null;
         File file = null;
@@ -290,14 +284,14 @@ public class AggregatedProcessing {
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
-            GrobidPDFEngine.processDocument(doc, l -> outputResponse.extendEntities(process(l)));
+            GrobidPDFEngine.processDocument(doc, l -> PDFAnnotationResponse.extendEntities(annotate(l)));
 
             List<Page> pages = new ArrayList<>();
             for (org.grobid.core.layout.Page page : doc.getPages()) {
                 pages.add(new Page(page.getHeight(), page.getWidth()));
             }
 
-            outputResponse.setPages(pages);
+            PDFAnnotationResponse.setPages(pages);
 
         } catch (Exception e) {
             throw new GrobidException("Cannot process pdf file: " + file.getPath(), e);
@@ -305,7 +299,7 @@ public class AggregatedProcessing {
             IOUtilities.removeTempFile(file);
         }
 
-        return outputResponse;
+        return PDFAnnotationResponse;
     }
 
     protected List<Measurement> markCriticalTemperatures(List<Measurement> temperatures, List<LayoutToken> tokens, List<Pair<String, List<LayoutToken>>> tcExpressionList) {
@@ -421,7 +415,7 @@ public class AggregatedProcessing {
     }
 
 
-    public OutputResponse process(List<LayoutToken> tokens) {
+    public PDFAnnotationResponse annotate(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
         List<Superconductor> namedEntitiesList = superconductorsNames.stream()
@@ -432,6 +426,14 @@ public class AggregatedProcessing {
             )
             .collect(Collectors.toList());
 
+        List<Measurement> temperatureList = getMeasurements(tokens, superconductorsNames);
+
+        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
+
+        return new PDFAnnotationResponse(linkedSuperconductors, temperatureList, new ArrayList<>());
+    }
+
+    private List<Measurement> getMeasurements(List<LayoutToken> tokens, List<Superconductor> superconductorsNames) {
         List<Pair<String, List<LayoutToken>>> tcExpressionList = superconductorsNames.stream()
             .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
             .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
@@ -439,10 +441,104 @@ public class AggregatedProcessing {
 
         List<Measurement> measurements = quantityParser.process(tokens);
         List<Measurement> temperatures = MeasurementUtils.filterMeasurements(measurements, Arrays.asList(UnitUtilities.Unit_Type.TEMPERATURE));
-        List<Measurement> temperatureList = markCriticalTemperatures(temperatures, tokens, tcExpressionList);
+        return markCriticalTemperatures(temperatures, tokens, tcExpressionList);
+    }
 
-        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
+    public PDFProcessingResponse process(InputStream uploadedInputStream) {
+        PDFProcessingResponse pdfProcessingResponse = new PDFProcessingResponse();
 
-        return new OutputResponse(linkedSuperconductors, temperatureList, new ArrayList<>());
+        Document doc = null;
+        File file = null;
+
+        try {
+            file = IOUtilities.writeInputFile(uploadedInputStream);
+            GrobidAnalysisConfig config =
+                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                    .build();
+            DocumentSource documentSource =
+                DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
+            doc = parsers.getSegmentationParser().processing(documentSource, config);
+
+            GrobidPDFEngine.processDocument(doc, l -> pdfProcessingResponse.addParagraph(process(l)));
+
+            List<Page> pages = new ArrayList<>();
+            for (org.grobid.core.layout.Page page : doc.getPages()) {
+                pages.add(new Page(page.getHeight(), page.getWidth()));
+            }
+
+        } catch (Exception e) {
+            throw new GrobidException("Cannot process pdf file: " + file.getPath(), e);
+        } finally {
+            IOUtilities.removeTempFile(file);
+        }
+
+        return pdfProcessingResponse;
+    }
+
+    public ProcessedParagraph process(List<LayoutToken> tokens) {
+        List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
+
+        List<Superconductor> namedEntitiesList = superconductorsNames.stream()
+            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
+                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
+                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
+                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
+            )
+            .collect(Collectors.toList());
+
+        List<Measurement> temperatureList = getMeasurements(tokens, superconductorsNames);
+
+        ProcessedParagraph processedParagraph = new ProcessedParagraph();
+
+        processedParagraph.setTokens(tokens.stream().map(l -> {
+
+            boolean subscript = l.isSubscript();
+            boolean superscript = l.isSuperscript();
+
+            String style = "baseline";
+            if (superscript) {
+                style = "superscript";
+            } else if (subscript) {
+                style = "subscript";
+            }
+
+            return new Token(l.getText(), l.getFont(), l.getFontSize(), style, l.getOffset());
+        }).collect(Collectors.toList()));
+
+        processedParagraph.setText(LayoutTokensUtil.toText(tokens));
+
+
+        List<Span> spansFromSuperconductors = namedEntitiesList.stream()
+            .map(s -> {
+                List<LayoutToken> layoutTokens = s.getLayoutTokens();
+                Pair<Integer, Integer> extremitiesSuperconductor = getExtremitiesAsIndex(tokens,
+                    layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset());
+                return new Span(s.getName(), s.getType(), s.getOffsetStart(), s.getOffsetEnd(),
+                    extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
+            })
+            .collect(Collectors.toList());
+
+
+        List<Span> spansForQuantities = temperatureList.stream()
+            .flatMap(t -> {
+                List<Pair<Quantity, Measurement>> listMeasurements = MeasurementUtils.flattenMeasurement(t);
+
+                return listMeasurements.stream()
+                    .map(pair -> {
+                        Quantity quantity = pair.getLeft();
+
+                        List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
+                        Pair<Integer, Integer> extremitiesQuantityAsIndex = getExtremitiesAsIndex(tokens,
+                            layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset());
+
+                        return new Span(quantity.getRawValue(), quantity.getType().toString(), quantity.getOffsetStart(), quantity.getOffsetEnd(),
+                            extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight());
+                    }).collect(Collectors.toList()).stream();
+            }).collect(Collectors.toList());
+
+        processedParagraph.getSpans().addAll(spansFromSuperconductors);
+        processedParagraph.getSpans().addAll(spansForQuantities);
+
+        return processedParagraph;
     }
 }

@@ -9,7 +9,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.*;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @JsonInclude(Include.NON_EMPTY)
-public class OutputResponse {
+public class PDFAnnotationResponse {
 
     private long runtime;
     private List<Superconductor> entities;
@@ -17,19 +17,19 @@ public class OutputResponse {
 
     private List<Superconductor> other;
 
-    public OutputResponse() {
+    public PDFAnnotationResponse() {
         entities = new ArrayList<>();
         measurements = new ArrayList<>();
         other = new ArrayList<>();
     }
 
-    public OutputResponse(List<Superconductor> superconductorList, List<Measurement> measurements, List<Superconductor> other) {
+    public PDFAnnotationResponse(List<Superconductor> superconductorList, List<Measurement> measurements, List<Superconductor> other) {
         this.entities = superconductorList;
         this.measurements = measurements;
         this.other = other;
     }
 
-    public OutputResponse extendEntities(OutputResponse other) {
+    public PDFAnnotationResponse extendEntities(PDFAnnotationResponse other) {
         this.entities.addAll(other.getEntities());
         this.measurements.addAll(other.getMeasurements());
         this.other.addAll(other.getOther());

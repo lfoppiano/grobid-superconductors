@@ -69,7 +69,7 @@ public class AggregatedProcessingTest {
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        OutputResponse response = target.process(tokens);
+        PDFAnnotationResponse response = target.annotate(tokens);
 //        System.out.println(response.toJson());
 
         EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);

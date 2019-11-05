@@ -2,7 +2,8 @@ package org.grobid.service.controller;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.grobid.core.data.OutputResponse;
+import org.grobid.core.data.PDFAnnotationResponse;
+import org.grobid.core.data.PDFProcessingResponse;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
@@ -54,7 +55,7 @@ public class AnnotationController {
     public String processPDF(@FormDataParam("input") InputStream uploadedInputStream,
                              @FormDataParam("input") FormDataContentDisposition fileDetail) {
         long start = System.currentTimeMillis();
-        OutputResponse extractedEntities = aggregatedProcessing.process(uploadedInputStream);
+        PDFAnnotationResponse extractedEntities = aggregatedProcessing.annotate(uploadedInputStream);
         long end = System.currentTimeMillis();
 
         extractedEntities.setRuntime(end - start);
@@ -70,11 +71,26 @@ public class AnnotationController {
         String textPreprocessed = text.replace("\r\n", "\n");
 
         long start = System.currentTimeMillis();
-        OutputResponse extractedEntities = aggregatedProcessing.process(textPreprocessed);
+        PDFAnnotationResponse extractedEntities = aggregatedProcessing.process(textPreprocessed);
         long end = System.currentTimeMillis();
 
         extractedEntities.setRuntime(end - start);
 
         return extractedEntities.toJson();
+    }
+
+    @Path("processSuperconductorsPDF")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public PDFProcessingResponse processPdfSuperconductors(@FormDataParam("input") InputStream uploadedInputStream,
+                                                           @FormDataParam("input") FormDataContentDisposition fileDetail) {
+        long start = System.currentTimeMillis();
+        PDFProcessingResponse response = aggregatedProcessing.process(uploadedInputStream);
+        long end = System.currentTimeMillis();
+
+        response.setRuntime(end - start);
+
+        return response;
     }
 }
