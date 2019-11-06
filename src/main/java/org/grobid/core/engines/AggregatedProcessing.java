@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.wipo.analyzers.wipokr.utils.StringUtil.*;
 
 @Singleton
 public class AggregatedProcessing {
@@ -513,7 +514,8 @@ public class AggregatedProcessing {
                 List<LayoutToken> layoutTokens = s.getLayoutTokens();
                 Pair<Integer, Integer> extremitiesSuperconductor = MeasurementUtils.getExtremitiesAsIndex(tokens,
                     layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
-                return new Span(s.getName(), s.getType(), s.getOffsetStart(), s.getOffsetEnd(),
+
+                return new Span(s.getName(), lowerCase(substring(s.getType(), 1, length(s.getType()) - 1)), s.getOffsetStart(), s.getOffsetEnd(),
                     extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
             })
             .collect(Collectors.toList());
@@ -531,7 +533,7 @@ public class AggregatedProcessing {
                         Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils.getExtremitiesAsIndex(tokens,
                             layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
 
-                        return new Span(quantity.getRawValue(), quantity.getType().toString(), quantity.getOffsetStart(), quantity.getOffsetEnd(),
+                        return new Span(quantity.getRawValue(), lowerCase(quantity.getType().toString()), quantity.getOffsetStart(), quantity.getOffsetEnd(),
                             extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight());
                     }).collect(Collectors.toList()).stream();
             }).collect(Collectors.toList());
