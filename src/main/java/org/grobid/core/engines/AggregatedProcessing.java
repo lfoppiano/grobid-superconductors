@@ -515,7 +515,8 @@ public class AggregatedProcessing {
                 Pair<Integer, Integer> extremitiesSuperconductor = MeasurementUtils.getExtremitiesAsIndex(tokens,
                     layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
 
-                return new Span(s.getName(), lowerCase(substring(s.getType(), 1, length(s.getType()) - 1)), s.getOffsetStart(), s.getOffsetEnd(),
+                return new Span(s.getName(), lowerCase(substring(s.getType(), 1, length(s.getType()) - 1)),
+                    s.getOffsetStart() - tokens.get(0).getOffset(), s.getOffsetEnd() - tokens.get(0).getOffset(),
                     extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
             })
             .collect(Collectors.toList());
@@ -533,7 +534,16 @@ public class AggregatedProcessing {
                         Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils.getExtremitiesAsIndex(tokens,
                             layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
 
-                        return new Span(quantity.getRawValue(), lowerCase(quantity.getType().toString()), quantity.getOffsetStart(), quantity.getOffsetEnd(),
+                        // Critical temperatures are tagged as tc*
+                        Measurement measurement = pair.getRight();
+                        String type = lowerCase(quantity.getType().toString());
+                        if(measurement.getQuantifiedObject() != null && StringUtils.equals(measurement.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
+                            type += "*";
+                        }
+
+                        return new Span(quantity.getRawValue(), type,
+                            quantity.getOffsetStart() - tokens.get(0).getOffset(),
+                            quantity.getOffsetEnd() - tokens.get(0).getOffset(),
                             extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight());
                     }).collect(Collectors.toList()).stream();
             }).collect(Collectors.toList());

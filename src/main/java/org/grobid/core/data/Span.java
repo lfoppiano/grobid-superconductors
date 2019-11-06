@@ -2,15 +2,15 @@ package org.grobid.core.data;
 
 public class Span {
 
-    private String label;
+    private String text;
     private String type;
     private int offsetStart;
     private int offsetEnd;
     private int tokenStart;
     private int tokenEnd;
 
-    public Span(String label, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
-        this.label = label;
+    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+        this.text = text;
         this.type = type;
         this.offsetStart = offsetStart;
         this.offsetEnd = offsetEnd;
@@ -58,11 +58,11 @@ public class Span {
         this.tokenEnd = tokenEnd;
     }
 
-    public String getLabel() {
-        return label;
+    public String getText() {
+        return text;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setText(String text) {
+        this.text = text;
     }
 }
