@@ -1,8 +1,8 @@
 grobidHome: ../grobid-home
 
 chemspotUrl: http://falcon.nims.go.jp/chemspot
-chemDataExtractorUrl: http://falcon.nims.go.jp/cde
-#chemDataExtractorUrl: http://localhost:8076
+#chemDataExtractorUrl: http://falcon.nims.go.jp/cde
+chemDataExtractorUrl: http://localhost:8076
 
 grobidQuantitiesUrl: http://falcon.nims.go.jp/quantities
 
