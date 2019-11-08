@@ -14,10 +14,7 @@ import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
 import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.IOUtilities;
-import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.MeasurementUtils;
-import org.grobid.core.utilities.UnitUtilities;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -530,26 +527,40 @@ public class AggregatedProcessing {
                     .map(pair -> {
                         Quantity quantity = pair.getLeft();
 
-                        List<LayoutToken> layoutTokens = quantity.getLayoutTokens();
+                        List<LayoutToken> layoutTokens = QuantityOperations.getLayoutTokens(quantity);
+                        List<OffsetPosition> offsets = QuantityOperations.getOffsets(quantity);
+                        List<OffsetPosition> sortedOffsets = offsets.stream()
+                            .sorted(Comparator.comparingInt(o -> o.start))
+                            .collect(Collectors.toList());
+
                         Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils.getExtremitiesAsIndex(tokens,
                             layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
 
                         // Critical temperatures are tagged as tc*
                         Measurement measurement = pair.getRight();
                         String type = lowerCase(quantity.getType().toString());
-                        if(measurement.getQuantifiedObject() != null && StringUtils.equals(measurement.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
+                        if (measurement.getQuantifiedObject() != null && StringUtils.equals(measurement.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
                             type += "*";
                         }
 
+                        int lowerOffset = sortedOffsets.get(0).start;
+                        int higherOffset = Iterables.getLast(sortedOffsets).end;
+
                         return new Span(quantity.getRawValue(), type,
-                            quantity.getOffsetStart() - tokens.get(0).getOffset(),
-                            quantity.getOffsetEnd() - tokens.get(0).getOffset(),
+                            lowerOffset - tokens.get(0).getOffset(),
+                            higherOffset - tokens.get(0).getOffset(),
                             extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight());
                     }).collect(Collectors.toList()).stream();
             }).collect(Collectors.toList());
 
         processedParagraph.getSpans().addAll(spansFromSuperconductors);
         processedParagraph.getSpans().addAll(spansForQuantities);
+
+        List<Span> sortedSpans = processedParagraph.getSpans().stream()
+            .sorted(Comparator.comparingInt(Span::getOffsetStart))
+            .collect(Collectors.toList());
+
+        processedParagraph.setSpans(sortedSpans);
 
         return processedParagraph;
     }
