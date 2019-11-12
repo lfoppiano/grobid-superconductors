@@ -518,39 +518,38 @@ public class AggregatedProcessing {
             })
             .collect(Collectors.toList());
 
-
         List<Span> spansForQuantities = temperatureList.stream()
             .flatMap(t -> {
-                List<Pair<Quantity, Measurement>> listMeasurements = MeasurementUtils.flattenMeasurement(t);
+                List<Quantity> quantityList = QuantityOperations.toQuantityList(t);
+                List<LayoutToken> layoutTokens = QuantityOperations.getLayoutTokens(quantityList);
 
-                return listMeasurements.stream()
-                    .map(pair -> {
-                        Quantity quantity = pair.getLeft();
+                // Token start and end
+                Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils
+                    .getExtremitiesAsIndex(tokens,
+                        layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
 
-                        List<LayoutToken> layoutTokens = QuantityOperations.getLayoutTokens(quantity);
-                        List<OffsetPosition> offsets = QuantityOperations.getOffsets(quantity);
-                        List<OffsetPosition> sortedOffsets = offsets.stream()
-                            .sorted(Comparator.comparingInt(o -> o.start))
-                            .collect(Collectors.toList());
 
-                        Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils.getExtremitiesAsIndex(tokens,
-                            layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
+                // Critical temperatures are tagged as tc*
+                String type = lowerCase(Iterables.getFirst(quantityList, new Quantity()).getType().toString());
+                if (t.getQuantifiedObject() != null
+                    && StringUtils.equals(t.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
+                    type += "*";
+                }
 
-                        // Critical temperatures are tagged as tc*
-                        Measurement measurement = pair.getRight();
-                        String type = lowerCase(quantity.getType().toString());
-                        if (measurement.getQuantifiedObject() != null && StringUtils.equals(measurement.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
-                            type += "*";
-                        }
+                //Offset start and end
+                List<OffsetPosition> offsets = QuantityOperations.getOffsets(quantityList);
+                List<OffsetPosition> sortedOffsets = offsets.stream()
+                    .sorted(Comparator.comparingInt(o -> o.start))
+                    .collect(Collectors.toList());
 
-                        int lowerOffset = sortedOffsets.get(0).start;
-                        int higherOffset = Iterables.getLast(sortedOffsets).end;
+                int lowerOffset = sortedOffsets.get(0).start;
+                int higherOffset = Iterables.getLast(sortedOffsets).end;
 
-                        return new Span(quantity.getRawValue(), type,
-                            lowerOffset - tokens.get(0).getOffset(),
-                            higherOffset - tokens.get(0).getOffset(),
-                            extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight());
-                    }).collect(Collectors.toList()).stream();
+                return Stream.of(new Span(LayoutTokensUtil.toText(layoutTokens), type,
+                    lowerOffset - tokens.get(0).getOffset(),
+                    higherOffset - tokens.get(0).getOffset(),
+                    extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight()));
+
             }).collect(Collectors.toList());
 
         processedParagraph.getSpans().addAll(spansFromSuperconductors);
