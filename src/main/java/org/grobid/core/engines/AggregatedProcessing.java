@@ -523,10 +523,13 @@ public class AggregatedProcessing {
                 List<Quantity> quantityList = QuantityOperations.toQuantityList(t);
                 List<LayoutToken> layoutTokens = QuantityOperations.getLayoutTokens(quantityList);
 
+                int start = layoutTokens.get(0).getOffset();
+                int end = Iterables.getLast(layoutTokens).getOffset();
+
                 // Token start and end
                 Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils
                     .getExtremitiesAsIndex(tokens,
-                        layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
+                        Math.min(start, end), Math.max(start, end) + 1);
 
 
                 // Critical temperatures are tagged as tc*
@@ -549,7 +552,7 @@ public class AggregatedProcessing {
                 int lowerOffset = sortedOffsets.get(0).start;
                 int higherOffset = Iterables.getLast(sortedOffsets).end;
 
-                return Stream.of(new Span(LayoutTokensUtil.toText(layoutTokens), type,
+                return Stream.of(new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())), type,
                     lowerOffset - tokens.get(0).getOffset(),
                     higherOffset - tokens.get(0).getOffset(),
                     extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight()));
