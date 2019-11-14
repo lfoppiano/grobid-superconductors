@@ -530,10 +530,14 @@ public class AggregatedProcessing {
 
 
                 // Critical temperatures are tagged as tc*
-                String type = lowerCase(Iterables.getFirst(quantityList, new Quantity()).getType().toString());
-                if (t.getQuantifiedObject() != null
-                    && StringUtils.equals(t.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
-                    type += "*";
+                String type = "temperature";
+                Quantity firstQuantity = Iterables.getFirst(quantityList, new Quantity());
+                if(firstQuantity.getType() != null) {
+                    type = lowerCase(firstQuantity.getType().toString());
+                    if (t.getQuantifiedObject() != null
+                        && StringUtils.equals(t.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
+                        type += "*";
+                    }
                 }
 
                 //Offset start and end
