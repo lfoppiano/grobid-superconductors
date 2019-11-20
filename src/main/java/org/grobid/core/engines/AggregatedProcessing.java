@@ -75,14 +75,13 @@ public class AggregatedProcessing {
 
             extremitiesSuperconductor = adjustExtremities(extremitiesSuperconductor, superconductor.getLayoutTokens(), tokens);
 
-            List<Pair<Quantity, Measurement>> criticalTemperaturesFlattenSorted
-                = criticalTemperaturesFlatten.stream().sorted((o1, o2) -> {
-                int superconductorLayoutTokenLowerOffset = superconductor.getLayoutTokens().get(0).getOffset();
-                int superconductorLayoutTokenHigherOffset = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset()
-                    + superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getText().length();
+            int superconductorLayoutTokenLowerOffset = superconductor.getLayoutTokens().get(0).getOffset();
+            int superconductorLayoutTokenHigherOffset = superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getOffset()
+                + superconductor.getLayoutTokens().get(superconductor.getLayoutTokens().size() - 1).getText().length();
 
-                double superconductorCentroidOffset = ((double) (superconductorLayoutTokenHigherOffset + superconductorLayoutTokenLowerOffset)) / 2.0;
+            double superconductorCentroidOffset = ((double) (superconductorLayoutTokenHigherOffset + superconductorLayoutTokenLowerOffset)) / 2.0;
 
+            List<Pair<Quantity, Measurement>> criticalTemperaturesFlattenSorted = criticalTemperaturesFlatten.stream().sorted((o1, o2) -> {
                 Quantity quantityT1 = o1.getLeft();
                 int t1LowerLayoutTokenOffset = quantityT1.getLayoutTokens().get(0).getOffset();
                 int t1HigherLayoutTokenOffset = quantityT1.getLayoutTokens().get(quantityT1.getLayoutTokens().size() - 1).getOffset()
@@ -431,14 +430,21 @@ public class AggregatedProcessing {
         return new PDFAnnotationResponse(linkedSuperconductors, temperatureList, new ArrayList<>());
     }
 
+    private List<Measurement> getTemperatures(List<LayoutToken> tokens) {
+        List<Measurement> measurements = quantityParser.process(tokens);
+        List<Measurement> temperatures = MeasurementUtils.filterMeasurements(measurements,
+            Collections.singletonList(UnitUtilities.Unit_Type.TEMPERATURE));
+
+        return temperatures;
+    }
+
     private List<Measurement> getMeasurements(List<LayoutToken> tokens, List<Superconductor> superconductorsNames) {
         List<Pair<String, List<LayoutToken>>> tcExpressionList = superconductorsNames.stream()
             .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
             .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
             .collect(Collectors.toList());
 
-        List<Measurement> measurements = quantityParser.process(tokens);
-        List<Measurement> temperatures = MeasurementUtils.filterMeasurements(measurements, Arrays.asList(UnitUtilities.Unit_Type.TEMPERATURE));
+        List<Measurement> temperatures = getTemperatures(tokens);
         return markCriticalTemperatures(temperatures, tokens, tcExpressionList);
     }
 
@@ -484,7 +490,7 @@ public class AggregatedProcessing {
             )
             .collect(Collectors.toList());
 
-        List<Measurement> temperatureList = getMeasurements(tokens, superconductorsNames);
+        List<Measurement> temperatureList = getTemperatures(tokens);
 
         ProcessedParagraph processedParagraph = new ProcessedParagraph();
 
@@ -504,7 +510,6 @@ public class AggregatedProcessing {
         }).collect(Collectors.toList()));
 
         processedParagraph.setText(LayoutTokensUtil.toText(tokens));
-
 
         List<Span> spansFromSuperconductors = namedEntitiesList.stream()
             .map(s -> {
@@ -531,18 +536,6 @@ public class AggregatedProcessing {
                     .getExtremitiesAsIndex(tokens,
                         Math.min(start, end), Math.max(start, end) + 1);
 
-
-                // Critical temperatures are tagged as tc*
-                String type = "temperature";
-                Quantity firstQuantity = Iterables.getFirst(quantityList, new Quantity());
-                if(firstQuantity.getType() != null) {
-                    type = lowerCase(firstQuantity.getType().toString());
-                    if (t.getQuantifiedObject() != null
-                        && StringUtils.equals(t.getQuantifiedObject().getNormalizedName(), "Critical Temperature")) {
-                        type += "*";
-                    }
-                }
-
                 //Offset start and end
                 List<OffsetPosition> offsets = QuantityOperations.getOffsets(quantityList);
                 List<OffsetPosition> sortedOffsets = offsets.stream()
@@ -551,6 +544,8 @@ public class AggregatedProcessing {
 
                 int lowerOffset = sortedOffsets.get(0).start;
                 int higherOffset = Iterables.getLast(sortedOffsets).end;
+
+                String type = "temperature";
 
                 return Stream.of(new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())), type,
                     lowerOffset - tokens.get(0).getOffset(),
