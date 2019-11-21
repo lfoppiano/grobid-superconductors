@@ -37,29 +37,6 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         window = 20;
     }
 
-
-    /**
-     * Dispatch the example to the training or test data, based on the split ration and the drawing of
-     * a random number
-     *
-     * @deprecated use AbstractTrainer.dispatchExample() instead. This will be removed in next release.
-     */
-    @Deprecated
-    public Writer dispatchExample(Writer writerTraining, Writer writerEvaluation, double splitRatio) {
-        Writer writer = null;
-        if ((writerTraining == null) && (writerEvaluation != null)) {
-            writer = writerEvaluation;
-        } else if ((writerTraining != null) && (writerEvaluation == null)) {
-            writer = writerTraining;
-        } else {
-            if (Math.random() <= splitRatio)
-                writer = writerTraining;
-            else
-                writer = writerEvaluation;
-        }
-        return writer;
-    }
-
     /**
      * Add the selected features to the model training
      */
@@ -73,7 +50,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "staging");
+            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "final/batch-1");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
