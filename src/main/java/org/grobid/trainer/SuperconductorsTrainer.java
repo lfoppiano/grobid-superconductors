@@ -14,11 +14,13 @@ import org.grobid.trainer.stax.handler.SuperconductorAnnotationStaxHandler;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
@@ -50,7 +52,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-            File adaptedCorpusDir = new File(corpusDir.getAbsolutePath() + File.separator + "final/batch-1");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath() + File.separator + "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -73,24 +75,32 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 evaluationOutputWriter = new OutputStreamWriter(os3, UTF_8);
             }
 
+            List<File> refFiles = Files.walk(adaptedCorpusDir, Integer.MAX_VALUE)
+                .filter(path -> Files.isRegularFile(path)
+                    && (StringUtils.endsWithIgnoreCase(path.getFileName().toString(), ".xml")))
+                .map(Path::toFile)
+                .collect(Collectors.toList());
+
+            LOGGER.info(refFiles.size() + " files to be processed.");
+
             // then we convert the tei files into the usual CRF label format
             // we process all tei files in the output directory
-            File[] refFiles = adaptedCorpusDir.listFiles((dir, name) ->
-                name.toLowerCase().endsWith(".tei") || name.toLowerCase().endsWith(".tei.xml")
-            );
+//            File[] refFiles = adaptedCorpusDir.listFiles((dir, name) ->
+//                name.toLowerCase().endsWith(".tei") || name.toLowerCase().endsWith(".tei.xml")
+//            );
 
             if (refFiles == null) {
                 return 0;
             }
 
-            LOGGER.info(refFiles.length + " files");
+            LOGGER.info(refFiles.size() + " files");
 
             String name;
 
             Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
             StringBuilder output = new StringBuilder();
-            for (int n = 0; n < refFiles.length; n++) {
-                File theFile = refFiles[n];
+            for (int n = 0; n < refFiles.size(); n++) {
+                File theFile = refFiles.get(n);
                 name = theFile.getName();
                 LOGGER.info(name);
 
@@ -103,8 +113,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
                 // we can now add the features
                 // we open the featured file
-                File theRawFile = new File(adaptedCorpusDir + File.separator +
-                    name.replace(".tei.xml", ".features.txt"));
+                File theRawFile = new File(theFile.getAbsolutePath().replace(".tei.xml", ".features.txt"));
                 if (!theRawFile.exists()) {
                     LOGGER.warn("Raw file " + theRawFile + " does not exist. Please have a look!");
                     continue;
