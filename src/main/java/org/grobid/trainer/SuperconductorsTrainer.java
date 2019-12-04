@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
@@ -83,13 +85,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
             LOGGER.info(refFiles.size() + " files to be processed.");
 
-            // then we convert the tei files into the usual CRF label format
-            // we process all tei files in the output directory
-//            File[] refFiles = adaptedCorpusDir.listFiles((dir, name) ->
-//                name.toLowerCase().endsWith(".tei") || name.toLowerCase().endsWith(".tei.xml")
-//            );
-
-            if (refFiles == null) {
+            if (isEmpty(refFiles)) {
                 return 0;
             }
 
@@ -105,7 +101,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                    Arrays.asList("material", "tc", "class", "me_method"));
+                    ANNOTATION_DEFAULT_TAGS);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
