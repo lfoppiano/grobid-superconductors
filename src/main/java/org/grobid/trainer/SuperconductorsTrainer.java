@@ -16,9 +16,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -191,18 +188,6 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         GrobidProperties.getInstance();
 
         Trainer trainer = new SuperconductorsTrainer();
-
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-
-        String nFoldCrossValidationReport = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
-
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
-            writer.write(nFoldCrossValidationReport);
-            writer.write("\n");
-        } catch (IOException e) {
-            throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
-        }
 
         AbstractTrainer.runTraining(trainer);
     }
