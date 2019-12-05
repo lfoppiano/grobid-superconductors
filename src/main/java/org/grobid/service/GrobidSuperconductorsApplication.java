@@ -9,6 +9,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.grobid.service.command.InterAnnotationAgreementCommand;
+import org.grobid.service.command.RunTrainingCommand;
 import org.grobid.service.command.TrainingGenerationCommand;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
@@ -17,8 +18,6 @@ import javax.servlet.FilterRegistration;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-
-import static javax.servlet.FilterRegistration.*;
 
 public class GrobidSuperconductorsApplication extends Application<GrobidSuperconductorsConfiguration> {
     private static final String RESOURCES = "/service";
@@ -44,8 +43,9 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(new MultiPartBundle());
         bootstrap.addBundle(new AssetsBundle("/web", "/", "index.html", "assets"));
-        bootstrap.addCommand(new TrainingGenerationCommand());
+        bootstrap.addCommand(new RunTrainingCommand());
         bootstrap.addCommand(new InterAnnotationAgreementCommand());
+        bootstrap.addCommand(new TrainingGenerationCommand());
     }
 
     @Override

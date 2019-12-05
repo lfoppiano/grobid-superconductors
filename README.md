@@ -38,6 +38,31 @@ To run the IAA (Inter Annotators Agreement) measurements:
 for example: 
 > java -jar build/libs/grobid-superconductor-{version}.onejar.jar iaa -dIn baseDirectory resources/dataset/superconductors/guidelines/annotated
 
+### Training
+
+For training: 
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a train -m superconductors config/config.yml
+
+or 
+
+> ./gradlew train_superconductors
+
+For training and evaluation with 10-fold cross validation
+
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a 10fold -m superconductors config/config.yml
+
+For training and evaluation with 80/20 partition: 
+ 
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a train_eval -m superconductors config/config.yml
+
+For training and evaluation with holdout: 
+ 
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a holdout -m superconductors config/config.yml
+
+To disable the writing on the `log` directory, use the option `--onlyPrint`
+
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a 10fold -m superconductors --onlyPrint config/config.yml
+
 ## License
 
 GROBID and grobid-superconductors are distributed under [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
