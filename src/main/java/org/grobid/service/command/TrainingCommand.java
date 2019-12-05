@@ -1,0 +1,147 @@
+package org.grobid.service.command;
+
+import io.dropwizard.cli.ConfiguredCommand;
+import io.dropwizard.setup.Bootstrap;
+import net.sf.saxon.functions.False;
+import net.sourceforge.argparse4j.impl.Arguments;
+import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.inf.Subparser;
+import org.apache.commons.lang3.StringUtils;
+import org.grobid.core.engines.Engine;
+import org.grobid.core.engines.SuperconductorsModels;
+import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
+import org.grobid.core.engines.training.TrainingOutputFormat;
+import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.main.GrobidHomeFinder;
+import org.grobid.core.main.LibraryLoader;
+import org.grobid.core.utilities.ChemDataExtractionClient;
+import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.grobid.trainer.AbstractTrainer;
+import org.grobid.trainer.SuperconductorsTrainer;
+import org.grobid.trainer.Trainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
+public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrainingCommand.class);
+    private final static String ACTION = "action";
+    private final static String PRINT = "print";
+    private final static String RECURSIVE = "recursive";
+    private final static String MODEL_NAME = "model";
+    private final static String OUTPUT_FORMAT = "outputFormat";
+
+
+    public TrainingCommand() {
+        super("training", "Training / Evaluate the model ");
+    }
+
+    @Override
+    public void configure(Subparser subparser) {
+        super.configure(subparser);
+
+        subparser.addArgument("-a", "--action")
+            .dest(ACTION)
+            .type(String.class)
+            .required(false)
+            .setDefault("train")
+            .help("Action: train, 10fold, train_eval");
+
+        subparser.addArgument("-m", "--model")
+            .dest(MODEL_NAME)
+            .type(String.class)
+            .required(false)
+            .setDefault(SuperconductorsModels.SUPERCONDUCTORS.getModelName())
+            .help("Model to train");
+
+        subparser.addArgument("-op", "--onlyPrint")
+            .dest(PRINT)
+            .type(Boolean.class)
+            .required(false)
+            .setDefault(Boolean.FALSE)
+            .help("Print on screen instead of writing on a log file");
+    }
+
+    @Override
+    protected void run(Bootstrap bootstrap, Namespace namespace, GrobidSuperconductorsConfiguration configuration) throws Exception {
+        try {
+            GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
+            String grobidHome = configuration.getGrobidHome();
+            if (grobidHome != null) {
+                GrobidProperties.setGrobidPropertiesPath(new File(grobidHome, "/config/grobid.properties").getAbsolutePath());
+            }
+
+            GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
+            GrobidProperties.getInstance(grobidHomeFinder);
+            LibraryLoader.load();
+        } catch (final Exception exp) {
+            System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
+            exp.printStackTrace();
+
+            System.exit(-1);
+        }
+
+        String modelName = namespace.get(MODEL_NAME);
+        String action = namespace.get(ACTION);
+        Boolean print = namespace.get(PRINT);
+
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+
+        if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
+            Trainer trainer = new SuperconductorsTrainer();
+
+            switch (action) {
+                case "train":
+                    AbstractTrainer.runTraining(trainer);
+
+                    break;
+                case "10fold":
+                    String nFoldCrossValidationReport = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
+
+                    if (!Files.exists(Paths.get("logs"))) {
+                        Files.createDirectory(Paths.get("logs"));
+                    }
+
+                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
+                        writer.write(nFoldCrossValidationReport);
+                        writer.write("\n");
+                    } catch (IOException e) {
+                        throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
+                    }
+
+                    break;
+                case "train_eval":
+
+                    String trainingEvaluation = AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
+
+                    if (print)
+
+                        if (!Files.exists(Paths.get("logs"))) {
+                            Files.createDirectory(Paths.get("logs"));
+                        }
+
+                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
+                        writer.write(trainingEvaluation);
+                        writer.write("\n");
+                    } catch (IOException e) {
+                        throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
+                    }
+                    break;
+
+            }
+        } else {
+            System.out.println(super.getDescription());
+        }
+
+    }
+}
