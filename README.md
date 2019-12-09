@@ -55,6 +55,10 @@ For training and evaluation with 80/20 partition:
  
 > java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a train_eval -m superconductors config/config.yml
 
+For training and evaluation with holdout: 
+ 
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a holdout -m superconductors config/config.yml
+
 To disable the writing on the `log` directory, use the option `--onlyPrint`
 
 > java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a 10fold -m superconductors --onlyPrint config/config.yml

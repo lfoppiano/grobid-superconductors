@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainingCommand.class);
@@ -38,7 +39,9 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
     private final static String PRINT = "print";
     private final static String RECURSIVE = "recursive";
     private final static String MODEL_NAME = "model";
-    private final static String OUTPUT_FORMAT = "outputFormat";
+    private final static String MAX_PAPER_NUMBER = "maxPaperNumber";
+
+    private final static List<String> ACTIONS = Arrays.asList("train", "10fold", "train_eval", "holdout");
 
 
     public TrainingCommand() {
@@ -53,8 +56,9 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
             .dest(ACTION)
             .type(String.class)
             .required(false)
+            .choices(ACTIONS)
             .setDefault("train")
-            .help("Action: train, 10fold, train_eval");
+            .help("Actions to the training command. ");
 
         subparser.addArgument("-m", "--model")
             .dest(MODEL_NAME)
@@ -69,6 +73,12 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
             .required(false)
             .setDefault(Boolean.FALSE)
             .help("Print on screen instead of writing on a log file");
+
+        subparser.addArgument("-n", "--max-paper-number")
+            .dest(MAX_PAPER_NUMBER)
+            .type(Integer.class)
+            .required(false)
+            .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
     }
 
     @Override
@@ -93,6 +103,7 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
         String modelName = namespace.get(MODEL_NAME);
         String action = namespace.get(ACTION);
         Boolean print = namespace.get(PRINT);
+        Integer maxPaperNumber = namespace.get(MAX_PAPER_NUMBER);
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
@@ -100,44 +111,41 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             Trainer trainer = new SuperconductorsTrainer();
 
+            String report = null;
             switch (action) {
                 case "train":
                     AbstractTrainer.runTraining(trainer);
-
                     break;
                 case "10fold":
-                    String nFoldCrossValidationReport = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
+                    report = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
+                    break;
+                case "train_eval":
+                    report = AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
+                    break;
+                case "holdout":
+                    AbstractTrainer.runTraining(trainer);
+                    report = AbstractTrainer.runEvaluation(trainer, true);
+                    break;
+                default:
+                    System.out.println("No correct action were supplied. Please provide beside " + Arrays.toString(ACTIONS.toArray()));
+                    break;
 
+            }
+            if (report != null) {
+                if (!print) {
                     if (!Files.exists(Paths.get("logs"))) {
                         Files.createDirectory(Paths.get("logs"));
                     }
 
-                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
-                        writer.write(nFoldCrossValidationReport);
+                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-evaluation-" + formatter.format(date) + ".txt"))) {
+                        writer.write(report);
                         writer.write("\n");
                     } catch (IOException e) {
-                        throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
+                        throw new GrobidException("Error when saving evaluation results into files. ", e);
                     }
-
-                    break;
-                case "train_eval":
-
-                    String trainingEvaluation = AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
-
-                    if (print)
-
-                        if (!Files.exists(Paths.get("logs"))) {
-                            Files.createDirectory(Paths.get("logs"));
-                        }
-
-                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-10fold-cross-validation-" + formatter.format(date) + ".txt"))) {
-                        writer.write(trainingEvaluation);
-                        writer.write("\n");
-                    } catch (IOException e) {
-                        throw new GrobidException("Error when saving n-fold cross-validation results into files. ", e);
-                    }
-                    break;
-
+                } else {
+                    System.out.println(report);
+                }
             }
         } else {
             System.out.println(super.getDescription());
