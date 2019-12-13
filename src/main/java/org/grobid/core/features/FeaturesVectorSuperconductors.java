@@ -1,12 +1,16 @@
 package org.grobid.core.features;
 
 import org.apache.commons.lang3.StringUtils;
+import org.grobid.core.GrobidModels;
+import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.TextUtilities;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.grobid.core.engines.tagging.GenericTaggerUtils.getPlainLabel;
 
 /**
  * Class for features used for superconductor identification in raw texts such as scientific articles
@@ -44,6 +48,8 @@ public class FeaturesVectorSuperconductors {
     public String wordShapeTrimmed = null;
 
     private boolean isNumberToken = false;
+
+    public String fulltextLabel = "<other>";
 
     public String printVector() {
         if (isBlank(string)) {
@@ -113,6 +119,9 @@ public class FeaturesVectorSuperconductors {
 
         // value returned by a chemical recognitor
         res.append(" " + chemicalCompound);
+
+        // fulltext label
+        res.append(" " + fulltextLabel);
 
         // label - for training data (1)
         if (label != null)
@@ -218,6 +227,11 @@ public class FeaturesVectorSuperconductors {
         featuresVector.wordShape = TextUtilities.wordShape(string);
 
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
+
+        Optional<TaggingLabel> first = token.getLabels().stream().filter(l -> l.getGrobidModel().equals(GrobidModels.FULLTEXT)).findFirst();
+        first.ifPresent( a-> {
+            featuresVector.fulltextLabel = getPlainLabel(a.getLabel());
+        });
 
         // Chemical compound
         featuresVector.chemicalCompound = compoundType;
