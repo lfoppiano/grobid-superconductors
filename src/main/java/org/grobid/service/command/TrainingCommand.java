@@ -19,6 +19,7 @@ import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
+import org.grobid.trainer.SuperconductorsTrainerByDocuments;
 import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +34,15 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static org.grobid.trainer.SuperconductorsTrainer.FOLD_TYPE_DOCUMENT;
+import static org.grobid.trainer.SuperconductorsTrainer.FOLD_TYPE_PARAGRAPH;
+
 public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainingCommand.class);
     private final static String ACTION = "action";
     private final static String PRINT = "print";
     private final static String RECURSIVE = "recursive";
+    private final static String FOLD_TYPE = "foldType";
     private final static String MODEL_NAME = "model";
     private final static String MAX_PAPER_NUMBER = "maxPaperNumber";
 
@@ -79,6 +84,14 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
             .type(Integer.class)
             .required(false)
             .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
+
+        /*subparser.addArgument("-ft", "--fold-type")
+            .dest(FOLD_TYPE)
+            .choices(Arrays.asList(FOLD_TYPE_PARAGRAPH, FOLD_TYPE_DOCUMENT))
+            .type(String.class)
+            .required(false)
+            .setDefault(FOLD_TYPE_PARAGRAPH)
+            .help("Specify if the fold (how a training sample is defined) should be by paragraph or by document. ");*/
     }
 
     @Override
@@ -104,12 +117,19 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
         String action = namespace.get(ACTION);
         Boolean print = namespace.get(PRINT);
         Integer maxPaperNumber = namespace.get(MAX_PAPER_NUMBER);
+        String foldType = namespace.get(FOLD_TYPE);
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            Trainer trainer = new SuperconductorsTrainer();
+            Trainer trainer = null;
+
+//            if (foldType.equals(FOLD_TYPE_PARAGRAPH)) {
+                trainer = new SuperconductorsTrainer();
+//            } else {
+//                trainer = new SuperconductorsTrainerByDocuments();
+//            }
 
             String report = null;
             switch (action) {

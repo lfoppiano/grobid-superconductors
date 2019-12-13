@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.data.chemDataExtractor.Span;
-import org.grobid.core.data.chemspot.Mention;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
