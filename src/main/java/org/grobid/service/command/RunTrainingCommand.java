@@ -2,24 +2,17 @@ package org.grobid.service.command;
 
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
-import net.sf.saxon.functions.False;
-import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
-import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
-import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
-import org.grobid.core.engines.training.TrainingOutputFormat;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
-import org.grobid.core.utilities.ChemDataExtractionClient;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
-import org.grobid.trainer.SuperconductorsTrainerByDocuments;
 import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +27,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.grobid.trainer.SuperconductorsTrainer.FOLD_TYPE_DOCUMENT;
-import static org.grobid.trainer.SuperconductorsTrainer.FOLD_TYPE_PARAGRAPH;
-
-public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TrainingCommand.class);
+public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RunTrainingCommand.class);
     private final static String ACTION = "action";
     private final static String PRINT = "print";
     private final static String RECURSIVE = "recursive";
@@ -49,7 +39,7 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
     private final static List<String> ACTIONS = Arrays.asList("train", "10fold", "train_eval", "holdout");
 
 
-    public TrainingCommand() {
+    public RunTrainingCommand() {
         super("training", "Training / Evaluate the model ");
     }
 
@@ -105,6 +95,7 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
 
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
+            Engine.getEngine(true);
             LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
