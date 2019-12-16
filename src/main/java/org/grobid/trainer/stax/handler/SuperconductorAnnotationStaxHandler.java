@@ -70,6 +70,7 @@ public class SuperconductorAnnotationStaxHandler implements StaxParserContentHan
 
         } else if (annotationsTags.contains(localName) && insideParagraph) {
             String text = getAccumulatedText();
+            // I write the remaining data in the accumulated text as "other" label
             writeData(text, getTag("other"));
 
             accumulator.setLength(0);

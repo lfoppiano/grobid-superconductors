@@ -2,19 +2,13 @@ package org.grobid.service.command;
 
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
-import net.sf.saxon.functions.False;
-import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
-import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
-import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
-import org.grobid.core.engines.training.TrainingOutputFormat;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
-import org.grobid.core.utilities.ChemDataExtractionClient;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
@@ -33,18 +27,19 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TrainingCommand.class);
+public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RunTrainingCommand.class);
     private final static String ACTION = "action";
     private final static String PRINT = "print";
     private final static String RECURSIVE = "recursive";
+    private final static String FOLD_TYPE = "foldType";
     private final static String MODEL_NAME = "model";
     private final static String MAX_PAPER_NUMBER = "maxPaperNumber";
 
     private final static List<String> ACTIONS = Arrays.asList("train", "10fold", "train_eval", "holdout");
 
 
-    public TrainingCommand() {
+    public RunTrainingCommand() {
         super("training", "Training / Evaluate the model ");
     }
 
@@ -79,6 +74,14 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
             .type(Integer.class)
             .required(false)
             .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
+
+        /*subparser.addArgument("-ft", "--fold-type")
+            .dest(FOLD_TYPE)
+            .choices(Arrays.asList(FOLD_TYPE_PARAGRAPH, FOLD_TYPE_DOCUMENT))
+            .type(String.class)
+            .required(false)
+            .setDefault(FOLD_TYPE_PARAGRAPH)
+            .help("Specify if the fold (how a training sample is defined) should be by paragraph or by document. ");*/
     }
 
     @Override
@@ -92,6 +95,7 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
 
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
+            Engine.getEngine(true);
             LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
@@ -104,12 +108,19 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
         String action = namespace.get(ACTION);
         Boolean print = namespace.get(PRINT);
         Integer maxPaperNumber = namespace.get(MAX_PAPER_NUMBER);
+        String foldType = namespace.get(FOLD_TYPE);
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            Trainer trainer = new SuperconductorsTrainer();
+            Trainer trainer = null;
+
+//            if (foldType.equals(FOLD_TYPE_PARAGRAPH)) {
+                trainer = new SuperconductorsTrainer();
+//            } else {
+//                trainer = new SuperconductorsTrainerByDocuments();
+//            }
 
             String report = null;
             switch (action) {

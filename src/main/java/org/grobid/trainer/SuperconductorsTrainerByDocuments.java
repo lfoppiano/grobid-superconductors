@@ -27,13 +27,10 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEV
 /**
  * @author Patrice Lopez
  */
-public class SuperconductorsTrainer extends AbstractTrainer {
-    public static final String FOLD_TYPE_PARAGRAPH = "paragraph";
-    public static final String FOLD_TYPE_DOCUMENT = "document";
-
+public class SuperconductorsTrainerByDocuments extends AbstractTrainer {
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
-    public SuperconductorsTrainer() {
+    public SuperconductorsTrainerByDocuments() {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
@@ -92,9 +89,9 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
             String name;
 
-            Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
-            StringBuilder output = new StringBuilder();
             for (int n = 0; n < refFiles.size(); n++) {
+                Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                StringBuilder output = new StringBuilder();
                 File theFile = refFiles.get(n);
                 name = theFile.getName();
                 LOGGER.info(name);
@@ -136,8 +133,6 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                         if (tag == null || StringUtils.length(StringUtils.trim(tag)) == 0) {
                             output.append("\n");
                             writer.write(output.toString() + "\n");
-                            writer.flush();
-                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                             output = new StringBuilder();
                             continue;
                         }
@@ -161,6 +156,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
                 writer.write(output.toString() + "\n");
                 writer.write("\n");
+                writer.flush();
 
             }
         } catch (Exception e) {
@@ -189,8 +185,8 @@ public class SuperconductorsTrainer extends AbstractTrainer {
     public static void main(String[] args) {
         GrobidProperties.getInstance();
 
-        Trainer trainer = new SuperconductorsTrainer();
+        Trainer trainer = new SuperconductorsTrainerByDocuments();
 
-        AbstractTrainer.runTraining(trainer);
+        AbstractTrainer.runNFoldEvaluation(trainer, 4);
     }
 }
