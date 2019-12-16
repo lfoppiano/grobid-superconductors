@@ -174,7 +174,7 @@ public class SuperconductorsTrainingXMLFormatterTest {
 
         String output = target.format(labeledTextList, 1);
 
-        assertThat(output.substring(357),
+        assertThat(output.substring(output.indexOf("<text xml:lang=\"en\">")),
             is("<text xml:lang=\"en\"><p>The electronic specific heat of as-grown and annealed single-crystals of <material>FeSe 1-x Te x</material> (<material>0.6 ≤ x ≤ 1</material>) has been investigated. It has been found that annealed single-crystals with <material>x = 0.6 -0.9</material> <tcValue>exhibit</tcValue> <tc>bulk superconductivity</tc> with a clear specific-heat jump at the <tc>superconducting</tc> (SC) <tc>transition temperature</tc>, T c . Both 2Δ 0 /k B T c [Δ 0 : the SC gap at 0 K estimated using the single-band BCS s-wave model] and ⊿C/(γ n -γ 0 )T c [⊿C: the specific-heat jump at T c , γ n : the electronic specific-heat coefficient in the normal state, γ 0 : the residual electronic specific-heat coefficient at 0 K in the SC state] are largest in the well-annealed single-crystal with x = 0.7, i.e., 4.29 and 2.76, respectively, indicating that the superconductivity is of the strong coupling. The thermodynamic critical field has also been estimated. γ n has been found to be one order of magnitude larger than those estimated from the band calculations and increases with increasing x at x = 0.6 -0.9, which is surmised to be due to the increase in the electronic effective mass, namely, the enhancement of the electron correlation. It has been found that there remains a finite value of γ 0 in the SC state even in the well-annealed single-crystals with x = 0.8 -0.9, suggesting an inhomogeneous electronic state in real space and/or momentum space.</p></text></tei>"));
     }
 
