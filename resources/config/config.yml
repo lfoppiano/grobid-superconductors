@@ -26,6 +26,9 @@ logging:
   # Logger-specific levels.
   loggers:
     org.grobid.core.data.normalization.QuantityNormalizer: "OFF"
+    org.grobid.core.engines.QuantityParser: "OFF"
+    org.grobid.core.engines.ValueParser: "OFF"
+    org.grobid.core.utilities.WordsToNumber: "OFF"
 
   appenders:
     - type: console
