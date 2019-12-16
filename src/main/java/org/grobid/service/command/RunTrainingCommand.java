@@ -59,7 +59,7 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .dest(MODEL_NAME)
             .type(String.class)
             .required(false)
-            .setDefault(SuperconductorsModels.SUPERCONDUCTORS.getModelName())
+            .setDefault("superconductors")
             .help("Model to train");
 
         subparser.addArgument("-op", "--onlyPrint")

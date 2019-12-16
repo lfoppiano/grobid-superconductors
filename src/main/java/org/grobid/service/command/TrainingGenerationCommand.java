@@ -13,7 +13,6 @@ import org.grobid.core.engines.training.TrainingOutputFormat;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.ChemDataExtractionClient;
-import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
