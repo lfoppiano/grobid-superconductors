@@ -108,7 +108,7 @@ public class SuperconductorsParserTrainingData {
 
         GrobidPDFEngine.processDocument(document, preprocessedLayoutToken -> {
 
-            // re-tokenise now
+            // Re-tokenise now
             final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(preprocessedLayoutToken);
 
             // Trying to fix the eventual offset mismatches by rewrite offsets
@@ -138,7 +138,6 @@ public class SuperconductorsParserTrainingData {
             List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurements(measurements,
                 Arrays.asList(
                     UnitUtilities.Unit_Type.TEMPERATURE,
-                    UnitUtilities.Unit_Type.MAGNETIC_FIELD_STRENGTH,
                     UnitUtilities.Unit_Type.PRESSURE
                 )
             );

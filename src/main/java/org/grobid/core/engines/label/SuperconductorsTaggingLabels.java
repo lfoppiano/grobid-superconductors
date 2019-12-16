@@ -17,7 +17,7 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
     public static final String SUPERCONDUCTORS_TC_VALUE_LABEL = "<tcValue>";
     public static final String SUPERCONDUCTORS_PRESSURE_LABEL = "<pressure>";
     public static final String SUPERCONDUCTORS_MAGNETISATION_LABEL = "<magnetisation>";
-    public static final String SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL = "<measurementMethod>";
+    public static final String SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL = "<me_method>";
     public static final String SUPERCONDUCTORS_SHAPE_LABEL = "<shape>";
 
     public static final TaggingLabel SUPERCONDUCTORS_CLASS = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, SUPERCONDUCTORS_CLASS_LABEL);

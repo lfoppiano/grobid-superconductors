@@ -324,8 +324,8 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
                 resultList.add(superconductor);
-            } else if (clusterLabel.equals(SUPERCONDUCTORS_SAMPLE)) {
-                superconductor.setType(SUPERCONDUCTORS_SAMPLE_LABEL);
+            } else if (clusterLabel.equals(SUPERCONDUCTORS_MEASUREMENT_METHOD)) {
+                superconductor.setType(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
@@ -342,6 +342,14 @@ public class SuperconductorsParser extends AbstractParser {
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_TC_VALUE)) {
                 superconductor.setType(SUPERCONDUCTORS_TC_VALUE_LABEL);
+                superconductor.setName(clusterContent);
+                superconductor.setLayoutTokens(theTokens);
+                superconductor.setBoundingBoxes(boundingBoxes);
+                superconductor.setOffsetStart(startPos);
+                superconductor.setOffsetEnd(endPos);
+                resultList.add(superconductor);
+            } else if (clusterLabel.equals(SUPERCONDUCTORS_PRESSURE)) {
+                superconductor.setType(SUPERCONDUCTORS_PRESSURE_LABEL);
                 superconductor.setName(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
