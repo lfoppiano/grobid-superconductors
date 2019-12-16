@@ -42,19 +42,32 @@ public class SentenceSegmenter {
         for (int i = 0; i < sentences.size(); i++) {
             List<Token> sentence = new ArrayList<>(sentences.get(i));
             if (CollectionUtils.isNotEmpty(sentence)) {
+
                 if (StringUtils.isNotBlank(sentence.get(0).getWordForm())
                     && !Character.isUpperCase(sentence.get(0).getWordForm().charAt(0))
                     && fixedSentences.size() > 0) {
 
-                    fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
+                    // Check if this sentence might be wrongly split with the previous one.
+                    // If the first character is not blank, doesn't start with an uppercase character and
+                    // there are sentences already in the output
 
+                    fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
                 } else if (CollectionUtils.size(sentence) == 1 && StringUtils.isBlank(sentence.get(0).getWordForm())) {
+                    //Only one sentence and it starts with space -> remove the space
+
                     fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
                 } else if (StringUtils.isBlank(sentence.get(0).getWordForm())) {
+                    //if first character is blank,
+                    //  - if the only character, append to the previous sentence
+                    //  - else if following character is not uppercase, append to the previous sentence
+                    //  - else append first character to previous sentence and the rest as new sentence
                     if (sentence.size() == 1) {
                         fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
                     } else if (!Character.isUpperCase(sentence.get(1).getWordForm().charAt(0))) {
                         fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
+                    } else {
+                        fixedSentences.get(fixedSentences.size() - 1).add(sentence.get(0));
+                        fixedSentences.add(sentence.subList(1, sentence.size()));
                     }
                 } else {
                     fixedSentences.add(sentence);
