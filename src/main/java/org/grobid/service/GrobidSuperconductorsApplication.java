@@ -43,9 +43,9 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(new MultiPartBundle());
         bootstrap.addBundle(new AssetsBundle("/web", "/", "index.html", "assets"));
-        bootstrap.addCommand(new RunTrainingCommand());
         bootstrap.addCommand(new InterAnnotationAgreementCommand());
         bootstrap.addCommand(new TrainingGenerationCommand());
+        bootstrap.addCommand(new RunTrainingCommand());
     }
 
     @Override

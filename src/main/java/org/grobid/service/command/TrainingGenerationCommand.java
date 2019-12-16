@@ -6,6 +6,7 @@ import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import org.apache.commons.lang3.StringUtils;
+import org.grobid.core.GrobidModels;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
