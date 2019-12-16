@@ -76,7 +76,6 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
     @Override
     protected void run(Bootstrap bootstrap, Namespace namespace, GrobidSuperconductorsConfiguration configuration) throws Exception {
         try {
-
             GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
             String grobidHome = configuration.getGrobidHome();
             if (grobidHome != null) {
