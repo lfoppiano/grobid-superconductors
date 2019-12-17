@@ -40,19 +40,17 @@ public class SuperconductorsParserTrainingData {
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperconductorsParserTrainingData.class);
 
     private SuperconductorsParser superconductorsParser;
-    private QuantityParser quantityParser;
     private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> trainingOutputFormatters = new HashMap<>();
 
 
     public SuperconductorsParserTrainingData(ChemDataExtractionClient chemspotClient) {
-        this(SuperconductorsParser.getInstance(chemspotClient), QuantityParser.getInstance(true));
+        this(SuperconductorsParser.getInstance(chemspotClient, QuantityParser.getInstance(true)));
     }
 
-    public SuperconductorsParserTrainingData(SuperconductorsParser parser, QuantityParser quantityParser) {
+    public SuperconductorsParserTrainingData(SuperconductorsParser parser) {
         superconductorsParser = parser;
         trainingOutputFormatters.put(TrainingOutputFormat.TSV, new SuperconductorsTrainingTSVFormatter());
         trainingOutputFormatters.put(TrainingOutputFormat.XML, new SuperconductorsTrainingXMLFormatter());
-        this.quantityParser = quantityParser;
     }
 
     private void writeOutput(File file,
@@ -134,55 +132,15 @@ public class SuperconductorsParserTrainingData {
             textAggregation.append("\n");
 
             Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(normalisedLayoutTokens);
-            List<Measurement> measurements = quantityParser.process(normalisedLayoutTokens);
-            List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurements(measurements,
-                Arrays.asList(
-                    UnitUtilities.Unit_Type.TEMPERATURE,
-                    UnitUtilities.Unit_Type.PRESSURE
-                )
-            );
 
             features.append(stringListPair.getLeft());
             features.append("\n");
             features.append("\n");
 
-            List<Superconductor> measurementsAdapted = filteredMeasurements
-                .stream()
-                .map(m -> {
-                    OffsetPosition offset = QuantityOperations.getContainingOffset(QuantityOperations.getOffset(m));
+            List<Superconductor> entities = stringListPair.getRight();
+//            List<Superconductor> sortedEntities = pruneOverlappingAnnotations(superconductorList);
 
-                    Superconductor superconductor = new Superconductor();
-                    superconductor.setOffsetStart(offset.start);
-                    superconductor.setOffsetEnd(offset.end);
-                    superconductor.setSource(Superconductor.SOURCE_QUANTITIES);
-
-                    String type = lowerCase(QuantityOperations.getType(m).getName());
-                    if (StringUtils.equals("temperature", type)) {
-                        type = SUPERCONDUCTORS_TC_VALUE_LABEL;
-                    } else if (StringUtils.equals("magnetic field strength", type)) {
-                        type = SUPERCONDUCTORS_MAGNETISATION_LABEL;
-                    }
-                    superconductor.setType(type);
-
-                    List<LayoutToken> quantityLayoutTokens = normalisedLayoutTokens
-                        .stream()
-                        .filter(l -> l.getOffset() >= superconductor.getOffsetStart()
-                            && l.getOffset() < superconductor.getOffsetEnd())
-                        .collect(Collectors.toList());
-
-                    String name = LayoutTokensUtil.toText(quantityLayoutTokens);
-                    superconductor.setName(name);
-
-                    return superconductor;
-                })
-                .filter(s -> StringUtils.isNotEmpty(s.getType()))
-                .collect(Collectors.toList());
-
-            List<Superconductor> superconductorList = stringListPair.getRight();
-            superconductorList.addAll(measurementsAdapted);
-            List<Superconductor> sortedEntities = pruneOverlappingAnnotations(superconductorList);
-
-            Pair<List<Superconductor>, List<LayoutToken>> labeleledText = Pair.of(sortedEntities, normalisedLayoutTokens);
+            Pair<List<Superconductor>, List<LayoutToken>> labeleledText = Pair.of(entities, normalisedLayoutTokens);
             labeledTextList.add(labeleledText);
 
         });
@@ -191,7 +149,6 @@ public class SuperconductorsParserTrainingData {
 
         writeOutput(file, outputDirectory, labelledTextOutput, features.toString(), textAggregation.toString(), outputFormat.toString());
     }
-
 
     /**
      * Remove overlapping annotations - grobid-quantities has lower priority in this context
@@ -216,7 +173,7 @@ public class SuperconductorsParserTrainingData {
                 previous = current;
             } else {
                 if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
-                    System.out.println("Overlapping. " + current.getName() + " <" + current.getType() + "> with " + previous.getName() + " <" + previous.getType() + ">");
+                    LOGGER.info("Overlapping. " + current.getName() + " <" + current.getType() + "> with " + previous.getName() + " <" + previous.getType() + ">");
 
                     if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
                         toBeRemoved.add(previous);

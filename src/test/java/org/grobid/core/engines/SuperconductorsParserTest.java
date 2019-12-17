@@ -2,6 +2,7 @@ package org.grobid.core.engines;
 
 import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.Quantity;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.data.chemDataExtractor.Span;
 import org.grobid.core.data.chemspot.Mention;
@@ -31,13 +32,15 @@ public class SuperconductorsParserTest {
     private SuperconductorsParser target;
 
     private ChemDataExtractionClient mockChemspotClient;
+    private QuantityParser mockQuantityParser;
 
     @Before
     public void setUp() throws Exception {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractionClient.class);
+        mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
         LibraryLoader.load();
-        target = new SuperconductorsParser(mockChemspotClient);
+        target = new SuperconductorsParser(mockChemspotClient, mockQuantityParser);
     }
 
     @Test
@@ -55,6 +58,23 @@ public class SuperconductorsParserTest {
         List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
 
         assertThat(booleans.stream().filter(b -> !b.equals(NONE_CHEMSPOT_TYPE)).count(), greaterThan(0L));
+    }
+
+    @Test
+    public void testSynchroniseLayoutTokenWithMentions2() {
+        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken("Ge 30 can be classified into Zintl\n" +
+            "compounds, where 14 group elements Si, Ge, and Sn forming the\n" +
+            "framework with polyhedral cages are partially substituted with\n" +
+            "lower valent elements such as ");
+
+        tokens.stream().forEach(l -> {
+            l.setOffset(l.getOffset() + 372);
+        });
+
+        List<Span> mentions = Arrays.asList(new Span(70, 72, "Si"), new Span(72, 76, ", Ge"));
+        List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
+
+        assertThat(booleans.stream().filter(b -> !b.equals(Boolean.FALSE)).count(), is(4L));
     }
 
     @Test

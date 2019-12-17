@@ -7,6 +7,7 @@ import org.grobid.core.utilities.TextUtilities;
 import java.util.regex.Matcher;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.grobid.core.engines.label.TaggingLabels.OTHER_LABEL;
 
 /**
  * Class for features used for superconductor identification in raw texts such as scientific articles
@@ -33,6 +34,8 @@ public class FeaturesVectorSuperconductors {
     public boolean italic = false;
 
     public String chemicalCompound = null;
+
+    public String quantity = OTHER_LABEL;
 
     public String shadowNumber = null; // Convert digits to “0”
 
@@ -114,6 +117,9 @@ public class FeaturesVectorSuperconductors {
         // value returned by a chemical recognitor
         res.append(" " + chemicalCompound);
 
+        // value returned by grobid quantity
+        res.append(" " + quantity);
+
         // label - for training data (1)
         if (label != null)
             res.append(" " + label + "");
@@ -129,7 +135,8 @@ public class FeaturesVectorSuperconductors {
     public static FeaturesVectorSuperconductors addFeatures(LayoutToken token,
                                                             String label,
                                                             LayoutToken previousToken,
-                                                            String compoundType) {
+                                                            String isChemicalCompound,
+                                                            String isQuantity) {
         FeatureFactory featureFactory = FeatureFactory.getInstance();
 
         FeaturesVectorSuperconductors featuresVector = new FeaturesVectorSuperconductors();
@@ -220,7 +227,10 @@ public class FeaturesVectorSuperconductors {
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
 
         // Chemical compound
-        featuresVector.chemicalCompound = compoundType;
+        featuresVector.chemicalCompound = isChemicalCompound;
+
+        //Grobid quantity
+        featuresVector.quantity = isQuantity;
 
         return featuresVector;
     }
