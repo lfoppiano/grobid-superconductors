@@ -4,7 +4,6 @@ import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
-import org.grobid.core.GrobidModels;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
@@ -60,7 +59,7 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .dest(MODEL_NAME)
             .type(String.class)
             .required(false)
-            .setDefault(SuperconductorsModels.SUPERCONDUCTORS.getModelName())
+            .setDefault("superconductors")
             .help("Model to train");
 
         subparser.addArgument("-op", "--onlyPrint")
