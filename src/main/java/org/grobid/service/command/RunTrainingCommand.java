@@ -70,13 +70,13 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .setDefault(Boolean.FALSE)
             .help("Print on screen instead of writing on a log file");
 
-        subparser.addArgument("-n", "--max-paper-number")
+        subparser.addArgument("-pn", "--max-paper-number")
             .dest(MAX_PAPER_NUMBER)
             .type(Integer.class)
             .required(false)
             .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
 
-        subparser.addArgument("-n", "--fold-count")
+        subparser.addArgument("-fc", "--fold-count")
             .dest(FOLD_COUNT)
             .type(Integer.class)
             .required(false)
@@ -136,7 +136,7 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
                 case "train":
                     AbstractTrainer.runTraining(trainer);
                     break;
-                case "10fold":
+                case "nfold":
                     report = AbstractTrainer.runNFoldEvaluation(trainer, foldCount, true);
                     name = foldCount + "-fold-cross-validation";
                     break;
