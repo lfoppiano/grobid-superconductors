@@ -2,19 +2,13 @@ package org.grobid.service.command;
 
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
-import net.sf.saxon.functions.False;
-import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
-import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
-import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
-import org.grobid.core.engines.training.TrainingOutputFormat;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
-import org.grobid.core.utilities.ChemDataExtractionClient;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
@@ -38,10 +32,12 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
     private final static String ACTION = "action";
     private final static String PRINT = "print";
     private final static String RECURSIVE = "recursive";
+    private final static String FOLD_TYPE = "foldType";
+    private final static String FOLD_COUNT = "foldCount";
     private final static String MODEL_NAME = "model";
     private final static String MAX_PAPER_NUMBER = "maxPaperNumber";
 
-    private final static List<String> ACTIONS = Arrays.asList("train", "10fold", "train_eval", "holdout");
+    private final static List<String> ACTIONS = Arrays.asList("train", "nfold", "train_eval", "holdout");
 
 
     public TrainingCommand() {
@@ -64,7 +60,7 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
             .dest(MODEL_NAME)
             .type(String.class)
             .required(false)
-            .setDefault(SuperconductorsModels.SUPERCONDUCTORS.getModelName())
+            .setDefault("superconductors")
             .help("Model to train");
 
         subparser.addArgument("-op", "--onlyPrint")
@@ -74,11 +70,26 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
             .setDefault(Boolean.FALSE)
             .help("Print on screen instead of writing on a log file");
 
-        subparser.addArgument("-n", "--max-paper-number")
+        subparser.addArgument("-pn", "--max-paper-number")
             .dest(MAX_PAPER_NUMBER)
             .type(Integer.class)
             .required(false)
             .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
+
+        subparser.addArgument("-fc", "--fold-count")
+            .dest(FOLD_COUNT)
+            .type(Integer.class)
+            .required(false)
+            .setDefault(10)
+            .help("Specify if the number of fold in n-fold cross-validation. ");
+
+        /*subparser.addArgument("-ft", "--fold-type")
+            .dest(FOLD_TYPE)
+            .choices(Arrays.asList(FOLD_TYPE_PARAGRAPH, FOLD_TYPE_DOCUMENT))
+            .type(String.class)
+            .required(false)
+            .setDefault(FOLD_TYPE_PARAGRAPH)
+            .help("Specify if the fold (how a training sample is defined) should be by paragraph or by document. ");*/
     }
 
     @Override
@@ -92,6 +103,7 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
 
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
+            Engine.getEngine(true);
             LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
@@ -104,6 +116,8 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
         String action = namespace.get(ACTION);
         Boolean print = namespace.get(PRINT);
         Integer maxPaperNumber = namespace.get(MAX_PAPER_NUMBER);
+        String foldType = namespace.get(FOLD_TYPE);
+        Integer foldCount = namespace.get(FOLD_COUNT);
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
@@ -111,20 +125,24 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             Trainer trainer = new SuperconductorsTrainer();
 
+            String name = "";
             String report = null;
             switch (action) {
                 case "train":
                     AbstractTrainer.runTraining(trainer);
                     break;
-                case "10fold":
-                    report = AbstractTrainer.runNFoldEvaluation(trainer, 10, true);
+                case "nfold":
+                    report = AbstractTrainer.runNFoldEvaluation(trainer, foldCount, true);
+                    name = foldCount + "-fold-cross-validation";
                     break;
                 case "train_eval":
                     report = AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
+                    name = "80-20-evaluation";
                     break;
                 case "holdout":
                     AbstractTrainer.runTraining(trainer);
                     report = AbstractTrainer.runEvaluation(trainer, true);
+                    name = "holdout-evaluation";
                     break;
                 default:
                     System.out.println("No correct action were supplied. Please provide beside " + Arrays.toString(ACTIONS.toArray()));
