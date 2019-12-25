@@ -1,4 +1,10 @@
 # Models 
+
+ - superconductors-evaluation-20191223.txt: 
+    - 2019/12/23
+    - 60 papers
+    - changes: added 16 more papers to the corpus 
+
  - superconductors-evaluation-20191218.txt: 
     - 2019/12/18 
     - 44 papers 
