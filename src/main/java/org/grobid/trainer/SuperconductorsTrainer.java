@@ -50,7 +50,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath() + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath() + File.separator + "final/batch-1");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
