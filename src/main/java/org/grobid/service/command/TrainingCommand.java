@@ -137,7 +137,7 @@ public class TrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConf
                         Files.createDirectory(Paths.get("logs"));
                     }
 
-                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-evaluation-" + formatter.format(date) + ".txt"))) {
+                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-evaluation-" + formatter.format(date) + "4labels.txt"))) {
                         writer.write(report);
                         writer.write("\n");
                     } catch (IOException e) {
