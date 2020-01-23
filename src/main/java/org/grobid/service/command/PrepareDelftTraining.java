@@ -15,6 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -90,27 +93,33 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("ddMMyy");
 
-
-        String filename = File.separator + SuperconductorsModels.SUPERCONDUCTORS.getModelName()
-            + "-" + formatter.format(date) + ".train";
-
-        String destinationPath = "";
+        String destination = "";
         if (isNotEmpty(outputPath)) {
-            destinationPath = outputPath + filename;
+            destination = outputPath;
         } else if (isNotEmpty(delftPath)) {
-            destinationPath = delftPath + File.separator + "data" + File.separator + "sequenceLabelling"
+            destination = delftPath + File.separator + "data" + File.separator + "sequenceLabelling"
                 + File.separator + "grobid" + File.separator
-                + SuperconductorsModels.SUPERCONDUCTORS.getModelName() + filename;
+                + SuperconductorsModels.SUPERCONDUCTORS.getModelName();
         } else {
             System.out.println("Both Delft path (--delft/-d option) and output path (--output/-o) are are selected." +
                 "Please select only one of them. ");
             System.exit(-1);
         }
 
+        Path destinationPath = Paths.get(destination);
+        if (!Files.exists(destinationPath)) {
+            Files.createDirectories(destinationPath);
+        }
+
+        String filename = File.separator + SuperconductorsModels.SUPERCONDUCTORS.getModelName()
+            + "-" + formatter.format(date) + ".train";
+
+        destinationPath = Paths.get(destination + filename);
+
         SuperconductorsTrainer trainer = new SuperconductorsTrainer();
         trainer.createCRFPPData(
             GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS),
-            new File(destinationPath));
+            destinationPath.toFile());
 
 
     }
