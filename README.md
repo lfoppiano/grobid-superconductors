@@ -63,6 +63,18 @@ To disable the writing on the `log` directory, use the option `--onlyPrint`
 
 > java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a 10fold -m superconductors --onlyPrint config/config.yml
 
+
+## Delft training data 
+
+It's possible to create training data for delft via command line: 
+
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar prepare-delft-training --delft /delft/root/path -m superconductors config/config.yml
+
+or with a general output directory 
+
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar prepare-delft-training --output /a/directory -m superconductors config/config.yml
+
+ 
 ## License
 
 GROBID and grobid-superconductors are distributed under [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 

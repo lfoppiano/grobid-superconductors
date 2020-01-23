@@ -73,7 +73,7 @@ dependencies {
 
 
     // grobid-quantities specific dependencies
-    compile 'tech.units:indriya:1.3'
+//    compile 'tech.units:indriya:1.3'
     compile group: 'si.uom', name: 'si-units-java8', version: '0.9'
     compile group: 'si.uom', name: 'si-quantity', version: '0.9'
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
@@ -167,8 +167,6 @@ tasks.run.workingDir = rootProject.rootDir
 
 
 /*** Packaging and distribution ***/
-
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 task mainJar(type: ShadowJar, group: 'onejar') {
     zip64 true
