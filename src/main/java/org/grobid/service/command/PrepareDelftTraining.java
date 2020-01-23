@@ -4,7 +4,6 @@ import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
-import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
@@ -120,6 +119,8 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
         trainer.createCRFPPData(
             GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS),
             destinationPath.toFile());
+
+        System.out.println("Writing training data for delft to " + destinationPath.toString());
 
 
     }
