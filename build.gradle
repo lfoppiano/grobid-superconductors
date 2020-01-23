@@ -168,6 +168,8 @@ tasks.run.workingDir = rootProject.rootDir
 
 /*** Packaging and distribution ***/
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 task mainJar(type: ShadowJar, group: 'onejar') {
     zip64 true
     from sourceSets.main.output
