@@ -1,14 +1,11 @@
 package org.grobid.core.engines;
 
 import org.easymock.EasyMock;
+import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Superconductor;
 import org.grobid.core.data.chemDataExtractor.Span;
-import org.grobid.core.data.chemspot.Mention;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.ChemDataExtractionClient;
-import org.grobid.core.utilities.ChemspotClient;
 import org.grobid.core.utilities.OffsetPosition;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -20,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
@@ -36,8 +32,8 @@ public class SuperconductorsParserTest {
     public void setUp() throws Exception {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractionClient.class);
 
-        LibraryLoader.load();
-        target = new SuperconductorsParser(mockChemspotClient);
+//        LibraryLoader.load();
+        target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient);
     }
 
     @Test
