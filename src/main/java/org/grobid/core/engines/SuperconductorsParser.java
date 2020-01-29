@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.data.chemDataExtractor.Span;
@@ -57,9 +58,16 @@ public class SuperconductorsParser extends AbstractParser {
         instance = this;
     }
 
+    @Inject
+    public SuperconductorsParser(GrobidModel model, ChemDataExtractionClient chemicalAnnotator) {
+        super(model);
+        this.chemicalAnnotator = chemicalAnnotator;
+        instance = this;
+    }
+
     public Pair<String, List<Superconductor>> generateTrainingData(List<LayoutToken> layoutTokens) {
 
-        if(isEmpty(layoutTokens))
+        if (isEmpty(layoutTokens))
             return Pair.of("", new ArrayList<>());
 
         List<Superconductor> measurements = new ArrayList<>();
@@ -69,10 +77,10 @@ public class SuperconductorsParser extends AbstractParser {
 
         //Normalisation
         List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
-                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
-                    return layoutToken;
-                }
+                return layoutToken;
+            }
         ).collect(Collectors.toList());
 
 
@@ -124,10 +132,10 @@ public class SuperconductorsParser extends AbstractParser {
 
         //Normalisation
         List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
-                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
-                    return layoutToken;
-                }
+                return layoutToken;
+            }
         ).collect(Collectors.toList());
 
         // list of textual tokens of the selected segment
@@ -192,7 +200,7 @@ public class SuperconductorsParser extends AbstractParser {
                 continue;
             } else {
                 if (token.getOffset() >= mentionStart
-                        && token.getOffset() + length(token.getText()) <= mentionEnd) {
+                    && token.getOffset() + length(token.getText()) <= mentionEnd) {
                     isChemicalEntity.add(true);
                     continue;
                 }
@@ -264,7 +272,7 @@ public class SuperconductorsParser extends AbstractParser {
                 }
 
                 FeaturesVectorSuperconductors featuresVector =
-                        FeaturesVectorSuperconductors.addFeatures(token, null, previous, isChemicalEntity.get(index).toString());
+                    FeaturesVectorSuperconductors.addFeatures(token, null, previous, isChemicalEntity.get(index).toString());
                 result.append(featuresVector.printVector());
                 result.append("\n");
                 previous = token;
@@ -368,7 +376,9 @@ public class SuperconductorsParser extends AbstractParser {
         return resultList;
     }
 
-    /** Tests on this method are failing ... use at your own risk! **/
+    /**
+     * Tests on this method are failing ... use at your own risk!
+     **/
     @Deprecated
     protected OffsetPosition calculateOffsets(List<LayoutToken> tokens, List<LayoutToken> theTokens, int pos) {
         String text = LayoutTokensUtil.toText(tokens);
