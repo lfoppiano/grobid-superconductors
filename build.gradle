@@ -65,7 +65,7 @@ dependencies {
 
     //GROBID
     compile 'org.grobid:grobid-core:0.6.0-SNAPSHOT'
-    compile 'org.grobid:grobid-trainer:0.5.6'
+    compile 'org.grobid:grobid-trainer:0.6.0-SNAPSHOT'
     compile "xom:xom:1.2.5"
 
 
