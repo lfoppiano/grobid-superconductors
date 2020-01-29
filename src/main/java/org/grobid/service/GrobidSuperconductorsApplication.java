@@ -9,6 +9,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.grobid.service.command.InterAnnotationAgreementCommand;
+import org.grobid.service.command.PrepareDelftTraining;
 import org.grobid.service.command.RunTrainingCommand;
 import org.grobid.service.command.TrainingGenerationCommand;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -38,21 +39,22 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
     @Override
     public void initialize(Bootstrap<GrobidSuperconductorsConfiguration> bootstrap) {
         GuiceBundle<GrobidSuperconductorsConfiguration> guiceBundle = GuiceBundle.defaultBuilder(GrobidSuperconductorsConfiguration.class)
-                .modules(getGuiceModules())
-                .build();
+            .modules(getGuiceModules())
+            .build();
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(new MultiPartBundle());
         bootstrap.addBundle(new AssetsBundle("/web", "/", "index.html", "assets"));
         bootstrap.addCommand(new RunTrainingCommand());
         bootstrap.addCommand(new InterAnnotationAgreementCommand());
         bootstrap.addCommand(new TrainingGenerationCommand());
+        bootstrap.addCommand(new PrepareDelftTraining());
     }
 
     @Override
     public void run(GrobidSuperconductorsConfiguration configuration, Environment environment) {
         // Enable CORS headers
         final FilterRegistration.Dynamic cors =
-                environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+            environment.servlets().addFilter("CORS", CrossOriginFilter.class);
 
         // Configure CORS parameters
         cors.setInitParameter("allowedOrigins", "*");

@@ -39,6 +39,10 @@ repositories {
     maven { url "https://dl.bintray.com/rookies/maven" }
     maven { url "http://oss.jfrog.org/artifactory/libs-snapshot" }
     maven { url "http://oss.jfrog.org/artifactory/libs-release" }
+    flatDir {
+        dirs 'localLibs'
+    }
+
 }
 
 ext {
@@ -53,7 +57,6 @@ configurations.all {
     }
 }
 
-
 dependencies {
     //Tests
     testCompile 'junit:junit:4.12'
@@ -61,10 +64,9 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 
     //GROBID
-//    compile 'org.grobid:grobid-core:0.6.0-SNAPSHOT'
-//    compile 'org.grobid:grobid-trainer:0.6.0-SNAPSHOT'
-    compile 'org.grobid:grobid-core:0.5.6'
-    compile 'org.grobid:grobid-trainer:0.5.6'
+    compile 'org.grobid:grobid-core:0.6.0-SNAPSHOT'
+    compile 'org.grobid:grobid-trainer:0.6.0-SNAPSHOT'
+    compile "xom:xom:1.2.5"
 
 
     compile('org.grobid:grobid-quantities:0.5.2-SNAPSHOT') {
@@ -73,7 +75,7 @@ dependencies {
 
 
     // grobid-quantities specific dependencies
-    compile 'tech.units:indriya:1.3'
+//    compile 'tech.units:indriya:1.3'
     compile group: 'si.uom', name: 'si-units-java8', version: '0.9'
     compile group: 'si.uom', name: 'si-quantity', version: '0.9'
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'

@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Quantity;
@@ -56,6 +57,13 @@ public class SuperconductorsParser extends AbstractParser {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         this.chemicalAnnotator = chemicalAnnotator;
         this.quantityParser = quantityParser;
+        instance = this;
+    }
+
+    @Inject
+    public SuperconductorsParser(GrobidModel model, ChemDataExtractionClient chemicalAnnotator) {
+        super(model);
+        this.chemicalAnnotator = chemicalAnnotator;
         instance = this;
     }
 
