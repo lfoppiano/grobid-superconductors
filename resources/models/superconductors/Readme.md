@@ -4,6 +4,7 @@ This table summarise the various models and evolution of evaluation.
 
 | date | number of documents | number of labels | F1 |changes | evaluation file |
 |--------------|-----|----|-------|---------------------|---|
+|  2019/01/23  | 85  |  6 | 65.07 | Adding 25 papers | [results](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200123/resources/models/superconductors/result-logs) |
 |  2019/12/25  | 60  |  6 | 60.41 | Enabling features from quantity model | [results](https://github.com/lfoppiano/grobid-superconductors/tree/add-quantities-features/resources/models/superconductors/result-logs) |
 |  2019/12/23  | 60  |  6 | 61.99 | Adding 16 papers | [`superconductors-evaluation-20191223.txt`](https://github.com/lfoppiano/grobid-superconductors/blob/master/resources/models/superconductors/result-logs/superconductors-10fold-cross-validation-20191223.txt) |
 |  2019/12/18  | 44  |  6 | 59.17 | Second review of annotations with updated guidelines | [`superconductors-10fold-cross-validation-20191218.txt`](https://github.com/lfoppiano/grobid-superconductors/blob/master/resources/models/superconductors/result-logs/superconductors-10fold-cross-validation-20191218.txt) |
