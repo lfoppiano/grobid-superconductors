@@ -1,6 +1,7 @@
 # Grobid superconductors module
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+![Java CI](https://github.com/lfoppiano/grobid-superconductors/workflows/Java%20CI/badge.svg)
 
 __Work in progress.__
 
