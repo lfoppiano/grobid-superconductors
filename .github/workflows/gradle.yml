@@ -16,7 +16,10 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build -x test
 
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1.0.1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Test with Gradle
+      run: ./gradlew test --info --stacktrace
+
+#    - name: Coveralls GitHub Action
+#      uses: coverallsapp/github-action@v1.0.1
+#      with:
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
