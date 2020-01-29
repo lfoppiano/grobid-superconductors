@@ -53,8 +53,14 @@ configurations.all {
     }
 }
 
+ext {
+    localLibs = ['grobid-quantities-0.5.2-SNAPSHOT.jar']
+}
+
 
 dependencies {
+    compile fileTree(dir: new File(rootProject.rootDir, 'localLibs'), include: localLibs)
+
     //Tests
     testCompile 'junit:junit:4.12'
     testCompile 'org.easymock:easymock:4.0.2'
