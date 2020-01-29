@@ -39,6 +39,10 @@ repositories {
     maven { url "https://dl.bintray.com/rookies/maven" }
     maven { url "http://oss.jfrog.org/artifactory/libs-snapshot" }
     maven { url "http://oss.jfrog.org/artifactory/libs-release" }
+    flatDir {
+        dirs 'localLibs'
+    }
+
 }
 
 ext {
@@ -54,10 +58,6 @@ configurations.all {
 }
 
 dependencies {
-    flatDir {
-        dirs 'localLibs'
-    }
-
     //Tests
     testCompile 'junit:junit:4.12'
     testCompile 'org.easymock:easymock:4.0.2'
