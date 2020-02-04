@@ -6,7 +6,7 @@ This table summarise the various models and evolution of evaluation.
 
 | date | number of documents | number of labels | changes | CRF (F1) | BidLSTM+CRF (F1) | evaluation files |
 |------|---------------------|------------------|---------|----------|------------------|------------------|
-|  2019/01/23  | 85  |  6 | Adding 25 papers              |65.07     | TBA | [results](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200125/resources/models/superconductors/result-logs) |
+|  2019/01/25  | 85  |  6 | Adding 25 papers              |65.07     | TBA | [results](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200125/resources/models/superconductors/result-logs) |
 |  2019/12/25  | 60  |  6 | Enabling features from quantity model | 60.41 | TBA | [results](https://github.com/lfoppiano/grobid-superconductors/tree/add-quantities-features/resources/models/superconductors/result-logs) |
 |  2019/12/23  | 60  |  6 | Adding 16 papers | 61.99 | TBA| [`superconductors-evaluation-20191223.txt`](https://github.com/lfoppiano/grobid-superconductors/blob/master/resources/models/superconductors/result-logs/superconductors-10fold-cross-validation-20191223.txt) |
 |  2019/12/18  | 44  |  6 | Second review of annotations with updated guidelines | 59.17 | TBA | [`superconductors-10fold-cross-validation-20191218.txt`](https://github.com/lfoppiano/grobid-superconductors/blob/master/resources/models/superconductors/result-logs/superconductors-10fold-cross-validation-20191218.txt) |
