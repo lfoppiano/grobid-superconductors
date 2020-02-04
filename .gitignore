@@ -4,6 +4,5 @@ build/*
 .gradle
 out
 annotated/*
-doc/*
-docs/_build/*
+doc/_build/*
 logs/*

@@ -9,7 +9,9 @@ The goal of this GROBID module is to identify and extract entities related to su
 In particular, the goal is to extract superconductors material and their properties, such a Critical Temperature (Tc) 
 and any expression or variation, Critical pressure, material name an class.
 
-As the other GROBID models, the module relies only on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration). 
+As the other GROBID models, the module relies only on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
+
+![GROBID superconductors_screenshot](doc/images/screenshot-2.png) 
 
 See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.    
 
@@ -63,9 +65,23 @@ for example:
 
 ## Accuracy
 
-Evaluation measures are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
+Evaluation made on the 25/01/2020 using 85 papers.
+The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds). 
+We also indicate the best and worst results over the 10 folds in the complete result page.  
 
-Since the corpus is being constructed while developing this module we are recording in separate branch each step of the training. 
+| Labels       | CRF        |             |               | BidLSTM+CRF|             |               |
+|--------------|------------|-------------|---------------|------------|-------------|---------------|
+| Metrics      | Precision  |  Recall     | F1-Score      | Precision  |  Recall     | F1-Score      | 
+| <class>      | 74.54      |        66.36|        69.97  |  80.91     |  56.56      |  66.50        |    
+| <material>   | 80.82      |        78.91|        79.77  |  80.40     |  84.52      |  82.40        |    
+| <me_method>  | 70.54      |        59.53|        64.3   |  55.67     |  62.83      |  58.68        |    
+| <pressure>   | 49.33      |        33.06|        35.85  |  81.19     |  61.25      |  68.68        |     
+| <tc>         | 78.67      |        73.78|        76.09  |  79.75     |  77.85      |  78.75        |    
+| <tcValue>    | 71.09      |        59.56|        64.46  |  55.26     |  57.32      |  56.14        |  
+| average      | 70.83      |        61.87|        65.07  |  76.57     |   76.77     |  76.65        |  
+
+All evaluation measures recorded over time, are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
+See [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations. 
 
 ## Training and evaluation
 
@@ -144,15 +160,19 @@ or with a general output directory
 
 Our warmest thanks to @kermitt2 ([Science-miner](http://www.science-miner.com)): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
 
+This project is developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
 ## License
 
 GROBID and grobid-superconductors are distributed under [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
 
-Contact: Luca Foppiano (<FOPPIANO.Luca@nims.go.jp>)
+Contact: Luca Foppiano (FOPPIANO.Luca __AT__ nims.go.jp)
 
 
 ## References
- 
+
+The system is described in the following articles (the latest on top): 
+
+- "Proposal for Automatic Extraction of Superconductors properties from scientific literature": [PDF](http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3)
 ```
 @inproceedings{foppiano2019proposal,
 	address = {Tsukuba},
