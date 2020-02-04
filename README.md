@@ -71,13 +71,15 @@ We also indicate the best and worst results over the 10 folds in the complete re
 
 | Labels       | CRF        |             |               | BidLSTM+CRF|             |               |
 |--------------|------------|-------------|---------------|------------|-------------|---------------|
-| Metrics      | Precision  |  Recall     | F1-Score      | Precision  |  Recall     | F1-Score      | 
+| Metrics      | Precision  |  Recall     | F1-Score      | Precision  |  Recall     | F1-Score      |
+|--------------|------------|-------------|---------------|------------|-------------|---------------| 
 | `<class>`    | 74.54      |        66.36|        69.97  |  80.91     |  56.56      |  66.50        |    
 | `<material>` | 80.82      |        78.91|        79.77  |  80.40     |  84.52      |  82.40        |    
 | `<me_method>`| 70.54      |        59.53|        64.3   |  55.67     |  62.83      |  58.68        |    
 | `<pressure>` | 49.33      |        33.06|        35.85  |  81.19     |  61.25      |  68.68        |     
 | `<tc>`       | 78.67      |        73.78|        76.09  |  79.75     |  77.85      |  78.75        |    
 | `<tcValue>`  | 71.09      |        59.56|        64.46  |  55.26     |  57.32      |  56.14        |  
+|--------------|------------|-------------|---------------|------------|-------------|---------------|
 | Average      | 70.83      |        61.87|        65.07  |  76.57     |   76.77     |  76.65        |  
 
 All evaluation measures recorded over time, are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
