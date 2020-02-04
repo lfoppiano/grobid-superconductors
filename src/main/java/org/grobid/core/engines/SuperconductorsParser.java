@@ -58,7 +58,6 @@ public class SuperconductorsParser extends AbstractParser {
         instance = this;
     }
 
-    @Inject
     public SuperconductorsParser(GrobidModel model, ChemDataExtractionClient chemicalAnnotator) {
         super(model);
         this.chemicalAnnotator = chemicalAnnotator;

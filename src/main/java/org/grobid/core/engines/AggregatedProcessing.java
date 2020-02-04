@@ -415,19 +415,19 @@ public class AggregatedProcessing {
     public PDFAnnotationResponse annotate(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
-        List<Superconductor> namedEntitiesList = superconductorsNames.stream()
-            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
-            )
-            .collect(Collectors.toList());
+//        List<Superconductor> namedEntitiesList = superconductorsNames.stream()
+//            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
+//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
+//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
+//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
+//            )
+//            .collect(Collectors.toList());
 
         List<Measurement> temperatureList = getMeasurements(tokens, superconductorsNames);
 
-        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
+//        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
 
-        return new PDFAnnotationResponse(linkedSuperconductors, temperatureList, new ArrayList<>());
+        return new PDFAnnotationResponse(superconductorsNames, temperatureList, new ArrayList<>());
     }
 
     private List<Measurement> getTemperatures(List<LayoutToken> tokens) {
@@ -445,7 +445,8 @@ public class AggregatedProcessing {
             .collect(Collectors.toList());
 
         List<Measurement> temperatures = getTemperatures(tokens);
-        return markCriticalTemperatures(temperatures, tokens, tcExpressionList);
+//        return markCriticalTemperatures(temperatures, tokens, tcExpressionList);
+        return temperatures;
     }
 
     public PDFProcessingResponse process(InputStream uploadedInputStream) {
