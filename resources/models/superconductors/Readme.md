@@ -1,5 +1,7 @@
 # Models 
 
+
+## Summary 
 This table summarise the various models and evolution of evaluation. 
 
 | date | number of documents | number of labels | changes | CRF (F1) | BidLSTM+CRF (F1) | evaluation files |
@@ -14,3 +16,7 @@ This table summarise the various models and evolution of evaluation.
 |  [2019/11/04](https://github.com/lfoppiano/grobid-superconductors/tree/training-20191104)  | 23  |  4 | Features engineering: added layout information (superscript/subscript) and chemdataextractor  |55.5 / 56.17 | TBA | [results](https://github.com/lfoppiano/grobid-superconductors/tree/training-20191104/resources/models/superconductors/results-log) |
 |  2019/10/31  | 23  |  4 | Initial model after meeting with domain expertes | 54.77 | TBA | [`superconductors-10fold-cross-validation-20191031.txt`](https://github.com/lfoppiano/grobid-superconductors/blob/master/resources/models/superconductors/result-logs/superconductors-10fold-cross-validation-20191031.txt) |
 |  2019/05/25  | TBA  |  1 | Initial model | TBA | TBA |  |
+
+## Detailed evaluation 
+
+TBD
