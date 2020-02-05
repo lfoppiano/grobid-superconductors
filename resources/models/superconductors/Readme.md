@@ -6,7 +6,7 @@ This table summarise the various models and evolution of evaluation.
 
 * In the BidLSTM+CRF column, the result between parenthesis is obtained by enabling [features layout](https://github.com/kermitt2/delft/pull/82). 
 * Results might slightly variate. In some cases, we report multiple F1 results but a single detailed result. 
-* The experiments using `[grobid-quantities](http://www.github.com/kermitt2/grobid-quantities) as features for <pressure> and <tcValue>` indicate the use of quantities identification as features for the this model (superconductors), instead of using them directly and ignoring `<pressure>` and `<tcValue>` from this model. 
+* The experiments using "[grobid-quantities](http://www.github.com/kermitt2/grobid-quantities) as features for `<pressure>` and `<tcValue>`" indicate the use of quantities identification as features for the this model (superconductors), instead of using them directly and ignoring `<pressure>` and `<tcValue>` from this model. 
 
 | Date | Documents | Labels | Changes | CRF (F1) | BidLSTM+CRF (F1)*  | 
 |------|---------------------|------------------|---------|----------|------------------|
