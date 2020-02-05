@@ -8,7 +8,7 @@ This table summarise the various models and evolution of evaluation.
 
 | date | number of documents | number of labels | changes | CRF (F1) | BidLSTM+CRF (F1)*  | evaluation files |
 |------|---------------------|------------------|---------|----------|------------------|------------------|
-|  2019/01/31  | 85  |  6 | Enabling features from quantity model| TBA   | (77.30) | |
+|  2019/01/31  | 85  |  6 | Enabling features from quantity model| 65.28   | (77.30) | |
 |  [2019/01/25](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200125)  | 85  |  6 | Adding 25 papers              |65.07     | 76.65 (77.08/76.87/76.79) | [results](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200125/resources/models/superconductors/result-logs) |
 |  2019/12/25  | 60  |  6 | Enabling features from quantity model | 60.41 | TBA | [results](https://github.com/lfoppiano/grobid-superconductors/tree/add-quantities-features/resources/models/superconductors/result-logs) |
 |  [2019/12/23](https://github.com/lfoppiano/grobid-superconductors/tree/training-20191223)  | 60  |  6 | Adding 16 papers | 61.99 | 69.68/71.15 (73.15/72.27)| [`superconductors-evaluation-20191223.txt`](https://github.com/lfoppiano/grobid-superconductors/blob/master/resources/models/superconductors/result-logs/superconductors-10fold-cross-validation-20191223.txt) |
