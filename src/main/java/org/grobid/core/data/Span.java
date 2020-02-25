@@ -1,5 +1,7 @@
 package org.grobid.core.data;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.grobid.core.layout.BoundingBox;
 
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ public class Span {
     private int offsetEnd;
     private int tokenStart;
     private int tokenEnd;
+    //We use the hashcode to generate an unique id
+    private int id;
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
     public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
@@ -22,15 +26,11 @@ public class Span {
         this.offsetEnd = offsetEnd;
         this.tokenStart = tokenStart;
         this.tokenEnd = tokenEnd;
+        this.id = hashCode();
     }
 
     public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes) {
-        this.text = text;
-        this.type = type;
-        this.offsetStart = offsetStart;
-        this.offsetEnd = offsetEnd;
-        this.tokenStart = tokenStart;
-        this.tokenEnd = tokenEnd;
+        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd);
         this.boundingBoxes = boundingBoxes;
     }
 
@@ -88,5 +88,39 @@ public class Span {
 
     public void setBoundingBoxes(List<BoundingBox> boundingBoxes) {
         this.boundingBoxes = boundingBoxes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Span span = (Span) o;
+
+        return new EqualsBuilder()
+            .append(offsetStart, span.offsetStart)
+            .append(offsetEnd, span.offsetEnd)
+            .append(tokenStart, span.tokenStart)
+            .append(tokenEnd, span.tokenEnd)
+            .append(text, span.text)
+            .append(type, span.type)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+            .append(text)
+            .append(type)
+            .append(offsetStart)
+            .append(offsetEnd)
+            .append(tokenStart)
+            .append(tokenEnd)
+            .toHashCode();
+    }
+
+    public int getId() {
+        return id;
     }
 }
