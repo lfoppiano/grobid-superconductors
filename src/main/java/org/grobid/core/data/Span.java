@@ -1,5 +1,10 @@
 package org.grobid.core.data;
 
+import org.grobid.core.layout.BoundingBox;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Span {
 
     private String text;
@@ -8,6 +13,7 @@ public class Span {
     private int offsetEnd;
     private int tokenStart;
     private int tokenEnd;
+    private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
     public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
         this.text = text;
@@ -16,6 +22,16 @@ public class Span {
         this.offsetEnd = offsetEnd;
         this.tokenStart = tokenStart;
         this.tokenEnd = tokenEnd;
+    }
+
+    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes) {
+        this.text = text;
+        this.type = type;
+        this.offsetStart = offsetStart;
+        this.offsetEnd = offsetEnd;
+        this.tokenStart = tokenStart;
+        this.tokenEnd = tokenEnd;
+        this.boundingBoxes = boundingBoxes;
     }
 
     public String getType() {
@@ -64,5 +80,13 @@ public class Span {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public List<BoundingBox> getBoundingBoxes() {
+        return boundingBoxes;
+    }
+
+    public void setBoundingBoxes(List<BoundingBox> boundingBoxes) {
+        this.boundingBoxes = boundingBoxes;
     }
 }

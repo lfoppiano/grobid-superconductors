@@ -13,6 +13,7 @@ public class PDFProcessingResponse {
 
     private long runtime;
     private List<ProcessedParagraph> paragraphs;
+    private List<Page> pages;
 
     public PDFProcessingResponse() {
         paragraphs = new ArrayList<>();
@@ -40,5 +41,13 @@ public class PDFProcessingResponse {
 
     public void setRuntime(long runtime) {
         this.runtime = runtime;
+    }
+
+    public void setPages(List<Page> pages) {
+        this.pages = pages;
+    }
+
+    public List<Page> getPages() {
+        return pages;
     }
 }
