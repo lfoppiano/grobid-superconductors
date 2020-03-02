@@ -130,7 +130,8 @@ public class SuperconductorsParser extends AbstractParser {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
         //Normalisation
-        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
+        List<LayoutToken> layoutTokensNormalised = tokens.stream()
+            .map(layoutToken -> {
                 layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
                 return layoutToken;

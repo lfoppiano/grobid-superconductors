@@ -2,6 +2,7 @@ package org.grobid.service.command;
 
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -33,6 +34,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     private static final Logger LOGGER = LoggerFactory.getLogger(InterAnnotationAgreementCommand.class);
     private final static String INPUT_DIRECTORY = "Input directory";
     private final static String OUTPUT_DIRECTORY = "Output directory";
+    private final static String VERBOSE_OUTPUT = "verbose output";
     private final static String MODE = "Method of calculation";
     public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("p");
     public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc",
@@ -48,11 +50,25 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     public void configure(Subparser subparser) {
         super.configure(subparser);
 
-        subparser.addArgument("-dIn")
+        subparser.addArgument("--input", "-i")
             .dest(INPUT_DIRECTORY)
             .type(String.class)
             .required(true)
             .help("Input directory");
+
+        subparser.addArgument("--output", "-o")
+            .dest(OUTPUT_DIRECTORY)
+            .type(String.class)
+            .required(false)
+            .help("Output directory. If not specified, the output is printed. ");
+
+        subparser.addArgument("--verbose", "-v")
+            .dest(VERBOSE_OUTPUT)
+            .type(Boolean.class)
+            .required(false)
+            .setDefault(false)
+            .action(Arguments.storeTrue())
+            .help("Output the detailed comparison. ");
 
         subparser.addArgument("-m")
             .dest(MODE)
@@ -70,7 +86,9 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
         InterAnnotationAgreementType mode = namespace.get(MODE);
 
-        System.out.println("Calculating IAA between the following directories: " +
+        Boolean isVerbose = namespace.get(VERBOSE_OUTPUT);
+
+        System.out.println("Calculating IAA between the following directories: \n" +
             Arrays.stream(directories).map(f -> f.getAbsolutePath()).collect(Collectors.joining(", \n")));
 
         if (mode.equals(InterAnnotationAgreementType.CODING)) {
@@ -104,6 +122,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             double averageAlpha = studies.stream()
                 .mapToDouble(UnitizedStudyWrapper::getAgreement).summaryStatistics().getAverage();
             System.out.println("Krippendorf alpha agreements: " + averageAlpha);
+            System.out.println(" ");
 
             // Evaluation by category
             System.out.println("Krippendorf alpha agreement by category: ");
@@ -117,56 +136,64 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             averageByCategory.forEach((c, d) -> {
                 System.out.println(c + ": " + d);
             });
+            System.out.println(" ");
 
-            // Pairwise evaluation
-            Map<Pair<Integer, Integer>, Double> pairwiseAverage = studies
-                .stream()
-                .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
-                .flatMap(Collection::stream)
-                .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.averagingDouble(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementAverage)));
-
-            // Pairwise matrix
-            Map<Pair<Integer, Integer>, List<InterAnnotationAgreementPairwiseComparisonEntry>> collect = studies
-                .stream()
-                .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
-                .flatMap(Collection::stream)
-                .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.toList()));
-
-            collect.forEach((k, v) -> {
-                System.out.println();
-
-                int column = k.getRight();
-                int row = k.getLeft();
-
-                System.out.println(row + " vs " + column);
-                System.out.println("General Agreement: " + pairwiseAverage.get(k));
-
-                System.out.println("Agreement by categories: ");
-                Map<String, Double> collect1 = v
+            if(directories.length > 2) {
+                // Pairwise evaluation
+                Map<Pair<Integer, Integer>, Double> pairwiseAverage = studies
                     .stream()
-                    .map(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementByCategory)
-                    .flatMap(m -> m.entrySet().stream())
-                    .collect(Collectors.groupingBy(Map.Entry::getKey,
-                        Collectors.averagingDouble(Map.Entry::getValue)));
+                    .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.averagingDouble(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementAverage)));
 
-                collect1.keySet().forEach(a -> {
-                    System.out.println(a + ": " + collect1.get(a));
+                // Pairwise matrix
+                Map<Pair<Integer, Integer>, List<InterAnnotationAgreementPairwiseComparisonEntry>> collect = studies
+                    .stream()
+                    .map(UnitizedStudyWrapper::getPairwiseRaterAgreementMatrices)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.toList()));
+
+                collect.forEach((k, v) -> {
+                    System.out.println();
+
+                    int column = k.getRight();
+                    int row = k.getLeft();
+
+                    System.out.println(row + " vs " + column);
+                    System.out.println("General Agreement: " + pairwiseAverage.get(k));
+                    System.out.println("");
+
+                    System.out.println("Agreement by categories: ");
+                    Map<String, Double> collect1 = v
+                        .stream()
+                        .map(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementByCategory)
+                        .flatMap(m -> m.entrySet().stream())
+                        .collect(Collectors.groupingBy(Map.Entry::getKey,
+                            Collectors.averagingDouble(Map.Entry::getValue)));
+
+                    collect1.keySet().forEach(a -> {
+                        System.out.println(a + ": " + collect1.get(a));
+                    });
+                    System.out.println("");
+
                 });
-
-
-            });
+            } else {
+                System.out.println("IAA ran only on two annotators. Ignoring the pairwise comparison. ");
+            }
 
             // Debug information
-            System.out.println();
-            System.out.println();
+            if (isVerbose.equals(true)) {
+                System.out.println();
+                System.out.println();
 
-            UnitizingStudyPrinter printer = new UnitizingStudyPrinter();
-            studies.forEach(s -> {
-                System.out.println("\t\t\t\t" + s.getContinuums().get(0));
-                s.getStudy().getCategories().forEach(c -> {
-                    printer.printUnitsForCategory(System.out, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));
+                UnitizingStudyPrinter printer = new UnitizingStudyPrinter();
+                studies.forEach(s -> {
+                    System.out.println("\t\t\t\t" + s.getContinuums().get(0));
+                    s.getStudy().getCategories().forEach(c -> {
+                        printer.printUnitsForCategory(System.out, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));
+                    });
                 });
-            });
+            }
         }
 
     }

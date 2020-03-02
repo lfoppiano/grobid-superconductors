@@ -10,6 +10,7 @@ import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 import org.grobid.trainer.stax.StaxUtils;
 
 import javax.xml.stream.XMLStreamException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 
@@ -38,10 +39,11 @@ public class UnitizedStudyWrapper {
     public UnitizedStudyWrapper(List<InputStream> filenames) {
         String firstContinuum = null;
 
+        int count = 0;
         for (InputStream file : filenames) {
             try {
                 AnnotationExtractionStaxHandler handler = new AnnotationExtractionStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                        Arrays.asList("supercon", "tc", "substitution", "propertyValue"));
+                        ANNOTATION_DEFAULT_TAGS);
 
                 XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(file);
                 StaxUtils.traverse(reader, handler);
@@ -76,6 +78,7 @@ public class UnitizedStudyWrapper {
                         study.addUnit(start, length, filenames.indexOf(file), annotationName);
                     });
                 }
+                count++;
 
             } catch (XMLStreamException e) {
                 throw new RuntimeException("Annotation XML not well formed, fix it before re-trying. ", e);

@@ -52,9 +52,11 @@ public class InterAnnotationAgreementUnitizingProcessor {
 
         List<UnitizedStudyWrapper> studies = new ArrayList<>();
 
+        LOGGER.info("Processing: ");
         for (final File file : refFiles) {
             String fileNameWithoutInputDirectory = file.getAbsolutePath().replace(directories.get(0).getAbsolutePath(), "");
 
+            System.out.println(" > " + file.getAbsolutePath());
             List<InputStream> files = new ArrayList<>();
             String absolutePath = "";//For debugging in case of exception
             try {
@@ -143,14 +145,14 @@ public class InterAnnotationAgreementUnitizingProcessor {
             List<File> collect = directories.stream().filter(f -> !f.exists()).collect(Collectors.toList());
             if (collect.size() > 0) {
                 throw new GrobidException("Input directory 1 cannot be accessed: "
-                        + collect.stream().map(File::getAbsolutePath).collect(Collectors.joining(" \n")));
+                    + collect.stream().map(File::getAbsolutePath).collect(Collectors.joining(" \n")));
             }
 
             // I iterate list one and find (if available the same files in list 2)
             List<File> refFiles = Arrays
-                    .stream(Objects.requireNonNull(directories.get(0).listFiles()))
-                    .filter(file -> StringUtils.endsWithIgnoreCase(file.getName(), ".xml"))
-                    .collect(Collectors.toList());
+                .stream(Objects.requireNonNull(directories.get(0).listFiles()))
+                .filter(file -> StringUtils.endsWithIgnoreCase(file.getName(), ".xml"))
+                .collect(Collectors.toList());
 
             LOGGER.info(refFiles.size() + " files to be processed.");
 
