@@ -62,6 +62,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             .required(false)
             .help("Output directory. If not specified, the output is printed. ");
 
+        //https://github.com/dropwizard/dropwizard/issues/2814#issue-460688964
         subparser.addArgument("--verbose", "-v")
             .dest(VERBOSE_OUTPUT)
             .type(Boolean.class)
