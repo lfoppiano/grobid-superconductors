@@ -496,17 +496,9 @@ public class AggregatedProcessing {
 
         processedParagraph.setTokens(tokens.stream().map(l -> {
 
-            boolean subscript = l.isSubscript();
-            boolean superscript = l.isSuperscript();
+            String style = getStyle(l);
 
-            String style = "baseline";
-            if (superscript) {
-                style = "superscript";
-            } else if (subscript) {
-                style = "subscript";
-            }
-
-            return new Token(l.getText(), l.getFont(), l.getFontSize(), style, l.getOffset());
+            return new Token(l.getText(), l.getFont(), l.getFontSize(), style, l.getOffset(), l.isItalic(), l.isBold());
         }).collect(Collectors.toList()));
 
         processedParagraph.setText(LayoutTokensUtil.toText(tokens));
@@ -519,9 +511,11 @@ public class AggregatedProcessing {
 
                 List<BoundingBox> boundingBoxes = BoundingBoxCalculator.calculate(layoutTokens);
 
+                String formattedString = toFormattedString(layoutTokens);
+
                 return new Span(s.getName(), lowerCase(substring(s.getType(), 1, length(s.getType()) - 1)),
                     s.getOffsetStart() - tokens.get(0).getOffset(), s.getOffsetEnd() - tokens.get(0).getOffset(),
-                    extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight(), boundingBoxes);
+                    extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight(), boundingBoxes, formattedString);
             })
             .collect(Collectors.toList());
 
@@ -572,5 +566,64 @@ public class AggregatedProcessing {
         processedParagraph.setSpans(sortedSpans);
 
         return processedParagraph;
+    }
+
+    protected String toFormattedString(List<LayoutToken> layoutTokens) {
+        StringBuilder sb = new StringBuilder();
+        String previousStyle = "baseline";
+        String opened = null;
+        for (LayoutToken lt : layoutTokens) {
+            String currentStyle = getStyle(lt);
+            if (currentStyle.equals(previousStyle)) {
+                sb.append(lt.getText());
+            } else {
+                if (currentStyle.equals("baseline")) {
+                    sb.append("</" + previousStyle.substring(0, 3) + ">");
+                    opened = null;
+                    sb.append(lt.getText());
+                } else if (currentStyle.equals("superscript")) {
+                    if (previousStyle.equals("baseline")) {
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    } else {
+                        sb.append("</" + previousStyle.substring(0, 3) + ">");
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    }
+                } else if (currentStyle.equals("subscript")) {
+                    if (previousStyle.equals("baseline")) {
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    } else {
+                        sb.append("</" + previousStyle.substring(0, 3) + ">");
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    }
+                }
+            }
+            previousStyle = currentStyle;
+        }
+        if (opened != null) {
+            sb.append("</" + opened + ">");
+            opened = null;
+        }
+        return sb.toString();
+    }
+
+    private String getStyle(LayoutToken l) {
+        boolean subscript = l.isSubscript();
+        boolean superscript = l.isSuperscript();
+
+        String style = "baseline";
+        if (superscript) {
+            style = "superscript";
+        } else if (subscript) {
+            style = "subscript";
+        }
+        return style;
     }
 }

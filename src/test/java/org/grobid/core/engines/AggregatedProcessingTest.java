@@ -332,6 +332,25 @@ public class AggregatedProcessingTest {
 
     }
 
+    @Test
+    public void testToFormattedString_1() throws Exception {
+        String text = "La x Fe 1-x";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+        layoutTokens.get(2).setSuperscript(false);
+        layoutTokens.get(2).setSubscript(true);
+
+        layoutTokens.get(6).setSuperscript(false);
+        layoutTokens.get(6).setSubscript(true);
+        layoutTokens.get(7).setSuperscript(false);
+        layoutTokens.get(7).setSubscript(true);
+        layoutTokens.get(8).setSuperscript(false);
+        layoutTokens.get(8).setSubscript(true);
+
+        String s = target.toFormattedString(layoutTokens);
+
+        System.out.println(s);
+    }
+
     public void testNLP4j() throws Exception {
 
         Tokenizer tokenizer = new EnglishTokenizer();
@@ -354,8 +373,6 @@ public class AggregatedProcessingTest {
         }
 
         FileUtils.writeLines(new File(output), outputLines);
-
-
     }
 
 }

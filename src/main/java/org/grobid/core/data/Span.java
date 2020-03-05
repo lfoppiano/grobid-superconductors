@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Span {
-
     private String text;
+    private String formattedText;
     private String type;
     private int offsetStart;
     private int offsetEnd;
     private int tokenStart;
     private int tokenEnd;
+
     //We use the hashcode to generate an unique id
     private int id;
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
@@ -33,6 +34,12 @@ public class Span {
         this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd);
         this.boundingBoxes = boundingBoxes;
     }
+
+    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes, String formattedText) {
+        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
+        this.formattedText = formattedText;
+    }
+
 
     public String getType() {
         return type;
@@ -122,5 +129,13 @@ public class Span {
 
     public int getId() {
         return id;
+    }
+
+    public String getFormattedText() {
+        return formattedText;
+    }
+
+    public void setFormattedText(String formattedText) {
+        this.formattedText = formattedText;
     }
 }
