@@ -34,8 +34,8 @@ public class UnitizedStudyWrapperTest {
 
         assertThat(unitizedStudyWrapper.getContinuums(), hasSize(3));
         assertThat(unitizedStudyWrapper.getAgreementByCategory().keySet(), hasSize(2));
-        assertThat(unitizedStudyWrapper.getAgreementByCategory().get("supercon"), is(1.0));
-        assertThat(unitizedStudyWrapper.getAgreementByCategory().get("propertyValue"), is(1.0));
+        assertThat(unitizedStudyWrapper.getAgreementByCategory().get("material"), is(1.0));
+        assertThat(unitizedStudyWrapper.getAgreementByCategory().get("class"), is(1.0));
         assertThat(unitizedStudyWrapper.getAgreement(), is(1.0));
         assertThat(unitizedStudyWrapper.getStudy(), is(not(nullValue())));
     }
