@@ -460,6 +460,7 @@ public class AggregatedProcessing {
             file = IOUtilities.writeInputFile(uploadedInputStream);
             GrobidAnalysisConfig config =
                 new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                    .analyzer(DeepAnalyzer.getInstance())
                     .build();
             DocumentSource documentSource =
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
