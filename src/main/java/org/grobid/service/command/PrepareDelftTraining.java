@@ -29,7 +29,7 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
     private final static String MODEL_NAME = "model";
     private final static String DELFT_PATH = "delft_path";
     private final static String OUTPUT_PATH = "output_path";
-
+    private final static String INPUT_PATH = "input_path";
 
     public PrepareDelftTraining() {
         super("prepare-delft-training", "Prepare training data for Delft.");
@@ -51,9 +51,8 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
             .required(false)
             .help("Output path directory. ");
 
-
-//        subparser.addArgument("-m", "--model")
-//            .dest(MODEL_NAME)
+//        subparser.addArgument("-i", "--input")
+//            .dest(INPUT_PATH)
 //            .type(String.class)
 //            .required(false)
 //            .setDefault("superconductors")
@@ -90,7 +89,7 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
         }
 
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("ddMMyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
 
         String destination = "";
         if (isNotEmpty(outputPath)) {
@@ -121,7 +120,5 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
             destinationPath.toFile());
 
         System.out.println("Writing training data for delft to " + destinationPath.toString());
-
-
     }
 }
