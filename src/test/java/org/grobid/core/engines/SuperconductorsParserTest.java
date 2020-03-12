@@ -24,6 +24,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertThat;
 
+@Ignore
 public class SuperconductorsParserTest {
 
     private SuperconductorsParser target;

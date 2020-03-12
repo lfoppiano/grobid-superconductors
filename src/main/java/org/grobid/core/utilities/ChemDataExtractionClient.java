@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,9 +93,17 @@ public class ChemDataExtractionClient {
             return mapper.readValue(inputLine, new TypeReference<List<Span>>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
-            LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
+            try {
+                LOGGER.error("The input line cannot be processed\n " + IOUtils.toString(inputLine, StandardCharsets.UTF_8) + "\n ", e);
+            } catch (IOException e1) {
+                LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
+            }
         } catch (IOException e) {
-            LOGGER.error("Some serious error when deserialize the JSON object: \n" + inputLine, e);
+            try {
+                LOGGER.error("Some serious error when deserialize the JSON object: \n" + IOUtils.toString(inputLine, StandardCharsets.UTF_8), e);
+            } catch (IOException e1) {
+                LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
+            }
         }
         return null;
     }
