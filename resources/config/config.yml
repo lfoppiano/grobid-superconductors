@@ -21,7 +21,7 @@ server:
   acceptQueueSize: 2048
 
 logging:
-  level: INFO
+  level: DEBUG
 
   # Logger-specific levels.
   loggers:
@@ -32,6 +32,7 @@ logging:
 
   appenders:
     - type: console
+      threshold: INFO
     - type: file
       threshold: DEBUG
       logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"

@@ -13,6 +13,7 @@ import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
 import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
@@ -415,19 +416,19 @@ public class AggregatedProcessing {
     public PDFAnnotationResponse annotate(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
-        List<Superconductor> namedEntitiesList = superconductorsNames.stream()
-            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
-            )
-            .collect(Collectors.toList());
+//        List<Superconductor> namedEntitiesList = superconductorsNames.stream()
+//            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
+//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
+//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
+//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
+//            )
+//            .collect(Collectors.toList());
 
         List<Measurement> temperatureList = getMeasurements(tokens, superconductorsNames);
 
-        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
+//        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
 
-        return new PDFAnnotationResponse(linkedSuperconductors, temperatureList, new ArrayList<>());
+        return new PDFAnnotationResponse(superconductorsNames, temperatureList, new ArrayList<>());
     }
 
     private List<Measurement> getTemperatures(List<LayoutToken> tokens) {
@@ -445,7 +446,8 @@ public class AggregatedProcessing {
             .collect(Collectors.toList());
 
         List<Measurement> temperatures = getTemperatures(tokens);
-        return markCriticalTemperatures(temperatures, tokens, tcExpressionList);
+//        return markCriticalTemperatures(temperatures, tokens, tcExpressionList);
+        return temperatures;
     }
 
     public PDFProcessingResponse process(InputStream uploadedInputStream) {
@@ -458,6 +460,7 @@ public class AggregatedProcessing {
             file = IOUtilities.writeInputFile(uploadedInputStream);
             GrobidAnalysisConfig config =
                 new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                    .analyzer(DeepAnalyzer.getInstance())
                     .build();
             DocumentSource documentSource =
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
@@ -465,11 +468,9 @@ public class AggregatedProcessing {
 
             GrobidPDFEngine.processDocument(doc, l -> pdfProcessingResponse.addParagraph(process(l)));
 
-            List<Page> pages = new ArrayList<>();
-            for (org.grobid.core.layout.Page page : doc.getPages()) {
-                pages.add(new Page(page.getHeight(), page.getWidth()));
-            }
+            List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
 
+            pdfProcessingResponse.setPages(pages);
         } catch (Exception e) {
             throw new GrobidException("Cannot process pdf file: " + file.getPath(), e);
         } finally {
@@ -496,17 +497,9 @@ public class AggregatedProcessing {
 
         processedParagraph.setTokens(tokens.stream().map(l -> {
 
-            boolean subscript = l.isSubscript();
-            boolean superscript = l.isSuperscript();
+            String style = getStyle(l);
 
-            String style = "baseline";
-            if (superscript) {
-                style = "superscript";
-            } else if (subscript) {
-                style = "subscript";
-            }
-
-            return new Token(l.getText(), l.getFont(), l.getFontSize(), style, l.getOffset());
+            return new Token(l.getText(), l.getFont(), l.getFontSize(), style, l.getOffset(), l.isItalic(), l.isBold());
         }).collect(Collectors.toList()));
 
         processedParagraph.setText(LayoutTokensUtil.toText(tokens));
@@ -517,9 +510,13 @@ public class AggregatedProcessing {
                 Pair<Integer, Integer> extremitiesSuperconductor = MeasurementUtils.getExtremitiesAsIndex(tokens,
                     layoutTokens.get(0).getOffset(), Iterables.getLast(layoutTokens).getOffset() + 1);
 
+                List<BoundingBox> boundingBoxes = BoundingBoxCalculator.calculate(layoutTokens);
+
+                String formattedString = toFormattedString(layoutTokens);
+
                 return new Span(s.getName(), lowerCase(substring(s.getType(), 1, length(s.getType()) - 1)),
                     s.getOffsetStart() - tokens.get(0).getOffset(), s.getOffsetEnd() - tokens.get(0).getOffset(),
-                    extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight());
+                    extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight(), boundingBoxes, formattedString);
             })
             .collect(Collectors.toList());
 
@@ -542,15 +539,21 @@ public class AggregatedProcessing {
                     .sorted(Comparator.comparingInt(o -> o.start))
                     .collect(Collectors.toList());
 
+                List<BoundingBox> boundingBoxes = BoundingBoxCalculator.calculate(layoutTokens);
+
                 int lowerOffset = sortedOffsets.get(0).start;
                 int higherOffset = Iterables.getLast(sortedOffsets).end;
 
                 String type = "temperature";
 
-                return Stream.of(new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())), type,
-                    lowerOffset - tokens.get(0).getOffset(),
-                    higherOffset - tokens.get(0).getOffset(),
-                    extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight()));
+                return Stream.of(
+                    new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())),
+                        type,
+                        lowerOffset - tokens.get(0).getOffset(),
+                        higherOffset - tokens.get(0).getOffset(),
+                        extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight(),
+                        boundingBoxes)
+                );
 
             }).collect(Collectors.toList());
 
@@ -564,5 +567,64 @@ public class AggregatedProcessing {
         processedParagraph.setSpans(sortedSpans);
 
         return processedParagraph;
+    }
+
+    protected String toFormattedString(List<LayoutToken> layoutTokens) {
+        StringBuilder sb = new StringBuilder();
+        String previousStyle = "baseline";
+        String opened = null;
+        for (LayoutToken lt : layoutTokens) {
+            String currentStyle = getStyle(lt);
+            if (currentStyle.equals(previousStyle)) {
+                sb.append(lt.getText());
+            } else {
+                if (currentStyle.equals("baseline")) {
+                    sb.append("</" + previousStyle.substring(0, 3) + ">");
+                    opened = null;
+                    sb.append(lt.getText());
+                } else if (currentStyle.equals("superscript")) {
+                    if (previousStyle.equals("baseline")) {
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    } else {
+                        sb.append("</" + previousStyle.substring(0, 3) + ">");
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    }
+                } else if (currentStyle.equals("subscript")) {
+                    if (previousStyle.equals("baseline")) {
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    } else {
+                        sb.append("</" + previousStyle.substring(0, 3) + ">");
+                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        opened = currentStyle.substring(0, 3);
+                        sb.append(lt.getText());
+                    }
+                }
+            }
+            previousStyle = currentStyle;
+        }
+        if (opened != null) {
+            sb.append("</" + opened + ">");
+            opened = null;
+        }
+        return sb.toString();
+    }
+
+    private String getStyle(LayoutToken l) {
+        boolean subscript = l.isSubscript();
+        boolean superscript = l.isSuperscript();
+
+        String style = "baseline";
+        if (superscript) {
+            style = "superscript";
+        } else if (subscript) {
+            style = "subscript";
+        }
+        return style;
     }
 }

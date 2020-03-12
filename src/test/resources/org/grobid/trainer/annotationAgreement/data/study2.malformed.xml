@@ -4,7 +4,7 @@
         <encodingDesc/>
     </teiHeader>
     <text xml:lang="en">
-        <p>This is a sentence with one <supercon>annotation</supercon>.</p>
-        <p>This is another sentence with another <propertyValue>annotation<propertyValue>.</p>
+        <p>This is a sentence with one <material>annotation</material>.</p>
+        <p>This is another sentence with another <class>annotation<class>.</p>
     </text>
 </tei>
