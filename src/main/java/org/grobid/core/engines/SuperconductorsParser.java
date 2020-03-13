@@ -96,7 +96,7 @@ public class SuperconductorsParser extends AbstractParser {
             try {
                 res = label(ress);
             } catch (Exception e) {
-                throw new GrobidException("CRF labeling for quantity parsing failed.", e);
+                throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
             measurements.addAll(extractResults(tokens, res));
         } catch (Exception e) {
@@ -159,7 +159,7 @@ public class SuperconductorsParser extends AbstractParser {
             try {
                 res = label(ress);
             } catch (Exception e) {
-                throw new GrobidException("CRF labeling for quantity parsing failed.", e);
+                throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
 
             List<Superconductor> localEntities = extractResults(layoutTokensNormalised, res);
@@ -367,7 +367,7 @@ public class SuperconductorsParser extends AbstractParser {
             } else if (clusterLabel.equals(SUPERCONDUCTORS_OTHER)) {
 
             } else {
-                LOGGER.error("Warning: unexpected label in quantity parser: " + clusterLabel.getLabel() + " for " + clusterContent);
+                LOGGER.error("Warning: unexpected label in superconductors parser: " + clusterLabel.getLabel() + " for " + clusterContent);
             }
 
 //            pos = endPos;

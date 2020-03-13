@@ -68,11 +68,10 @@ dependencies {
     compile 'org.grobid:grobid-trainer:0.6.0-SNAPSHOT'
     compile "xom:xom:1.2.5"
 
-
+    //Grobid-quantities
     compile('org.grobid:grobid-quantities:0.5.2-SNAPSHOT') {
         transitive = false
     }
-
 
     // grobid-quantities specific dependencies
 //    compile 'tech.units:indriya:1.3'
