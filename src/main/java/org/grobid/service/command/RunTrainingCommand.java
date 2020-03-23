@@ -70,11 +70,11 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .setDefault(Boolean.FALSE)
             .help("Print on screen instead of writing on a log file");
 
-        subparser.addArgument("-n", "--max-paper-number")
-            .dest(MAX_PAPER_NUMBER)
-            .type(Integer.class)
-            .required(false)
-            .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
+//        subparser.addArgument("-n", "--max-paper-number")
+//            .dest(MAX_PAPER_NUMBER)
+//            .type(Integer.class)
+//            .required(false)
+//            .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
 
         subparser.addArgument("-n", "--fold-count")
             .dest(FOLD_COUNT)
