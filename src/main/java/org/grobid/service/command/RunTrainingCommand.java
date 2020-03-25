@@ -136,7 +136,7 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
                 case "train":
                     AbstractTrainer.runTraining(trainer);
                     break;
-                case "10fold":
+                case "nfold":
                     report = AbstractTrainer.runNFoldEvaluation(trainer, foldCount, true);
                     name = foldCount + "-fold-cross-validation";
                     break;
