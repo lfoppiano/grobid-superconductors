@@ -38,27 +38,27 @@ public class SuperconductorsParser extends AbstractParser {
 
     private static volatile SuperconductorsParser instance;
     public static final String NONE_CHEMSPOT_TYPE = "NONE";
-    private ChemDataExtractionClient chemicalAnnotator;
+    private ChemDataExtractorClient chemicalAnnotator;
 
-    public static SuperconductorsParser getInstance(ChemDataExtractionClient chemspotClient) {
+    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient) {
         if (instance == null) {
             getNewInstance(chemspotClient);
         }
         return instance;
     }
 
-    private static synchronized void getNewInstance(ChemDataExtractionClient chemspotClient) {
+    private static synchronized void getNewInstance(ChemDataExtractorClient chemspotClient) {
         instance = new SuperconductorsParser(chemspotClient);
     }
 
     @Inject
-    public SuperconductorsParser(ChemDataExtractionClient chemicalAnnotator) {
+    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator) {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         this.chemicalAnnotator = chemicalAnnotator;
         instance = this;
     }
 
-    public SuperconductorsParser(GrobidModel model, ChemDataExtractionClient chemicalAnnotator) {
+    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator) {
         super(model);
         this.chemicalAnnotator = chemicalAnnotator;
         instance = this;

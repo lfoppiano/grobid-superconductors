@@ -44,7 +44,7 @@ public class SuperconductorsParserTrainingData {
     private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> trainingOutputFormatters = new HashMap<>();
 
 
-    public SuperconductorsParserTrainingData(ChemDataExtractionClient chemspotClient) {
+    public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient) {
         this(SuperconductorsParser.getInstance(chemspotClient), QuantityParser.getInstance(true));
     }
 
