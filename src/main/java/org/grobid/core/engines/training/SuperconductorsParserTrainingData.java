@@ -194,7 +194,10 @@ public class SuperconductorsParserTrainingData {
 
 
     /**
-     * Remove overlapping annotations - grobid-quantities has lower priority in this context
+     * Remove overlapping annotations
+     *     - sort annotation by starting offset then pairwise check
+     *     - if they have the same type I take the one with the larger entity or the quantity model
+     *     - else if they have different type I take the one with the smaller entity size or the one from quantities model
      **/
     private List<Superconductor> pruneOverlappingAnnotations(List<Superconductor> superconductorList) {
         //Sorting by offsets
@@ -204,6 +207,10 @@ public class SuperconductorsParserTrainingData {
             .collect(Collectors.toList());
 
 //                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());
+
+        if (superconductorList.size() <= 1) {
+            return sortedEntities;
+        }
 
         List<Superconductor> toBeRemoved = new ArrayList<>();
 
@@ -218,12 +225,45 @@ public class SuperconductorsParserTrainingData {
                 if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
                     System.out.println("Overlapping. " + current.getName() + " <" + current.getType() + "> with " + previous.getName() + " <" + previous.getType() + ">");
 
-                    if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-                        toBeRemoved.add(previous);
-                    } else if (previous.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-                        toBeRemoved.add(previous);
-                    } else {
-                        toBeRemoved.add(previous);
+                    if (current.getType().equals(previous.getType())) {
+                        // Type is the same, I take the largest one
+                        if (StringUtils.length(previous.getName()) > StringUtils.length(current.getName())) {
+                            toBeRemoved.add(previous);
+                        } else if (StringUtils.length(previous.getName()) < StringUtils.length(current.getName())) {
+                            toBeRemoved.add(current);
+                        } else {
+                            if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
+                                current.setLayoutTokens(previous.getLayoutTokens());
+                                current.setBoundingBoxes(previous.getBoundingBoxes());
+                                toBeRemoved.add(previous);
+                            } else if (previous.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
+                                previous.setLayoutTokens(current.getLayoutTokens());
+                                previous.setBoundingBoxes(current.getBoundingBoxes());
+                                toBeRemoved.add(current);
+                            } else {
+                                toBeRemoved.add(previous);
+                            }
+                        }
+                    } else if (!current.getType().equals(previous.getType())) {
+                        // Type is different I take the shorter match
+
+                        if (StringUtils.length(previous.getName()) < StringUtils.length(current.getName())) {
+                            toBeRemoved.add(current);
+                        } else if (StringUtils.length(previous.getName()) > StringUtils.length(current.getName())) {
+                            toBeRemoved.add(previous);
+                        } else {
+                            if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
+                                current.setLayoutTokens(previous.getLayoutTokens());
+                                current.setBoundingBoxes(previous.getBoundingBoxes());
+                                toBeRemoved.add(previous);
+                            } else if (previous.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
+                                previous.setLayoutTokens(current.getLayoutTokens());
+                                previous.setBoundingBoxes(current.getBoundingBoxes());
+                                toBeRemoved.add(current);
+                            } else {
+                                toBeRemoved.add(previous);
+                            }
+                        }
                     }
                 }
                 previous = current;
