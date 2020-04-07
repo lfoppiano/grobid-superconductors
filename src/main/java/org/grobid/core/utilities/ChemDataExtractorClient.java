@@ -14,7 +14,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.grobid.core.data.chemDataExtractor.Span;
-import org.grobid.core.data.chemspot.Mention;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,20 +31,20 @@ import java.util.List;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Singleton
-public class ChemDataExtractionClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChemDataExtractionClient.class);
+public class ChemDataExtractorClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChemDataExtractorClient.class);
 
     private final String serverUrl;
     private GrobidSuperconductorsConfiguration configuration;
     private HttpClient httpClient;
 
-    public ChemDataExtractionClient(String serverUrl) {
+    public ChemDataExtractorClient(String serverUrl) {
         this.serverUrl = serverUrl;
         this.httpClient = HttpClientBuilder.create().build();
     }
 
     @Inject
-    public ChemDataExtractionClient(GrobidSuperconductorsConfiguration configuration) {
+    public ChemDataExtractorClient(GrobidSuperconductorsConfiguration configuration) {
         this.configuration = configuration;
         this.serverUrl = configuration.getChemDataExtractorUrl();
         this.httpClient = HttpClientBuilder.create().build();

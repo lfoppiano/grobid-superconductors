@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Measurement;
-import org.grobid.core.data.Quantity;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.data.chemDataExtractor.Span;
 import org.grobid.core.engines.label.TaggingLabel;
@@ -25,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -37,23 +35,23 @@ public class SuperconductorsParser extends AbstractParser {
 
     private static volatile SuperconductorsParser instance;
     public static final String NONE_CHEMSPOT_TYPE = "NONE";
-    private ChemDataExtractionClient chemicalAnnotator;
+    private ChemDataExtractorClient chemicalAnnotator;
     private QuantityParser quantityParser;
 
-    public static SuperconductorsParser getInstance(ChemDataExtractionClient chemspotClient, QuantityParser quantityParser) {
+    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient, QuantityParser quantityParser) {
         if (instance == null) {
             getNewInstance(chemspotClient, quantityParser);
         }
         return instance;
     }
 
-    private static synchronized void getNewInstance(ChemDataExtractionClient chemspotClient,
+    private static synchronized void getNewInstance(ChemDataExtractorClient chemspotClient,
                                                     QuantityParser quantityParser) {
         instance = new SuperconductorsParser(chemspotClient, quantityParser);
     }
 
     @Inject
-    public SuperconductorsParser(ChemDataExtractionClient chemicalAnnotator, QuantityParser quantityParser) {
+    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator, QuantityParser quantityParser) {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         this.chemicalAnnotator = chemicalAnnotator;
         this.quantityParser = quantityParser;
@@ -61,7 +59,7 @@ public class SuperconductorsParser extends AbstractParser {
     }
 
     @Inject
-    public SuperconductorsParser(GrobidModel model, ChemDataExtractionClient chemicalAnnotator) {
+    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator) {
         super(model);
         this.chemicalAnnotator = chemicalAnnotator;
         instance = this;
@@ -96,7 +94,7 @@ public class SuperconductorsParser extends AbstractParser {
             try {
                 res = label(ress);
             } catch (Exception e) {
-                throw new GrobidException("CRF labeling for quantity parsing failed.", e);
+                throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
             output.addAll(extractResults(tokens, res));
         } catch (Exception e) {
@@ -228,7 +226,7 @@ public class SuperconductorsParser extends AbstractParser {
             try {
                 res = label(ress);
             } catch (Exception e) {
-                throw new GrobidException("CRF labeling for quantity parsing failed.", e);
+                throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
 
             List<Superconductor> localEntities = extractResults(layoutTokensNormalised, res);
@@ -518,7 +516,7 @@ public class SuperconductorsParser extends AbstractParser {
             } else if (clusterLabel.equals(SUPERCONDUCTORS_OTHER)) {
                 continue;
             } else {
-                LOGGER.error("Warning: unexpected label in quantity parser: " + clusterLabel.getLabel() + " for " + clusterContent);
+                LOGGER.error("Warning: unexpected label in superconductors parser: " + clusterLabel.getLabel() + " for " + clusterContent);
             }
 
 //            pos = endPos;
