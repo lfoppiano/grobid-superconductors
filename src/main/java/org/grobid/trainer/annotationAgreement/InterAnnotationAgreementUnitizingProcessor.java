@@ -56,7 +56,7 @@ public class InterAnnotationAgreementUnitizingProcessor {
         for (final File file : refFiles) {
             String fileNameWithoutInputDirectory = file.getAbsolutePath().replace(directories.get(0).getAbsolutePath(), "");
 
-            System.out.println(" > " + file.getAbsolutePath());
+            LOGGER.info(" > " + file.getAbsolutePath());
             List<InputStream> files = new ArrayList<>();
             String absolutePath = "";//For debugging in case of exception
             try {
@@ -68,7 +68,7 @@ public class InterAnnotationAgreementUnitizingProcessor {
                 }
             } catch (FileNotFoundException e) {
                 LOGGER.warn("The file " + fileNameWithoutInputDirectory + " cannot be found in the " + absolutePath + ". Skipping!");
-                break;
+                continue;
             }
 
             UnitizedStudyWrapper wrappedStudy = new UnitizedStudyWrapper(files);

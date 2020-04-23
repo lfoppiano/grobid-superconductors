@@ -11,7 +11,11 @@ and any expression or variation, Critical pressure, material name an class.
 
 As the other GROBID models, the module relies only on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
 
-![GROBID superconductors_screenshot](doc/images/screenshot-2.png) 
+![GROBID superconductors_screenshot](resources/web/supercuration/docs/images/grobid-superconductors-web-home.png)
+
+and provides on-pdf annotations: 
+
+![GROBID superconductors_screenshot](resources/web/supercuration/docs/images/grobid-superconductors-web-home-2.png) 
 
 See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.    
 

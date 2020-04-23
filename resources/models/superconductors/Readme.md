@@ -10,6 +10,7 @@ This table summarise the various models and evolution of evaluation.
 
 | Date | Documents | Labels | Changes | CRF (F1) | BidLSTM+CRF (F1)  | 
 |------|---------------------|------------------|---------|----------|------------------|
+|  [2020/04/16](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200416) | 114 | 6 | Removed duplicate papers, finalisation and further corrections | 78.07 | 74.27 | 
 |  [2020/03/11](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200311-quantities) | 121 | 6 | Use [grobid-quantities](http://www.github.com/kermitt2/grobid-quantities) as features for `<pressure>` and `<tcValue>`| TBD | TBD |
 |  [2020/03/11](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200311) | 121 | 6 | Adding 39 more papers | TBD  | TBD | 
 |  [2020/01/31](https://github.com/lfoppiano/grobid-superconductors/tree/training-20200131-quantities)  | 85  |  6 | Use [grobid-quantities](http://www.github.com/kermitt2/grobid-quantities) as features for `<pressure>` and `<tcValue>`| 65.28 [details](https://github.com/lfoppiano/grobid-superconductors/blob/training-20200131-quantities/resources/models/superconductors/model.wapiti.evaluation.txt)  | (77.30 [details](https://github.com/lfoppiano/grobid-superconductors/blob/training-20200131-quantities/resources/models/superconductors/model.delft.evaluation.txt)) | 
