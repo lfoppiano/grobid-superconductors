@@ -439,6 +439,14 @@ public class AggregatedProcessing {
         return temperatures;
     }
 
+    private List<Measurement> getPressures(List<LayoutToken> tokens) {
+        List<Measurement> measurements = quantityParser.process(tokens);
+        List<Measurement> pressures = MeasurementUtils.filterMeasurements(measurements,
+            Collections.singletonList(UnitUtilities.Unit_Type.PRESSURE));
+
+        return pressures;
+    }
+
     private List<Measurement> getMeasurements(List<LayoutToken> tokens, List<Superconductor> superconductorsNames) {
         List<Pair<String, List<LayoutToken>>> tcExpressionList = superconductorsNames.stream()
             .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
@@ -483,15 +491,14 @@ public class AggregatedProcessing {
     public ProcessedParagraph process(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
-        List<Superconductor> namedEntitiesList = superconductorsNames.stream()
+        List<Superconductor> namedEntitiesList = superconductorsNames;
+        /*.stream()
             .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
                 || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
                 || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
                 || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
             )
-            .collect(Collectors.toList());
-
-        List<Measurement> temperatureList = getTemperatures(tokens);
+            .collect(Collectors.toList());*/
 
         ProcessedParagraph processedParagraph = new ProcessedParagraph();
 
@@ -513,13 +520,16 @@ public class AggregatedProcessing {
                 List<BoundingBox> boundingBoxes = BoundingBoxCalculator.calculate(layoutTokens);
 
                 String formattedString = toFormattedString(layoutTokens);
+                String source = "grobid-superconductors";
 
                 return new Span(s.getName(), lowerCase(substring(s.getType(), 1, length(s.getType()) - 1)),
+                    source,
                     s.getOffsetStart() - tokens.get(0).getOffset(), s.getOffsetEnd() - tokens.get(0).getOffset(),
                     extremitiesSuperconductor.getLeft(), extremitiesSuperconductor.getRight(), boundingBoxes, formattedString);
             })
             .collect(Collectors.toList());
 
+        List<Measurement> temperatureList = getTemperatures(tokens);
         List<Span> spansForQuantities = temperatureList.stream()
             .flatMap(t -> {
                 List<Quantity> quantityList = QuantityOperations.toQuantityList(t);
@@ -544,11 +554,53 @@ public class AggregatedProcessing {
                 int lowerOffset = sortedOffsets.get(0).start;
                 int higherOffset = Iterables.getLast(sortedOffsets).end;
 
-                String type = "temperature";
+                String type = "tcvalue";
+                String source = "grobid-quantitites";
 
                 return Stream.of(
                     new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())),
                         type,
+                        source,
+                        lowerOffset - tokens.get(0).getOffset(),
+                        higherOffset - tokens.get(0).getOffset(),
+                        extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight(),
+                        boundingBoxes)
+                );
+
+            }).collect(Collectors.toList());
+
+        List<Measurement> pressureList = getPressures(tokens);
+        List<Span> spansForPressures = pressureList.stream()
+            .flatMap(t -> {
+                List<Quantity> quantityList = QuantityOperations.toQuantityList(t);
+                List<LayoutToken> layoutTokens = QuantityOperations.getLayoutTokens(quantityList);
+
+                int start = layoutTokens.get(0).getOffset();
+                int end = Iterables.getLast(layoutTokens).getOffset();
+
+                // Token start and end
+                Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils
+                    .getExtremitiesAsIndex(tokens,
+                        Math.min(start, end), Math.max(start, end) + 1);
+
+                //Offset start and end
+                List<OffsetPosition> offsets = QuantityOperations.getOffsets(quantityList);
+                List<OffsetPosition> sortedOffsets = offsets.stream()
+                    .sorted(Comparator.comparingInt(o -> o.start))
+                    .collect(Collectors.toList());
+
+                List<BoundingBox> boundingBoxes = BoundingBoxCalculator.calculate(layoutTokens);
+
+                int lowerOffset = sortedOffsets.get(0).start;
+                int higherOffset = Iterables.getLast(sortedOffsets).end;
+
+                String type = "pressure";
+                String source = "grobid-quantities";
+
+                return Stream.of(
+                    new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())),
+                        type,
+                        source,
                         lowerOffset - tokens.get(0).getOffset(),
                         higherOffset - tokens.get(0).getOffset(),
                         extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight(),
@@ -559,15 +611,17 @@ public class AggregatedProcessing {
 
         processedParagraph.getSpans().addAll(spansFromSuperconductors);
         processedParagraph.getSpans().addAll(spansForQuantities);
+        processedParagraph.getSpans().addAll(spansForPressures);
 
         List<Span> sortedSpans = processedParagraph.getSpans().stream()
             .sorted(Comparator.comparingInt(Span::getOffsetStart))
             .collect(Collectors.toList());
 
-        processedParagraph.setSpans(sortedSpans);
+        processedParagraph.setSpans(pruneOverlappingAnnotations(sortedSpans));
 
         return processedParagraph;
     }
+
 
     protected String toFormattedString(List<LayoutToken> layoutTokens) {
         StringBuilder sb = new StringBuilder();
@@ -626,5 +680,99 @@ public class AggregatedProcessing {
             style = "subscript";
         }
         return style;
+    }
+
+    /**
+     * Remove overlapping annotations
+     *     - sort annotation by starting offset then pairwise check
+     *     - if they have the same type I take the one with the larger entity or the quantity model
+     *     - else if they have different type I take the one with the smaller entity size or the one from
+     *      the superconductors model
+     **/
+    private List<Span> pruneOverlappingAnnotations(List<Span> spanList) {
+        //Sorting by offsets
+        List<Span> sortedEntities = spanList
+            .stream()
+            .sorted(Comparator.comparingInt(Span::getOffsetStart))
+            .collect(Collectors.toList());
+
+//                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());
+
+        if (spanList.size() <= 1) {
+            return sortedEntities;
+        }
+
+        List<Span> toBeRemoved = new ArrayList<>();
+
+        Span previous = null;
+        boolean first = true;
+        for (Span current : sortedEntities) {
+
+            if (first) {
+                first = false;
+                previous = current;
+            } else {
+                if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
+                    System.out.println("Overlapping. " + current.getText() + " <" + current.getType() + "> with " + previous.getText() + " <" + previous.getType() + ">");
+
+                    if (current.getType().equals(previous.getType())) {
+                        // Type is the same, I take the largest one
+                        if (StringUtils.length(previous.getText()) > StringUtils.length(current.getText())) {
+                            toBeRemoved.add(previous);
+                        } else if (StringUtils.length(previous.getText()) < StringUtils.length(current.getText())) {
+                            toBeRemoved.add(current);
+                        } else {
+                            if (current.getSource().equals("grobid-superconductors")) {
+                                if(isEmpty(current.getBoundingBoxes()) && isNotEmpty(previous.getBoundingBoxes())) {
+                                    current.setBoundingBoxes(previous.getBoundingBoxes());
+                                } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())){
+                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                }
+                                toBeRemoved.add(previous);
+                            } else if (previous.getSource().equals("grobid-superconductors")) {
+                                if(isEmpty(previous.getBoundingBoxes()) && isNotEmpty(current.getBoundingBoxes())) {
+                                    previous.setBoundingBoxes(current.getBoundingBoxes());
+                                } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())){
+                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                }
+                                toBeRemoved.add(current);
+                            } else {
+                                toBeRemoved.add(previous);
+                            }
+                        }
+                    } else if (!current.getType().equals(previous.getType())) {
+                        // Type is different I take the shorter match
+
+                        if (StringUtils.length(previous.getText()) < StringUtils.length(current.getText())) {
+                            toBeRemoved.add(current);
+                        } else if (StringUtils.length(previous.getText()) > StringUtils.length(current.getText())) {
+                            toBeRemoved.add(previous);
+                        } else {
+                            if (current.getSource().equals("grobid-superconductors")) {
+                                if(isEmpty(current.getBoundingBoxes()) && isNotEmpty(previous.getBoundingBoxes())) {
+                                    current.setBoundingBoxes(previous.getBoundingBoxes());
+                                } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())){
+                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                }
+                                toBeRemoved.add(previous);
+                            } else if (previous.getSource().equals("grobid-superconductors")) {
+                                if(isEmpty(previous.getBoundingBoxes()) && isNotEmpty(current.getBoundingBoxes())) {
+                                    previous.setBoundingBoxes(current.getBoundingBoxes());
+                                } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())){
+                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                }
+                                toBeRemoved.add(current);
+                            } else {
+                                toBeRemoved.add(previous);
+                            }
+                        }
+                    }
+                }
+                previous = current;
+            }
+        }
+
+        sortedEntities.removeAll(toBeRemoved);
+        return sortedEntities;
     }
 }

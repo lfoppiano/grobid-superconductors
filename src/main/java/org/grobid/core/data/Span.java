@@ -16,6 +16,9 @@ public class Span {
     private int tokenStart;
     private int tokenEnd;
 
+    //The source where this span was generated from
+    private String source;
+
     //We use the hashcode to generate an unique id
     private int id;
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
@@ -35,8 +38,18 @@ public class Span {
         this.boundingBoxes = boundingBoxes;
     }
 
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes) {
+        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
+        this.source = source;
+    }
+
     public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes, String formattedText) {
         this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
+        this.formattedText = formattedText;
+    }
+
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes, String formattedText) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
         this.formattedText = formattedText;
     }
 
@@ -137,5 +150,13 @@ public class Span {
 
     public void setFormattedText(String formattedText) {
         this.formattedText = formattedText;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

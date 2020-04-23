@@ -126,7 +126,7 @@ public class DeepAnalyzer implements Analyzer {
                 theChunk.setText(subtokens[i]);
                 result.add(theChunk);
                 theChunk.setOffset(startingIndex);
-                startingIndex+= StringUtils.length(theChunk.getText());
+                startingIndex += StringUtils.length(theChunk.getText());
             }
         }
         return result;
