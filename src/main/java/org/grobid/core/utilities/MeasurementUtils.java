@@ -68,12 +68,12 @@ public class MeasurementUtils {
         int end = tokens.size() - 1;
 
         List<LayoutToken> centralTokens = tokens.stream()
-                .filter(layoutToken -> (layoutToken.getOffset() >= startOffset && getLayoutTokenEndOffset(layoutToken) <= endOffset)
-                                || (layoutToken.getOffset() >= startOffset && layoutToken.getOffset() < endOffset
-                                || (getLayoutTokenEndOffset(layoutToken) > startOffset && getLayoutTokenEndOffset(layoutToken) < endOffset)
-                        )
+            .filter(layoutToken -> (layoutToken.getOffset() >= startOffset && getLayoutTokenEndOffset(layoutToken) <= endOffset)
+                    || (layoutToken.getOffset() >= startOffset && layoutToken.getOffset() < endOffset
+                    || (getLayoutTokenEndOffset(layoutToken) > startOffset && getLayoutTokenEndOffset(layoutToken) < endOffset)
                 )
-                .collect(Collectors.toList());
+            )
+            .collect(Collectors.toList());
 
         int layoutTokenIndexStart = start;
         int layoutTokenIndexEnd = end;
@@ -206,25 +206,89 @@ public class MeasurementUtils {
         return QuantityOperations.getContainingOffset(offsets);
     }
 
+    /**
+     * Given a list of measurements, retain only the type requested in the second parameter
+     **/
+    public static List<Measurement> filterMeasurementsByUnitValue(List<Measurement> process, List<String> valuesToBeKept) {
+        if (isEmpty(process)) {
+            return process;
+        }
+        List<Measurement> filteredMeasurements = process.stream().filter(measurement -> {
+            switch (measurement.getType()) {
+                case VALUE:
+                    if (measurement.getQuantityAtomic().getRawUnit() != null) {
+                        return valuesToBeKept.stream().anyMatch(measurement.getQuantityAtomic().getRawUnit().getRawName()::equalsIgnoreCase);
+                    }
+                    return false;
+                case CONJUNCTION:
+                    return measurement.getQuantityList()
+                        .stream()
+                        .anyMatch(quantity -> {
+                                if (quantity.getRawUnit() != null) {
+                                    return valuesToBeKept.stream().anyMatch(quantity.getRawUnit().getRawName()::equalsIgnoreCase);
+                                }
+                                return false;
+                            }
+                        );
+                case INTERVAL_BASE_RANGE:
+                    boolean baseMatch = false;
+                    if (measurement.getQuantityBase() != null && measurement.getQuantityBase().getRawUnit() != null) {
+                        baseMatch = valuesToBeKept.stream().anyMatch(measurement.getQuantityBase().getRawUnit().getRawName()::equalsIgnoreCase);
+                    }
+
+                    boolean rangeMatch = false;
+                    if (measurement.getQuantityRange() != null && measurement.getQuantityRange().getRawUnit() != null) {
+                        rangeMatch = valuesToBeKept.stream().anyMatch(measurement.getQuantityRange().getRawUnit().getRawName()::equalsIgnoreCase);
+                    }
+
+                    if (baseMatch || rangeMatch) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                case INTERVAL_MIN_MAX:
+                    boolean mostMatch = false;
+                    if (measurement.getQuantityMost() != null && measurement.getQuantityMost().getRawUnit() != null) {
+                        mostMatch = valuesToBeKept.stream().anyMatch(measurement.getQuantityMost().getRawUnit().getRawName()::equalsIgnoreCase);
+                    }
+
+                    boolean leastMatch = false;
+                    if (measurement.getQuantityLeast() != null && measurement.getQuantityLeast().getRawUnit() != null) {
+                        leastMatch = valuesToBeKept.stream().anyMatch(measurement.getQuantityLeast().getRawUnit().getRawName()::equalsIgnoreCase);
+                    }
+
+                    if (mostMatch || leastMatch) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+            }
+
+            return false;
+        }).collect(Collectors.toList());
+
+        return filteredMeasurements;
+    }
+
 
     /**
      * Given a list of measurements, retain only the type requested in the second parameter
      **/
-    public static List<Measurement> filterMeasurements(List<Measurement> process, List<UnitUtilities.Unit_Type> typesToBeKept) {
+    public static List<Measurement> filterMeasurementsByUnitType(List<Measurement> process, List<UnitUtilities.Unit_Type> typesToBeKept) {
         List<Measurement> filteredMeasurements = process.stream().filter(measurement -> {
             switch (measurement.getType()) {
                 case VALUE:
                     return typesToBeKept.contains(measurement.getQuantityAtomic().getType());
                 case CONJUNCTION:
                     return measurement.getQuantityList()
-                            .stream().anyMatch(quantity -> typesToBeKept.contains(quantity.getType()));
+                        .stream().anyMatch(quantity -> typesToBeKept.contains(quantity.getType()));
                 case INTERVAL_BASE_RANGE:
                     return typesToBeKept.contains(measurement.getQuantityBase().getType()) ||
-                            typesToBeKept.contains(measurement.getQuantityRange().getType());
+                        typesToBeKept.contains(measurement.getQuantityRange().getType());
 
                 case INTERVAL_MIN_MAX:
                     return (measurement.getQuantityMost() != null && typesToBeKept.contains(measurement.getQuantityMost().getType())) ||
-                            (measurement.getQuantityLeast() != null && typesToBeKept.contains(measurement.getQuantityLeast().getType()));
+                        (measurement.getQuantityLeast() != null && typesToBeKept.contains(measurement.getQuantityLeast().getType()));
 
             }
 
@@ -267,9 +331,9 @@ public class MeasurementUtils {
 
         } else if (measurement.getType().equals(UnitUtilities.Measurement_Type.CONJUNCTION)) {
             List<Pair<Quantity, Measurement>> collect = measurement.getQuantityList()
-                    .stream()
-                    .map(q -> Pair.of(q, measurement))
-                    .collect(Collectors.toList());
+                .stream()
+                .map(q -> Pair.of(q, measurement))
+                .collect(Collectors.toList());
 
             results.addAll(collect);
         }

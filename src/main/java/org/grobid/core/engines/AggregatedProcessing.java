@@ -433,15 +433,17 @@ public class AggregatedProcessing {
 
     private List<Measurement> getTemperatures(List<LayoutToken> tokens) {
         List<Measurement> measurements = quantityParser.process(tokens);
-        List<Measurement> temperatures = MeasurementUtils.filterMeasurements(measurements,
+        List<Measurement> temperatures = MeasurementUtils.filterMeasurementsByUnitType(measurements,
             Collections.singletonList(UnitUtilities.Unit_Type.TEMPERATURE));
 
-        return temperatures;
+        List<Measurement> kelvins = MeasurementUtils.filterMeasurementsByUnitValue(temperatures,
+            Collections.singletonList("k"));
+        return kelvins;
     }
 
     private List<Measurement> getPressures(List<LayoutToken> tokens) {
         List<Measurement> measurements = quantityParser.process(tokens);
-        List<Measurement> pressures = MeasurementUtils.filterMeasurements(measurements,
+        List<Measurement> pressures = MeasurementUtils.filterMeasurementsByUnitType(measurements,
             Collections.singletonList(UnitUtilities.Unit_Type.PRESSURE));
 
         return pressures;

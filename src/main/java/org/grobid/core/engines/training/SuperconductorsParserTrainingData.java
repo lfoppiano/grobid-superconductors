@@ -135,7 +135,7 @@ public class SuperconductorsParserTrainingData {
 
             Pair<String, List<Superconductor>> stringListPair = superconductorsParser.generateTrainingData(normalisedLayoutTokens);
             List<Measurement> measurements = quantityParser.process(normalisedLayoutTokens);
-            List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurements(measurements,
+            List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurementsByUnitType(measurements,
                 Arrays.asList(
                     UnitUtilities.Unit_Type.TEMPERATURE,
                     UnitUtilities.Unit_Type.PRESSURE
