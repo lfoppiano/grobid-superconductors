@@ -69,20 +69,20 @@ for example:
 
 ## Accuracy
 
-Evaluation made on the 25/01/2020 using 85 papers.
+Evaluation made on the 05/01/2020 using 114 papers.
 The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds). 
 We also indicate the best and worst results over the 10 folds in the complete result page.  
 
 | Labels       | CRF        |             |               | BidLSTM+CRF|             |               |
 |--------------|------------|-------------|---------------|------------|-------------|---------------|
 | Metrics      | Precision  |  Recall     | F1-Score      | Precision  |  Recall     | F1-Score      | 
-| `<class>`    | 74.54      |        66.36|        69.97  |  80.91     |  56.56      |  66.50        |    
-| `<material>` | 80.82      |        78.91|        79.77  |  80.40     |  84.52      |  82.40        |    
-| `<me_method>`| 70.54      |        59.53|        64.3   |  55.67     |  62.83      |  58.68        |    
-| `<pressure>` | 49.33      |        33.06|        35.85  |  81.19     |  61.25      |  68.68        |     
-| `<tc>`       | 78.67      |        73.78|        76.09  |  79.75     |  77.85      |  78.75        |    
-| `<tcValue>`  | 71.09      |        59.56|        64.46  |  55.26     |  57.32      |  56.14        |  
-| Average      | 70.83      |        61.87|        65.07  |  76.57     |   76.77     |  76.65        |  
+| `<class>`    | 81.66      |   72.36     | 76.64          |  73.75     |  65.42      |  69.29        |    
+| `<material>` | 81.89      |   80.09     | 80.96          |  74.57     |  75.33      |  74.91        |    
+| `<me_method>`| 73.57      |   71.24     | 72.26          |  69.75     |  82.87      |  75.73        |    
+| `<pressure>` | 55.27      |   34.4      | 41.54          |  39.25     |  18.89      |  23.06        |     
+| `<tc>`       | 82.3       |   77.61     | 79.83          |  80.09     |  76.85      |  78.41        |    
+| `<tcValue>`  | 74.64      |   61.8      | 67.56          |  74.85     |  67.24      |  70.68        |  
+| All (micro avg)  | 80.41  |   75.89     | 78.07         |  74.82     |   73.79     |  74.27        |  
 
 All evaluation measures recorded over time, are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
 See [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations. 
