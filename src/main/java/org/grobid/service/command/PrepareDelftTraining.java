@@ -51,12 +51,11 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
             .required(false)
             .help("Output path directory. ");
 
-//        subparser.addArgument("-i", "--input")
-//            .dest(INPUT_PATH)
-//            .type(String.class)
-//            .required(false)
-//            .setDefault("superconductors")
-//            .help("Name of the model for which generate the training data. ");
+        subparser.addArgument("-i", "--input")
+            .dest(INPUT_PATH)
+            .type(String.class)
+            .required(false)
+            .help("Input path directory. ");
 
     }
 
@@ -79,7 +78,7 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
             System.exit(-1);
         }
 
-//        String modelName = namespace.get(MODEL_NAME);
+        String inputPath = namespace.get(INPUT_PATH);
         String delftPath = namespace.get(DELFT_PATH);
         String outputPath = namespace.get(OUTPUT_PATH);
 
@@ -103,6 +102,10 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
                 "Please select only one of them. ");
             System.exit(-1);
         }
+        File input = GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS);
+        if(isNotEmpty(inputPath)) {
+            input = Paths.get(inputPath).toFile();
+        }
 
         Path destinationPath = Paths.get(destination);
         if (!Files.exists(destinationPath)) {
@@ -115,9 +118,7 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
         destinationPath = Paths.get(destination + filename);
 
         SuperconductorsTrainer trainer = new SuperconductorsTrainer();
-        trainer.createCRFPPData(
-            GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS),
-            destinationPath.toFile());
+        trainer.createCRFPPData(input, destinationPath.toFile());
 
         System.out.println("Writing training data for delft to " + destinationPath.toString());
     }

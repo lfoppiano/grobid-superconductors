@@ -158,6 +158,12 @@ or with a general output directory
 
 > java -jar build/libs/grobid-superconductor-0.1.onejar.jar prepare-delft-training --output /a/directory -m superconductors config/config.yml
 
+It's possible also to specify an input directory for the corpus. **NOTE**: the script will look for files in a subdirectory called `final`: 
+
+> java -jar build/libs/grobid-superconductor-0.1.onejar.jar prepare-delft-training --input /b/directory --output /a/directory -m superconductors config/config.yml
+
+will look for training data in `/b/directory/final`.
+
 ### Inter annotation agreement
 
 *TODO*: add more information
@@ -253,7 +259,8 @@ tc: 0.7981279136158688
 
 Our warmest thanks to @kermitt2 ([Science-miner](http://www.science-miner.com)): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
 
-This project is developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
+This project has been developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
+
 ## License
 
 GROBID and grobid-superconductors are distributed under [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
