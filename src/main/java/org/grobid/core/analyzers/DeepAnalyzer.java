@@ -36,20 +36,14 @@ public class DeepAnalyzer implements Analyzer {
         return instance;
     }
 
-    /**
-     * Creates a new instance.
-     */
     private static synchronized void getNewInstance() {
         instance = new DeepAnalyzer();
     }
 
-    /**
-     * Hidden constructor
-     */
     private DeepAnalyzer() {
     }
 
-    public static final String DELIMITERS = " \n\r\t([^%‰°,:;?.!/)-–−=≈<>+\"“”‘’'`$]*\u2666\u2665\u2663\u2660\u00A0";
+    public static final String DELIMITERS = " \n\r\t\f\u00A0([^%‰°•,:;?.!/)-–−‐=≈~<>+\"“”‘’'`$]*\u2666\u2665\u2663\u2660\u00A0";
     private static final String REGEX = "(?<=[a-zA-Z])(?=\\d)|(?<=\\d)(?=\\D)";
 
     public String getName() {
