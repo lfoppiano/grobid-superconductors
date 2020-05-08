@@ -284,10 +284,7 @@ public class AggregatedProcessing {
 
             GrobidPDFEngine.processDocument(doc, l -> PDFAnnotationResponse.extendEntities(annotate(l)));
 
-            List<Page> pages = new ArrayList<>();
-            for (org.grobid.core.layout.Page page : doc.getPages()) {
-                pages.add(new Page(page.getHeight(), page.getWidth()));
-            }
+            List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
 
             PDFAnnotationResponse.setPages(pages);
 
@@ -416,17 +413,7 @@ public class AggregatedProcessing {
     public PDFAnnotationResponse annotate(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
-//        List<Superconductor> namedEntitiesList = superconductorsNames.stream()
-//            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
-//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
-//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
-//                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
-//            )
-//            .collect(Collectors.toList());
-
         List<Measurement> temperatureList = getMeasurements(tokens, superconductorsNames);
-
-//        List<Superconductor> linkedSuperconductors = linkSuperconductorsWithTc(namedEntitiesList, temperatureList, tokens);
 
         return new PDFAnnotationResponse(superconductorsNames, temperatureList, new ArrayList<>());
     }
@@ -494,13 +481,6 @@ public class AggregatedProcessing {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
 
         List<Superconductor> namedEntitiesList = superconductorsNames;
-        /*.stream()
-            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_CLASS_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL))
-                || s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL))
-            )
-            .collect(Collectors.toList());*/
 
         ProcessedParagraph processedParagraph = new ProcessedParagraph();
 
@@ -774,7 +754,7 @@ public class AggregatedProcessing {
             }
         }
 
-        sortedEntities.removeAll(toBeRemoved);
-        return sortedEntities;
+        List<Span> newSortedEntitiers = (List<Span>) CollectionUtils.removeAll(sortedEntities, toBeRemoved);
+        return newSortedEntitiers;
     }
 }

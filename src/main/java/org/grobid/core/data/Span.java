@@ -125,6 +125,7 @@ public class Span {
             .append(tokenEnd, span.tokenEnd)
             .append(text, span.text)
             .append(type, span.type)
+            .append(source, span.source)
             .isEquals();
     }
 
@@ -137,6 +138,7 @@ public class Span {
             .append(offsetEnd)
             .append(tokenStart)
             .append(tokenEnd)
+            .append(source)
             .toHashCode();
     }
 
