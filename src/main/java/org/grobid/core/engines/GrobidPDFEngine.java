@@ -7,19 +7,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.Figure;
-import org.grobid.core.data.Table;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
 import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
-import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.layout.LayoutTokenization;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.LayoutTokensUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +79,7 @@ public class GrobidPDFEngine {
                     abstractTokens = BiblioItem.cleanAbstractLayoutTokens(abstractTokens);
                     Pair<String, List<LayoutToken>> abstractTokenPostProcessed = parsers.getFullTextParser().processShort(abstractTokens, doc);
                     List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
-                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
+//                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
                     outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
                 }
 
@@ -175,7 +172,7 @@ public class GrobidPDFEngine {
 
                         Pair<String, List<LayoutToken>> body = parsers.getFullTextParser().processShort(tokens, doc);
                         List<LayoutToken> restructuredTokens = body.getRight();
-                        addSpaceAtTheEnd(tokens, restructuredTokens);
+                        //addSpaceAtTheEnd(tokens, restructuredTokens);
                         List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(restructuredTokens);
 
                         if (isNotEmpty(normalisedLayoutTokens)) {
@@ -217,7 +214,7 @@ public class GrobidPDFEngine {
                 Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShort(tokens, doc);
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
-                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
+//                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
                     outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
                 }
             }
@@ -367,7 +364,7 @@ public class GrobidPDFEngine {
         }
 
         //De-hypenisation and converting break lines with spaces.
-        List<LayoutToken> bodyLayouts = LayoutTokensUtil.dehyphenize(layoutTokens)
+        List<LayoutToken> bodyLayouts = layoutTokens
             .stream()
             .map(m -> {
                 m.setText(StringUtils.replace(m.getText(), "\r\n", " "));

@@ -6,6 +6,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.Material;
 import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
@@ -115,63 +116,13 @@ public class MaterialParserTrainingData {
 
             textAggregation.append("\n");
 
-            Pair<String, List<Superconductor>> stringListPair = materialParser.generateTrainingData(normalisedLayoutTokens);
-            List<Measurement> measurements = quantityParser.process(normalisedLayoutTokens);
-            List<Measurement> filteredMeasurements = MeasurementUtils.filterMeasurementsByUnitType(measurements,
-                Arrays.asList(
-                    UnitUtilities.Unit_Type.TEMPERATURE,
-                    UnitUtilities.Unit_Type.PRESSURE
-                )
-            );
-
-            features.append(stringListPair.getLeft());
-            features.append("\n");
-            features.append("\n");
-
-            List<Superconductor> measurementsAdapted = filteredMeasurements
-                .stream()
-                .map(m -> {
-                    OffsetPosition offset = QuantityOperations.getContainingOffset(QuantityOperations.getOffset(m));
-
-                    Superconductor superconductor = new Superconductor();
-                    superconductor.setOffsetStart(offset.start);
-                    superconductor.setOffsetEnd(offset.end);
-                    superconductor.setSource(Superconductor.SOURCE_QUANTITIES);
-
-                    String type = lowerCase(QuantityOperations.getType(m).getName());
-                    if (StringUtils.equals("temperature", type)) {
-                        type = SUPERCONDUCTORS_TC_VALUE_LABEL;
-                    } else if (StringUtils.equals("magnetic field strength", type)) {
-                        type = SUPERCONDUCTORS_MAGNETISATION_LABEL;
-                    }
-                    superconductor.setType(type);
-
-                    List<LayoutToken> quantityLayoutTokens = normalisedLayoutTokens
-                        .stream()
-                        .filter(l -> l.getOffset() >= superconductor.getOffsetStart()
-                            && l.getOffset() < superconductor.getOffsetEnd())
-                        .collect(Collectors.toList());
-
-                    String name = LayoutTokensUtil.toText(quantityLayoutTokens);
-                    superconductor.setName(name);
-
-                    return superconductor;
-                })
-                .filter(s -> StringUtils.isNotEmpty(s.getType()))
-                .collect(Collectors.toList());
-
-            List<Superconductor> superconductorList = stringListPair.getRight();
-            superconductorList.addAll(measurementsAdapted);
-            List<Superconductor> sortedEntities = pruneOverlappingAnnotations(superconductorList);
-
-            Pair<List<Superconductor>, List<LayoutToken>> labeleledText = Pair.of(sortedEntities, normalisedLayoutTokens);
-            labeledTextList.add(labeleledText);
+            Pair<String, List<Material>> stringListPair = materialParser.generateTrainingData(normalisedLayoutTokens);
 
         });
 
-        String labelledTextOutput = trainingOutputFormatters.get(outputFormat).format(labeledTextList, id);
+//        String labelledTextOutput = trainingOutputFormatters.get(outputFormat).format(labeledTextList, id);
 
-        writeOutput(file, outputDirectory, labelledTextOutput, features.toString(), textAggregation.toString(), outputFormat.toString());
+//        writeOutput(file, outputDirectory, labelledTextOutput, features.toString(), textAggregation.toString(), outputFormat.toString());
     }
 
     /**

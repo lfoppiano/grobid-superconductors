@@ -12,6 +12,7 @@ import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
+import org.grobid.trainer.MaterialTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
 import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
@@ -121,59 +122,60 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        Trainer trainer = null;
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            Trainer trainer = null;
-
-//            if (foldType.equals(FOLD_TYPE_PARAGRAPH)) {
             trainer = new SuperconductorsTrainer();
-//            } else {
-//                trainer = new SuperconductorsTrainerByDocuments();
-//            }
-            String name = "";
-            String report = null;
-            switch (action) {
-                case "train":
-                    AbstractTrainer.runTraining(trainer);
-                    break;
-                case "nfold":
-                    report = AbstractTrainer.runNFoldEvaluation(trainer, foldCount, true);
-                    name = foldCount + "-fold-cross-validation";
-                    break;
-                case "train_eval":
-                    report = AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
-                    name = "80-20-evaluation";
-                    break;
-                case "holdout":
-                    AbstractTrainer.runTraining(trainer);
-                    report = AbstractTrainer.runEvaluation(trainer, true);
-                    name = "holdout-evaluation";
-                    break;
-                default:
-                    System.out.println("No correct action were supplied. Please provide beside " + Arrays.toString(ACTIONS.toArray()));
-                    break;
-
-            }
-            if (report != null) {
-                if (!print) {
-                    if (!Files.exists(Paths.get("logs"))) {
-                        Files.createDirectory(Paths.get("logs"));
-                    }
-
-                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-" + name
-                        + "-" + formatter.format(date) + ".txt"))) {
-                        writer.write(report);
-                        writer.write("\n");
-                    } catch (IOException e) {
-                        throw new GrobidException("Error when saving evaluation results into files. ", e);
-                    }
-                } else {
-                    System.out.println(report);
-                }
-            }
+        } else if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
+            trainer = new MaterialTrainer();
         } else {
+            System.out.println("The model name " + modelName + " does not correspond to any model. ");
             System.out.println(super.getDescription());
+            System.exit(-1);
         }
+
+        String name = "";
+        String report = null;
+        switch (action) {
+            case "train":
+                AbstractTrainer.runTraining(trainer);
+                break;
+            case "nfold":
+                report = AbstractTrainer.runNFoldEvaluation(trainer, foldCount, true);
+                name = foldCount + "-fold-cross-validation";
+                break;
+            case "train_eval":
+                report = AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
+                name = "80-20-evaluation";
+                break;
+            case "holdout":
+                AbstractTrainer.runTraining(trainer);
+                report = AbstractTrainer.runEvaluation(trainer, true);
+                name = "holdout-evaluation";
+                break;
+            default:
+                System.out.println("No correct action were supplied. Please provide beside " + Arrays.toString(ACTIONS.toArray()));
+                break;
+
+        }
+        if (report != null) {
+            if (!print) {
+                if (!Files.exists(Paths.get("logs"))) {
+                    Files.createDirectory(Paths.get("logs"));
+                }
+
+                try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-" + name
+                    + "-" + formatter.format(date) + ".txt"))) {
+                    writer.write(report);
+                    writer.write("\n");
+                } catch (IOException e) {
+                    throw new GrobidException("Error when saving evaluation results into files. ", e);
+                }
+            } else {
+                System.out.println(report);
+            }
+        }
+
 
     }
 }

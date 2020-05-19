@@ -119,7 +119,7 @@ public class SuperconductorsParserTrainingData {
                         + StringUtils.length(normalisedLayoutTokens.get(i - 1).getText());
 
                     if (expectedFollowingOffset != normalisedLayoutTokens.get(i).getOffset()) {
-                        throw new RuntimeException("Crossvalidating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
+                        throw new RuntimeException("Cross-validating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
 //                        normalisedLayoutTokens.get(i).setOffset(expectedFollowingOffset);
                     }
                 });

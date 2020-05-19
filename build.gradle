@@ -149,7 +149,8 @@ test {
 
 def trainerTasks = [
     //Training models
-    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer"
+    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer",
+    "train_material": "org.grobid.trainer.MaterialTrainer"
 ]
 
 trainerTasks.each { taskName, mainClassName ->

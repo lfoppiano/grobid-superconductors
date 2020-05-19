@@ -14,6 +14,10 @@ import java.util.List;
 import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
 import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
 
+/**
+ * This will be moved to Span
+ */
+@Deprecated
 public class Superconductor {
 
     public static final String SOURCE_QUANTITIES = "quantities";
