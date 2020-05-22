@@ -4,7 +4,6 @@ import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,15 +16,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
-public class AnnotationExtractionStaxHandlerTest {
+public class AnnotationOffsetsExtractionStaxHandlerTest {
 
-    private AnnotationExtractionStaxHandler target;
+    private AnnotationOffsetsExtractionStaxHandler target;
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
     @Before
     public void setUp() {
-        target = new AnnotationExtractionStaxHandler(
+        target = new AnnotationOffsetsExtractionStaxHandler(
                 Arrays.asList("p"),
                 Arrays.asList("supercon", "tc", "substitution", "propertyValue")
         );

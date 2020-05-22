@@ -6,11 +6,10 @@ import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationStudy;
 import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreement;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
-import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationOffsetsExtractionStaxHandler;
 import org.grobid.trainer.stax.StaxUtils;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 
@@ -42,7 +41,7 @@ public class UnitizedStudyWrapper {
         int count = 0;
         for (InputStream file : filenames) {
             try {
-                AnnotationExtractionStaxHandler handler = new AnnotationExtractionStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
+                AnnotationOffsetsExtractionStaxHandler handler = new AnnotationOffsetsExtractionStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
                         ANNOTATION_DEFAULT_TAGS);
 
                 XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(file);

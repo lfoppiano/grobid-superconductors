@@ -1,8 +1,9 @@
 package org.grobid.core.engines;
 
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.text.StringEscapeUtils;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Material;
@@ -11,6 +12,7 @@ import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.BoundingBoxCalculator;
@@ -148,8 +150,40 @@ public class MaterialParser extends AbstractParser {
         return result.toString();
     }
 
+    public String extractResultsForTraining(List<LayoutToken> tokens, String result) {
+        TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.MATERIAL, result, tokens);
+        List<TaggingTokenCluster> clusters = clusteror.cluster();
+
+        StringBuilder rawTaggedValue = new StringBuilder();
+
+        for (TaggingTokenCluster cluster : clusters) {
+            if (cluster == null) {
+                continue;
+            }
+
+            TaggingLabel clusterLabel = cluster.getTaggingLabel();
+            String clusterContent = LayoutTokensUtil.toText(cluster.concatTokens()).trim();
+
+            String escapedContent = StringEscapeUtils.escapeXml11(clusterContent);
+
+            if (!clusterLabel.equals(MATERIAL_OTHER)) {
+                rawTaggedValue.append(clusterLabel.getLabel());
+            }
+            rawTaggedValue.append(escapedContent);
+            if (!clusterLabel.equals(MATERIAL_OTHER)) {
+                rawTaggedValue.append(clusterLabel.getLabel().replace("<", "</"));
+            }
+            LabeledTokensContainer last = Iterables.getLast(cluster.getLabeledTokensContainers());
+            if (last.isTrailingSpace()) {
+                rawTaggedValue.append(" ");
+            }
+        }
+
+        return rawTaggedValue.toString();
+    }
+
     /**
-     * Extract identified quantities from a labeled text.
+     * Extract identified material from a labeled text.
      */
     public List<Material> extractResults(List<LayoutToken> tokens, String result) {
         TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.MATERIAL, result, tokens);
@@ -157,6 +191,15 @@ public class MaterialParser extends AbstractParser {
 
         List<Material> extracted = new ArrayList<>();
         Material currentMaterial = new Material();
+
+        // Usually the shape is shared
+        String shape = null;
+
+        //We assume the doping is shared too, although might not always be the case
+        String doping = null;
+
+        String processingVariable = null;
+        StringBuilder rawTaggedValue = new StringBuilder();
 
         for (TaggingTokenCluster cluster : clusters) {
             if (cluster == null) {
@@ -171,6 +214,18 @@ public class MaterialParser extends AbstractParser {
             if (!clusterLabel.equals(SUPERCONDUCTORS_OTHER))
                 boundingBoxes = BoundingBoxCalculator.calculate(cluster.concatTokens());
 
+            if (!clusterLabel.equals(MATERIAL_OTHER)) {
+                rawTaggedValue.append(clusterLabel.getLabel());
+            }
+            rawTaggedValue.append(clusterContent);
+            if (!clusterLabel.equals(MATERIAL_OTHER)) {
+                rawTaggedValue.append(clusterLabel.getLabel().replace("<", "</"));
+            }
+            LabeledTokensContainer last = Iterables.getLast(cluster.getLabeledTokensContainers());
+            if (last.isTrailingSpace()) {
+                rawTaggedValue.append(" ");
+            }
+
 //            OffsetPosition calculatedOffset = calculateOffsets(tokens, theTokens, pos);
 //            pos = calculatedOffset.start;
 //            int endPos = calculatedOffset.end;
@@ -178,8 +233,6 @@ public class MaterialParser extends AbstractParser {
             int startPos = theTokens.get(0).getOffset();
             int endPos = startPos + clusterContent.length();
 
-            String doping = null;
-            String shape = null;
 
             if (clusterLabel.equals(MATERIAL_NAME)) {
                 if (StringUtils.isNotEmpty(currentMaterial.getName())) {
@@ -190,6 +243,7 @@ public class MaterialParser extends AbstractParser {
 
             } else if (clusterLabel.equals(MATERIAL_DOPING)) {
                 doping = clusterContent;
+
             } else if (clusterLabel.equals(MATERIAL_FORMULA)) {
                 if (StringUtils.isNotEmpty(currentMaterial.getFormula())) {
                     extracted.add(currentMaterial);
@@ -199,22 +253,90 @@ public class MaterialParser extends AbstractParser {
 
             } else if (clusterLabel.equals(MATERIAL_SHAPE)) {
                 shape = clusterContent;
+
             } else if (clusterLabel.equals(MATERIAL_VALUE)) {
+                String value = clusterContent;
 
+                if (StringUtils.isNotEmpty(processingVariable)) {
+                    currentMaterial.getVariables().put(processingVariable, value);
+                } else {
+                    LOGGER.error("Got a value but the processing variable is empty. Value: " + value);
+                }
             } else if (clusterLabel.equals(MATERIAL_VARIABLE)) {
+                String variable = clusterContent;
+                if (StringUtils.isNotEmpty(processingVariable)) {
+                    if (!processingVariable.equals(variable)) {
+                        processingVariable = variable;
+                    }
+                } else {
+                    processingVariable = variable;
+                }
 
-            } else if (clusterLabel.equals(SUPERCONDUCTORS_OTHER)) {
+            } else if (clusterLabel.equals(MATERIAL_OTHER)) {
 
             } else {
                 LOGGER.error("Warning: unexpected label in the material parser: " + clusterLabel.getLabel() + " for " + clusterContent);
             }
         }
 
+        extracted.add(currentMaterial);
+
+
+        for (Material material : extracted) {
+            material.setShape(shape);
+            material.setDoping(doping);
+            material.setRawTaggedValue(rawTaggedValue.toString());
+        }
+
         return extracted;
     }
 
-    public Pair<String, List<Material>> generateTrainingData(List<LayoutToken> layoutTokens) {
-        return null;
+    public String generateTrainingData(List<LayoutToken> layoutTokens) {
+        if (isEmpty(layoutTokens))
+            return "";
+
+        List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
+
+        //Normalisation
+        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
+                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+
+                return layoutToken;
+            }
+        ).collect(Collectors.toList());
+
+        String features = null;
+        try {
+            // string representation of the feature matrix for CRF lib
+            features = addFeatures(layoutTokensNormalised);
+
+            String labelledResults = null;
+            try {
+                labelledResults = label(features);
+            } catch (Exception e) {
+                throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
+            }
+            return extractResultsForTraining(tokens, labelledResults);
+        } catch (Exception e) {
+            throw new GrobidException("An exception occured while running Grobid.", e);
+        }
+    }
+
+
+    public String generateTrainingData(String text) {
+        text = text.replace("\r\t", " ");
+        text = text.replace("\n", " ");
+        text = text.replace("\t", " ");
+
+        List<LayoutToken> layoutTokens = null;
+        try {
+            layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+        } catch (Exception e) {
+            LOGGER.error("fail to tokenize:, " + text, e);
+        }
+
+        return generateTrainingData(layoutTokens);
+
     }
 
 }

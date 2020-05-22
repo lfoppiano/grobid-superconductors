@@ -43,6 +43,7 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
     public static final TaggingLabel MATERIAL_FORMULA = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_FORMULA_LABEL);
     public static final TaggingLabel MATERIAL_NAME = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_NAME_LABEL);
     public static final TaggingLabel MATERIAL_DOPING = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_DOPING_LABEL);
+    public static final TaggingLabel MATERIAL_OTHER = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, OTHER_LABEL);
 
     static {
         //Superconductor
@@ -62,6 +63,7 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         register(MATERIAL_FORMULA);
         register(MATERIAL_NAME);
         register(MATERIAL_DOPING);
+        register(MATERIAL_OTHER);
 
 
     }

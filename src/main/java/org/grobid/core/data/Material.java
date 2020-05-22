@@ -1,5 +1,6 @@
 package org.grobid.core.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.OffsetPosition;
@@ -9,10 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Material {
 
     private String name;
-    private String structure;
+    private String shape;
     private String formula;
     private String doping;
     private Map<String, String> variables = new HashMap<>();
@@ -20,6 +22,7 @@ public class Material {
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
     private List<LayoutToken> layoutTokens = new ArrayList<>();
     private OffsetPosition offsets = new OffsetPosition();
+    private String rawTaggedValue;
 
 
     public String getName() {
@@ -30,12 +33,12 @@ public class Material {
         this.name = name;
     }
 
-    public String getStructure() {
-        return structure;
+    public String getShape() {
+        return shape;
     }
 
-    public void setStructure(String structure) {
-        this.structure = structure;
+    public void setShape(String shape) {
+        this.shape = shape;
     }
 
     public String getFormula() {
@@ -92,5 +95,13 @@ public class Material {
 
     public void setOffsetEnd(int endPos) {
         this.offsets.end = endPos;
+    }
+
+    public void setRawTaggedValue(String rawTaggedValue) {
+        this.rawTaggedValue = rawTaggedValue;
+    }
+
+    public String getRawTaggedValue() {
+        return rawTaggedValue;
     }
 }

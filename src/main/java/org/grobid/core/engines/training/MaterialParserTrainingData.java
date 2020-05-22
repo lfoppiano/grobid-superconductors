@@ -116,7 +116,7 @@ public class MaterialParserTrainingData {
 
             textAggregation.append("\n");
 
-            Pair<String, List<Material>> stringListPair = materialParser.generateTrainingData(normalisedLayoutTokens);
+            String string = materialParser.generateTrainingData(normalisedLayoutTokens);
 
         });
 

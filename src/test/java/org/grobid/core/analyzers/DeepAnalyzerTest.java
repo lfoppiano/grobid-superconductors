@@ -5,6 +5,7 @@ import org.grobid.core.utilities.LayoutTokensUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -61,6 +62,18 @@ public class DeepAnalyzerTest {
         assertThat(tokens.get(0).getOffset(), is(0));
         assertThat(tokens.get(15).getText(), is("5"));
         assertThat(tokens.get(15).getOffset(), is(30));
+    }
+
+
+    @Test
+    public void testTokenize_with_unicode_characters() throws Exception {
+        String input = "La2\u2212xSrxCuO4 (LSCO)";
+
+        System.out.println(input);
+
+        List<String> tokenize = target.tokenize(input);
+
+        System.out.println(tokenize);
     }
 
 }

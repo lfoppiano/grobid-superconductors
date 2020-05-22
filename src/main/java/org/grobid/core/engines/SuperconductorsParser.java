@@ -69,8 +69,8 @@ public class SuperconductorsParser extends AbstractParser {
         if (isEmpty(layoutTokens))
             return Pair.of("", new ArrayList<>());
 
-        List<Superconductor> measurements = new ArrayList<>();
-        String ress = null;
+        List<Superconductor> entities = new ArrayList<>();
+        String features = null;
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
@@ -90,20 +90,20 @@ public class SuperconductorsParser extends AbstractParser {
 
         try {
             // string representation of the feature matrix for CRF lib
-            ress = addFeatures(layoutTokensNormalised, listAnnotations);
+            features = addFeatures(layoutTokensNormalised, listAnnotations);
 
-            String res = null;
+            String labelledResults = null;
             try {
-                res = label(ress);
+                labelledResults = label(features);
             } catch (Exception e) {
                 throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
-            measurements.addAll(extractResults(tokens, res));
+            entities.addAll(extractResults(tokens, labelledResults));
         } catch (Exception e) {
             throw new GrobidException("An exception occured while running Grobid.", e);
         }
 
-        return Pair.of(ress, measurements);
+        return Pair.of(features, entities);
     }
 
     public Pair<String, List<Superconductor>> generateTrainingData(String text) {
