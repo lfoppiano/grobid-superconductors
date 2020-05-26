@@ -17,11 +17,11 @@ public class Material {
     private String shape;
     private String formula;
     private String doping;
-    private Map<String, String> variables = new HashMap<>();
+    private Map<String, List<String>> variables = new HashMap<>();
 
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
     private List<LayoutToken> layoutTokens = new ArrayList<>();
-    private OffsetPosition offsets = new OffsetPosition();
+    private List<OffsetPosition> offsets = new ArrayList<>();
     private String rawTaggedValue;
 
 
@@ -57,11 +57,11 @@ public class Material {
         this.doping = doping;
     }
 
-    public Map<String, String> getVariables() {
+    public Map<String, List<String>> getVariables() {
         return variables;
     }
 
-    public void addVariable(String variable, String value) {
+    public void addVariable(String variable, List<String> value) {
         this.variables.putIfAbsent(variable, value);
     }
 
@@ -81,27 +81,27 @@ public class Material {
         this.layoutTokens = layoutTokens;
     }
 
-    public OffsetPosition getOffsets() {
-        return offsets;
-    }
-
-    public void setOffsets(OffsetPosition offsets) {
-        this.offsets = offsets;
-    }
-
-    public void setOffsetStart(int startPos) {
-        this.offsets.start = startPos;
-    }
-
-    public void setOffsetEnd(int endPos) {
-        this.offsets.end = endPos;
-    }
-
     public void setRawTaggedValue(String rawTaggedValue) {
         this.rawTaggedValue = rawTaggedValue;
     }
 
     public String getRawTaggedValue() {
         return rawTaggedValue;
+    }
+
+    public List<OffsetPosition> getOffsets() {
+        return offsets;
+    }
+
+    public void setOffsets(List<OffsetPosition> offsets) {
+        this.offsets = offsets;
+    }
+
+    public void addOffset(OffsetPosition offsetPosition) {
+        offsets.add(offsetPosition);
+    }
+
+    public void addBoundingBoxes(List<BoundingBox> boundingBoxes) {
+        boundingBoxes.addAll(boundingBoxes);
     }
 }

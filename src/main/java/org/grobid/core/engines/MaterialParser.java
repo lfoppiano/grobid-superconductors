@@ -17,16 +17,17 @@ import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.BoundingBoxCalculator;
 import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.grobid.core.engines.SuperconductorsModels.MATERIAL;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
@@ -226,13 +227,8 @@ public class MaterialParser extends AbstractParser {
                 rawTaggedValue.append(" ");
             }
 
-//            OffsetPosition calculatedOffset = calculateOffsets(tokens, theTokens, pos);
-//            pos = calculatedOffset.start;
-//            int endPos = calculatedOffset.end;
-
             int startPos = theTokens.get(0).getOffset();
             int endPos = startPos + clusterContent.length();
-
 
             if (clusterLabel.equals(MATERIAL_NAME)) {
                 if (StringUtils.isNotEmpty(currentMaterial.getName())) {
@@ -240,9 +236,13 @@ public class MaterialParser extends AbstractParser {
                     currentMaterial = new Material();
                 }
                 currentMaterial.setName(clusterContent);
+                currentMaterial.addOffset(new OffsetPosition(startPos, endPos));
+                currentMaterial.addBoundingBoxes(boundingBoxes);
 
             } else if (clusterLabel.equals(MATERIAL_DOPING)) {
                 doping = clusterContent;
+//                dopingOffsets.addAll(new OffsetPosition(startPos, endPos));
+//                dopingBoundingBoxes.addAll(boundingBoxes);
 
             } else if (clusterLabel.equals(MATERIAL_FORMULA)) {
                 if (StringUtils.isNotEmpty(currentMaterial.getFormula())) {
@@ -250,15 +250,21 @@ public class MaterialParser extends AbstractParser {
                     currentMaterial = new Material();
                 }
                 currentMaterial.setFormula(clusterContent);
+                currentMaterial.addOffset(new OffsetPosition(startPos, endPos));
+                currentMaterial.addBoundingBoxes(boundingBoxes);
 
             } else if (clusterLabel.equals(MATERIAL_SHAPE)) {
                 shape = clusterContent;
+//                shapeOffsets.addAll(new OffsetPosition(startPos, endPos));
+//                shapeBoundingBoxes.addAll(boundingBoxes);
 
             } else if (clusterLabel.equals(MATERIAL_VALUE)) {
                 String value = clusterContent;
 
                 if (StringUtils.isNotEmpty(processingVariable)) {
-                    currentMaterial.getVariables().put(processingVariable, value);
+                    String[] split = value.split(",|;|or|and");
+                    List<String> listValues = Arrays.stream(split).map(StringUtils::trim).collect(Collectors.toList());
+                    currentMaterial.getVariables().put(processingVariable, listValues);
                 } else {
                     LOGGER.error("Got a value but the processing variable is empty. Value: " + value);
                 }
@@ -281,8 +287,36 @@ public class MaterialParser extends AbstractParser {
 
         extracted.add(currentMaterial);
 
+        /** Post_processing the variables-> values **/
+        List<Material> processedMaterials = new ArrayList<>();
+
+//        Map<String, List<String>> processedVariables = new HashMap<>();
+//
+//        for (Material material : extracted) {
+//            if (isNotEmpty(material.getVariables().keySet())) {
+//
+//                for (Map.Entry<String, String> substitutions : material.getVariables().entrySet()) {
+//                    String variable = substitutions.getKey();
+//                    String values = substitutions.getValue();
+//
+//                    // split by comma
+//
+//                }
+//            } else {
+//                processedMaterials.add(material);
+//            }
+//        }
+//
+//        Material newMaterial = new Material();
+//        newMaterial.setName(material.getName());
+//        newMaterial.setFormula(material.getFormula());
+//        newMaterial.setOffsets(material.getOffsets());
+//        newMaterial.setBoundingBoxes(material.getBoundingBoxes());
+//        newMaterial.addVariable(variable, s);
+//        processedMaterials.add(newMaterial);
 
         for (Material material : extracted) {
+            /** Shape and doping are shared properties **/
             material.setShape(shape);
             material.setDoping(doping);
             material.setRawTaggedValue(rawTaggedValue.toString());
