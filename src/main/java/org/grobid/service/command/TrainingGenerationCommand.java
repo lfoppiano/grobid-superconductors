@@ -31,39 +31,42 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
 
 
     public TrainingGenerationCommand() {
-        super("trainingGeneration", "Generate training data ");
+        super("create-training", "Generate training data ");
     }
 
     @Override
     public void configure(Subparser subparser) {
         super.configure(subparser);
 
-        subparser.addArgument("-dIn")
-                .dest(INPUT_DIRECTORY)
-                .type(String.class)
-                .required(true)
-                .help("Input directory");
+        subparser.addArgument("-dIn", "--input", "-i")
+            .dest(INPUT_DIRECTORY)
+            .type(Arguments.fileType().verifyCanRead().verifyIsDirectory())
+            .required(true)
+            .help("Input directory");
 
-        subparser.addArgument("-dOut")
-                .dest(OUTPUT_DIRECTORY)
-                .type(String.class)
-                .required(true)
-                .help("Output directory");
+        subparser.addArgument("-dOut", "--output", "-o")
+            .dest(OUTPUT_DIRECTORY)
+            .type(Arguments.fileType()
+                .verifyNotExists().verifyCanCreate()
+                .or()
+                .verifyIsDirectory().verifyCanWrite())
+            .required(true)
+            .help("Output directory");
 
-        subparser.addArgument("-m")
-                .dest(MODEL_NAME)
-                .type(String.class)
-                .required(true)
-                .help("Model for which to create training data");
+        subparser.addArgument("-m", "--model")
+            .dest(MODEL_NAME)
+            .type(String.class)
+            .required(true)
+            .help("Model for which to create training data");
 
-        subparser.addArgument("-f")
-                .dest(OUTPUT_FORMAT)
-                .type(String.class)
-                .required(false)
-                .setDefault("xml")
-                .help("Output format (TSV, XML)");
+        subparser.addArgument("-f", "--format")
+            .dest(OUTPUT_FORMAT)
+            .type(String.class)
+            .required(false)
+            .setDefault("xml")
+            .help("Output format (TSV, XML)");
 
-        subparser.addArgument("-r")
+        subparser.addArgument("-r", "--recursive")
             .dest(RECURSIVE)
             .type(Boolean.class)
             .required(false)
@@ -102,7 +105,7 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory, outputDirectory,
-                    TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)), recursive);
+                TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)), recursive);
         } else {
             System.out.println(super.getDescription());
         }

@@ -44,8 +44,8 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         bootstrap.addCommand(new RunTrainingCommand());
         bootstrap.addCommand(new InterAnnotationAgreementCommand());
         bootstrap.addCommand(new TrainingGenerationCommand());
-        bootstrap.addCommand(new PrepareDelftTraining());
-        bootstrap.addCommand(new PrepareMaterialParserTraining());
+        bootstrap.addCommand(new PrepareDelftTrainingCommand());
+        bootstrap.addCommand(new PrepareMaterialParserTrainingCommand());
     }
 
     @Override
