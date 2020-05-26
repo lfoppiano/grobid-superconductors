@@ -77,15 +77,10 @@ public class MaterialTrainer extends AbstractTrainer {
             Writer outputWriter = null;
             try {
                 // the file for writing the training data
-                OutputStream os2 = null;
                 Path relativeOutputPath = Paths.get(outputDirectory, String.valueOf(Paths.get(inputDirectory).relativize(Paths.get(inputFile.getAbsolutePath()))));
                 Files.createDirectories(relativeOutputPath.getParent());
-                if (outputDirectory != null) {
-                    os2 = new FileOutputStream(relativeOutputPath.toString());
-                    outputWriter = new OutputStreamWriter(os2, UTF_8);
-                } else {
-                    return;
-                }
+                OutputStream os2 = new FileOutputStream(relativeOutputPath.toString().replace("superconductors.tei.xml", "material.tei.xml"));
+                outputWriter = new OutputStreamWriter(os2, UTF_8);
 
                 outputWriter.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
                 outputWriter.write("<materials>\n");
