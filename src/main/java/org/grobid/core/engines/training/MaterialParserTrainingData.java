@@ -1,58 +1,46 @@
 package org.grobid.core.engines.training;
 
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Material;
-import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.GrobidPDFEngine;
 import org.grobid.core.engines.MaterialParser;
-import org.grobid.core.engines.QuantityParser;
-import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.ChemDataExtractorClient;
+import org.grobid.core.utilities.LayoutTokensUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.lang3.StringUtils.lowerCase;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_MAGNETISATION_LABEL;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 public class MaterialParserTrainingData {
     private static final Logger LOGGER = LoggerFactory.getLogger(MaterialParserTrainingData.class);
 
     private MaterialParser materialParser;
-//    private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> trainingOutputFormatters = new HashMap<>();
 
-
-    public MaterialParserTrainingData(ChemDataExtractorClient chemspotClient) {
-//        this(SuperconductorsParser.getInstance(chemspotClient), QuantityParser.getInstance(true));
+    public MaterialParserTrainingData() {
+        materialParser = MaterialParser.getInstance();
     }
-
     public MaterialParserTrainingData(MaterialParser parser) {
         materialParser = parser;
-//        trainingOutputFormatters.put(TrainingOutputFormat.TSV, new SuperconductorsTrainingTSVFormatter());
-//        trainingOutputFormatters.put(TrainingOutputFormat.XML, new SuperconductorsTrainingXMLFormatter());
     }
 
     private void writeOutput(File file,
@@ -71,7 +59,60 @@ public class MaterialParserTrainingData {
         }
     }
 
-    private void createTrainingPDF(File file, String outputDirectory, TrainingOutputFormat outputFormat, int id) {
+    /**
+     * Processes the XML files of the superconductors model, and extract all the content labeled as material
+     */
+    public void createTrainingFromText(String inputDirectory, String outputDirectory, boolean recursive) {
+        Path inputPath = Paths.get(inputDirectory);
+
+        int maxDept = recursive ? Integer.MAX_VALUE : 1;
+        List<File> refFiles = new ArrayList<>();
+        try {
+            refFiles = Files.walk(inputPath, maxDept)
+                .filter(path -> Files.isRegularFile(path)
+                    && (StringUtils.endsWithIgnoreCase(path.getFileName().toString(), ".txt")))
+                .map(Path::toFile)
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            return;
+        }
+
+        if (isEmpty(refFiles)) {
+            return;
+        }
+
+        for (File inputFile : refFiles) {
+            Writer outputWriter = null;
+            try {
+                // the file for writing the training data
+                Path relativeOutputPath = Paths.get(outputDirectory, String.valueOf(Paths.get(inputDirectory).relativize(Paths.get(inputFile.getAbsolutePath()))));
+                Files.createDirectories(relativeOutputPath.getParent());
+                String outputFile = relativeOutputPath.toString().replace("txt", "material.tei.xml");
+                OutputStream os2 = new FileOutputStream(outputFile);
+                outputWriter = new OutputStreamWriter(os2, UTF_8);
+
+                outputWriter.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
+                outputWriter.write("<materials>\n");
+
+                StringBuilder contentBuilder = new StringBuilder();
+                List<String> lines = Files.lines(Paths.get(inputFile.getAbsolutePath()), UTF_8).collect(Collectors.toList());
+                for (String line : lines) {
+                    String tagged = materialParser.generateTrainingData(line);
+                    outputWriter.write("\t<material>");
+                    outputWriter.write(tagged);
+                    outputWriter.write("</material>\n");
+                }
+
+                outputWriter.write("</materials>\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                closeQuietly(outputWriter);
+            }
+        }
+    }
+
+    private void createTrainingFromPDF(File file, String outputDirectory, TrainingOutputFormat outputFormat, int id) {
         Document document = null;
         try {
             GrobidAnalysisConfig config =
@@ -165,7 +206,7 @@ public class MaterialParserTrainingData {
                     if (!file.exists()) {
                         throw new GrobidException("Cannot create training data because input file can not be accessed: " + file.getAbsolutePath());
                     }
-                    createTrainingPDF(file, outputDirectory, outputFormat, n);
+                    createTrainingFromPDF(file, outputDirectory, outputFormat, n);
                 } catch (final Exception exp) {
                     LOGGER.error("An error occured while processing the following pdf: "
                         + file.getPath(), exp);

@@ -2,9 +2,11 @@ package org.grobid.service.command;
 
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import org.grobid.core.engines.SuperconductorsModels;
+import org.grobid.core.engines.training.MaterialParserTrainingData;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
@@ -26,9 +28,10 @@ public class PrepareMaterialParserTrainingCommand extends ConfiguredCommand<Grob
 
     private final static String OUTPUT_PATH = "output_path";
     private final static String INPUT_PATH = "input_path";
+    private final static String INPUT_FORMAT = "input_format";
 
     public PrepareMaterialParserTrainingCommand() {
-        super("prepare-material-training", "Prepare the training data for the Material Parser using already annotated XML files. ");
+        super("prepare-material-training", "Prepare the training data for the Material Parser using data from already annotated XML or raw TXT files. ");
     }
 
     @Override
@@ -37,15 +40,23 @@ public class PrepareMaterialParserTrainingCommand extends ConfiguredCommand<Grob
 
         subparser.addArgument("-o", "--output")
             .dest(OUTPUT_PATH)
-            .type(String.class)
+            .type(Arguments.fileType().verifyIsDirectory().verifyCanWrite().or().verifyNotExists().verifyCanCreate())
             .required(true)
             .help("Output path directory. ");
 
         subparser.addArgument("-i", "--input")
             .dest(INPUT_PATH)
-            .type(String.class)
-            .required(true)
+            .type(Arguments.fileType().verifyCanRead().verifyIsDirectory())
+            .required(false)
             .help("Input path directory. ");
+
+        subparser.addArgument("--input-format")
+            .dest(INPUT_FORMAT)
+            .type(String.class)
+            .required(false)
+            .setDefault("xml")
+            .choices("xml", "txt")
+            .help("Format of the input file.");
 
     }
 
@@ -68,21 +79,21 @@ public class PrepareMaterialParserTrainingCommand extends ConfiguredCommand<Grob
             System.exit(-1);
         }
 
-        String inputPath = namespace.get(INPUT_PATH);
-        String outputPath = namespace.get(OUTPUT_PATH);
+        File inputPath = namespace.get(INPUT_PATH);
+        File outputPath = namespace.get(OUTPUT_PATH);
+        String inputFormat = namespace.get(INPUT_FORMAT);
 
-        File input = GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS);
-        if (isNotEmpty(inputPath)) {
-            input = Paths.get(inputPath).toFile();
+        if (inputPath == null) {
+            inputPath = GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS);
         }
 
-        Path sourcePath = Paths.get(input.getAbsolutePath());
-
-        Path destinationPath = Paths.get(outputPath);
-        if (!Files.exists(destinationPath)) {
-            Files.createDirectories(destinationPath);
+        switch (inputFormat) {
+            case "txt":
+                new MaterialParserTrainingData().createTrainingFromText(inputPath.toString(), outputPath.toString(), true);
+                break;
+            case "xml":
+                new MaterialTrainer().createTrainingDataFromSuperconductors(inputPath.toString(), outputPath.toString(), true);
+                break;
         }
-
-        new MaterialTrainer().createTrainingDataFromSuperconductors(sourcePath.toString(), destinationPath.toString(), true);
     }
 }
