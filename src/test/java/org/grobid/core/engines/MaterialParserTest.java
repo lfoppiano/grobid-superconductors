@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -126,6 +125,7 @@ public class MaterialParserTest {
     public void testExtractResults_formulaWithVariables() throws Exception {
         //        String text = "graphene, the atomic monolayer modification of graphite, Li-or Ca-decoration";
         String text = "CeM 2 X 2 (M = Cu, Ni, Ru, Rh, Pd, Au, .; X = Si, Ge) ";
+        //MNX (M = Zr, Hf; X = Cl, Br, I) 
 
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
