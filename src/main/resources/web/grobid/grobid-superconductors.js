@@ -6,6 +6,12 @@
 
 var grobid = (function ($) {
 
+        var urlMapper = {
+            "processSuperconductorsText": "/processSuperconductorsText",
+            "processMaterialText": "/material/parse",
+            "processSuperconductorsPDF": "/processSuperconductorsPDF",
+        }
+
         // for components view
         var responseJson = null;
 
@@ -25,9 +31,20 @@ var grobid = (function ($) {
             return baseUrl;
         }
 
-        function setBaseUrl(ext) {
-            var baseUrl = defineBaseURL('service' + '/' + ext);
+        function setBaseUrl(action) {
+            var suffix = urlMapper[action];
+            var baseUrl = defineBaseURL('service' + suffix);
             $('#gbdForm').attr('action', baseUrl);
+        }
+
+        function loadExamples(examples_list) {
+            for (var idx_example in examples_list) {
+                $('#example' + idx_example).unbind('click')
+                $('#example' + idx_example).bind('click', {id: idx_example}, function (event) {
+                    event.preventDefault();
+                    $('#inputTextArea').val(examples_list[event.data.id]);
+                });
+            }
         }
 
         $(document).ready(function () {
@@ -40,23 +57,8 @@ var grobid = (function ($) {
 
             createInputTextArea('text');
             setBaseUrl('processSuperconductorsText');
-            $('#example0').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[0]);
-            });
-            setBaseUrl('processQuantityText');
-            $('#example1').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[1]);
-            });
-            $('#example2').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[2]);
-            });
-            $('#example3').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[3]);
-            });
+            loadExamples(examples_superconductors)
+
             $("#selectedService").val('processSuperconductorsText');
 
             $('#selectedService').change(function () {
@@ -70,7 +72,6 @@ var grobid = (function ($) {
                 $("#about").attr('class', 'section-active');
                 $("#rest").attr('class', 'section-not-active');
                 $("#doc").attr('class', 'section-not-active');
-                $("#demo").attr('class', 'section-not-active');
 
                 $("#subTitle").html("About");
                 $("#subTitle").show();
@@ -78,7 +79,6 @@ var grobid = (function ($) {
                 $("#divAbout").show();
                 $("#divRestI").hide();
                 $("#divDoc").hide();
-                $("#divDemo").hide();
                 $('#requestResult').hide();
                 return false;
             });
@@ -86,7 +86,6 @@ var grobid = (function ($) {
                 $("#rest").attr('class', 'section-active');
                 $("#doc").attr('class', 'section-not-active');
                 $("#about").attr('class', 'section-not-active');
-                $("#demo").attr('class', 'section-not-active');
 
                 $("#subTitle").hide();
                 //$("#subTitle").show();
@@ -102,7 +101,6 @@ var grobid = (function ($) {
                 $("#doc").attr('class', 'section-active');
                 $("#rest").attr('class', 'section-not-active');
                 $("#about").attr('class', 'section-not-active');
-                $("#demo").attr('class', 'section-not-active');
 
                 $("#subTitle").html("Doc");
                 $("#subTitle").show();
@@ -158,7 +156,20 @@ var grobid = (function ($) {
                     type: 'POST',
                     url: urlLocal,
                     data: formData,
-                    success: onSuccessText,
+                    success: onSuccessSuperconductorsText,
+                    error: AjaxError,
+                    contentType: false,
+                    processData: false
+                });
+            } else if (selected === 'processMaterialText') {
+                var formData = new FormData();
+                formData.append("text", $('#inputTextArea').val());
+
+                $.ajax({
+                    type: 'POST',
+                    url: urlLocal,
+                    data: formData,
+                    success: onSuccessMaterialText,
                     error: AjaxError,
                     contentType: false,
                     processData: false
@@ -448,7 +459,70 @@ var grobid = (function ($) {
             return quantityType;
         }
 
-        function onSuccessText(responseText, statusText) {
+        function onSuccessMaterialText(response, statusText) {
+            responseJson = response;
+            $('#infoResult').html('');
+            if ((responseJson === null) || (responseJson.length === 0)) {
+                $('#requestResult')
+                    .html("<font color='red'>Error encountered while receiving the server's answer: response is empty.</font>");
+                return;
+            }
+
+            var display = '<div class=\"note-tabs\"> \
+            <ul id=\"resultTab\" class=\"nav nav-tabs\"> \
+                <li class="active"><a href=\"#navbar-fixed-annotation\" data-toggle=\"tab\">Annotations</a></li> \
+                <li><a href=\"#navbar-fixed-json\" data-toggle=\"tab\">Response</a></li> \
+            </ul> \
+            <div class="tab-content"> \
+            <div class="tab-pane active" id="navbar-fixed-annotation">\n';
+
+            display += '<pre style="background-color:#FFF;width:95%;" id="displayAnnotatedText">';
+
+            var inputText = $('#inputTextArea').val();
+
+            display += '<table id="sentenceNER" style="width:100%;table-layout:fixed;" class="table">';
+            //var string = responseJson.text;
+
+            display += '<tr style="background-color:#FFF;">';
+
+            for (var index in responseJson) {
+                // var annotatedTextAsHtml = "<p>" + taggedText.replace(/(\r\n|\n|\r)/gm, "</p><p>") + "</p>";
+                var material = responseJson[index];
+
+                var replaced = material.rawTaggedValue.replace(/<\/?[^<> ]+>/gm, function (matching) {
+                    return matching.replace("<", "[").replace(">", "]").replace("<\/", "[")
+                })
+                var annotatedTextAsHtml = "<p>" + replaced.replace(/(\r\n|\n|\r)/gm, "</p><p>") + "</p>";
+
+                display += '<td style="font-size:small;width:60%;border:1px solid #CCC;">' + annotatedTextAsHtml + '</td>';
+            }
+            display += '<td style="font-size:small;width:40%;padding:0 5px; border:0"><span id="detailed_annot-0-0" /></td>';
+
+            display += '</tr>';
+            display += '</table>\n';
+            display += '</pre>\n';
+            display += '</div> \
+                    <div class="tab-pane " id="navbar-fixed-json">\n';
+
+
+            //JSON Pretty print box
+            display += "<pre class='prettyprint' id='jsonCode'>";
+
+            display += "<pre class='prettyprint lang-json' id='xmlCode'>";
+            var testStr = vkbeautify.json(response);
+
+            display += htmll(testStr);
+
+            display += "</pre>";
+            display += '</div></div></div>';
+
+            $('#requestResult').html(display);
+            window.prettyPrint && prettyPrint();
+
+            $('#requestResult').show();
+        }
+
+        function onSuccessSuperconductorsText(responseText, statusText) {
             responseJson = responseText;
             $('#infoResult').html('');
             if ((responseJson == null) || (responseJson.length === 0)) {
@@ -824,8 +898,60 @@ var grobid = (function ($) {
             string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
                 "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
 
-            if (name) {
-                string += "<p>name: <b>" + name + "</b></p>";
+            if (type !== "material") {
+                if (name) {
+                    string += "<p>name: <b>" + name + "</b></p>";
+                }
+            } else {
+
+                if (name) {
+                    string += "<p>rawName: <b>" + name + "</b></p>";
+                }
+
+                var structuredMaterials = entity.resolvedMaterialNames;
+
+                if (structuredMaterials && structuredMaterials.length > 0) {
+                    for (var idx = 0; idx < structuredMaterials.length; idx++) {
+                        if (structuredMaterials[idx].doping) {
+                            string += "<br /><p>doping: <b>" + structuredMaterials[idx].doping + "</b></p>";
+                        }
+
+                        if (structuredMaterials[idx].name) {
+                            string += "<br /><p>name: <b>" + structuredMaterials[idx].name + "</b></p>";
+                        }
+
+                        if (structuredMaterials[idx].formula) {
+                            string += "<br /><p>formula: <b>" + structuredMaterials[idx].formula + "</b></p>";
+                        }
+
+                        if (structuredMaterials[idx].shape) {
+                            string += "<br /><p>shape: <b>" + structuredMaterials[idx].shape + "</b></p>";
+                        }
+
+                        if (structuredMaterials[idx].variables && Object.keys(structuredMaterials[idx].variables).length > 0) {
+                            string += "<br /><p>variables: ";
+                            for (var m in structuredMaterials[idx].variables) {
+                                string += "<br />&nbsp;<b>" + m + "</b>";
+                                for (var i = 0; i < structuredMaterials[idx].variables[m].length; i++) {
+                                    string += "<br />&nbsp;&nbsp;<b>" + structuredMaterials[idx].variables[m][i] + "</b>";
+                                }
+                                string += "<br />";
+                            }
+                            string +="</p>"
+                        }
+
+                        if (structuredMaterials[idx].resolvedFormulas && structuredMaterials[idx].resolvedFormulas.length > 0) {
+                            string += "<br /><p>resolvedFormulas: ";
+                            for (var idx2 = 0; idx2 < structuredMaterials[idx].resolvedFormulas.length; idx2++) {
+                                string += "<br />&nbsp;<b>" + structuredMaterials[idx].resolvedFormulas[idx2] + "</b>";
+                            }
+                            string +="</p>"
+                        }
+
+                    }
+
+
+                }
             }
 
             if (entity.tc) {
@@ -1105,11 +1231,18 @@ var grobid = (function ($) {
 
             if (selected === 'processSuperconductorsText') {
                 createInputTextArea();
-                setBaseUrl('processSuperconductorsText');
+                setBaseUrl(selected);
+                loadExamples(examples_superconductors);
+                $('#requestResult').hide();
+            } else if (selected === 'processMaterialText') {
+                createInputTextArea();
+                setBaseUrl(selected);
+                loadExamples(examples_materials);
                 $('#requestResult').hide();
             } else if (selected === 'annotateSuperconductorsPDF') {
                 createInputFile(selected);
-                setBaseUrl('annotateSuperconductorsPDF');
+                setBaseUrl(selected);
+                loadExamples(examples_superconductors);
                 $('#requestResult').hide();
             }
         }
@@ -1127,11 +1260,19 @@ var grobid = (function ($) {
             $('#textInputDiv').show();
         }
 
-        var examples = [
-            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.", "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
-
+        var examples_superconductors = [
+            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
+            "The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
+            "The highest T c in boron-doped SWNTs (single-walled nanotubes) ranged from 8 to For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K ."
         ]
 
+        var examples_materials = [
+            "polycristalline Metadiboride Mgb 2 thin film",
+            "polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42",
+            "crystal structure of (Sr, Na)Fe 2 As 2",
+            "hole-doped La1−x SrxOFeAs compound"
+        ]
     }
 
 )(jQuery);

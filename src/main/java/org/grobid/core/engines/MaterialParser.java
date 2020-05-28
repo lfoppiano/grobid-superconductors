@@ -288,34 +288,9 @@ public class MaterialParser extends AbstractParser {
         extracted.add(currentMaterial);
 
         /** Post_processing the variables-> values **/
-        List<Material> processedMaterials = new ArrayList<>();
-
-//        Map<String, List<String>> processedVariables = new HashMap<>();
-//
-//        for (Material material : extracted) {
-//            if (isNotEmpty(material.getVariables().keySet())) {
-//
-//                for (Map.Entry<String, String> substitutions : material.getVariables().entrySet()) {
-//                    String variable = substitutions.getKey();
-//                    String values = substitutions.getValue();
-//
-//                    // split by comma
-//
-//                }
-//            } else {
-//                processedMaterials.add(material);
-//            }
-//        }
-//
-//        Material newMaterial = new Material();
-//        newMaterial.setName(material.getName());
-//        newMaterial.setFormula(material.getFormula());
-//        newMaterial.setOffsets(material.getOffsets());
-//        newMaterial.setBoundingBoxes(material.getBoundingBoxes());
-//        newMaterial.addVariable(variable, s);
-//        processedMaterials.add(newMaterial);
 
         for (Material material : extracted) {
+            material = Material.resolveVariables(material);
             /** Shape and doping are shared properties **/
             material.setShape(shape);
             material.setDoping(doping);

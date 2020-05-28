@@ -10,6 +10,7 @@ import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Superconductor;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.GrobidPDFEngine;
+import org.grobid.core.engines.MaterialParser;
 import org.grobid.core.engines.QuantityParser;
 import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
@@ -45,7 +46,7 @@ public class SuperconductorsParserTrainingData {
 
 
     public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient) {
-        this(SuperconductorsParser.getInstance(chemspotClient), QuantityParser.getInstance(true));
+        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance()), QuantityParser.getInstance(true));
     }
 
     public SuperconductorsParserTrainingData(SuperconductorsParser parser, QuantityParser quantityParser) {
@@ -195,9 +196,9 @@ public class SuperconductorsParserTrainingData {
 
     /**
      * Remove overlapping annotations
-     *     - sort annotation by starting offset then pairwise check
-     *     - if they have the same type I take the one with the larger entity or the quantity model
-     *     - else if they have different type I take the one with the smaller entity size or the one from quantities model
+     * - sort annotation by starting offset then pairwise check
+     * - if they have the same type I take the one with the larger entity or the quantity model
+     * - else if they have different type I take the one with the smaller entity size or the one from quantities model
      **/
     private List<Superconductor> pruneOverlappingAnnotations(List<Superconductor> superconductorList) {
         //Sorting by offsets

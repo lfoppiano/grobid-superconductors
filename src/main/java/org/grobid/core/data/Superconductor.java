@@ -1,6 +1,7 @@
 package org.grobid.core.data;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.grobid.core.layout.BoundingBox;
@@ -11,8 +12,7 @@ import org.grobid.core.utilities.UnitUtilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
-import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
+import static org.wipo.analyzers.wipokr.utils.StringUtil.*;
 
 /**
  * This will be moved to Span
@@ -24,6 +24,9 @@ public class Superconductor {
     public static final String SOURCE_SUPERCONDUCTORS = "superconductors";
 
     private String name;
+
+    //TODO: to refactor this class
+    private List<Material> structuredMaterials = new ArrayList<>();
 
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
     private List<LayoutToken> layoutTokens = new ArrayList<>();
@@ -137,6 +140,19 @@ public class Superconductor {
                 else
                     json.append(",");
                 json.append("{").append(box.toJson()).append("}");
+            }
+            json.append("] ");
+        }
+
+        if(CollectionUtils.isNotEmpty(structuredMaterials)) {
+            json.append(", \"resolvedMaterialNames\" : [");
+            boolean first = true;
+            for (Material material : structuredMaterials) {
+                if (first)
+                    first = false;
+                else
+                    json.append(",");
+                json.append(material.toJson());
             }
             json.append("] ");
         }
@@ -256,5 +272,13 @@ public class Superconductor {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public List<Material> getStructuredMaterials() {
+        return structuredMaterials;
+    }
+
+    public void setStructuredMaterials(List<Material> structuredMaterials) {
+        this.structuredMaterials = structuredMaterials;
     }
 }

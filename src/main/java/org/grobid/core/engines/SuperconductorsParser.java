@@ -38,29 +38,30 @@ public class SuperconductorsParser extends AbstractParser {
 
     private static volatile SuperconductorsParser instance;
     public static final String NONE_CHEMSPOT_TYPE = "NONE";
-    private ChemDataExtractorClient chemicalAnnotator;
+    private final MaterialParser materialParser;
+    private final ChemDataExtractorClient chemicalAnnotator;
 
-    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient) {
+    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient, MaterialParser materialParser) {
         if (instance == null) {
-            getNewInstance(chemspotClient);
+            synchronized (SuperconductorsParser.class) {
+                if (instance == null) {
+                    instance = new SuperconductorsParser(chemspotClient, materialParser);
+                }
+            }
         }
         return instance;
     }
 
-    private static synchronized void getNewInstance(ChemDataExtractorClient chemspotClient) {
-        instance = new SuperconductorsParser(chemspotClient);
-    }
-
     @Inject
-    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator) {
-        super(SuperconductorsModels.SUPERCONDUCTORS);
-        this.chemicalAnnotator = chemicalAnnotator;
+    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser) {
+        this(SuperconductorsModels.SUPERCONDUCTORS, chemicalAnnotator, materialParser);
         instance = this;
     }
 
-    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator) {
+    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser) {
         super(model);
         this.chemicalAnnotator = chemicalAnnotator;
+        this.materialParser = materialParser;
         instance = this;
     }
 
@@ -319,6 +320,7 @@ public class SuperconductorsParser extends AbstractParser {
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
                 superconductor.setName(clusterContent);
+                superconductor.setStructuredMaterials(materialParser.process(theTokens));
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);
