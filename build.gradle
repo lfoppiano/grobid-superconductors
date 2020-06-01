@@ -15,22 +15,15 @@ buildscript {
     }
 }
 
-
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-apply plugin: 'application'
-
-group = "org.grobid"
-
-description = """Grobid module for extraction of superconductor information from scientific related literature"""
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+/** Plugins **/
+plugins {
+    id 'java'
+    id 'application'
+    id 'maven'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
+
+
 
 repositories {
     mavenLocal()
@@ -42,14 +35,13 @@ repositories {
     flatDir {
         dirs 'localLibs'
     }
-
 }
 
-ext {
-    // treating them separately, these jars will be flattened into grobid-core.jar on installing,
-    // to avoid missing dependencies from the projects that include grobid-core (see 'jar' taskin grobid-core)
-    localLibs = []
-}
+/** Package description **/
+group = "org.grobid"
+description = """Grobid module for extraction of superconductor information from scientific related literature"""
+
+/** Dependencies **/
 
 configurations.all {
     resolutionStrategy {
@@ -135,17 +127,35 @@ configurations.all {
     }
 }
 
+/** Other configuration **/
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    //    options.compilerArgs << "-Xlint:deprecation"
+    //    options.compilerArgs << "-Xlint:unchecked"
+}
+
 sourceSets.main.resources {
     srcDirs = ["src/main/resources", "resources"]
 }
-
 
 test {
     exclude '**/**IntegrationTest**'
 }
 
+tasks.run.workingDir = rootProject.rootDir
 
-// Training configuration
+mainClassName = 'org.grobid.keyterm.service.GrobidKeytermApplication'
+
+run {
+    args = ['server', 'resources/config/config.yml']
+}
+
+
+/** Training configuration **/
 
 def trainerTasks = [
     //Training models
@@ -159,13 +169,10 @@ trainerTasks.each { taskName, mainClassName ->
     }
 }
 
-// return the default value if the property has not been specified in command line
-ext.getArg = { propName, defaultVal ->
-    return project.hasProperty(propName) ? project.getProperty(propName) : defaultVal;
-}
-
-tasks.run.workingDir = rootProject.rootDir
-
+//// return the default value if the property has not been specified in command line
+//ext.getArg = { propName, defaultVal ->
+//    return project.hasProperty(propName) ? project.getProperty(propName) : defaultVal;
+//}
 
 /*** Packaging and distribution ***/
 
@@ -207,20 +214,17 @@ artifacts {
 distZip.classifier = 'application'
 distTar.classifier = 'application'
 
+
+/** Model management **/
 task copyModels(type: Copy) {
     from "${rootDir}/resources/models"
     include "**/*.wapiti"
     into "${rootDir}/../grobid-home/models/"
 }
 
-//tasks.withType(JavaCompile) {
-//    options.compilerArgs << "-Xlint:deprecation"
-//    options.compilerArgs << "-Xlint:unchecked"
-//}
-
 
 wrapper {
-    gradleVersion "5.4.1"
+    gradleVersion "6.4.1"
 }
 
 
