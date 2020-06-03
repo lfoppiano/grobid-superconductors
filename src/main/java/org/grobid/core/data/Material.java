@@ -17,10 +17,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.containsAny;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
 import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
 
@@ -33,14 +34,15 @@ public class Material {
     private String shape;
     private String formula;
     private String doping;
-    private final List<String> resolvedFormulas = new ArrayList<>();
-    private final Map<String, List<String>> variables = new HashMap<>();
 
+    private List<String> resolvedFormulas = new ArrayList<>();
+
+    private final Map<String, List<String>> variables = new HashMap<>();
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
+
     private List<LayoutToken> layoutTokens = new ArrayList<>();
     private List<OffsetPosition> offsets = new ArrayList<>();
     private String rawTaggedValue;
-
 
     public String getName() {
         return name;
@@ -118,13 +120,17 @@ public class Material {
         offsets.add(offsetPosition);
     }
 
+    public void setResolvedFormulas(List<String> resolvedFormulas) {
+        this.resolvedFormulas = resolvedFormulas;
+    }
+
     public void addBoundingBoxes(List<BoundingBox> boundingBoxes) {
         this.boundingBoxes.addAll(boundingBoxes);
     }
 
-    public static Material resolveVariables(Material material) {
+    public static List<String> resolveVariables(Material material) {
         if (CollectionUtils.isEmpty(material.getVariables().keySet()) || isEmpty(material.getFormula())) {
-            return material;
+            return new ArrayList<>();
         }
 
         if (isEmpty(material.getFormula())) {
@@ -158,14 +164,14 @@ public class Material {
         List<String> output = new ArrayList<>();
         generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
 
-        material.getResolvedFormulas().addAll(output);
+//        material.getResolvedFormulas().addAll(output);
 //        return output.stream().map(s -> {
 //            Material material1 = new Material();
 //            material1.setFormula(s);
 //            return material1;
 //        }).collect(Collectors.toList());
 
-        return material;
+        return output;
     }
 
     public static void generatePermutations(Map<String, List<String>> input, List<String> keyList,
@@ -321,5 +327,30 @@ public class Material {
 
         json.append(" }");
         return json.toString();
+    }
+
+    /**
+     * Expand a formula in the form (A, B, C)Formula in AFormula, BFormula, CFormula ...
+     */
+    public static List<String> expandFormula(String formula) {
+
+        String regex = "^ ?\\(([A-Za-z, ]+)\\)(.*)";
+        Pattern formulaDopantPattern = Pattern.compile(regex);
+
+        Matcher m = formulaDopantPattern.matcher(formula);
+        List<String> expantedFormulas = new ArrayList<>();
+
+        if (m.find()) {
+            String dopants = m.group(1);
+            String formulaWithoutDopants = m.group(2);
+
+            String[] splittedDopants = dopants.split(",");
+
+            for (String dopant : splittedDopants) {
+                expantedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
+            }
+        }
+
+        return expantedFormulas;
     }
 }

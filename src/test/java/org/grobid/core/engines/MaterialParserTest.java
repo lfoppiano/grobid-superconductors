@@ -107,7 +107,7 @@ public class MaterialParserTest {
         // These triples made in following way: label, starting index (included), ending index (excluded)
         List<Triple<String, Integer, Integer>> labels = Arrays.asList(
             Triple.of("<shape>", 0, 1),
-            Triple.of("<name>", 1, 3)
+            Triple.of("<name>", 2, 5)
         );
 
         String result = getWapitiResult(layoutTokens, labels);
@@ -129,16 +129,12 @@ public class MaterialParserTest {
 
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
-        List<LayoutToken> layoutTokensWithoutSpaces = layoutTokens.stream()
-            .filter(token -> StringUtils.isNotBlank(token.getText()))
-            .collect(Collectors.toList());
-
         List<Triple<String, Integer, Integer>> labels = Arrays.asList(
-            Triple.of("<formula>", 0, 4),
-            Triple.of("<variable>", 5, 6),
-            Triple.of("<value>", 7, 18),
-            Triple.of("<variable>", 21, 22),
-            Triple.of("<value>", 23, 26)
+            Triple.of("<formula>", 0, 7),
+            Triple.of("<variable>", 9, 10),
+            Triple.of("<value>", 13, 29),
+            Triple.of("<variable>", 34, 35),
+            Triple.of("<value>", 38, 42)
         );
         String results = getWapitiResult(layoutTokens, labels);
 
@@ -153,21 +149,40 @@ public class MaterialParserTest {
     }
 
     @Test
+    public void testExtractResults_formulaWithDopants() throws Exception {
+        String text = "(Sr,K)Fe2As2 films";
+
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+
+        List<Triple<String, Integer, Integer>> labels = Arrays.asList(
+            Triple.of("<formula>", 0, 9),
+            Triple.of("<shape>", 10, 11)
+        );
+        String results = getWapitiResult(layoutTokens, labels);
+
+        List<Material> materials = target.extractResults(layoutTokens, results);
+
+        assertThat(materials, hasSize(1));
+        assertThat(materials.get(0).getFormula(), is("(Sr,K)Fe2As2"));
+        assertThat(materials.get(0).getShape(), is("films"));
+        assertThat(materials.get(0).getResolvedFormulas(), hasSize(2));
+        assertThat(materials.get(0).getResolvedFormulas().get(0), is("SrFe2As2"));
+        assertThat(materials.get(0).getResolvedFormulas().get(1), is("KFe2As2"));
+
+    }
+
+    @Test
     public void testExtractResults_formulaWithVariables_2() throws Exception {
         String text = "CeM m In 3+2m (M = Ir or Co; m = 0, 1) ";
 
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
-        List<LayoutToken> layoutTokensWithoutSpaces = layoutTokens.stream()
-            .filter(token -> StringUtils.isNotBlank(token.getText()))
-            .collect(Collectors.toList());
-
         List<Triple<String, Integer, Integer>> labels = Arrays.asList(
-            Triple.of("<formula>", 0, 7),
-            Triple.of("<variable>", 8, 9),
-            Triple.of("<value>", 10, 13),
-            Triple.of("<variable>", 14, 15),
-            Triple.of("<value>", 16, 19)
+            Triple.of("<formula>", 0, 10),
+            Triple.of("<variable>", 12, 13),
+            Triple.of("<value>", 15, 21),
+            Triple.of("<variable>", 23, 24),
+            Triple.of("<value>", 27, 31)
         );
         String results = getWapitiResult(layoutTokens, labels);
 
@@ -187,8 +202,8 @@ public class MaterialParserTest {
 
         List<Triple<String, Integer, Integer>> labels = Arrays.asList(
             Triple.of("<formula>", 0, 3),
-            Triple.of("<formula>", 4, 7),
-            Triple.of("<shape>", 7, 8)
+            Triple.of("<formula>", 6, 9),
+            Triple.of("<shape>", 10, 11)
         );
         String results = getWapitiResult(layoutTokens, labels);
 
@@ -214,7 +229,6 @@ public class MaterialParserTest {
     public static String getWapitiResult(List<LayoutToken> layoutTokens, List<Triple<String, Integer, Integer>> labels) {
 
         List<String> features = layoutTokens.stream()
-            .filter(token -> StringUtils.isNotBlank(token.getText()))
             .map(token -> FeaturesVectorMaterial.addFeatures(token.getText(), null).printVector())
             .collect(Collectors.toList());
 
@@ -248,10 +262,35 @@ public class MaterialParserTest {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < features.size(); i++) {
+            if (features.get(i).startsWith(" ")) {
+                continue;
+            }
             sb.append(features.get(i)).append(" ").append(labeled.get(i)).append("\n");
         }
 
         return sb.toString();
+    }
+
+    @Test
+    public void testExpandFormula() throws Exception {
+        String formula = "(Sr,K)Fe2As2";
+
+        List<String> expandFormulas = Material.expandFormula(formula);
+
+        assertThat(expandFormulas, hasSize(2));
+        assertThat(expandFormulas.get(0), is("SrFe2As2"));
+        assertThat(expandFormulas.get(1), is("KFe2As2"));
+    }
+
+    @Test
+    public void testExpandFormula2() throws Exception {
+        String formula = "(Sr , K ) Fe2As2";
+
+        List<String> expandFormulas = Material.expandFormula(formula);
+
+        assertThat(expandFormulas, hasSize(2));
+        assertThat(expandFormulas.get(0), is("SrFe2As2"));
+        assertThat(expandFormulas.get(1), is("KFe2As2"));
     }
 
     @SuppressWarnings("unchecked")

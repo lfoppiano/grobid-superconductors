@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -290,7 +291,19 @@ public class MaterialParser extends AbstractParser {
         /** Post_processing the variables-> values **/
 
         for (Material material : extracted) {
-            material = Material.resolveVariables(material);
+            List<String> resolvedFormulas = Material.resolveVariables(material);
+
+            //If there are no resolved formulas (no variable) I could still have a (A, B)C1,D2 formula type that can
+            // be expanded
+            if(isEmpty(resolvedFormulas)) {
+                resolvedFormulas.add(material.getFormula());
+            }
+
+            List<String> resolvedAndExpandedFormulas = resolvedFormulas.stream()
+                .flatMap(f -> Material.expandFormula(f).stream())
+                .collect(Collectors.toList());
+
+            material.setResolvedFormulas(resolvedAndExpandedFormulas);
             /** Shape and doping are shared properties **/
             material.setShape(shape);
             material.setDoping(doping);

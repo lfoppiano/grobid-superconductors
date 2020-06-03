@@ -44,9 +44,9 @@ public class FeaturesVectorMaterial {
     private boolean isNumberToken = false;
 
     public String printVector() {
-        if (isBlank(string)) {
-            return null;
-        }
+//        if (isBlank(string)) {
+//            return null;
+//        }
         StringBuffer res = new StringBuffer();
 
         // token string (1)
