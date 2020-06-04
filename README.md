@@ -21,9 +21,9 @@ See the [References](https://github.com/lfoppiano/grobid-superconductors#referen
 
 ### Getting started
 
-Building module requires maven and JDK 1.8 or greater.  
+Building module requires the JDK 1.8 or greater.  
 
-First install and build the latest development version of GROBID as explained by the [documentation](http://grobid.readthedocs.org).
+First, install and build the latest development version of GROBID as explained by the [documentation](http://grobid.readthedocs.org).
 
 The modules should be installed inside the grobid directory
 
