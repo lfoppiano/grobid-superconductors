@@ -142,6 +142,12 @@ public class Material {
             .filter(var -> material.getFormula().contains(var))
             .collect(Collectors.toSet());
 
+        List<String> output = new ArrayList<>();
+
+        if (containedVariables.size() == 0) {
+            return output;
+        }
+
         if (containedVariables.size() != variables.size()) {
             LOGGER.warn("While processing the variables, some are not present in the material formula and " +
                 "won't be substituted: " + SetUtils.disjunction(variables, containedVariables));
@@ -161,7 +167,6 @@ public class Material {
 //        }
 
 
-        List<String> output = new ArrayList<>();
         generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
 
 //        material.getResolvedFormulas().addAll(output);
@@ -223,7 +228,11 @@ public class Material {
                         }
                     }
                 } else {
-                    returnFormula = returnFormula.replaceFirst(variable, value);
+                    // if the variable is followed by a lowercase character, I skip the substitution
+                    if (variableIndex == formula.length() - 1
+                        || !Character.isLowerCase(formula.charAt(variableIndex + variable.length()))) {
+                        returnFormula = returnFormula.replaceFirst(variable, value);
+                    }
                 }
             }
             startSearching = variableIndex + 1;
@@ -349,6 +358,8 @@ public class Material {
             for (String dopant : splittedDopants) {
                 expantedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
             }
+        } else {
+            return Arrays.asList(formula);
         }
 
         return expantedFormulas;

@@ -23,12 +23,12 @@ public class MaterialTest {
 //        assertThat(materials.get(0).getFormula(), is("Fe0.9Cu0.1O2"));
 //        assertThat(materials.get(1).getFormula(), is("Fe0.8Cu0.2O2"));
 //        assertThat(materials.get(2).getFormula(), is("Fe0.7Cu0.3O2"));
-        Material materialOutput = Material.resolveVariables(material);
+        List<String> outputMaterials = Material.resolveVariables(material);
 
-        assertThat(materialOutput.getResolvedFormulas(), hasSize(3));
-        assertThat(materialOutput.getResolvedFormulas().get(0), is("Fe0.9Cu0.1O2"));
-        assertThat(materialOutput.getResolvedFormulas().get(1), is("Fe0.8Cu0.2O2"));
-        assertThat(materialOutput.getResolvedFormulas().get(2), is("Fe0.7Cu0.3O2"));
+        assertThat(outputMaterials, hasSize(3));
+        assertThat(outputMaterials.get(0), is("Fe0.9Cu0.1O2"));
+        assertThat(outputMaterials.get(1), is("Fe0.8Cu0.2O2"));
+        assertThat(outputMaterials.get(2), is("Fe0.7Cu0.3O2"));
     }
 
     @Test
@@ -54,21 +54,21 @@ public class MaterialTest {
 //        assertThat(materials.get(10).getFormula(), is("Fe0.7Cu0.3O2"));
 //        assertThat(materials.get(11).getFormula(), is("Fe0.7Cu0.5O2"));
 
-        Material outputMaterial = Material.resolveVariables(material);
+        List<String> outputMaterials = Material.resolveVariables(material);
 
-        assertThat(outputMaterial.getResolvedFormulas(), hasSize(12));
-        assertThat(outputMaterial.getResolvedFormulas().get(0), is("Fe0.9Cu-1O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(1), is("Fe0.9Cu-0.2O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(2), is("Fe0.9Cu0.3O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(3), is("Fe0.9Cu0.5O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(4), is("Fe0.8Cu-1O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(5), is("Fe0.8Cu-0.2O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(6), is("Fe0.8Cu0.3O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(7), is("Fe0.8Cu0.5O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(8), is( "Fe0.7Cu-1O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(9), is( "Fe0.7Cu-0.2O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(10), is("Fe0.7Cu0.3O2"));
-        assertThat(outputMaterial.getResolvedFormulas().get(11), is("Fe0.7Cu0.5O2"));
+        assertThat(outputMaterials, hasSize(12));
+        assertThat(outputMaterials.get(0), is("Fe0.9Cu-1O2"));
+        assertThat(outputMaterials.get(1), is("Fe0.9Cu-0.2O2"));
+        assertThat(outputMaterials.get(2), is("Fe0.9Cu0.3O2"));
+        assertThat(outputMaterials.get(3), is("Fe0.9Cu0.5O2"));
+        assertThat(outputMaterials.get(4), is("Fe0.8Cu-1O2"));
+        assertThat(outputMaterials.get(5), is("Fe0.8Cu-0.2O2"));
+        assertThat(outputMaterials.get(6), is("Fe0.8Cu0.3O2"));
+        assertThat(outputMaterials.get(7), is("Fe0.8Cu0.5O2"));
+        assertThat(outputMaterials.get(8), is( "Fe0.7Cu-1O2"));
+        assertThat(outputMaterials.get(9), is( "Fe0.7Cu-0.2O2"));
+        assertThat(outputMaterials.get(10), is("Fe0.7Cu0.3O2"));
+        assertThat(outputMaterials.get(11), is("Fe0.7Cu0.5O2"));
 
     }
 
@@ -100,20 +100,20 @@ public class MaterialTest {
         assertThat(output, is("PrFeAs(O1−x Fx)"));
     }
 
-    @Test
-    public void testToJson() {
-        Material material = new Material();
-
-        material.setName("Material Name");
-        material.setDoping("Doping!");
-        material.setShape("shape!");
-        material.setFormula("Cu x Fe y");
-        material.addVariable("x", Arrays.asList("1","2","3"));
-        material.addVariable("y", Arrays.asList("1","2","3"));
-
-        material = Material.resolveVariables(material);
-
-        System.out.println(material.toJson());
-    }
+//    @Test
+//    public void testToJson() {
+//        Material material = new Material();
+//
+//        material.setName("Material Name");
+//        material.setDoping("Doping!");
+//        material.setShape("shape!");
+//        material.setFormula("Cu x Fe y");
+//        material.addVariable("x", Arrays.asList("1","2","3"));
+//        material.addVariable("y", Arrays.asList("1","2","3"));
+//
+//        List<String> outputMaterials = Material.resolveVariables(material);
+//
+//        System.out.println(material.toJson());
+//    }
 
 }

@@ -295,15 +295,17 @@ public class MaterialParser extends AbstractParser {
 
             //If there are no resolved formulas (no variable) I could still have a (A, B)C1,D2 formula type that can
             // be expanded
-            if(isEmpty(resolvedFormulas)) {
+            if(isEmpty(resolvedFormulas) && StringUtils.isNotEmpty(material.getFormula())) {
                 resolvedFormulas.add(material.getFormula());
             }
 
-            List<String> resolvedAndExpandedFormulas = resolvedFormulas.stream()
-                .flatMap(f -> Material.expandFormula(f).stream())
-                .collect(Collectors.toList());
+            if(isNotEmpty(resolvedFormulas)) {
+                List<String> resolvedAndExpandedFormulas = resolvedFormulas.stream()
+                    .flatMap(f -> Material.expandFormula(f).stream())
+                    .collect(Collectors.toList());
+                material.setResolvedFormulas(resolvedAndExpandedFormulas);
+            }
 
-            material.setResolvedFormulas(resolvedAndExpandedFormulas);
             /** Shape and doping are shared properties **/
             material.setShape(shape);
             material.setDoping(doping);
