@@ -82,7 +82,7 @@ public class GrobidPDFEngine {
                     abstractTokens = BiblioItem.cleanAbstractLayoutTokens(abstractTokens);
                     Pair<String, List<LayoutToken>> abstractTokenPostProcessed = parsers.getFullTextParser().processShort(abstractTokens, doc);
                     List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
-                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
+//                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
                     outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
                 }
 
@@ -175,7 +175,7 @@ public class GrobidPDFEngine {
 
                         Pair<String, List<LayoutToken>> body = parsers.getFullTextParser().processShort(tokens, doc);
                         List<LayoutToken> restructuredTokens = body.getRight();
-                        addSpaceAtTheEnd(tokens, restructuredTokens);
+                        //addSpaceAtTheEnd(tokens, restructuredTokens);
                         List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(restructuredTokens);
 
                         if (isNotEmpty(normalisedLayoutTokens)) {
@@ -217,7 +217,7 @@ public class GrobidPDFEngine {
                 Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShort(tokens, doc);
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
-                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
+//                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
                     outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
                 }
             }
@@ -367,7 +367,7 @@ public class GrobidPDFEngine {
         }
 
         //De-hypenisation and converting break lines with spaces.
-        List<LayoutToken> bodyLayouts = LayoutTokensUtil.dehyphenize(layoutTokens)
+        List<LayoutToken> bodyLayouts = layoutTokens
             .stream()
             .map(m -> {
                 m.setText(StringUtils.replace(m.getText(), "\r\n", " "));
