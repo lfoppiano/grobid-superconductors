@@ -1268,10 +1268,10 @@ var grobid = (function ($) {
         ]
 
         var examples_materials = [
-            "polycristalline Metadiboride Mgb 2 thin film",
-            "polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42",
-            "crystal structure of (Sr, Na)Fe 2 As 2",
-            "hole-doped La1−x SrxOFeAs compound"
+            "hole-doped La1−x SrxOyFe1-yAs compound with (x = 0.1, 0.2 and 0.3 and y = 0.1, 0.4 and 0.5)",
+            "polycrystalline samples in the range of 0 < x < 0.42",
+            "(Sr, Na)Fe 2 As 2 thin wire",
+            "hole-doped La1−x SrxOFeAs with x = 0.2, 0.3 and 0.6"
         ]
     }
 
