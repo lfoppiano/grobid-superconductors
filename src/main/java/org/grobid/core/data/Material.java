@@ -166,8 +166,11 @@ public class Material {
 //            }
 //        }
 
-
-        generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
+        try {
+            generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
+        } catch (NumberFormatException e) {
+            LOGGER.warn("Cannot replace variables " + Arrays.toString(variables.toArray()));
+        }
 
 //        material.getResolvedFormulas().addAll(output);
 //        return output.stream().map(s -> {
@@ -210,7 +213,8 @@ public class Material {
             Integer variableIndex = formula.indexOf(variable, startSearching);
 
             if (variableIndex > -1) {
-                if (formula.startsWith("-", variableIndex - 1)) {
+                if (formula.startsWith("-", variableIndex - 1)
+                    || formula.startsWith("\u2212", variableIndex - 1)) {
                     Integer endSearch = variableIndex - 1;
                     while (Character.isDigit(formula.charAt(endSearch - 1))) {
                         endSearch = endSearch - 1;
@@ -219,10 +223,10 @@ public class Material {
                         String number = formula.substring(endSearch, variableIndex - 1);
                         BigDecimal operation = new BigDecimal(number).subtract(new BigDecimal(value));
                         operation.setScale(2, RoundingMode.HALF_UP);
-                        returnFormula = returnFormula.replaceFirst(number + "-" + variable, String.valueOf(operation.doubleValue()));
+                        returnFormula = returnFormula.replaceFirst(number + formula.charAt(variableIndex - 1) + variable, String.valueOf(operation.doubleValue()));
                     } else {
-                        if (value.startsWith("-")) {
-                            returnFormula = returnFormula.replaceFirst("-" + variable, value.substring(1));
+                        if (value.startsWith("-") || value.startsWith("\u2212")) {
+                            returnFormula = returnFormula.replaceFirst(formula.charAt(variableIndex - 1) + variable, value.substring(1));
                         } else {
                             returnFormula = returnFormula.replaceFirst(variable, value);
                         }
