@@ -1,6 +1,7 @@
 package org.grobid.core.engines;
 
 import org.easymock.EasyMock;
+import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.chemDataExtractor.Span;
 import org.grobid.core.layout.LayoutToken;
@@ -31,11 +32,7 @@ public class SuperconductorsParserTest {
     @Before
     public void setUp() throws Exception {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
-
-        LibraryLoader.load();
-//        target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient);
-
-        target = new SuperconductorsParser(SuperconductorsModels.SUPERCONDUCTORS, mockChemspotClient);
+        target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient);
     }
 
     @Test
