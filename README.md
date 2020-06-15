@@ -1,27 +1,41 @@
 # Grobid superconductors module
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-![Java CI](https://github.com/lfoppiano/grobid-superconductors/workflows/Java%20CI/badge.svg)
 
 __Work in progress.__
 
-The goal of this GROBID module is to identify and extract entities related to superconductors domain from scientific literature. 
-In particular, the goal is to extract superconductors material and their properties, such a Critical Temperature (Tc) 
-and any expression or variation, Critical pressure, material name an class.
+The goal of this GROBID module is to identify and extract and link entities and properties within from superconductors-related scientific literature. 
+In particular, the goal is to extract superconductors material and their properties, such a Critical Temperature (Tc) and any expression or variation, Critical pressure, material name and class.
 
-As the other GROBID models, the module relies only on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
+As the others GROBID models, the module relies on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
 
-![GROBID superconductors_screenshot](resources/web/supercuration/docs/images/grobid-superconductors-web-home.png)
+The linking is implemented as Python library, you can find the code in [here](./resources/web/linking). 
+
+The following screenshots show the end to end result, also called [Supercuration](./resources/web/supercuration) (Superconductors Curation) is an advanced interface including the linking module on top of the extrated entities: 
+
+![GROBID superconductors_screenshot](./resources/web/supercuration/docs/images/grobid-superconductors-web-home.png)
 
 and provides on-pdf annotations: 
 
-![GROBID superconductors_screenshot](resources/web/supercuration/docs/images/grobid-superconductors-web-home-2.png) 
+![GROBID superconductors_screenshot](./resources/web/supercuration/docs/images/grobid-superconductors-web-home-2.png) 
 
 See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.    
 
-### Getting started
+The [web](./resources/web) project contains also other utilities. 
 
-Building module requires maven and JDK 1.8 or greater.  
+### Output databases
+
+The output database can be easily created using the [Extraction process](./resources/web/process) on a set of PDFs. 
+
+Example of database output, organised by dates, can be found [here](./resources/dataset/database): 
+    
+ - [500-papers](./resources/dataset/database/500-papers) is the output from 500 papers from American Institute of Physics (AIP), American Physical Society (APS) and Institute of Physics (IOP). They were automatically selected using keywords relative to the superconductors domain such as 'tc', 'superconductivity'. 
+    
+ - [IOP-0953-2048](./resources/dataset/database/IOP-0953-2048) contains the output obtained processing the journal ``IOP - Superconductors science and technology`` 
+
+## Getting started
+
+This module requires JDK 1.8 or greater.  
 
 First install and build the latest development version of GROBID as explained by the [documentation](http://grobid.readthedocs.org).
 
@@ -69,6 +83,8 @@ for example:
 
 ## Accuracy
 
+### Extraction (Sequence labelling task)
+
 Evaluation made on the 05/01/2020 using 114 papers.
 The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds). 
 We also indicate the best and worst results over the 10 folds in the complete result page.  
@@ -86,6 +102,17 @@ We also indicate the best and worst results over the 10 folds in the complete re
 
 All evaluation measures recorded over time, are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
 See [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations. 
+
+### End to end evaluation (Extraction + Linking)
+
+Corpus of 500 PDF papers from American Institute of Physics (AIP), 
+American Physical Society (APS) and Institute of Physics (IOP). 
+Results are approximate, they are calculated based on manual correction on the output data: 
+
+
+Total links|	Correct links|	Wrong links|	Error rate|	Precision|	Recall|	F1-score|
+|---------------|---------------|---------------|---------------|---------------|---------------|---------------|
+597|	441|	156|	26.13|	73.86|	66.33|	69.90|
 
 ## Training and evaluation
 
@@ -270,7 +297,7 @@ Contact: Luca Foppiano (FOPPIANO.Luca __AT__ nims.go.jp)
 
 ## References
 
-The system is described in the following articles (the latest on top): 
+We described the framework around the system in the following articles (the latest on top): 
 
 - "Proposal for Automatic Extraction of Superconductors properties from scientific literature": [PDF](http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3)
 ```
