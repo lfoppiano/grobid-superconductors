@@ -1,10 +1,18 @@
 package org.grobid.core.features;
 
 import org.apache.commons.lang3.StringUtils;
+import org.grobid.core.engines.SuperconductorsModels;
+import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
+import org.grobid.core.engines.label.TaggingLabel;
+import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.TextUtilities;
 
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -12,7 +20,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * Class for features used for superconductor identification in raw texts such as scientific articles
  * and patent descriptions.
  */
-public class FeaturesVectorSuperconductors {
+public class FeaturesVectorEntityLinker {
     public LayoutToken token = null;    // just the reference value, not a feature
 
     public String string = null; // lexical feature
@@ -20,19 +28,10 @@ public class FeaturesVectorSuperconductors {
 
     public String capitalisation = null;// one of INITCAP, ALLCAPS, NOCAPS
     public String digit;                // one of ALLDIGIT, CONTAINDIGIT, NODIGIT
-    public boolean singleChar = false;
 
     // one of NOPUNCT, OPENBRACKET, ENDBRACKET, DOT, COMMA, HYPHEN, QUOTE, PUNCT (default)
     // OPENQUOTE, ENDQUOTE
     public String punctType = null;
-    public String fontStatus = null; // one of NEWFONT, SAMEFONT
-    public String fontSize = null; // one of HIGHERFONT, SAMEFONTSIZE, LOWERFONT
-    public String fontStyle = null;   // one of BASELINE (default), SUPERSCRIPT, SUBSCRIPT
-
-    public boolean bold = false;
-    public boolean italic = false;
-
-    public String chemicalCompound = null;
 
     public String shadowNumber = null; // Convert digits to “0”
 
@@ -43,7 +42,7 @@ public class FeaturesVectorSuperconductors {
 
     public String wordShapeTrimmed = null;
 
-    private boolean isNumberToken = false;
+    public String entityType = null;
 
     public String printVector() {
         if (isBlank(string)) {
@@ -78,12 +77,6 @@ public class FeaturesVectorSuperconductors {
         // digit information (1)
         res.append(" " + digit);
 
-        // character information (1)
-        if (singleChar)
-            res.append(" 1");
-        else
-            res.append(" 0");
-
         // punctuation information (1)
         res.append(" " + punctType); // in case the token is a punctuation (NO otherwise)
 
@@ -99,20 +92,8 @@ public class FeaturesVectorSuperconductors {
         // word shape trimmed
         res.append(" " + wordShapeTrimmed);
 
-        //Font status
-        res.append(" " + fontStatus);
-
-        //Font size
-        res.append(" " + fontSize);
-
-        res.append(" " + bold);
-
-        res.append(" " + italic);
-
-        res.append(" " + fontStyle);
-
-        // value returned by a chemical recognitor
-        res.append(" " + chemicalCompound);
+        // entity type
+        res.append(" " + entityType);
 
         // label - for training data (1)
         if (label != null)
@@ -126,22 +107,14 @@ public class FeaturesVectorSuperconductors {
     /**
      * Add the features for the chemical entity extraction model.
      */
-    public static FeaturesVectorSuperconductors addFeatures(LayoutToken token,
-                                                            String label,
-                                                            LayoutToken previousToken,
-                                                            String compoundType) {
+    public static FeaturesVectorEntityLinker addFeatures(String token, String label, String entityType) {
         FeatureFactory featureFactory = FeatureFactory.getInstance();
 
-        FeaturesVectorSuperconductors featuresVector = new FeaturesVectorSuperconductors();
-        featuresVector.token = token;
-        String string = token.getText();
+        FeaturesVectorEntityLinker featuresVector = new FeaturesVectorEntityLinker();
+        String string = token;
         featuresVector.string = string;
         featuresVector.label = label;
 
-
-        if (string.length() == 1) {
-            featuresVector.singleChar = true;
-        }
 
         if (featureFactory.test_all_capital(string))
             featuresVector.capitalisation = "ALLCAPS";
@@ -171,56 +144,29 @@ public class FeaturesVectorSuperconductors {
             featuresVector.punctType = "COMMA";
         } else if (string.equals("-") || string.equals("−") || string.equals("–")) {
             featuresVector.punctType = "HYPHEN";
-        } else if (string.equals("\"") || string.equals("\'") || string.equals("`")) {
+        } else if (string.equals("\"") || string.equals("'") || string.equals("`")) {
             featuresVector.punctType = "QUOTE";
         }
 
         //DEFAULTS
-        if (featuresVector.capitalisation == null)
-            featuresVector.capitalisation = "NOCAPS";
-
-        if (featuresVector.digit == null)
-            featuresVector.digit = "NODIGIT";
-
         if (featuresVector.punctType == null)
             featuresVector.punctType = "NOPUNCT";
 
-        if (token.isBold())
-            featuresVector.bold = true;
-
-        if (token.isItalic())
-            featuresVector.italic = true;
-
-        if (StringUtils.equals(previousToken.getFont(), token.getFont())) {
-            featuresVector.fontStatus = "SAMEFONT";
-        } else {
-            featuresVector.fontStatus = "DIFFERENTFONT";
-        }
-
-        if (previousToken.fontSize < token.fontSize) {
-            featuresVector.fontSize = "HIGHERFONT";
-        } else if (previousToken.fontSize == token.fontSize) {
-            featuresVector.fontSize = "SAMEFONTSIZE";
-        } else {
-            featuresVector.fontSize = "LOWERFONT";
-        }
-
-        if(token.isSuperscript()) {
-            featuresVector.fontStyle = "SUPERSCRIPT";
-        } else if (token.isSubscript()) {
-            featuresVector.fontStyle = "SUBSCRIPT";
-        } else {
-            featuresVector.fontStyle = "BASELINE";
-        }
-
         featuresVector.shadowNumber = TextUtilities.shadowNumbers(string);
 
+        System.out.println(string);
         featuresVector.wordShape = TextUtilities.wordShape(string);
 
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
 
-        // Chemical compound
-        featuresVector.chemicalCompound = compoundType;
+//        Optional<String> first = token.getLabels().stream()
+//            .filter(taggingLabel -> taggingLabel.getGrobidModel().equals(SuperconductorsModels.SUPERCONDUCTORS))
+//            .map(TaggingLabel::getLabel)
+//            .findFirst();
+//
+//        // entity type
+//        featuresVector.entityType = first.orElse(TaggingLabels.OTHER_LABEL);
+        featuresVector.entityType = entityType;
 
         return featuresVector;
     }

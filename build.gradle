@@ -159,7 +159,8 @@ run {
 
 def trainerTasks = [
     //Training models
-    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer"
+    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer",
+    "train_entityLinker": "org.grobid.trainer.EntityLinkerTrainer"
 ]
 
 trainerTasks.each { taskName, mainClassName ->
@@ -182,11 +183,11 @@ task mainJar(type: ShadowJar, group: 'onejar') {
     zip64 true
     from sourceSets.main.output
     mergeServiceFiles()
-    from {
-        project.configurations.compile.collect {
-            it.isDirectory() ? [] : localLibs.contains(it.getName()) ? zipTree(it) : []
-        }
-    }
+//    from {
+//        project.configurations.compile.collect {
+//            it.isDirectory() ? [] : localLibs.contains(it.getName()) ? zipTree(it) : []
+//        }
+//    }
 }
 
 shadowJar {

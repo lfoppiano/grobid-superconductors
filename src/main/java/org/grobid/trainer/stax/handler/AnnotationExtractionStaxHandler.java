@@ -3,6 +3,7 @@ package org.grobid.trainer.stax.handler;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
