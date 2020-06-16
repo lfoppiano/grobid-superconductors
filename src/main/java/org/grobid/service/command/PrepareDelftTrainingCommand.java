@@ -5,12 +5,15 @@ import io.dropwizard.setup.Bootstrap;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
+import org.grobid.core.GrobidModel;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.grobid.trainer.MaterialTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
+import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +64,15 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .required(false)
             .help("Input path directory. ");
 
+        subparser.addMutuallyExclusiveGroup()
+            .addArgument("-m", "--model")
+            .dest(MODEL_NAME)
+            .type(String.class)
+            .choices(Arrays.asList("superconductors", "material"))
+            .required(false)
+            .setDefault("superconductors")
+            .help("Model data to use. ");
+
     }
 
     @Override
@@ -84,27 +96,33 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         File inputPath = namespace.get(INPUT_PATH);
         File delftPath = namespace.get(DELFT_PATH);
         File outputPath = namespace.get(OUTPUT_PATH);
+        String modelName = namespace.get(MODEL_NAME);
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
 
-        String filename = File.separator + SuperconductorsModels.SUPERCONDUCTORS.getModelName()
-            + "-" + formatter.format(date) + ".train";
+        GrobidModel model = SuperconductorsModels.SUPERCONDUCTORS;
+        Trainer trainer =  new SuperconductorsTrainer();
+
+        if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
+            model = SuperconductorsModels.MATERIAL;
+            trainer = new MaterialTrainer();
+        }
+
+        String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
 
         File destination = null;
         if (outputPath != null) {
             destination = Paths.get(outputPath.getAbsolutePath(), filename).toFile();
         } else {
             destination = Paths.get(delftPath.getAbsolutePath(), "data", "sequenceLabelling",
-                "grobid", SuperconductorsModels.SUPERCONDUCTORS.getModelName(), filename).toFile();
+                "grobid", modelName, filename).toFile();
         }
 
         if (inputPath == null) {
-            inputPath = GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS);
+            inputPath = GrobidProperties.getCorpusPath(new File("/"), model);
             System.out.println("Input directory was not provided, getting the training data from " + inputPath.getAbsolutePath());
         }
-
-        SuperconductorsTrainer trainer = new SuperconductorsTrainer();
         trainer.createCRFPPData(inputPath, destination);
 
         System.out.println("Writing training data for delft to " + destination.toString());
