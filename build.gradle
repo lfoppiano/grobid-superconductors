@@ -207,7 +207,7 @@ jar {
 }
 
 artifacts {
-//    archives shadowJar
+    archives shadowJar
     archives mainJar
 }
 
