@@ -29,7 +29,15 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
 
     private StringBuilder accumulator;
 
-    private boolean insideLink = false;
+    /**
+     * Indicate the type of link that has been identified already, if any:
+     * LINK_SOURCE = a source have been already identified
+     * LINK_DESTINATION = a destination has been already identified
+     * null = I'm outside any linking
+     */
+    private static final String LINK_SOURCE = "source";
+    private static final String LINK_DESTINATION = "destination";
+    private String insideLink = null;
     private String link_id = null;
 
     private List<Triple<String, String, String>> labeled = new ArrayList<>();
@@ -60,8 +68,9 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
         final String localName = reader.getName().getLocalPart();
 
         if (topTag.equals(localName)) {
-            link_id = null;
             //At every paragraph I start from scratch
+            link_id = null;
+            insideLink = null;
 
         } else if (sourceLabel.equals(localName)) {
             //e.g. tcValue
@@ -85,7 +94,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
                     if (!link_id.equals(destinationId)) {
                         revertPreviousLabelPointingRight();
                         link_id = destinationId;
-                        insideLink = false;
+                        insideLink = null;
                     }
                 }
             }
@@ -134,27 +143,36 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
     public void onEndElement(XMLStreamReader2 reader) {
         final String localName = reader.getName().getLocalPart();
         if (topTag.equals(localName)) {
-            if (link_id != null) {
+            if (insideLink != null || link_id != null) {
                 // Cleanup the mess
                 revertPreviousLabelPointingRight();
+                link_id = null;
+                insideLink = null;
             }
 
             writeData();
             labeled.add(new ImmutableTriple<>("\n", "", ""));
-            link_id = null;
+
         } else if (sourceLabel.equals(localName)) {
             if (link_id == null) {
                 //there is not ptr, so I should exclude this
             } else {
-                if (insideLink) {
-                    // the material is coming before - link to the left
-                    writeData("link_left", localName);
-                    insideLink = false;
-                    link_id = null;
+                if (isNotEmpty(insideLink)) {
+                    if (LINK_DESTINATION.equals(insideLink)) {
+                        // the material is coming before - link to the left
+                        writeData("link_left", localName);
+                        insideLink = null;
+                        link_id = null;
+                    } else {
+                        // the tcValue is coming before, I can't link them, I cancel the previous link and link to the right
+                        revertPreviousLabelPointingRight();
+                        writeData("link_right", localName);
+                        insideLink = LINK_SOURCE;
+                    }
                 } else {
                     // this is a promise that I will obtain the other end of the link - if Not I will wipe it out
-                    writeData("link_right_" + link_id, localName);
-                    insideLink = true;
+                    writeData("link_right", localName);
+                    insideLink = LINK_SOURCE;
                 }
             }
 
@@ -165,15 +183,23 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
             if (link_id == null) {
                 //ignore
             } else {
-                if (insideLink) {
-                    // the tcValue is coming before - link to the left
-                    writeData("link_left", localName);
-                    link_id = null;
-                    insideLink = false;
+                if (insideLink != null) {
+                    if (LINK_SOURCE.equals(insideLink)) {
+                        // the tcValue is coming before - link to the left
+                        writeData("link_left", localName);
+                        link_id = null;
+                        insideLink = null;
+                    } else {
+                        //the material is coming before - I can't connect, so I remove the previous annotation,
+                        // and link right
+                        revertPreviousLabelPointingRight();
+                        writeData("link_right", localName);
+                        insideLink = LINK_DESTINATION;
+                    }
                 } else {
                     // this is a promise that I will obtain the other end of the link - if Not I will wipe it out
-                    writeData("link_right_" + link_id, localName);
-                    insideLink = true;
+                    writeData("link_right", localName);
+                    insideLink = LINK_DESTINATION;
                 }
             }
 
