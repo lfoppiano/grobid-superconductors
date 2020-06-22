@@ -695,7 +695,7 @@ public class AggregatedProcessing {
                 previous = current;
             } else {
                 if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
-                    System.out.println("Overlapping. " + current.getText() + " <" + current.getType() + "> with " + previous.getText() + " <" + previous.getType() + ">");
+                    LOGGER.debug("Overlapping. " + current.getText() + " <" + current.getType() + "> with " + previous.getText() + " <" + previous.getType() + ">");
 
                     if (current.getType().equals(previous.getType())) {
                         // Type is the same, I take the largest one

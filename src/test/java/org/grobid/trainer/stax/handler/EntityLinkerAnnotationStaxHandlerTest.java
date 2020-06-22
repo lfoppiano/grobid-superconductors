@@ -38,7 +38,7 @@ public class EntityLinkerAnnotationStaxHandlerTest {
 
         List<Triple<String, String, String>> labeled = target.getLabeled();
 
-        labeled.stream().map(Triple::toString).forEach(System.out::println);
+//        labeled.stream().map(Triple::toString).forEach(System.out::println);
 
         assertThat(target.getLabeled(), hasSize(62));
 

@@ -348,7 +348,7 @@ public class AggregatedProcessingTest {
 
         String s = target.toFormattedString(layoutTokens);
 
-        System.out.println(s);
+        assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
     }
 
     public void testNLP4j() throws Exception {

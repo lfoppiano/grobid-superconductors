@@ -47,7 +47,7 @@ public class EntityLinkerTrainer extends AbstractTrainer {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entity_linker", "superconductors") + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entityLinker", "superconductors") + File.separator + "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -121,6 +121,7 @@ public class EntityLinkerTrainer extends AbstractTrainer {
 
                     token = UnicodeUtil.normaliseTextAndRemoveSpaces(token);
                     output.append(FeaturesVectorEntityLinker.addFeatures(token, label, entity_type).printVector());
+                    output.append("\n");
                 }
 
                 writer.write(output.toString());

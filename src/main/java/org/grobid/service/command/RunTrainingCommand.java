@@ -12,6 +12,7 @@ import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
+import org.grobid.trainer.EntityLinkerTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
 import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
@@ -27,21 +28,23 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static net.sourceforge.argparse4j.impl.Arguments.storeTrue;
+
 public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RunTrainingCommand.class);
+
     private final static String ACTION = "action";
     private final static String PRINT = "print";
     private final static String RECURSIVE = "recursive";
-    private final static String FOLD_TYPE = "foldType";
     private final static String FOLD_COUNT = "foldCount";
     private final static String MODEL_NAME = "model";
-    private final static String MAX_PAPER_NUMBER = "maxPaperNumber";
+    private static final String SPLIT = "split";
 
     private final static List<String> ACTIONS = Arrays.asList("train", "nfold", "train_eval", "holdout");
 
 
     public RunTrainingCommand() {
-        super("training", "Training / Evaluate the model ");
+        super("training", "Training / Evaluate the model using different approaches. ");
     }
 
     @Override
@@ -68,13 +71,14 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .type(Boolean.class)
             .required(false)
             .setDefault(Boolean.FALSE)
+            .action(storeTrue())
             .help("Print on screen instead of writing on a log file");
 
-        subparser.addArgument("-pn", "--max-paper-number")
-            .dest(MAX_PAPER_NUMBER)
-            .type(Integer.class)
-            .required(false)
-            .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
+//        subparser.addArgument("-r", "--recursive")
+//            .dest(RECURSIVE)
+//            .type(Integer.class)
+//            .required(false)
+//            .help("Limit the training to a certain number of papers (useful to record training improvement when increasing training data)");
 
         subparser.addArgument("-fc", "--fold-count")
             .dest(FOLD_COUNT)
@@ -83,13 +87,12 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .setDefault(10)
             .help("Specify if the number of fold in n-fold cross-validation. ");
 
-        /*subparser.addArgument("-ft", "--fold-type")
-            .dest(FOLD_TYPE)
-            .choices(Arrays.asList(FOLD_TYPE_PARAGRAPH, FOLD_TYPE_DOCUMENT))
-            .type(String.class)
+        subparser.addArgument("-s", "--split")
+            .dest(SPLIT)
+            .type(Double.class)
             .required(false)
-            .setDefault(FOLD_TYPE_PARAGRAPH)
-            .help("Specify if the fold (how a training sample is defined) should be by paragraph or by document. ");*/
+            .setDefault(0.8f)
+            .help("Specify the split rate between training and evaluation data. Used only in case of train_eval. Default: 0.8. ");
     }
 
     @Override
@@ -115,65 +118,65 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
         String modelName = namespace.get(MODEL_NAME);
         String action = namespace.get(ACTION);
         Boolean print = namespace.get(PRINT);
-        Integer maxPaperNumber = namespace.get(MAX_PAPER_NUMBER);
-        String foldType = namespace.get(FOLD_TYPE);
+        Float split = namespace.get(SPLIT);
         Integer foldCount = namespace.get(FOLD_COUNT);
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        Trainer trainer = null;
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            Trainer trainer = null;
-
-//            if (foldType.equals(FOLD_TYPE_PARAGRAPH)) {
             trainer = new SuperconductorsTrainer();
-//            } else {
-//                trainer = new SuperconductorsTrainerByDocuments();
-//            }
-            String name = "";
-            String report = null;
-            switch (action) {
-                case "train":
-                    AbstractTrainer.runTraining(trainer);
-                    break;
-                case "nfold":
-                    report = AbstractTrainer.runNFoldEvaluation(trainer, foldCount, true);
-                    name = foldCount + "-fold-cross-validation";
-                    break;
-                case "train_eval":
-                    report = AbstractTrainer.runSplitTrainingEvaluation(trainer, 0.8);
-                    name = "80-20-evaluation";
-                    break;
-                case "holdout":
-                    AbstractTrainer.runTraining(trainer);
-                    report = AbstractTrainer.runEvaluation(trainer, true);
-                    name = "holdout-evaluation";
-                    break;
-                default:
-                    System.out.println("No correct action were supplied. Please provide beside " + Arrays.toString(ACTIONS.toArray()));
-                    break;
-
-            }
-            if (report != null) {
-                if (!print) {
-                    if (!Files.exists(Paths.get("logs"))) {
-                        Files.createDirectory(Paths.get("logs"));
-                    }
-
-                    try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/superconductors-" + name
-                        + "-" + formatter.format(date) + ".txt"))) {
-                        writer.write(report);
-                        writer.write("\n");
-                    } catch (IOException e) {
-                        throw new GrobidException("Error when saving evaluation results into files. ", e);
-                    }
-                } else {
-                    System.out.println(report);
-                }
-            }
+        } else if (SuperconductorsModels.ENTITY_LINKER.getModelName().equals(modelName)) {
+            trainer = new EntityLinkerTrainer();
         } else {
+            System.out.println("The model name " + modelName + " does not correspond to any model. ");
             System.out.println(super.getDescription());
+            System.exit(-1);
         }
+
+        String name = "";
+        String report = null;
+        switch (action) {
+            case "train":
+                AbstractTrainer.runTraining(trainer);
+                break;
+            case "nfold":
+                report = AbstractTrainer.runNFoldEvaluation(trainer, foldCount, true);
+                name = foldCount + "-fold-cross-validation";
+                break;
+            case "train_eval":
+                report = AbstractTrainer.runSplitTrainingEvaluation(trainer, Double.valueOf(split));
+                name = "train_eval-with-split-" + split;
+                break;
+            case "holdout":
+                AbstractTrainer.runTraining(trainer);
+                report = AbstractTrainer.runEvaluation(trainer, true);
+                name = "holdout-evaluation";
+                break;
+            default:
+                System.out.println("No correct action were supplied. Please provide beside " + Arrays.toString(ACTIONS.toArray()));
+                break;
+
+        }
+        if (report != null) {
+            if (!print) {
+                if (!Files.exists(Paths.get("logs"))) {
+                    Files.createDirectory(Paths.get("logs"));
+                }
+
+                try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("logs/" + modelName + "-" + name
+                    + "-" + formatter.format(date) + ".txt"))) {
+                    writer.write(report);
+                    writer.write("\n");
+                } catch (IOException e) {
+                    throw new GrobidException("Error when saving evaluation results into files. ", e);
+                }
+            } else {
+                System.out.println(report);
+            }
+        }
+
 
     }
 }

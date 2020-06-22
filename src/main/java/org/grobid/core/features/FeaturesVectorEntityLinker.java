@@ -5,7 +5,9 @@ import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
+import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.TextUtilities;
 
 import java.util.Optional;
@@ -93,7 +95,7 @@ public class FeaturesVectorEntityLinker {
         res.append(" " + wordShapeTrimmed);
 
         // entity type
-        res.append(" " + entityType);
+        res.append(" " + GenericTaggerUtils.getPlainLabel(entityType));
 
         // label - for training data (1)
         if (label != null)
@@ -154,7 +156,7 @@ public class FeaturesVectorEntityLinker {
 
         featuresVector.shadowNumber = TextUtilities.shadowNumbers(string);
 
-        System.out.println(string);
+//        System.out.println(string);
         featuresVector.wordShape = TextUtilities.wordShape(string);
 
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
