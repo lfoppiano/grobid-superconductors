@@ -1,20 +1,10 @@
 package org.grobid.core.features;
 
-import org.apache.commons.lang3.StringUtils;
-import org.grobid.core.engines.SuperconductorsModels;
-import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
-import org.grobid.core.engines.label.TaggingLabel;
-import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.TextUtilities;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -59,16 +49,16 @@ public class FeaturesVectorEntityLinker {
         res.append(" " + string.toLowerCase());
 
         // prefix (4)
-        res.append(" ").append(TextUtilities.prefix(string, 1));
-        res.append(" ").append(TextUtilities.prefix(string, 2));
-        res.append(" ").append(TextUtilities.prefix(string, 3));
-        res.append(" ").append(TextUtilities.prefix(string, 4));
-
-        // suffix (4)
-        res.append(" ").append(TextUtilities.suffix(string, 1));
-        res.append(" ").append(TextUtilities.suffix(string, 2));
-        res.append(" ").append(TextUtilities.suffix(string, 3));
-        res.append(" ").append(TextUtilities.suffix(string, 4));
+//        res.append(" ").append(TextUtilities.prefix(string, 1));
+//        res.append(" ").append(TextUtilities.prefix(string, 2));
+//        res.append(" ").append(TextUtilities.prefix(string, 3));
+//        res.append(" ").append(TextUtilities.prefix(string, 4));
+//
+//        // suffix (4)
+//        res.append(" ").append(TextUtilities.suffix(string, 1));
+//        res.append(" ").append(TextUtilities.suffix(string, 2));
+//        res.append(" ").append(TextUtilities.suffix(string, 3));
+//        res.append(" ").append(TextUtilities.suffix(string, 4));
 
         // capitalisation (1)
         if (digit.equals("ALLDIGIT"))
@@ -86,13 +76,13 @@ public class FeaturesVectorEntityLinker {
         //res.append(" " + string.length());
 
         // shadow number
-        res.append(" " + shadowNumber);
+//        res.append(" " + shadowNumber);
 
         // word shape
         res.append(" " + wordShape);
 
         // word shape trimmed
-        res.append(" " + wordShapeTrimmed);
+//        res.append(" " + wordShapeTrimmed);
 
         // entity type
         res.append(" " + GenericTaggerUtils.getPlainLabel(entityType));
@@ -156,7 +146,6 @@ public class FeaturesVectorEntityLinker {
 
         featuresVector.shadowNumber = TextUtilities.shadowNumbers(string);
 
-//        System.out.println(string);
         featuresVector.wordShape = TextUtilities.wordShape(string);
 
         featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);

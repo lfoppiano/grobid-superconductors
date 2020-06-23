@@ -10,6 +10,16 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         super();
     }
 
+    //Entity Linker
+    public static final String ENTITY_LINKER_RIGHT_ATTACHMENT_LABEL = "<link_right>";
+    public static final String ENTITY_LINKER_LEFT_ATTACHMENT_LABEL = "<link_left>";
+
+    public static final TaggingLabel ENTITY_LINKER_RIGHT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER, ENTITY_LINKER_RIGHT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_LEFT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER, ENTITY_LINKER_LEFT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_OTHER = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER, OTHER_LABEL);
+
+
+    //Superconductors
     public static final String SUPERCONDUCTORS_CLASS_LABEL = "<class>";
     public static final String SUPERCONDUCTORS_MATERIAL_LABEL = "<material>";
     public static final String SUPERCONDUCTORS_SAMPLE_LABEL = "<sample>";
@@ -32,6 +42,7 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
 
     public static final TaggingLabel SUPERCONDUCTORS_OTHER = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, OTHER_LABEL);
 
+    // Abbreviation
     private static final String ABBREVIATION_NAME_LABEL = "<acronym>";
 
     public static final TaggingLabel ABBREVIATION_VALUE_NAME = new TaggingLabelImpl(SuperconductorsModels.ABBREVIATIONS, ABBREVIATION_NAME_LABEL);
@@ -53,6 +64,10 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         //Abbreviation
         register(ABBREVIATION_VALUE_NAME);
         register(ABBREVIATION_OTHER);
+
+        //Entity linker
+        register(ENTITY_LINKER_RIGHT_ATTACHMENT);
+        register(ENTITY_LINKER_LEFT_ATTACHMENT);
 
     }
 }

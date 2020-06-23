@@ -31,7 +31,7 @@ public class EntityLinkerTrainer extends AbstractTrainer {
         super(SuperconductorsModels.ENTITY_LINKER);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
-        window = 20;
+        window = 40;
     }
 
     /**
