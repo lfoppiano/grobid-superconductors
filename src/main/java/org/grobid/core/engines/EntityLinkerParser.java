@@ -121,7 +121,7 @@ public class EntityLinkerParser extends AbstractParser {
 //
 //    }
 
-    public List<Superconductor> process(List<LayoutToken> layoutTokens) {
+    public List<Superconductor> process(List<LayoutToken> layoutTokens, List<Superconductor> annotations) {
 
         List<Superconductor> entities = new ArrayList<>();
 
@@ -146,8 +146,11 @@ public class EntityLinkerParser extends AbstractParser {
             return new ArrayList<>();
 
         try {
+            List<Span> mentions = annotations.stream().map(a-> new Span(a.getOffsetStart(), a.getOffsetEnd(), a.getType())).collect(Collectors.toList());
+            List<String> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
+
             // string representation of the feature matrix for CRF lib
-            String ress = addFeatures(layoutTokensNormalised);
+            String ress = addFeatures(layoutTokensNormalised, listAnnotations);
 
             if (StringUtils.isEmpty(ress))
                 return entities;
@@ -173,7 +176,7 @@ public class EntityLinkerParser extends AbstractParser {
     /**
      * Extract all occurrences of measurement/quantities from a simple piece of text.
      */
-    public List<Superconductor> process(String text) {
+    public List<Superconductor> process(String text, List<Superconductor> annotations) {
         if (isBlank(text)) {
             return new ArrayList<>();
         }
@@ -192,24 +195,18 @@ public class EntityLinkerParser extends AbstractParser {
         if (isEmpty(tokens)) {
             return new ArrayList<>();
         }
-        return process(tokens);
+        return process(tokens, annotations);
     }
 
 
     @SuppressWarnings({"UnusedParameters"})
-    private String addFeatures(List<LayoutToken> tokens) {
+    private String addFeatures(List<LayoutToken> tokens, List<String> annotations) {
         StringBuilder result = new StringBuilder();
         try {
-            LayoutToken previous = new LayoutToken();
             ListIterator<LayoutToken> it = tokens.listIterator();
             while (it.hasNext()) {
                 int index = it.nextIndex();
                 LayoutToken token = it.next();
-
-                if (token.getText().trim().equals("@newline")) {
-                    result.append("\n");
-                    continue;
-                }
 
                 String text = token.getText();
                 if (text.equals(" ") || text.equals("\n")) {
@@ -217,10 +214,9 @@ public class EntityLinkerParser extends AbstractParser {
                 }
 
                 FeaturesVectorEntityLinker featuresVector =
-                    FeaturesVectorEntityLinker.addFeatures(token.getText(), null, token.getLabels().get(0).getLabel());
+                    FeaturesVectorEntityLinker.addFeatures(token.getText(), null, annotations.get(index));
                 result.append(featuresVector.printVector());
                 result.append("\n");
-                previous = token;
             }
         } catch (Exception e) {
             throw new GrobidException("An exception occured while running Grobid.", e);
@@ -273,5 +269,58 @@ public class EntityLinkerParser extends AbstractParser {
         }
 
         return resultList;
+    }
+
+    protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Span> mentions) {
+        List<String> output = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(mentions)) {
+            tokens.stream().forEach(t -> output.add(OTHER_LABEL));
+
+            return output;
+        }
+
+        mentions = mentions.stream()
+            .sorted(Comparator.comparingInt(Span::getStart))
+            .collect(Collectors.toList());
+
+        int globalOffset = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
+
+        int mentionId = 0;
+        Span mention = mentions.get(mentionId);
+
+        for (LayoutToken token : tokens) {
+            //normalise the offsets
+            int mentionStart = globalOffset + mention.getStart();
+            int mentionEnd = globalOffset + mention.getEnd();
+
+            if (token.getOffset() < mentionStart) {
+                output.add(OTHER_LABEL);
+                continue;
+            } else {
+                if (token.getOffset() >= mentionStart
+                    && token.getOffset() + length(token.getText()) <= mentionEnd) {
+                    output.add(mention.getLabel());
+                    continue;
+                }
+
+                if (mentionId == mentions.size() - 1) {
+                    output.add(OTHER_LABEL);
+                    break;
+                } else {
+                    output.add(OTHER_LABEL);
+                    mentionId++;
+                    mention = mentions.get(mentionId);
+                }
+            }
+        }
+        if (tokens.size() > output.size()) {
+
+            for (int counter = output.size(); counter < tokens.size(); counter++) {
+                output.add(OTHER_LABEL);
+            }
+        }
+
+        return output;
     }
 }
