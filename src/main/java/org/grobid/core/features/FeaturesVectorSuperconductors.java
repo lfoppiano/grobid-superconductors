@@ -171,7 +171,7 @@ public class FeaturesVectorSuperconductors {
             featuresVector.punctType = "COMMA";
         } else if (string.equals("-") || string.equals("−") || string.equals("–")) {
             featuresVector.punctType = "HYPHEN";
-        } else if (string.equals("\"") || string.equals("\'") || string.equals("`")) {
+        } else if (string.equals("\"") || string.equals("'") || string.equals("`")) {
             featuresVector.punctType = "QUOTE";
         }
 

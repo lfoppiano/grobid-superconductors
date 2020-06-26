@@ -127,17 +127,19 @@ public class SuperconductorsParser extends AbstractParser {
 
         List<Superconductor> entities = new ArrayList<>();
 
-        // List<LayoutToken> for the selected segment
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
-
         //Normalisation
-        List<LayoutToken> layoutTokensNormalised = tokens.stream()
+        List<LayoutToken> layoutTokensPreNormalised = layoutTokens.stream()
             .map(layoutToken -> {
-                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+                    LayoutToken newOne = new LayoutToken(layoutToken);
+                    newOne.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+//                        .replaceAll("\\p{C}", " ")));
+                    return newOne;
+                }
+            ).collect(Collectors.toList());
 
-                return layoutToken;
-            }
-        ).collect(Collectors.toList());
+        // List<LayoutToken> for the selected segment
+        List<LayoutToken> layoutTokensNormalised = DeepAnalyzer.getInstance()
+            .retokenizeLayoutTokens(layoutTokensPreNormalised);
 
         // list of textual tokens of the selected segment
         //List<String> texts = getTexts(tokenizationParts);

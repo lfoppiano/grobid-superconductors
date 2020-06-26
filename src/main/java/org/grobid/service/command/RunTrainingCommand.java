@@ -150,7 +150,6 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
                 name = "train_eval-with-split-" + split;
                 break;
             case "holdout":
-                AbstractTrainer.runTraining(trainer);
                 report = AbstractTrainer.runEvaluation(trainer, true);
                 name = "holdout-evaluation";
                 break;
