@@ -1,0 +1,1738 @@
+=== START RAW RESULTS ===
+"	"	"	"	"	"	"	"	"	"	ALLCAPS	NODIGIT	1	QUOTE	"	"	"	<other>	<other>
+"	"	"	"	"	"	"	"	"	"	ALLCAPS	NODIGIT	1	QUOTE	"	"	"	<other>	<other>
+1111	1111	1	11	111	1111	1	11	111	1111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXX	dddd	d	<other>	<other>
+"	"	"	"	"	"	"	"	"	"	ALLCAPS	NODIGIT	1	QUOTE	"	"	"	<other>	<other>
+"	"	"	"	"	"	"	"	"	"	ALLCAPS	NODIGIT	1	QUOTE	"	"	"	<other>	<other>
+epitaxial	epitaxial	e	ep	epi	epit	l	al	ial	xial	NOCAPS	NODIGIT	0	NOPUNCT	epitaxial	xxxx	x	I-<shape>	I-<shape>
+thin	thin	t	th	thi	thin	n	in	hin	thin	NOCAPS	NODIGIT	0	NOPUNCT	thin	xxxx	x	<shape>	<shape>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	<shape>	<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+>	>	>	>	>	>	>	>	>	>	ALLCAPS	NODIGIT	1	NOPUNCT	>	>	>	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+S	s	S	S	S	S	S	S	S	S	ALLCAPS	NODIGIT	1	NOPUNCT	S	X	X	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+11	11	1	11	11	11	1	11	11	11	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+RuO	ruo	R	Ru	RuO	RuO	O	uO	RuO	RuO	INITCAP	NODIGIT	0	NOPUNCT	RuO	XxX	XxX	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+9	9	9	9	9	9	9	9	9	9	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Nd	nd	N	Nd	Nd	Nd	d	Nd	Nd	Nd	INITCAP	NODIGIT	0	NOPUNCT	Nd	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+m	m	m	m	m	m	m	m	m	m	NOCAPS	NODIGIT	1	NOPUNCT	m	x	x	<formula>	<formula>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<formula>	<formula>
+CaCuO	cacuo	C	Ca	CaC	CaCu	O	uO	CuO	aCuO	INITCAP	NODIGIT	0	NOPUNCT	CaCuO	XxXxX	XxXxX	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<name>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<name>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+crystals	crystals	c	cr	cry	crys	s	ls	als	tals	NOCAPS	NODIGIT	0	NOPUNCT	crystals	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xKx	xkx	x	xK	xKx	xKx	x	Kx	xKx	xKx	NOCAPS	NODIGIT	0	NOPUNCT	xKx	xXx	xXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xLax	xlax	x	xL	xLa	xLax	x	ax	Lax	xLax	NOCAPS	NODIGIT	0	NOPUNCT	xLax	xXxxx	xXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xLax	xlax	x	xL	xLa	xLax	x	ax	Lax	xLax	NOCAPS	NODIGIT	0	NOPUNCT	xLax	xXxxx	xXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+thin	thin	t	th	thi	thin	n	in	hin	thin	NOCAPS	NODIGIT	0	NOPUNCT	thin	xxxx	x	I-<shape>	I-<shape>
+film	film	f	fi	fil	film	m	lm	ilm	film	NOCAPS	NODIGIT	0	NOPUNCT	film	xxxx	x	<shape>	<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xLax	xlax	x	xL	xLa	xLax	x	ax	Lax	xLax	NOCAPS	NODIGIT	0	NOPUNCT	xLax	xXxxx	xXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+thin	thin	t	th	thi	thin	n	in	hin	thin	NOCAPS	NODIGIT	0	NOPUNCT	thin	xxxx	x	I-<shape>	I-<shape>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	<shape>	<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xLn	xln	x	xL	xLn	xLn	n	Ln	xLn	xLn	NOCAPS	NODIGIT	0	NOPUNCT	xLn	xXx	xXx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xLnx	xlnx	x	xL	xLn	xLnx	x	nx	Lnx	xLnx	NOCAPS	NODIGIT	0	NOPUNCT	xLnx	xXxxx	xXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+thin	thin	t	th	thi	thin	n	in	hin	thin	NOCAPS	NODIGIT	0	NOPUNCT	thin	xxxx	x	I-<shape>	I-<shape>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	<shape>	<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+2212	2212	2	22	221	2212	2	12	212	2212	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXX	dddd	d	<name>	<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+2223	2223	2	22	222	2223	3	23	223	2223	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXX	dddd	d	<name>	<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+2212	2212	2	22	221	2212	2	12	212	2212	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXX	dddd	d	<name>	<name>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+CCO	cco	C	CC	CCO	CCO	O	CO	CCO	CCO	ALLCAPS	NODIGIT	0	NOPUNCT	CCO	XXX	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+n	n	n	n	n	n	n	n	n	n	NOCAPS	NODIGIT	1	NOPUNCT	n	x	x	<formula>	<formula>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<formula>	<formula>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+La	la	L	La	La	La	a	La	La	La	INITCAP	NODIGIT	0	NOPUNCT	La	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<doping>
+Co	co	C	Co	Co	Co	o	Co	Co	Co	INITCAP	NODIGIT	0	NOPUNCT	Co	Xx	Xx	I-<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<doping>	<doping>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<doping>	<doping>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<doping>	<doping>
+BaO	bao	B	Ba	BaO	BaO	O	aO	BaO	BaO	INITCAP	NODIGIT	0	NOPUNCT	BaO	XxX	XxX	<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+doped	doped	d	do	dop	dope	d	ed	ped	oped	NOCAPS	NODIGIT	0	NOPUNCT	doped	xxxx	x	<doping>	<doping>
+Co	co	C	Co	Co	Co	o	Co	Co	Co	INITCAP	NODIGIT	0	NOPUNCT	Co	Xx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<name>	<name>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+thin	thin	t	th	thi	thin	n	in	hin	thin	NOCAPS	NODIGIT	0	NOPUNCT	thin	xxxx	x	I-<shape>	I-<shape>
+film	film	f	fi	fil	film	m	lm	ilm	film	NOCAPS	NODIGIT	0	NOPUNCT	film	xxxx	x	<shape>	<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<doping>
+Co	co	C	Co	Co	Co	o	Co	Co	Co	INITCAP	NODIGIT	0	NOPUNCT	Co	Xx	Xx	I-<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<doping>	<doping>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<doping>	<doping>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<doping>	<doping>
+BaO	bao	B	Ba	BaO	BaO	O	aO	BaO	BaO	INITCAP	NODIGIT	0	NOPUNCT	BaO	XxX	XxX	<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+doped	doped	d	do	dop	dope	d	ed	ped	oped	NOCAPS	NODIGIT	0	NOPUNCT	doped	xxxx	x	<doping>	<doping>
+Co	co	C	Co	Co	Co	o	Co	Co	Co	INITCAP	NODIGIT	0	NOPUNCT	Co	Xx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<name>	<name>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+thin	thin	t	th	thi	thin	n	in	hin	thin	NOCAPS	NODIGIT	0	NOPUNCT	thin	xxxx	x	I-<shape>	I-<shape>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	<shape>	<shape>
+grown	grown	g	gr	gro	grow	n	wn	own	rown	NOCAPS	NODIGIT	0	NOPUNCT	grown	xxxx	x	<other>	<other>
+on	on	o	on	on	on	n	on	on	on	NOCAPS	NODIGIT	0	NOPUNCT	on	xx	x	<other>	<other>
+CaF	caf	C	Ca	CaF	CaF	F	aF	CaF	CaF	INITCAP	NODIGIT	0	NOPUNCT	CaF	XxX	XxX	<other>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<doping>
+Co	co	C	Co	Co	Co	o	Co	Co	Co	INITCAP	NODIGIT	0	NOPUNCT	Co	Xx	Xx	I-<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+doped	doped	d	do	dop	dope	d	ed	ped	oped	NOCAPS	NODIGIT	0	NOPUNCT	doped	xxxx	x	<doping>	<doping>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<formula>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	I-<formula>	<formula>
+6	6	6	6	6	6	6	6	6	6	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sn	sn	S	Sn	Sn	Sn	n	Sn	Sn	Sn	INITCAP	NODIGIT	0	NOPUNCT	Sn	Xx	Xx	<formula>	<formula>
+5	5	5	5	5	5	5	5	5	5	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	I-<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
++	+	+	+	+	+	+	+	+	+	ALLCAPS	NODIGIT	1	NOPUNCT	+	+	+	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<doping>
+Gd	gd	G	Gd	Gd	Gd	d	Gd	Gd	Gd	INITCAP	NODIGIT	0	NOPUNCT	Gd	Xx	Xx	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<name>	<doping>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<doping>
+Gd	gd	G	Gd	Gd	Gd	d	Gd	Gd	Gd	INITCAP	NODIGIT	0	NOPUNCT	Gd	Xx	Xx	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<name>	<doping>
+film	film	f	fi	fil	film	m	lm	ilm	film	NOCAPS	NODIGIT	0	NOPUNCT	film	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<doping>
+Gd	gd	G	Gd	Gd	Gd	d	Gd	Gd	Gd	INITCAP	NODIGIT	0	NOPUNCT	Gd	Xx	Xx	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<name>	<doping>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<doping>
+Gd	gd	G	Gd	Gd	Gd	d	Gd	Gd	Gd	INITCAP	NODIGIT	0	NOPUNCT	Gd	Xx	Xx	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+BaCuO	bacuo	B	Ba	BaC	BaCu	O	uO	CuO	aCuO	INITCAP	NODIGIT	0	NOPUNCT	BaCuO	XxXxX	XxXxX	<name>	<doping>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	<other>
+Gd	gd	G	Gd	Gd	Gd	d	Gd	Gd	Gd	INITCAP	NODIGIT	0	NOPUNCT	Gd	Xx	Xx	<name>	I-<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<doping>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<name>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<doping>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	<name>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<doping>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<name>	<doping>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<formula>
+La	la	L	La	La	La	a	La	La	La	INITCAP	NODIGIT	0	NOPUNCT	La	Xx	Xx	I-<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+8	8	8	8	8	8	8	8	8	8	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+FeAsO	feaso	F	Fe	FeA	FeAs	O	sO	AsO	eAsO	INITCAP	NODIGIT	0	NOPUNCT	FeAsO	XxXxX	XxXxX	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+8	8	8	8	8	8	8	8	8	8	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+F	f	F	F	F	F	F	F	F	F	ALLCAPS	NODIGIT	1	NOPUNCT	F	X	X	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+La	la	L	La	La	La	a	La	La	La	INITCAP	NODIGIT	0	NOPUNCT	La	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<formula>
+Li	li	L	Li	Li	Li	i	Li	Li	Li	INITCAP	NODIGIT	0	NOPUNCT	Li	Xx	Xx	I-<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Li	li	L	Li	Li	Li	i	Li	Li	Li	INITCAP	NODIGIT	0	NOPUNCT	Li	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+OH	oh	O	OH	OH	OH	H	OH	OH	OH	ALLCAPS	NODIGIT	0	NOPUNCT	OH	XX	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+FeSe	fese	F	Fe	FeS	FeSe	e	Se	eSe	FeSe	INITCAP	NODIGIT	0	NOPUNCT	FeSe	XxXXx	XxXx	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+MnNiSi	mnnisi	M	Mn	MnN	MnNi	i	Si	iSi	NiSi	INITCAP	NODIGIT	0	NOPUNCT	MnNiSi	XxXxXx	XxXxXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+12	12	1	12	12	12	2	12	12	12	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<formula>	<formula>
+FeCoGe	fecoge	F	Fe	FeC	FeCo	e	Ge	oGe	CoGe	INITCAP	NODIGIT	0	NOPUNCT	FeCoGe	XxXxXx	XxXxXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+T	t	T	T	T	T	T	T	T	T	ALLCAPS	NODIGIT	1	NOPUNCT	T	X	X	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+with	with	w	wi	wit	with	h	th	ith	with	NOCAPS	NODIGIT	0	NOPUNCT	with	xxxx	x	<other>	<other>
+										ALLCAPS	NODIGIT	1	NOPUNCT				<other>	<other>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	I-<variable>	I-<variable>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<value>	I-<value>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<value>	<value>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<value>	<value>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+90	90	9	90	90	90	0	90	90	90	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+Ru	ru	R	Ru	Ru	Ru	u	Ru	Ru	Ru	INITCAP	NODIGIT	0	NOPUNCT	Ru	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+90	90	9	90	90	90	0	90	90	90	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+Ru	ru	R	Ru	Ru	Ru	u	Ru	Ru	Ru	INITCAP	NODIGIT	0	NOPUNCT	Ru	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+10	10	1	10	10	10	0	10	10	10	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+95	95	9	95	95	95	5	95	95	95	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+05	05	0	05	05	05	5	05	05	05	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+95	95	9	95	95	95	5	95	95	95	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+Ru	ru	R	Ru	Ru	Ru	u	Ru	Ru	Ru	INITCAP	NODIGIT	0	NOPUNCT	Ru	Xx	Xx	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+05	05	0	05	05	05	5	05	05	05	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+95	95	9	95	95	95	5	95	95	95	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+Ru	ru	R	Ru	Ru	Ru	u	Ru	Ru	Ru	INITCAP	NODIGIT	0	NOPUNCT	Ru	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+05	05	0	05	05	05	5	05	05	05	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+95	95	9	95	95	95	5	95	95	95	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+T	t	T	T	T	T	T	T	T	T	ALLCAPS	NODIGIT	1	NOPUNCT	T	X	X	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+05	05	0	05	05	05	5	05	05	05	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+98	98	9	98	98	98	8	98	98	98	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+Ru	ru	R	Ru	Ru	Ru	u	Ru	Ru	Ru	INITCAP	NODIGIT	0	NOPUNCT	Ru	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+02	02	0	02	02	02	2	02	02	02	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Mo	mo	M	Mo	Mo	Mo	o	Mo	Mo	Mo	INITCAP	NODIGIT	0	NOPUNCT	Mo	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+T	t	T	T	T	T	T	T	T	T	ALLCAPS	NODIGIT	1	NOPUNCT	T	X	X	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sb	sb	S	Sb	Sb	Sb	b	Sb	Sb	Sb	INITCAP	NODIGIT	0	NOPUNCT	Sb	Xx	Xx	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<doping>
+Nd	nd	N	Nd	Nd	Nd	d	Nd	Nd	Nd	INITCAP	NODIGIT	0	NOPUNCT	Nd	Xx	Xx	<formula>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<doping>
+Eu	eu	E	Eu	Eu	Eu	u	Eu	Eu	Eu	INITCAP	NODIGIT	0	NOPUNCT	Eu	Xx	Xx	<formula>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<doping>
+Gd	gd	G	Gd	Gd	Gd	d	Gd	Gd	Gd	INITCAP	NODIGIT	0	NOPUNCT	Gd	Xx	Xx	<formula>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<doping>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<formula>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<doping>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	<formula>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<doping>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<doping>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+NEG	neg	N	NE	NEG	NEG	G	EG	NEG	NEG	ALLCAPS	NODIGIT	0	NOPUNCT	NEG	XXX	X	I-<name>	I-<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<name>
+RE	re	R	RE	RE	RE	E	RE	RE	RE	ALLCAPS	NODIGIT	0	NOPUNCT	RE	XX	X	<name>	<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<other>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<name>	I-<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<doping>
+Sm	sm	S	Sm	Sm	Sm	m	Sm	Sm	Sm	INITCAP	NODIGIT	0	NOPUNCT	Sm	Xx	Xx	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<doping>
+RE	re	R	RE	RE	RE	E	RE	RE	RE	ALLCAPS	NODIGIT	0	NOPUNCT	RE	XX	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<name>	<doping>
+superconductors	superconductors	s	su	sup	supe	s	rs	ors	tors	NOCAPS	NODIGIT	0	NOPUNCT	superconductors	xxxx	x	<other>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<doping>
+Sm	sm	S	Sm	Sm	Sm	m	Sm	Sm	Sm	INITCAP	NODIGIT	0	NOPUNCT	Sm	Xx	Xx	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<name>	<doping>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+SnSe	snse	S	Sn	SnS	SnSe	e	Se	nSe	SnSe	INITCAP	NODIGIT	0	NOPUNCT	SnSe	XxXXx	XxXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+16	16	1	16	16	16	6	16	16	16	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+NbSe	nbse	N	Nb	NbS	NbSe	e	Se	bSe	NbSe	INITCAP	NODIGIT	0	NOPUNCT	NbSe	XxXXx	XxXx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<value>	I-<value>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<value>	<value>
+70	70	7	70	70	70	0	70	70	70	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<value>	<value>
+<	<	<	<	<	<	<	<	<	<	ALLCAPS	NODIGIT	1	NOPUNCT	<	<	<	<value>	<value>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	I-<variable>	I-<variable>
+<	<	<	<	<	<	<	<	<	<	ALLCAPS	NODIGIT	1	NOPUNCT	<	<	<	I-<value>	I-<value>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<value>	<value>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<value>	<value>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<value>	I-<value>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<value>	<value>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<value>	<value>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<value>	<value>
+80	80	8	80	80	80	0	80	80	80	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+polycrystalline	polycrystalline	p	po	pol	poly	e	ne	ine	line	NOCAPS	NODIGIT	0	NOPUNCT	polycrystalline	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sc	sc	S	Sc	Sc	Sc	c	Sc	Sc	Sc	INITCAP	NODIGIT	0	NOPUNCT	Sc	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<formula>
+5	5	5	5	5	5	5	5	5	5	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	I-<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+V	v	V	V	V	V	V	V	V	V	ALLCAPS	NODIGIT	1	NOPUNCT	V	X	X	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<formula>
+6	6	6	6	6	6	6	6	6	6	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<formula>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<name>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<name>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<name>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<name>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<name>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<formula>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<name>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<name>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<name>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<name>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	I-<doping>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<name>	<doping>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<name>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<doping>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<doping>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	<formula>
+5	5	5	5	5	5	5	5	5	5	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Na	na	N	Na	Na	Na	a	Na	Na	Na	INITCAP	NODIGIT	0	NOPUNCT	Na	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xKx	xkx	x	xK	xKx	xKx	x	Kx	xKx	xKx	NOCAPS	NODIGIT	0	NOPUNCT	xKx	xXx	xXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+xLax	xlax	x	xL	xLa	xLax	x	ax	Lax	xLax	NOCAPS	NODIGIT	0	NOPUNCT	xLax	xXxxx	xXx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+epitaxial	epitaxial	e	ep	epi	epit	l	al	ial	xial	NOCAPS	NODIGIT	0	NOPUNCT	epitaxial	xxxx	x	I-<shape>	I-<shape>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	<shape>	<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<doping>	I-<doping>
+Tl	tl	T	Tl	Tl	Tl	l	Tl	Tl	Tl	INITCAP	NODIGIT	0	NOPUNCT	Tl	Xx	Xx	<doping>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<doping>	<doping>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<doping>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<doping>	<doping>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<doping>	<doping>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	<doping>	<doping>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	I-<name>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<doping>	I-<doping>
+Tl	tl	T	Tl	Tl	Tl	l	Tl	Tl	Tl	INITCAP	NODIGIT	0	NOPUNCT	Tl	Xx	Xx	<doping>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<doping>	<doping>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<doping>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<doping>	<doping>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<doping>	<doping>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	<doping>	<doping>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	I-<name>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<formula>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	I-<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<doping>	I-<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<doping>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<doping>	<doping>
+Dy	dy	D	Dy	Dy	Dy	y	Dy	Dy	Dy	INITCAP	NODIGIT	0	NOPUNCT	Dy	Xx	Xx	<doping>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<doping>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<doping>	<doping>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	I-<shape>	I-<shape>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<formula>	I-<formula>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<formula>	<formula>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<formula>
+Sm	sm	S	Sm	Sm	Sm	m	Sm	Sm	Sm	INITCAP	NODIGIT	0	NOPUNCT	Sm	Xx	Xx	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+BaCuO	bacuo	B	Ba	BaC	BaCu	O	uO	CuO	aCuO	INITCAP	NODIGIT	0	NOPUNCT	BaCuO	XxXxX	XxXxX	<formula>	<formula>
+5	5	5	5	5	5	5	5	5	5	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<doping>	I-<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<doping>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<doping>	<doping>
+Sm	sm	S	Sm	Sm	Sm	m	Sm	Sm	Sm	INITCAP	NODIGIT	0	NOPUNCT	Sm	Xx	Xx	<doping>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<doping>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<doping>	<doping>
+samples	samples	s	sa	sam	samp	s	es	les	ples	NOCAPS	NODIGIT	0	NOPUNCT	samples	xxxx	x	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<doping>	I-<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<doping>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<doping>	<doping>
+Sm	sm	S	Sm	Sm	Sm	m	Sm	Sm	Sm	INITCAP	NODIGIT	0	NOPUNCT	Sm	Xx	Xx	<doping>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<doping>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<doping>	<doping>
+samples	samples	s	sa	sam	samp	s	es	les	ples	NOCAPS	NODIGIT	0	NOPUNCT	samples	xxxx	x	<other>	<other>
+YSm	ysm	Y	YS	YSm	YSm	m	Sm	YSm	YSm	INITCAP	NODIGIT	0	NOPUNCT	YSm	XXx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+20	20	2	20	20	20	0	20	20	20	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<name>	<name>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<doping>	I-<doping>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<doping>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<doping>	<doping>
+Dy	dy	D	Dy	Dy	Dy	y	Dy	Dy	Dy	INITCAP	NODIGIT	0	NOPUNCT	Dy	Xx	Xx	<doping>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<doping>	<doping>
+BCO	bco	B	BC	BCO	BCO	O	CO	BCO	BCO	ALLCAPS	NODIGIT	0	NOPUNCT	BCO	XXX	X	<doping>	<doping>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<doping>
+a	a	a	a	a	a	a	a	a	a	NOCAPS	NODIGIT	1	NOPUNCT	a	x	x	<other>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<doping>
+the	the	t	th	the	the	e	he	the	the	NOCAPS	NODIGIT	0	NOPUNCT	the	xxx	x	<other>	<doping>
+nano	nano	n	na	nan	nano	o	no	ano	nano	NOCAPS	NODIGIT	0	NOPUNCT	nano	xxxx	x	I-<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+doped	doped	d	do	dop	dope	d	ed	ped	oped	NOCAPS	NODIGIT	0	NOPUNCT	doped	xxxx	x	<doping>	<doping>
+MgB	mgb	M	Mg	MgB	MgB	B	gB	MgB	MgB	INITCAP	NODIGIT	0	NOPUNCT	MgB	XxX	XxX	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<doping>
+hydrogen	hydrogen	h	hy	hyd	hydr	n	en	gen	ogen	NOCAPS	NODIGIT	0	NOPUNCT	hydrogen	xxxx	x	I-<name>	<doping>
+sulfide	sulfide	s	su	sul	sulf	e	de	ide	fide	NOCAPS	NODIGIT	0	NOPUNCT	sulfide	xxxx	x	<name>	<doping>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<other>	<doping>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	I-<formula>	<doping>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<doping>
+S	s	S	S	S	S	S	S	S	S	ALLCAPS	NODIGIT	1	NOPUNCT	S	X	X	<formula>	<doping>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	I-<formula>
+n	n	n	n	n	n	n	n	n	n	NOCAPS	NODIGIT	1	NOPUNCT	n	x	x	<other>	<formula>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<formula>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	I-<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<formula>
+10	10	1	10	10	10	0	10	10	10	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
++	+	+	+	+	+	+	+	+	+	ALLCAPS	NODIGIT	1	NOPUNCT	+	+	+	<formula>	<formula>
+δ	δ	δ	δ	δ	δ	δ	δ	δ	δ	NOCAPS	NODIGIT	1	NOPUNCT	δ	x	x	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<name>
+2223	2223	2	22	222	2223	3	23	223	2223	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXX	dddd	d	<name>	<name>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+021907	021907	0	02	021	0219	7	07	907	1907	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXXXX	dddd	d	<other>	I-<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<other>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	<formula>
+Polycrystalline	polycrystalline	P	Po	Pol	Poly	e	ne	ine	line	INITCAP	NODIGIT	0	NOPUNCT	Polycrystalline	Xxxx	Xx	I-<shape>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	I-<name>	<formula>
+MnNiSi	mnnisi	M	Mn	MnN	MnNi	i	Si	iSi	NiSi	INITCAP	NODIGIT	0	NOPUNCT	MnNiSi	XxXxXx	XxXxXx	<name>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<name>	<formula>
+Àx	àx	À	Àx	Àx	Àx	x	Àx	Àx	Àx	INITCAP	NODIGIT	0	NOPUNCT	Àx	Xx	Xx	<name>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<name>	<other>
+FeCoGe	fecoge	F	Fe	FeC	FeCo	e	Ge	oGe	CoGe	INITCAP	NODIGIT	0	NOPUNCT	FeCoGe	XxXxXx	XxXxXx	<name>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<other>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	I-<variable>	I-<variable>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	I-<variable>	I-<variable>
+¼	¼	¼	¼	¼	¼	¼	¼	¼	¼	ALLCAPS	NODIGIT	1	NOPUNCT	¼	¼	¼	<other>	<other>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<value>	I-<value>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<value>	<value>
+38	38	3	38	38	38	8	38	38	38	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<value>	<value>
+and	and	a	an	and	and	d	nd	and	and	NOCAPS	NODIGIT	0	NOPUNCT	and	xxx	x	<value>	<value>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<value>	<value>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<value>	<value>
+39	39	3	39	39	39	9	39	39	39	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<shape>	I-<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<shape>	<doping>
+UC	uc	U	UC	UC	UC	C	UC	UC	UC	ALLCAPS	NODIGIT	0	NOPUNCT	UC	XX	X	<shape>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<shape>	<doping>
+thick	thick	t	th	thi	thic	k	ck	ick	hick	NOCAPS	NODIGIT	0	NOPUNCT	thick	xxxx	x	<shape>	<doping>
+La	la	L	La	La	La	a	La	La	La	INITCAP	NODIGIT	0	NOPUNCT	La	Xx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<value>	I-<value>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<value>	<value>
+06	06	0	06	06	06	6	06	06	06	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<value>	<value>
+
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<doping>	<other>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<doping>	<other>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<doping>	<other>
+ML	ml	M	ML	ML	ML	L	ML	ML	ML	ALLCAPS	NODIGIT	0	NOPUNCT	ML	XX	X	<doping>	<other>
+of	of	o	of	of	of	f	of	of	of	NOCAPS	NODIGIT	0	NOPUNCT	of	xx	x	<doping>	<other>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<doping>	<other>
+on	on	o	on	on	on	n	on	on	on	NOCAPS	NODIGIT	0	NOPUNCT	on	xx	x	<other>	<other>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	I-<name>	<other>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<name>	<other>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<other>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+∼	∼	∼	∼	∼	∼	∼	∼	∼	∼	ALLCAPS	NODIGIT	1	NOPUNCT	∼	∼	∼	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+6	6	6	6	6	6	6	6	6	6	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Te	te	T	Te	Te	Te	e	Te	Te	Te	INITCAP	NODIGIT	0	NOPUNCT	Te	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+NbSe	nbse	N	Nb	NbS	NbSe	e	Se	bSe	NbSe	INITCAP	NODIGIT	0	NOPUNCT	NbSe	XxXXx	XxXx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+NbSe	nbse	N	Nb	NbS	NbSe	e	Se	bSe	NbSe	INITCAP	NODIGIT	0	NOPUNCT	NbSe	XxXXx	XxXx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<formula>	<formula>
+La	la	L	La	La	La	a	La	La	La	INITCAP	NODIGIT	0	NOPUNCT	La	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+CuO	cuo	C	Cu	CuO	CuO	O	uO	CuO	CuO	INITCAP	NODIGIT	0	NOPUNCT	CuO	XxX	XxX	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+25	25	2	25	25	25	5	25	25	25	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<other>	I-<doping>
+%	%	%	%	%	%	%	%	%	%	ALLCAPS	NODIGIT	1	NOPUNCT	%	%	%	<other>	<doping>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	I-<name>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<doping>
+2212	2212	2	22	221	2212	2	12	212	2212	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXX	dddd	d	<name>	<doping>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+04	04	0	04	04	04	4	04	04	04	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+TaS	tas	T	Ta	TaS	TaS	S	aS	TaS	TaS	INITCAP	NODIGIT	0	NOPUNCT	TaS	XxX	XxX	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	<formula>	<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+TaSe	tase	T	Ta	TaS	TaSe	e	Se	aSe	TaSe	INITCAP	NODIGIT	0	NOPUNCT	TaSe	XxXXx	XxXx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+MoTe	mote	M	Mo	MoT	MoTe	e	Te	oTe	MoTe	INITCAP	NODIGIT	0	NOPUNCT	MoTe	XxXXx	XxXx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+MoX	mox	M	Mo	MoX	MoX	X	oX	MoX	MoX	INITCAP	NODIGIT	0	NOPUNCT	MoX	XxX	XxX	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+NbSe	nbse	N	Nb	NbS	NbSe	e	Se	bSe	NbSe	INITCAP	NODIGIT	0	NOPUNCT	NbSe	XxXXx	XxXx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+TaS	tas	T	Ta	TaS	TaS	S	aS	TaS	TaS	INITCAP	NODIGIT	0	NOPUNCT	TaS	XxX	XxX	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+H	h	H	H	H	H	H	H	H	H	ALLCAPS	NODIGIT	1	NOPUNCT	H	X	X	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+TaSe	tase	T	Ta	TaS	TaSe	e	Se	aSe	TaSe	INITCAP	NODIGIT	0	NOPUNCT	TaSe	XxXXx	XxXx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<doping>	I-<doping>
+%	%	%	%	%	%	%	%	%	%	ALLCAPS	NODIGIT	1	NOPUNCT	%	%	%	<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+doped	doped	d	do	dop	dope	d	ed	ped	oped	NOCAPS	NODIGIT	0	NOPUNCT	doped	xxxx	x	<doping>	<doping>
+YFO	yfo	Y	YF	YFO	YFO	O	FO	YFO	YFO	ALLCAPS	NODIGIT	0	NOPUNCT	YFO	XXX	X	I-<name>	I-<name>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<other>
+YBCO	ybco	Y	YB	YBC	YBCO	O	CO	BCO	YBCO	ALLCAPS	NODIGIT	0	NOPUNCT	YBCO	XXXX	X	<name>	I-<name>
+film	film	f	fi	fil	film	m	lm	ilm	film	NOCAPS	NODIGIT	0	NOPUNCT	film	xxxx	x	I-<shape>	I-<shape>
+
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	I-<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<other>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	<formula>
+μm	μm	μ	μm	μm	μm	m	μm	μm	μm	NOCAPS	NODIGIT	0	NOPUNCT	μm	xx	x	<other>	<formula>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	I-<name>	<formula>
+2212	2212	2	22	221	2212	2	12	212	2212	NOCAPS	ALLDIGIT	0	NOPUNCT	XXXX	dddd	d	<name>	<formula>
+
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<doping>	I-<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+9	9	9	9	9	9	9	9	9	9	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<doping>	<doping>
+ML	ml	M	ML	ML	ML	L	ML	ML	ML	ALLCAPS	NODIGIT	0	NOPUNCT	ML	XX	X	<doping>	<doping>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<doping>	<doping>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<other>	<doping>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	I-<name>	<doping>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<name>	<other>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<name>	<other>
+thin	thin	t	th	thi	thin	n	in	hin	thin	NOCAPS	NODIGIT	0	NOPUNCT	thin	xxxx	x	I-<shape>	I-<shape>
+films	films	f	fi	fil	film	s	ms	lms	ilms	NOCAPS	NODIGIT	0	NOPUNCT	films	xxxx	x	<shape>	<shape>
+
+5	5	5	5	5	5	5	5	5	5	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<doping>	I-<doping>
+%	%	%	%	%	%	%	%	%	%	ALLCAPS	NODIGIT	1	NOPUNCT	%	%	%	<doping>	<doping>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<doping>	<doping>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<doping>	<doping>
+doped	doped	d	do	dop	dope	d	ed	ped	oped	NOCAPS	NODIGIT	0	NOPUNCT	doped	xxxx	x	<doping>	<doping>
+
+51	51	5	51	51	51	1	51	51	51	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	I-<formula>	I-<formula>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	<formula>	<formula>
+%	%	%	%	%	%	%	%	%	%	ALLCAPS	NODIGIT	1	NOPUNCT	%	%	%	<formula>	<formula>
+Y	y	Y	Y	Y	Y	Y	Y	Y	Y	ALLCAPS	NODIGIT	1	NOPUNCT	Y	X	X	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+O	o	O	O	O	O	O	O	O	O	ALLCAPS	NODIGIT	1	NOPUNCT	O	X	X	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+In	in	I	In	In	In	n	In	In	In	INITCAP	NODIGIT	0	NOPUNCT	In	Xx	Xx	<formula>	<formula>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<formula>	<formula>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<other>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	I-<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<formula>	<formula>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<formula>	<formula>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<other>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	I-<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+Pb	pb	P	Pb	Pb	Pb	b	Pb	Pb	Pb	INITCAP	NODIGIT	0	NOPUNCT	Pb	Xx	Xx	<formula>	<formula>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<formula>	<formula>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<formula>	<formula>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+and	and	a	an	and	and	d	nd	and	and	NOCAPS	NODIGIT	0	NOPUNCT	and	xxx	x	<other>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	I-<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+In	in	I	In	In	In	n	In	In	In	INITCAP	NODIGIT	0	NOPUNCT	In	Xx	Xx	<formula>	<formula>
+/	/	/	/	/	/	/	/	/	/	ALLCAPS	NODIGIT	1	NOPUNCT	/	/	/	<formula>	<formula>
+Si	si	S	Si	Si	Si	i	Si	Si	Si	INITCAP	NODIGIT	0	NOPUNCT	Si	Xx	Xx	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<formula>	<other>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<formula>	<other>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<other>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+5	5	5	5	5	5	5	5	5	5	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Rb	rb	R	Rb	Rb	Rb	b	Rb	Rb	Rb	INITCAP	NODIGIT	0	NOPUNCT	Rb	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Cs	cs	C	Cs	Cs	Cs	s	Cs	Cs	Cs	INITCAP	NODIGIT	0	NOPUNCT	Cs	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Tl	tl	T	Tl	Tl	Tl	l	Tl	Tl	Tl	INITCAP	NODIGIT	0	NOPUNCT	Tl	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+single	single	s	si	sin	sing	e	le	gle	ngle	NOCAPS	NODIGIT	0	NOPUNCT	single	xxxx	x	I-<shape>	I-<shape>
+crystals	crystals	c	cr	cry	crys	s	ls	als	tals	NOCAPS	NODIGIT	0	NOPUNCT	crystals	xxxx	x	<shape>	<shape>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Bi	bi	B	Bi	Bi	Bi	i	Bi	Bi	Bi	INITCAP	NODIGIT	0	NOPUNCT	Bi	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Cu	cu	C	Cu	Cu	Cu	u	Cu	Cu	Cu	INITCAP	NODIGIT	0	NOPUNCT	Cu	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Nb	nb	N	Nb	Nb	Nb	b	Nb	Nb	Nb	INITCAP	NODIGIT	0	NOPUNCT	Nb	Xx	Xx	<value>	<value>
+[	[	[	[	[	[	[	[	[	[	ALLCAPS	NODIGIT	1	OPENBRACKET	[	[	[	<other>	<value>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<other>	<value>
+]	]	]	]	]	]	]	]	]	]	ALLCAPS	NODIGIT	1	ENDBRACKET	]	]	]	<other>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	I-<name>	<formula>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Rb	rb	R	Rb	Rb	Rb	b	Rb	Rb	Rb	INITCAP	NODIGIT	0	NOPUNCT	Rb	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Cs	cs	C	Cs	Cs	Cs	s	Cs	Cs	Cs	INITCAP	NODIGIT	0	NOPUNCT	Cs	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+and	and	a	an	and	and	d	nd	and	and	NOCAPS	NODIGIT	0	NOPUNCT	and	xxx	x	<value>	<value>
+Tl	tl	T	Tl	Tl	Tl	l	Tl	Tl	Tl	INITCAP	NODIGIT	0	NOPUNCT	Tl	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Rb	rb	R	Rb	Rb	Rb	b	Rb	Rb	Rb	INITCAP	NODIGIT	0	NOPUNCT	Rb	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<name>	I-<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<name>	<formula>
+
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<formula>	I-<formula>
+15	15	1	15	15	15	5	15	15	15	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+Nb	nb	N	Nb	Nb	Nb	b	Nb	Nb	Nb	INITCAP	NODIGIT	0	NOPUNCT	Nb	Xx	Xx	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Sn	sn	S	Sn	Sn	Sn	n	Sn	Sn	Sn	INITCAP	NODIGIT	0	NOPUNCT	Sn	Xx	Xx	<formula>	<formula>
+
+AB	ab	A	AB	AB	AB	B	AB	AB	AB	ALLCAPS	NODIGIT	0	NOPUNCT	AB	XX	X	I-<formula>	I-<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+MgB	mgb	M	Mg	MgB	MgB	B	gB	MgB	MgB	INITCAP	NODIGIT	0	NOPUNCT	MgB	XxX	XxX	<formula>	<formula>
+4	4	4	4	4	4	4	4	4	4	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+ABi	abi	A	AB	ABi	ABi	i	Bi	ABi	ABi	INITCAP	NODIGIT	0	NOPUNCT	ABi	XXx	Xx	I-<formula>	I-<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+ABi	abi	A	AB	ABi	ABi	i	Bi	ABi	ABi	INITCAP	NODIGIT	0	NOPUNCT	ABi	XXx	Xx	I-<formula>	I-<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+ABi	abi	A	AB	ABi	ABi	i	Bi	ABi	ABi	INITCAP	NODIGIT	0	NOPUNCT	ABi	XXx	Xx	I-<formula>	I-<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+single	single	s	si	sin	sing	e	le	gle	ngle	NOCAPS	NODIGIT	0	NOPUNCT	single	xxxx	x	I-<shape>	I-<shape>
+crystals	crystals	c	cr	cry	crys	s	ls	als	tals	NOCAPS	NODIGIT	0	NOPUNCT	crystals	xxxx	x	<shape>	<shape>
+
+ABi	abi	A	AB	ABi	ABi	i	Bi	ABi	ABi	INITCAP	NODIGIT	0	NOPUNCT	ABi	XXx	Xx	I-<formula>	I-<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+single	single	s	si	sin	sing	e	le	gle	ngle	NOCAPS	NODIGIT	0	NOPUNCT	single	xxxx	x	I-<shape>	I-<shape>
+crystalline	crystalline	c	cr	cry	crys	e	ne	ine	line	NOCAPS	NODIGIT	0	NOPUNCT	crystalline	xxxx	x	<shape>	<shape>
+
+AEFe	aefe	A	AE	AEF	AEFe	e	Fe	EFe	AEFe	INITCAP	NODIGIT	0	NOPUNCT	AEFe	XXXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AEFe	aefe	A	AE	AEF	AEFe	e	Fe	EFe	AEFe	INITCAP	NODIGIT	0	NOPUNCT	AEFe	XXXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+AE	ae	A	AE	AE	AE	E	AE	AE	AE	ALLCAPS	NODIGIT	0	NOPUNCT	AE	XX	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Eu	eu	E	Eu	Eu	Eu	u	Eu	Eu	Eu	INITCAP	NODIGIT	0	NOPUNCT	Eu	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<other>	<value>
+'	'	'	'	'	'	'	'	'	'	ALLCAPS	NODIGIT	1	QUOTE	'	'	'	<other>	<value>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<other>	<value>
+'	'	'	'	'	'	'	'	'	'	ALLCAPS	NODIGIT	1	QUOTE	'	'	'	<other>	<value>
+for	for	f	fo	for	for	r	or	for	for	NOCAPS	NODIGIT	0	NOPUNCT	for	xxx	x	<other>	<value>
+LiFeAs	lifeas	L	Li	LiF	LiFe	s	As	eAs	FeAs	INITCAP	NODIGIT	0	NOPUNCT	LiFeAs	XxXxXx	XxXxXx	I-<name>	<value>
+and	and	a	an	and	and	d	nd	and	and	NOCAPS	NODIGIT	0	NOPUNCT	and	xxx	x	<other>	<value>
+NaFeAs	nafeas	N	Na	NaF	NaFe	s	As	eAs	FeAs	INITCAP	NODIGIT	0	NOPUNCT	NaFeAs	XxXxXx	XxXxXx	I-<name>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<other>	<value>
+'	'	'	'	'	'	'	'	'	'	ALLCAPS	NODIGIT	1	QUOTE	'	'	'	<other>	<value>
+11	11	1	11	11	11	1	11	11	11	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<other>	<value>
+'	'	'	'	'	'	'	'	'	'	ALLCAPS	NODIGIT	1	QUOTE	'	'	'	<other>	<value>
+for	for	f	fo	for	for	r	or	for	for	NOCAPS	NODIGIT	0	NOPUNCT	for	xxx	x	<other>	<value>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	I-<formula>	<value>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<formula>	<value>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<formula>	<value>
+Te	te	T	Te	Te	Te	e	Te	Te	Te	INITCAP	NODIGIT	0	NOPUNCT	Te	Xx	Xx	<formula>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<other>
+
+AFe	afe	A	AF	AFe	AFe	e	Fe	AFe	AFe	INITCAP	NODIGIT	0	NOPUNCT	AFe	XXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AFe	afe	A	AF	AFe	AFe	e	Fe	AFe	AFe	INITCAP	NODIGIT	0	NOPUNCT	AFe	XXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Eu	eu	E	Eu	Eu	Eu	u	Eu	Eu	Eu	INITCAP	NODIGIT	0	NOPUNCT	Eu	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+AFe	afe	A	AF	AFe	AFe	e	Fe	AFe	AFe	INITCAP	NODIGIT	0	NOPUNCT	AFe	XXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+alkaline	alkaline	a	al	alk	alka	e	ne	ine	line	NOCAPS	NODIGIT	0	NOPUNCT	alkaline	xxxx	x	I-<value>	I-<value>
+earth	earth	e	ea	ear	eart	h	th	rth	arth	NOCAPS	NODIGIT	0	NOPUNCT	earth	xxxx	x	<value>	<value>
+metal	metal	m	me	met	meta	l	al	tal	etal	NOCAPS	NODIGIT	0	NOPUNCT	metal	xxxx	x	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+AFe	afe	A	AF	AFe	AFe	e	Fe	AFe	AFe	INITCAP	NODIGIT	0	NOPUNCT	AFe	XXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AFe	afe	A	AF	AFe	AFe	e	Fe	AFe	AFe	INITCAP	NODIGIT	0	NOPUNCT	AFe	XXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+X	x	X	X	X	X	X	X	X	X	ALLCAPS	NODIGIT	1	NOPUNCT	X	X	X	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+X	x	X	X	X	X	X	X	X	X	ALLCAPS	NODIGIT	1	NOPUNCT	X	X	X	I-<variable>	I-<variable>
+:	:	:	:	:	:	:	:	:	:	ALLCAPS	NODIGIT	1	PUNCT	:	:	:	<other>	<other>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<other>	<value>
+'	'	'	'	'	'	'	'	'	'	ALLCAPS	NODIGIT	1	QUOTE	'	'	'	<other>	<value>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<other>	<value>
+
+AFe	afe	A	AF	AFe	AFe	e	Fe	AFe	AFe	INITCAP	NODIGIT	0	NOPUNCT	AFe	XXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+X	x	X	X	X	X	X	X	X	X	ALLCAPS	NODIGIT	1	NOPUNCT	X	X	X	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+K	k	K	K	K	K	K	K	K	K	ALLCAPS	NODIGIT	1	NOPUNCT	K	X	X	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Rb	rb	R	Rb	Rb	Rb	b	Rb	Rb	Rb	INITCAP	NODIGIT	0	NOPUNCT	Rb	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Cs	cs	C	Cs	Cs	Cs	s	Cs	Cs	Cs	INITCAP	NODIGIT	0	NOPUNCT	Cs	Xx	Xx	<value>	<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+and	and	a	an	and	and	d	nd	and	and	NOCAPS	NODIGIT	0	NOPUNCT	and	xxx	x	<value>	<value>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<value>	<value>
+;	;	;	;	;	;	;	;	;	;	ALLCAPS	NODIGIT	1	PUNCT	;	;	;	<other>	<other>
+X	x	X	X	X	X	X	X	X	X	ALLCAPS	NODIGIT	1	NOPUNCT	X	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+S	s	S	S	S	S	S	S	S	S	ALLCAPS	NODIGIT	1	NOPUNCT	S	X	X	I-<value>	I-<value>
+
+AFeAs	afeas	A	AF	AFe	AFeA	s	As	eAs	FeAs	INITCAP	NODIGIT	0	NOPUNCT	AFeAs	XXxXx	XxXx	I-<formula>	I-<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+alkaline	alkaline	a	al	alk	alka	e	ne	ine	line	NOCAPS	NODIGIT	0	NOPUNCT	alkaline	xxxx	x	I-<value>	I-<value>
+element	element	e	el	ele	elem	t	nt	ent	ment	NOCAPS	NODIGIT	0	NOPUNCT	element	xxxx	x	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+AFeAs	afeas	A	AF	AFe	AFeA	s	As	eAs	FeAs	INITCAP	NODIGIT	0	NOPUNCT	AFeAs	XXxXx	XxXx	I-<formula>	I-<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<formula>	<formula>
+111	111	1	11	111	111	1	11	111	111	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<formula>	<formula>
+
+AFeAsO	afeaso	A	AF	AFe	AFeA	O	sO	AsO	eAsO	INITCAP	NODIGIT	0	NOPUNCT	AFeAsO	XXxXxX	XxXxX	I-<formula>	I-<formula>
+1	1	1	1	1	1	1	1	1	1	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+−	−	−	−	−	−	−	−	−	−	ALLCAPS	NODIGIT	1	HYPHEN	−	−	−	<formula>	<formula>
+δ	δ	δ	δ	δ	δ	δ	δ	δ	δ	NOCAPS	NODIGIT	1	NOPUNCT	δ	x	x	<formula>	<formula>
+
+AM	am	A	AM	AM	AM	M	AM	AM	AM	ALLCAPS	NODIGIT	0	NOPUNCT	AM	XX	X	I-<formula>	I-<formula>
+x	x	x	x	x	x	x	x	x	x	NOCAPS	NODIGIT	1	NOPUNCT	x	x	x	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<formula>	<formula>
+NH	nh	N	NH	NH	NH	H	NH	NH	NH	ALLCAPS	NODIGIT	0	NOPUNCT	NH	XX	X	<formula>	<formula>
+3	3	3	3	3	3	3	3	3	3	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<formula>	<formula>
+y	y	y	y	y	y	y	y	y	y	NOCAPS	NODIGIT	1	NOPUNCT	y	x	x	<formula>	<formula>
+Fe	fe	F	Fe	Fe	Fe	e	Fe	Fe	Fe	INITCAP	NODIGIT	0	NOPUNCT	Fe	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+APd	apd	A	AP	APd	APd	d	Pd	APd	APd	INITCAP	NODIGIT	0	NOPUNCT	APd	XXx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+A	a	A	A	A	A	A	A	A	A	ALLCAPS	NODIGIT	1	NOPUNCT	A	X	X	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+and	and	a	an	and	and	d	nd	and	and	NOCAPS	NODIGIT	0	NOPUNCT	and	xxx	x	<value>	<value>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+ARCO	arco	A	AR	ARC	ARCO	O	CO	RCO	ARCO	ALLCAPS	NODIGIT	0	NOPUNCT	ARCO	XXXX	X	I-<name>	I-<name>
+
+Ae	ae	A	Ae	Ae	Ae	e	Ae	Ae	Ae	INITCAP	NODIGIT	0	NOPUNCT	Ae	Xx	Xx	I-<name>	I-<formula>
+-	-	-	-	-	-	-	-	-	-	ALLCAPS	NODIGIT	1	HYPHEN	-	-	-	<name>	<formula>
+122	122	1	12	122	122	2	22	122	122	NOCAPS	ALLDIGIT	0	NOPUNCT	XXX	ddd	d	<name>	<formula>
+
+AeCuO	aecuo	A	Ae	AeC	AeCu	O	uO	CuO	eCuO	INITCAP	NODIGIT	0	NOPUNCT	AeCuO	XxXxX	XxXxX	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AeFe	aefe	A	Ae	AeF	AeFe	e	Fe	eFe	AeFe	INITCAP	NODIGIT	0	NOPUNCT	AeFe	XxXXx	XxXx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+(	(	(	(	(	(	(	(	(	(	ALLCAPS	NODIGIT	1	OPENBRACKET	(	(	(	<other>	<other>
+Ae	ae	A	Ae	Ae	Ae	e	Ae	Ae	Ae	INITCAP	NODIGIT	0	NOPUNCT	Ae	Xx	Xx	I-<variable>	I-<variable>
+=	=	=	=	=	=	=	=	=	=	ALLCAPS	NODIGIT	1	NOPUNCT	=	=	=	<other>	<other>
+Ba	ba	B	Ba	Ba	Ba	a	Ba	Ba	Ba	INITCAP	NODIGIT	0	NOPUNCT	Ba	Xx	Xx	I-<value>	I-<value>
+,	,	,	,	,	,	,	,	,	,	ALLCAPS	NODIGIT	1	COMMA	,	,	,	<value>	<value>
+Sr	sr	S	Sr	Sr	Sr	r	Sr	Sr	Sr	INITCAP	NODIGIT	0	NOPUNCT	Sr	Xx	Xx	<value>	<value>
+or	or	o	or	or	or	r	or	or	or	NOCAPS	NODIGIT	0	NOPUNCT	or	xx	x	<value>	<value>
+Ca	ca	C	Ca	Ca	Ca	a	Ca	Ca	Ca	INITCAP	NODIGIT	0	NOPUNCT	Ca	Xx	Xx	<value>	<value>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+AeFe	aefe	A	Ae	AeF	AeFe	e	Fe	eFe	AeFe	INITCAP	NODIGIT	0	NOPUNCT	AeFe	XxXXx	XxXx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+
+AeFe	aefe	A	Ae	AeF	AeFe	e	Fe	eFe	AeFe	INITCAP	NODIGIT	0	NOPUNCT	AeFe	XxXXx	XxXx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AeOs	aeos	A	Ae	AeO	AeOs	s	Os	eOs	AeOs	INITCAP	NODIGIT	0	NOPUNCT	AeOs	XxXXx	XxXx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AeOs	aeos	A	Ae	AeO	AeOs	s	Os	eOs	AeOs	INITCAP	NODIGIT	0	NOPUNCT	AeOs	XxXXx	XxXx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+P	p	P	P	P	P	P	P	P	P	ALLCAPS	NODIGIT	1	NOPUNCT	P	X	X	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AeRu	aeru	A	Ae	AeR	AeRu	u	Ru	eRu	AeRu	INITCAP	NODIGIT	0	NOPUNCT	AeRu	XxXXx	XxXx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AeRu	aeru	A	Ae	AeR	AeRu	u	Ru	eRu	AeRu	INITCAP	NODIGIT	0	NOPUNCT	AeRu	XxXXx	XxXx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+P	p	P	P	P	P	P	P	P	P	ALLCAPS	NODIGIT	1	NOPUNCT	P	X	X	<formula>	<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+AfeAs	afeas	A	Af	Afe	AfeA	s	As	eAs	feAs	INITCAP	NODIGIT	0	NOPUNCT	AfeAs	XxXXx	XxXx	I-<formula>	I-<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+7	7	7	7	7	7	7	7	7	7	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+93	93	9	93	93	93	3	93	93	93	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+As	as	A	As	As	As	s	As	As	As	INITCAP	NODIGIT	0	NOPUNCT	As	Xx	Xx	<formula>	<formula>
+0	0	0	0	0	0	0	0	0	0	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+.	.	.	.	.	.	.	.	.	.	ALLCAPS	NODIGIT	1	DOT	.	.	.	<formula>	<formula>
+07	07	0	07	07	07	7	07	07	07	NOCAPS	ALLDIGIT	0	NOPUNCT	XX	dd	d	<formula>	<formula>
+)	)	)	)	)	)	)	)	)	)	ALLCAPS	NODIGIT	1	ENDBRACKET	)	)	)	<other>	<other>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+S	s	S	S	S	S	S	S	S	S	ALLCAPS	NODIGIT	1	NOPUNCT	S	X	X	<formula>	<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Se	se	S	Se	Se	Se	e	Se	Se	Se	INITCAP	NODIGIT	0	NOPUNCT	Se	Xx	Xx	<formula>	<formula>
+crystals	crystals	c	cr	cry	crys	s	ls	als	tals	NOCAPS	NODIGIT	0	NOPUNCT	crystals	xxxx	x	I-<shape>	I-<shape>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+Te	te	T	Te	Te	Te	e	Te	Te	Te	INITCAP	NODIGIT	0	NOPUNCT	Te	Xx	Xx	<formula>	<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+2	2	2	2	2	2	2	2	2	2	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
++	+	+	+	+	+	+	+	+	+	ALLCAPS	NODIGIT	1	NOPUNCT	+	+	+	<formula>	<formula>
+δ	δ	δ	δ	δ	δ	δ	δ	δ	δ	NOCAPS	NODIGIT	1	NOPUNCT	δ	x	x	<formula>	<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<formula>	I-<formula>
+5	5	5	5	5	5	5	5	5	5	NOCAPS	ALLDIGIT	1	NOPUNCT	X	d	d	<formula>	<formula>
+%	%	%	%	%	%	%	%	%	%	ALLCAPS	NODIGIT	1	NOPUNCT	%	%	%	<formula>	<formula>
+
+Ag	ag	A	Ag	Ag	Ag	g	Ag	Ag	Ag	INITCAP	NODIGIT	0	NOPUNCT	Ag	Xx	Xx	I-<doping>	I-<doping>
+doped	doped	d	do	dop	dope	d	ed	ped	oped	NOCAPS	NODIGIT	0	NOPUNCT	doped	xxxx	x	<doping>	<doping>
+SmBCO	smbco	S	Sm	SmB	SmBC	O	CO	BCO	mBCO	INITCAP	NODIGIT	0	NOPUNCT	SmBCO	XxXXX	XxX	I-<name>	I-<name>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<doping>             94.43        33.33        60           42.86        15     
+<formula>            91.88        85.19        88.46        86.79        130    
+<name>               92.34        71.43        25.64        37.74        39     
+<shape>              99.07        96           88.89        92.31        27     
+<value>              98.61        87.5         87.5         87.5         24     
+<variable>           100          100          100          100          24     
+
+all (micro avg.)     96.06        81.53        78.38        79.92        259    
+all (macro avg.)     96.06        78.91        75.08        74.53        259    
+
+===== Instance-level results =====
+
+Total expected instances:   164
+Correct instances:          120
+Instance-level recall:      73.17
+
+
+Evaluation for org.grobid.core.GrobidModels$1@23f86d8a model is realized in 221 ms
