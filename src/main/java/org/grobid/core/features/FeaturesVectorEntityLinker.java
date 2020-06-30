@@ -37,9 +37,9 @@ public class FeaturesVectorEntityLinker {
     public String entityType = null;
 
     public String printVector() {
-        if (isBlank(string)) {
-            return null;
-        }
+//        if (isBlank(string)) {
+//            return null;
+//        }
         StringBuffer res = new StringBuffer();
 
         // token string (1)

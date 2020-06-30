@@ -14,6 +14,7 @@ import java.util.List;
 import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
 import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
 
+@Deprecated
 public class Superconductor {
 
     public static final String SOURCE_QUANTITIES = "quantities";
@@ -25,6 +26,7 @@ public class Superconductor {
     private List<LayoutToken> layoutTokens = new ArrayList<>();
     private OffsetPosition offsets = null;
     private Measurement criticalTemperatureMeasurement = null;
+    private Superconductor linkedEntity = null;
     private String source = "";
 
     //Temporary solution for the demo
@@ -135,6 +137,10 @@ public class Superconductor {
                 json.append("{").append(box.toJson()).append("}");
             }
             json.append("] ");
+        }
+
+        if(linkedEntity != null) {
+            json.append(", \"linkedEntity\":\"" + linkedEntity.getName() + "\"");
         }
 
         if (criticalTemperatureMeasurement != null) {
@@ -252,5 +258,13 @@ public class Superconductor {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Superconductor getLinkedEntity() {
+        return linkedEntity;
+    }
+
+    public void setLinkedEntity(Superconductor linkedEntity) {
+        this.linkedEntity = linkedEntity;
     }
 }

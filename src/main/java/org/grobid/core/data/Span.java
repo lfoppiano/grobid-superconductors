@@ -3,25 +3,35 @@ package org.grobid.core.data;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.grobid.core.layout.BoundingBox;
+import org.grobid.core.layout.LayoutToken;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a generic implementation of a class representing a span, namely an entity
+ */
 public class Span {
+    //We use the hashcode to generate an unique id
+    private int id;
+
     private String text;
     private String formattedText;
     private String type;
+
+    //offset in the text
     private int offsetStart;
     private int offsetEnd;
+
+    //tokens index referred to the layout token list
     private int tokenStart;
     private int tokenEnd;
 
     //The source where this span was generated from
     private String source;
 
-    //We use the hashcode to generate an unique id
-    private int id;
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
+    private List<LayoutToken> layoutTokens = new ArrayList<>();
 
     public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
         this.text = text;

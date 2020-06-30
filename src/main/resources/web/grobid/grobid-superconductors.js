@@ -832,6 +832,12 @@ var grobid = (function ($) {
                 string += "<p>Tc: <b>" + entity.tc + "</b></p>";
                 string = string.replace("___TYPE___", "material-tc");
             }
+
+            if(entity.linkedEntity) {
+                string += "<p>Linked: <b>" + entity.linkedEntity + "</b></p>";
+                string = string.replace("___TYPE___", "material-tc");
+            }
+
             string = string.replace("___TYPE___", type);
 
             string += "</td></tr>";

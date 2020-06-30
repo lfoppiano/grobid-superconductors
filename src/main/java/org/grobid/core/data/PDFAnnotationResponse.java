@@ -8,6 +8,8 @@ import java.util.List;
 import static com.fasterxml.jackson.annotation.JsonInclude.*;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+/** Use PdfProcessingResponse **/
+@Deprecated
 @JsonInclude(Include.NON_EMPTY)
 public class PDFAnnotationResponse {
 

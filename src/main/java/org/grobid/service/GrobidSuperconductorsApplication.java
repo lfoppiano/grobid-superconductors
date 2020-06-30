@@ -9,7 +9,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.grobid.service.command.InterAnnotationAgreementCommand;
-import org.grobid.service.command.PrepareDelftTraining;
+import org.grobid.service.command.PrepareDelftTrainingCommand;
 import org.grobid.service.command.RunTrainingCommand;
 import org.grobid.service.command.TrainingGenerationCommand;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -47,7 +47,7 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         bootstrap.addCommand(new RunTrainingCommand());
         bootstrap.addCommand(new InterAnnotationAgreementCommand());
         bootstrap.addCommand(new TrainingGenerationCommand());
-        bootstrap.addCommand(new PrepareDelftTraining());
+        bootstrap.addCommand(new PrepareDelftTrainingCommand());
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.*;
+import org.grobid.trainer.EntityLinkerTrainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,18 +41,20 @@ public class AggregatedProcessing {
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
     private SentenceSegmenter sentenceSegmenter;
+    private EntityLinkerParser entityLinkerParser;
 
 
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser) {
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, EntityLinkerParser entityLinkerParser) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
         this.sentenceSegmenter = new SentenceSegmenter();
+        this.entityLinkerParser = entityLinkerParser;
         parsers = new EngineParsers();
     }
 
     @Inject
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser) {
-        this(superconductorsParser, QuantityParser.getInstance(true));
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, EntityLinkerParser entityLinkerParser) {
+        this(superconductorsParser, QuantityParser.getInstance(true), entityLinkerParser);
     }
 
     private List<Superconductor> linkSuperconductorsWithTc(List<Superconductor> superconductors, List<Measurement> measurements, List<LayoutToken> tokens) {
@@ -297,6 +300,7 @@ public class AggregatedProcessing {
         return PDFAnnotationResponse;
     }
 
+    @Deprecated
     protected List<Measurement> markCriticalTemperatures(List<Measurement> temperatures, List<LayoutToken> tokens, List<Pair<String, List<LayoutToken>>> tcExpressionList) {
         if (isEmpty(tokens)) {
             return temperatures;
@@ -412,8 +416,9 @@ public class AggregatedProcessing {
 
     public PDFAnnotationResponse annotate(List<LayoutToken> tokens) {
         List<Superconductor> superconductorsNames = superconductorsParser.process(tokens);
+        superconductorsNames = entityLinkerParser.process(tokens, superconductorsNames);
 
-        List<Measurement> temperatureList = getMeasurements(tokens, superconductorsNames);
+        List<Measurement> temperatureList = getTemperatures(tokens);
 
         return new PDFAnnotationResponse(superconductorsNames, temperatureList, new ArrayList<>());
     }

@@ -31,15 +31,17 @@ public class AggregatedProcessingTest {
     AggregatedProcessing target;
 
     SuperconductorsParser mockSuperconductorsParser;
+    EntityLinkerParser mockEntityLinkerParser;
     QuantityParser mockQuantityParser;
 
     @Before
     public void setUp() throws Exception {
 
         mockSuperconductorsParser = EasyMock.createMock(SuperconductorsParser.class);
+        mockEntityLinkerParser = EasyMock.createMock(EntityLinkerParser.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser);
+        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser, mockEntityLinkerParser);
     }
 
     @Test
@@ -66,13 +68,14 @@ public class AggregatedProcessingTest {
 
         EasyMock.expect(mockSuperconductorsParser.process(tokens)).andReturn(Arrays.asList(superconductor));
         EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature));
+        EasyMock.expect(mockEntityLinkerParser.process((List<LayoutToken>) EasyMock.anyObject(), EasyMock.anyObject())).andReturn(new ArrayList<Superconductor>());
 
-        EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
+        EasyMock.replay(mockSuperconductorsParser, mockQuantityParser, mockEntityLinkerParser);
 
         PDFAnnotationResponse response = target.annotate(tokens);
 //        System.out.println(response.toJson());
 
-        EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
+        EasyMock.verify(mockSuperconductorsParser, mockQuantityParser, mockEntityLinkerParser);
 
     }
 
@@ -278,9 +281,9 @@ public class AggregatedProcessingTest {
         temperature.setAtomicQuantity(quantity);
 
         List<Pair<String, List<LayoutToken>>> tcExpressionList = extractedEntities.stream()
-                .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
-                .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
-                .collect(Collectors.toList());
+            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
+            .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
+            .collect(Collectors.toList());
 
         List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, tcExpressionList);
 
