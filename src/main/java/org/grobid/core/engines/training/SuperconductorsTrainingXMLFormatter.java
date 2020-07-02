@@ -5,7 +5,7 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.data.Superconductor;
+import org.grobid.core.data.Span;
 import org.grobid.core.document.xml.XmlBuilderUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
@@ -21,11 +21,11 @@ import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
 public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutputFormattter {
 
     @Override
-    public String format(List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList, int id) {
+    public String format(List<Pair<List<Span>, List<LayoutToken>>> labeledTextList, int id) {
         Element textNode = teiElement("text");
         textNode.addAttribute(new Attribute("xml:lang", "http://www.w3.org/XML/1998/namespace", "en"));
 
-        for (Pair<List<Superconductor>, List<LayoutToken>> labeledText : labeledTextList) {
+        for (Pair<List<Span>, List<LayoutToken>> labeledText : labeledTextList) {
             textNode.appendChild(trainingExtraction(labeledText.getLeft(), labeledText.getRight()));
         }
 
@@ -35,16 +35,16 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
         return XmlBuilderUtils.toXml(quantityDocumentRoot);
     }
 
-    protected Element trainingExtraction(List<Superconductor> superconductorList, List<LayoutToken> tokens) {
+    protected Element trainingExtraction(List<Span> superconductorList, List<LayoutToken> tokens) {
         Element p = teiElement("p");
 
         int startPosition = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
-        for (Superconductor superconductor : superconductorList) {
+        for (Span superconductor : superconductorList) {
 
             int start = superconductor.getOffsetStart();
             int end = superconductor.getOffsetEnd();
 
-            String name = superconductor.getName();
+            String name = superconductor.getText();
             // remove < and > from the material name \o/
             Element supercon = teiElement(prepareType(superconductor.getType()));
             supercon.appendChild(name);

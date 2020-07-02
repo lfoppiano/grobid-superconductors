@@ -128,7 +128,6 @@ configurations.all {
 }
 
 /** Other configuration **/
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -212,7 +211,7 @@ artifacts {
 }
 
 distZip.archiveClassifier = 'application'
-distTar.archiveClassifier = 'application'
+//distTar.archiveClassifier = 'application'
 
 
 /** Model management **/

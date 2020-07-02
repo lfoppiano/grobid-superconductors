@@ -6,9 +6,14 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Quantity;
+import org.grobid.core.data.Span;
+import org.grobid.core.engines.QuantitiesModels;
+import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -274,8 +279,8 @@ public class MeasurementUtils {
     /**
      * Given a list of measurements, retain only the type requested in the second parameter
      **/
-    public static List<Measurement> filterMeasurementsByUnitType(List<Measurement> process, List<UnitUtilities.Unit_Type> typesToBeKept) {
-        List<Measurement> filteredMeasurements = process.stream().filter(measurement -> {
+    public static List<Measurement> filterMeasurementsByUnitType(List<Measurement> measurementList, List<UnitUtilities.Unit_Type> typesToBeKept) {
+        List<Measurement> filteredMeasurements = measurementList.stream().filter(measurement -> {
             switch (measurement.getType()) {
                 case VALUE:
                     return typesToBeKept.contains(measurement.getQuantityAtomic().getType());
@@ -296,6 +301,13 @@ public class MeasurementUtils {
         }).collect(Collectors.toList());
 
         return filteredMeasurements;
+    }
+
+    /**
+     * Given a list of measurements, retain only the type requested in the second parameter
+     **/
+    public static List<Measurement> filterMeasurementsByUnitType(List<Measurement> measurementList, UnitUtilities.Unit_Type typeToBeKept) {
+        return MeasurementUtils.filterMeasurementsByUnitType(measurementList, Arrays.asList(typeToBeKept));
     }
 
     /**
@@ -339,5 +351,41 @@ public class MeasurementUtils {
         }
 
         return results;
+    }
+
+    public static Span toSpan(Measurement measurement, List<LayoutToken> tokens, String outputLabel) {
+
+        List<Quantity> quantityList = QuantityOperations.toQuantityList(measurement);
+        List<LayoutToken> layoutTokens = QuantityOperations.getLayoutTokens(quantityList);
+
+        int start = layoutTokens.get(0).getOffset();
+        int end = Iterables.getLast(layoutTokens).getOffset();
+
+        // Token start and end
+        Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils
+            .getExtremitiesAsIndex(tokens,
+                Math.min(start, end), Math.max(start, end) + 1);
+
+        //Offset start and end
+        List<OffsetPosition> offsets = QuantityOperations.getOffsets(quantityList);
+        List<OffsetPosition> sortedOffsets = offsets.stream()
+            .sorted(Comparator.comparingInt(o -> o.start))
+            .collect(Collectors.toList());
+
+        List<BoundingBox> boundingBoxes = BoundingBoxCalculator.calculate(layoutTokens);
+
+        int lowerOffset = sortedOffsets.get(0).start;
+        int higherOffset = Iterables.getLast(sortedOffsets).end;
+
+        String type = outputLabel;
+        String source = QuantitiesModels.QUANTITIES.getModelName();
+
+        return new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())),
+                type,
+                source,
+                lowerOffset - tokens.get(0).getOffset(),
+                higherOffset - tokens.get(0).getOffset(),
+                extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight(),
+                boundingBoxes);
     }
 }

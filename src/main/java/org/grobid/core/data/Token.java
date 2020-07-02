@@ -1,5 +1,8 @@
 package org.grobid.core.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Token {
     private final String text;
     private final String font;

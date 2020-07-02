@@ -2,24 +2,22 @@ package org.grobid.service.controller;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.grobid.core.data.PDFAnnotationResponse;
-import org.grobid.core.data.PDFProcessingResponse;
+import org.grobid.core.data.DocumentResponse;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 
 @Singleton
 @Path("/")
 public class AnnotationController {
-
-    private static final String PATH_BASE = "/";
-    private static final String PATH_IS_ALIVE = "isalive";
 
     private AggregatedProcessing aggregatedProcessing;
 
@@ -28,65 +26,32 @@ public class AnnotationController {
         this.aggregatedProcessing = aggregatedProcessing;
     }
 
-    @Path(PATH_IS_ALIVE)
-    @Produces(MediaType.TEXT_PLAIN)
-    @GET
-    public static Response isAlive() {
-        Response response = null;
-        try {
-
-            String retVal = null;
-            try {
-                retVal = Boolean.valueOf(true).toString();
-            } catch (Exception e) {
-                retVal = Boolean.valueOf(false).toString();
-            }
-            response = Response.status(Response.Status.OK).entity(retVal).build();
-        } catch (Exception e) {
-            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-        return response;
-    }
-
-    @Path("annotateSuperconductorsPDF")
+    @Path("/process/text")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public String processPDF(@FormDataParam("input") InputStream uploadedInputStream,
-                             @FormDataParam("input") FormDataContentDisposition fileDetail) {
-        long start = System.currentTimeMillis();
-        PDFAnnotationResponse extractedEntities = aggregatedProcessing.annotate(uploadedInputStream);
-        long end = System.currentTimeMillis();
-
-        extractedEntities.setRuntime(end - start);
-
-        return extractedEntities.toJson();
-    }
-
-    @Path("processSuperconductorsText")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public String processTextSuperconductors(@FormDataParam("text") String text) {
-
+    public DocumentResponse processTextSuperconductors(@FormDataParam("text") String text,
+                                                       @FormDataParam("disableLinking") boolean disableLinking) {
         String textPreprocessed = text.replace("\r\n", "\n");
 
         long start = System.currentTimeMillis();
-        PDFAnnotationResponse extractedEntities = aggregatedProcessing.process(textPreprocessed);
+        DocumentResponse extractedEntities = aggregatedProcessing.process(textPreprocessed, disableLinking);
         long end = System.currentTimeMillis();
 
         extractedEntities.setRuntime(end - start);
 
-        return extractedEntities.toJson();
+        return extractedEntities;
     }
 
-    @Path("processSuperconductorsPDF")
+    @Path("/process/pdf")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public PDFProcessingResponse processPdfSuperconductors(@FormDataParam("input") InputStream uploadedInputStream,
-                                                           @FormDataParam("input") FormDataContentDisposition fileDetail) {
+    public DocumentResponse processPdfSuperconductors(@FormDataParam("input") InputStream uploadedInputStream,
+                                                      @FormDataParam("input") FormDataContentDisposition fileDetail,
+                                                      @FormDataParam("disableLinking") boolean disableLinking) {
         long start = System.currentTimeMillis();
-        PDFProcessingResponse response = aggregatedProcessing.process(uploadedInputStream);
+        DocumentResponse response = aggregatedProcessing.process(uploadedInputStream, disableLinking);
         long end = System.currentTimeMillis();
 
         response.setRuntime(end - start);

@@ -9,8 +9,8 @@ import org.codehaus.stax2.XMLStreamReader2;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.annotationAgreement.data.UnitizedStudyWrapper;
-import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
