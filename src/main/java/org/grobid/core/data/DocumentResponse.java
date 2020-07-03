@@ -35,7 +35,8 @@ public class DocumentResponse {
     }
 
     public void addParagraph(ProcessedParagraph paragraph) {
-        paragraph.setTokens(null);
+        //TODO: remove tokens will break supercuration....
+//        paragraph.setTokens(null);
         this.paragraphs.add(paragraph);
     }
 

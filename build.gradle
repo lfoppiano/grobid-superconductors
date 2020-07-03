@@ -112,6 +112,9 @@ dependencies {
     // XML
     implementation 'org.codehaus.woodstox:stax2-api:3.1.4'
     implementation 'com.fasterxml.woodstox:woodstox-core:5.1.0'
+
+    // Jep
+    implementation 'black.ninia:jep:3.9.0'
 }
 
 

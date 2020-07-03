@@ -1,6 +1,8 @@
 package org.grobid.core.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.grobid.core.layout.LayoutToken;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Token {
@@ -20,6 +22,12 @@ public class Token {
         this.isItalic = isItalic;
         this.isBold = isBold;
         this.offset = offset;
+    }
+
+    public static Token of(LayoutToken layoutToken) {
+        String style = getStyle(layoutToken);
+
+        return new Token(layoutToken.getText(), layoutToken.getFont(), layoutToken.getFontSize(), style, layoutToken.getOffset(), layoutToken.isItalic(), layoutToken.isBold());
     }
 
     public String getText() {
@@ -48,5 +56,19 @@ public class Token {
 
     public boolean isBold() {
         return isBold;
+    }
+
+    @JsonIgnore
+    public static String getStyle(LayoutToken l) {
+        boolean subscript = l.isSubscript();
+        boolean superscript = l.isSuperscript();
+
+        String style = "baseline";
+        if (superscript) {
+            style = "superscript";
+        } else if (subscript) {
+            style = "subscript";
+        }
+        return style;
     }
 }

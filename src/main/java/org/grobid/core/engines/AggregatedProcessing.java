@@ -29,6 +29,8 @@ import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.grobid.core.data.Token.getStyle;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_PRESSURE_LABEL;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
 
 @Singleton
@@ -185,28 +187,37 @@ public class AggregatedProcessing {
         return new DocumentResponse(processedParagraph);
     }
 
-    private List<Span> getTemperatures(List<LayoutToken> tokens) {
+    private List<Span> getQuantities(List<LayoutToken> tokens) {
         List<Measurement> measurements = quantityParser.process(tokens);
+
+        List<Span> spans = new ArrayList<>();
+
+        spans.addAll(getTemperatures(measurements).stream()
+            .flatMap(p -> Stream.of(MeasurementUtils.toSpan(p, tokens, SUPERCONDUCTORS_TC_VALUE_LABEL)))
+            .collect(Collectors.toList()));
+
+        spans.addAll(getPressures(measurements).stream()
+            .flatMap(p -> Stream.of(MeasurementUtils.toSpan(p, tokens, SUPERCONDUCTORS_PRESSURE_LABEL)))
+            .collect(Collectors.toList()));
+
+
+        return spans;
+    }
+
+    private List<Measurement> getTemperatures(List<Measurement> measurements) {
         List<Measurement> temperatures = MeasurementUtils.filterMeasurementsByUnitType(measurements,
             Collections.singletonList(UnitUtilities.Unit_Type.TEMPERATURE));
 
         List<Measurement> kelvins = MeasurementUtils.filterMeasurementsByUnitValue(temperatures,
             Collections.singletonList("k"));
 
-        return kelvins.stream()
-            .flatMap(p -> Stream.of(MeasurementUtils.toSpan(p, tokens, SUPERCONDUCTORS_TC_VALUE_LABEL)))
-            .collect(Collectors.toList());
+        return kelvins;
     }
 
-    private List<Span> getPressures(List<LayoutToken> tokens) {
-        List<Measurement> measurements = quantityParser.process(tokens);
+    private List<Measurement> getPressures(List<Measurement> measurements) {
         List<Measurement> pressures = MeasurementUtils.filterMeasurementsByUnitType(measurements,
             Collections.singletonList(UnitUtilities.Unit_Type.PRESSURE));
-
-        List<Span> spans = pressures.stream()
-            .flatMap(p -> Stream.of(MeasurementUtils.toSpan(p, tokens, "pressure")))
-            .collect(Collectors.toList());
-        return spans;
+        return pressures;
     }
 
     public DocumentResponse process(InputStream uploadedInputStream, boolean disableLinking) {
@@ -240,26 +251,29 @@ public class AggregatedProcessing {
     }
 
     public List<ProcessedParagraph> process(List<LayoutToken> tokens, boolean disableLinking) {
-        List<Span> namedEntitiesList = superconductorsParser.process(tokens);
-
         ProcessedParagraph processedParagraph = new ProcessedParagraph();
 
-        processedParagraph.setTokens(tokens.stream().map(l -> {
-            String style = getStyle(l);
-
-            return new Token(l.getText(), l.getFont(), l.getFontSize(), style, l.getOffset(), l.isItalic(), l.isBold());
-        }).collect(Collectors.toList()));
-
+        processedParagraph.setTokens(tokens.stream().map(l -> Token.of(l)).collect(Collectors.toList()));
         processedParagraph.setText(LayoutTokensUtil.toText(tokens));
 
-        List<Span> temperatureList = getTemperatures(tokens);
-        List<Span> pressureList = getPressures(tokens);
+        List<Span> spans = new ArrayList<>();
+        List<Span> superconductorsList = superconductorsParser.process(tokens);
+        // Re-calculate the offsets to be based on the current paragraph - TODO: investigate this mismatch
+        List<Span> correctedSuperconductorsSpans = superconductorsList.stream()
+            .map(s -> {
+                int paragraphOffsetStart = tokens.get(0).getOffset();
+                s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
+                s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
+                return s;
+            })
+            .collect(Collectors.toList());
 
-        processedParagraph.getSpans().addAll(namedEntitiesList);
-        processedParagraph.getSpans().addAll(temperatureList);
-        processedParagraph.getSpans().addAll(pressureList);
+        List<Span> quantitiesList = getQuantities(tokens);
+        spans.addAll(correctedSuperconductorsSpans);
+        spans.addAll(quantitiesList);
 
-        List<Span> sortedSpans = processedParagraph.getSpans().stream()
+        List<Span> sortedSpans = spans
+            .stream()
             .sorted(Comparator.comparingInt(Span::getOffsetStart))
             .collect(Collectors.toList());
 
@@ -321,18 +335,6 @@ public class AggregatedProcessing {
         return sb.toString();
     }
 
-    public static String getStyle(LayoutToken l) {
-        boolean subscript = l.isSubscript();
-        boolean superscript = l.isSuperscript();
-
-        String style = "baseline";
-        if (superscript) {
-            style = "superscript";
-        } else if (subscript) {
-            style = "subscript";
-        }
-        return style;
-    }
 
     /**
      * Remove overlapping annotations
