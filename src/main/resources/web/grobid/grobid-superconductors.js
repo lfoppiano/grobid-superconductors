@@ -73,8 +73,6 @@ var grobid = (function ($) {
 
             // Avoid flash of white box if rendered for any reason.
             textArea.style.background = 'transparent';
-
-
             textArea.value = text;
 
             document.body.appendChild(textArea);
@@ -110,6 +108,47 @@ var grobid = (function ($) {
 
         }
 
+        /** **/
+        function downloadRDF() {
+            var fileName = "export.xml";
+            var a = document.createElement("a");
+            var xml_header = '<?xml version="1.0"?>';
+            var rdf_header = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:supercon="http://falcon.nims.go.jp/supercuration">';
+            var rdf_header_end = '</rdf:RDF>';
+
+            var outputXML = xml_header + "\n" + rdf_header + "\n";
+
+            var tableResultsBody = $('#tableResultsBody');
+
+            var rows = tableResultsBody.find("tr");
+            $.each(rows, function () {
+                var tds = $(this).children();
+                var material = tds[2].textContent;
+                var tcValue = tds[3].textContent;
+                var id = $(this).attr("id").replaceAll("row", "");
+
+                outputXML += "\t" + '<rdf:Supercon rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
+
+                outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
+                outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
+
+                outputXML += "\t" + '</rdf:Supercon>';
+            });
+
+            outputXML += rdf_header_end;
+
+            var file = new Blob([outputXML], {type: 'application/xml'});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+
+            document.body.appendChild(a);
+
+            $(a).ready(function () {
+                a.click();
+                return true;
+            });
+        }
+
         $(document).ready(function () {
             $('#requestResultPdf').hide();
             $('#requestResultText').hide();
@@ -127,6 +166,7 @@ var grobid = (function ($) {
             $('#submitRequestPdf').bind('click', 'processPDF', processPdf);
             $('#copy-button').bind('click', copyOnClipboard);
             $('#add-button').bind('click', addRow);
+            $('#download-rdf-button').bind('click', downloadRDF);
 
             //this mess avoid that pressing the tabs down in the text we reset the wrong div
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -607,8 +647,9 @@ var grobid = (function ($) {
             $("#" + tc_element_id).editable();
 
             appendRemoveButton(row_id);
-
         }
+
+        /** Visualisation **/
 
         function showSpanOnPDF(param) {
             var type = param.data.type;
