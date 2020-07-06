@@ -113,7 +113,7 @@ var grobid = (function ($) {
         $(document).ready(function () {
             $('#requestResultPdf').hide();
             $('#requestResultText').hide();
-            $('#tableResults').hide();
+            // $('#tableResults').hide();
 
             configuration = {
                 "url_mapping": {
@@ -465,7 +465,6 @@ var grobid = (function ($) {
                         var boundingBoxes = span.boundingBoxes;
                         if ((boundingBoxes != null) && (boundingBoxes.length > 0)) {
                             boundingBoxes.forEach(function (boundingBox, positionIdx) {
-                                // console.log(positionIdx)
                                 // get page information for the annotation
                                 var pageNumber = boundingBox.page;
                                 if (pageInfo[pageNumber - 1]) {
@@ -496,7 +495,7 @@ var grobid = (function ($) {
 
                                 // in case of multiple bounding boxes, we will have multiple IDs, in this case we can point
                                 // to the first box
-                                $("#" + element_id).bind('click', span.id + "0", goToByScroll);
+                                $("#" + element_id).bind('click', span.id + '0', goToByScroll);
                                 $("#" + mat_element_id).editable();
                                 $("#" + tc_element_id).editable();
                                 appendRemoveButton(row_id);
@@ -543,7 +542,7 @@ var grobid = (function ($) {
                 y + "px; left:" + x + "px;";
             element.setAttribute("style", attributes + "border:2px solid; box-sizing: content-box;");
             element.setAttribute("class", 'area' + ' ' + type);
-            element.setAttribute("id", (annotationId + positionIdx));
+            element.setAttribute("id", (annotationId + '' + positionIdx));
             element.setAttribute("page", page);
 
             pageDiv.append(element);
@@ -556,7 +555,7 @@ var grobid = (function ($) {
                 return
             }
 
-            $('#' + (annotationId + positionIdx)).bind('click', {
+            $('#' + (annotationId + '' + positionIdx)).bind('click', {
                 'type': 'entity',
                 'item': item
             }, showSpanOnPDF);
@@ -567,7 +566,7 @@ var grobid = (function ($) {
 
             let viewInPDFIcon = "";
             if (viewInPDF === true) {
-                viewInPDFIcon = "<img src='static/resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
+                viewInPDFIcon = "<img src='resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
             }
 
             let row_id = "row" + id;
@@ -575,11 +574,11 @@ var grobid = (function ($) {
             let mat_element_id = "mat" + id;
             let tc_element_id = "tc" + id;
 
-            let html_code = "<tr id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
-                "<td><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
-                "<td><img src='static/resources/icons/trash.svg' alt='-' id='remove-button'></img></td>" +
-                "<td><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
-                "<td><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
+            let html_code = "<tr class='d-flex' id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
+                "<td class='col-1'><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
+                "<td class='col-1'><img src='resources/icons/trash.svg' alt='-' id='remove-button'/></td>" +
+                "<td class='col-6'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
+                "<td class='col-4'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
                 "</tr>";
 
             return {row_id, element_id, mat_element_id, tc_element_id, html_code};
@@ -588,8 +587,10 @@ var grobid = (function ($) {
         function appendRemoveButton(row_id) {
             let remove_button = $("#" + row_id).find("img#remove-button");
             remove_button.bind("click", function () {
-                console.log("Removing row with id " + row_id);
+                // console.log("Removing row with id " + row_id);
                 let item = $("#" + row_id);
+                // Remove eventual popups
+                $("#" + item.attr("aria-describedby")).html("").hide();
                 item.remove();
             });
         }
@@ -677,7 +678,7 @@ var grobid = (function ($) {
             string += ">";
             if (span.tc) {
                 var infobox_id = "infobox" + span.id;
-                string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "<img id='" + infobox_id + "' src='static/resources/icons/arrow-up.svg'/></h2>";
+                string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "<img id='" + infobox_id + "' src='resources/icons/arrow-up.svg'/></h2>";
 
             } else {
                 string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "</h2>";

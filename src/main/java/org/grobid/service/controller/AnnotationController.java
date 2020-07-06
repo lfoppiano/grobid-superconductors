@@ -5,19 +5,19 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.DocumentResponse;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
 
 @Singleton
 @Path("/")
 public class AnnotationController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationController.class);
 
     private AggregatedProcessing aggregatedProcessing;
 
@@ -25,6 +25,19 @@ public class AnnotationController {
     public AnnotationController(GrobidSuperconductorsConfiguration configuration, AggregatedProcessing aggregatedProcessing) {
         this.aggregatedProcessing = aggregatedProcessing;
     }
+
+    @Path("/annotations/feedback")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @POST
+    public void annotationFeedback(@FormParam("name") String name,
+                                   @FormParam("pk") String key,
+                                   @FormParam("value") String value) {
+
+        // pk can be used to add more information - at the moment is the same as name
+        LOGGER.debug("Received feedback on annotation for " + name + " with value " + value);
+
+    }
+
 
     @Path("/process/text")
     @Consumes(MediaType.MULTIPART_FORM_DATA)

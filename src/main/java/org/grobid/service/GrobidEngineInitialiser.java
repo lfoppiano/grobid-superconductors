@@ -15,7 +15,6 @@ import javax.inject.Singleton;
 public class GrobidEngineInitialiser {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrobidEngineInitialiser.class);
 
-
     @Inject
     public GrobidEngineInitialiser(GrobidSuperconductorsConfiguration configuration) {
         LOGGER.info("Initialising Grobid");

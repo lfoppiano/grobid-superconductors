@@ -11,7 +11,7 @@
     <script type="text/javascript" src="resources/libs/jquery/jquery.form.3.51.js"></script>
 
     <!-- bootstrap -->
-    <script type="text/javascript" src="resources/libs/bootstrap-4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="resources/libs/bootstrap-4.5.0/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="resources/libs/bootstrap-4.5.0/css/bootstrap.min.css" media="screen"/>
     <link rel="stylesheet" href="resources/libs/font-awesome/css/font-awesome.min.css">
 
@@ -77,11 +77,6 @@
                     <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
                         <div class="row m-3">
                             <div class="col" id="about-content">
-                                <p><a href="http://www.apache.org/licenses/LICENSE-2.0.html" rel="nofollow"><img
-                                    src="https://camo.githubusercontent.com/8bf81d4b6a63eaf6f712e3092fe7238f8716e615/687474703a2f2f696d672e736869656c64732e696f2f3a6c6963656e73652d6170616368652d626c75652e737667"
-                                    alt="License" data-canonical-src="http://img.shields.io/:license-apache-blue.svg"
-                                    style="max-width:100%;"></a></p>
-                                <p><strong>Work in progress.</strong></p>
                                 <p>The goal of this GROBID module is to identify, extract and link entities in text from
                                     superconductors-related scientific literature.
                                     In particular, the goal is to extract superconductor materials and their related
@@ -142,7 +137,7 @@
                                     cross-validation (average metrics over the 10 folds).
                                     We also indicate the best and worst results over the 10 folds in the complete result
                                     page.</p>
-                                <table class="table">
+                                <table class="table-sm">
                                     <thead>
                                     <tr>
                                         <th>Labels</th>
@@ -238,7 +233,7 @@
                                     Results are approximate, they are calculated based on manual correction on the
                                     output
                                     data:</p>
-                                <table class="table">
+                                <table class="table-sm">
                                     <thead>
                                     <tr>
                                         <th>Total links</th>
@@ -369,16 +364,16 @@
             </div>
         </div>
 
-        <div id="requestResultPdf" class="border">
+        <div id="requestResultPdf">
             <div id="tableResults" style="width:85%;">
                 <div class="row m-4">
                     <table class="table table-editable">
                         <thead>
-                        <tr>
-                            <th class="span1" scope="col"></th>
-                            <th class="span1" scope="col"></th>
-                            <th scope="span6">Material</th>
-                            <th scope="span4">Critical temperature</th>
+                        <tr class="d-flex">
+                            <th class="col-1" scope="col"></th>
+                            <th class="col-1" scope="col"></th>
+                            <th class="col-6">Material</th>
+                            <th class="col-4">Critical temperature</th>
                         </tr>
                         </thead>
                         <tbody id="tableResultsBody">
@@ -432,7 +427,7 @@
     </div>
 
     <footer>
-        <p><span style="color:#848484;">&copy; National Institute for Materials Science and GROBID contributors, 2019 - 2020 </span>
+        <p><span style="color:#848484;">&copy; GROBID contributors, 2019 - 2020 </span>
         </p>
     </footer>
 </div>
