@@ -2,166 +2,437 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>GROBID Superconductors Text and Data mining Web Application</title>
-    <link rel="icon" type="image/x-icon" href="resources/img/favicon.ico"/>
-    <link rel="shortcut icon" type="image/x-icon" href="resources/img/favicon.ico"/>
+    <title>GROBID Superconductors TDM application</title>
+    <link rel="icon" type="image/x-icon" href="resources/images/favicon.ico"/>
+    <link rel="shortcut icon" type="image/x-icon" href="resources/images/favicon.ico"/>
 
-    <script type="text/javascript" src="resources/js/jquery-1.10.0.min.js"></script>
-    <script type="text/javascript" src="resources/js/jquery.form.js"></script>
-    <script type="text/javascript" src="resources/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery -->
+    <script type="text/javascript" src="resources/libs/jquery/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="resources/libs/jquery/jquery.form.3.51.js"></script>
 
-    <script type="text/javascript" src="resources/bootstrap/js/prettify.js"></script>
-    <script type="text/javascript" src="resources/js/vkbeautify.js"></script>
+    <!-- bootstrap -->
+    <script type="text/javascript" src="resources/libs/bootstrap-4.5.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="resources/libs/bootstrap-4.5.0/css/bootstrap.min.css" media="screen"/>
+    <link rel="stylesheet" href="resources/libs/font-awesome/css/font-awesome.min.css">
 
-    <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" media="screen"/>
-    <link rel="stylesheet" href="resources/bootstrap/css/prettify.css"/>
+    <script type="text/javascript" src="resources/libs/vkbeautify/vkbeautify.js"></script>
 
-    <link rel="stylesheet" href="resources/font-awesome/css/font-awesome.min.css">
+    <!-- X-editable -->
+    <link href="resources/libs/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+    <script src="resources/libs/bootstrap-editable/js/bootstrap-editable.js"></script>
 
     <!-- PDF.js stuff -->
-    <link type="text/css" href="resources/pdf.js/web/text_layer_builder.css" rel="stylesheet"/>
-    <link type="text/css" href="resources/pdf.js/web/annotation_layer_builder.css" rel="stylesheet"/>
-    <script type="text/javascript" src="resources/pdf.js/web/text_layer_builder.js"></script>
-    <script type="text/javascript" src="resources/pdf.js/web/pdf_link_service.js"></script>
-    <script type="text/javascript" src="resources/pdf.js/web/annotation_layer_builder.js"></script>
-    <script type="text/javascript" src="resources/pdf.js/build_/pdf.js"></script>
+    <link type="text/css" href="resources/libs/pdf.js/web/text_layer_builder.css" rel="stylesheet"/>
+    <link type="text/css" href="resources/libs/pdf.js/web/annotation_layer_builder.css" rel="stylesheet"/>
+    <script type="text/javascript" src="resources/libs/pdf.js/web/text_layer_builder.js"></script>
+    <script type="text/javascript" src="resources/libs/pdf.js/web/pdf_link_service.js"></script>
+    <script type="text/javascript" src="resources/libs/pdf.js/web/annotation_layer_builder.js"></script>
+    <script type="text/javascript" src="resources/libs/pdf.js/build_/pdf.js"></script>
 
-    <!--link rel="stylesheet" type="text/css" href="brat/style-vis.css"/-->
+    <!-- markdown -->
+    <script type="text/javascript" src="resources/libs/markdown/markdown.js"></script>
+
+    <!-- Grobid Javascript/CSS -->
     <link rel="stylesheet" href="resources/css/style.css"/>
     <link rel="stylesheet" href="resources/css/style-ner.css"/>
     <link rel="stylesheet" href="resources/css/style-quantities.css"/>
     <link rel="stylesheet" href="resources/css/style-superconductors.css"/>
-
-    <!-- The Grobid Javascript library -->
     <script src="grobid/grobid-superconductors.js"></script>
-
 </head>
 
 <body>
-<div class="container" style="width:85%;">
-
+<div class="container">
     <div class="content">
 
         <div class="page-header">
-            <h1><span style="color:#333;">GROBID Superconductors Text and Data Mining
-                <!--img src="resources/img/grobid_header_logo.png" /-->
-                     <span style="padding-left:40px;color:#AE0C0C;">        
-                        <h2><small>
-                            <a class="section-active" id="about" href="#">About</a>
-                                <span style="padding-left:20px;">&nbsp;</span>
-                            <!--a class="section-active" id="demo" href="#">Demo</a>
-                                <span style="padding-left:20px;">&nbsp;</span-->
-                            <a class="section-not-active" id="rest" href="#">Service</a>
-                                <span style="padding-left:20px;">&nbsp;</span>
-                            <a class="section-not-active" id="doc" href="#">Documentation</a>
-                                <span style="padding-left:20px;">&nbsp;</span>
-                        </small></h2>
-                     </span>
-            </span>
-
-            </h1>
+            <div class="row">
+                <div class="col-11">
+                    <h1>GROBID Superconductors Text and Data Mining</h1>
+                </div>
+                <div class="col-1">
+                    <!--                    <a href="http://www.github.com/lfoppiano/grobid-superconductors"><img-->
+                    <!--                        src="resources/img/GitHub-Mark-32px.png"></a>-->
+                </div>
+            </div>
         </div>
-
-        <table border="0">
-            <tr>
-                <td style="width:100px;align:left;vertical-align: top;"><h4><span id="subTitle"></span></h4></td>
-                <td style="align:left;vertical-align: top;">
-                    <div id="divAbout">
-                        <p>
-                            <large><b>GROBID</b> Superconductors elements extraction
-                        </p>
-                        <p>This is an (not yet) open source project (not yet) available on <a
-                                href="https://bitbucket.com/lfoppiano/grobid-superconductors">Bitbucket</a> under <a
-                                href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a>. </p>
-                        <p>
-
-                            <a style="color:#70695C;"
-                               href="mailto:">Contact</a>.
-                        </p>
-                    </div>
-                    <div id="divDoc">
-
-                    </div>
-                </td>
-            </tr>
-        </table>
-
-        <div id="divRestI">
+        <div>
             <form class="form-horizontal" method="post" id="gbdForm" target=_blank accept-charset="UTF-8">
-                <!--div class="form-horizontal" method="post" id="gbdForm" target=_blank accept-charset="UTF-8"-->
-                <!--form class="form-horizontal" method="post" id="gbdForm" target=_blank accept-charset="UTF-8"-->
-                <table border="0">
-                    <tr>
-                        <td>Service to call &nbsp;</td>
-                        <td>
-                            <select id="selectedService">
-                                <option value="processSuperconductorsText" selected>Process text</option>
-                                <option value="annotateSuperconductorsPDF">Annotate PDF documents</option>
-                            </select>
-                        </td>
-                        <td>
-                            <div id="consolidateBlock"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td/>
-                    </tr>
-                    <tr>
-                        <td><span id="label">&nbsp;</span></td>
-                        <td>
-                            <div id="field">
 
-                                <div class="fileupload fileupload-new" data-provides="fileupload" id="fileInputDiv">
-                                    <div class="input-append">
-                                        <div class="uneditable-input span4" style="white-space:normal;">
-                                            <i class="icon-file fileupload-exists" style="white-space:normal;"></i>
-                                            <span class="fileupload-preview" style="white-space:normal;"></span>
-                                        </div>
-                                        <span class=""/>
+                <ul class="nav nav-tabs" id="top-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="about-tab" data-toggle="tab" href="#about" role="tab"
+                           aria-controls="about" aria-selected="true">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="process-text-tab" data-toggle="tab" href="#process-text" role="tab"
+                           aria-controls="process-text" aria-selected="false">Text</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="process-pdf-tab" data-toggle="tab" href="#process-pdf" role="tab"
+                           aria-controls="process-pdf" aria-selected="false">PDF documents</a>
+                    </li>
+                </ul>
 
-                                        <span class="btn btn-file">
-                                            <span class="fileupload-new" id="labelFile">Select file</span>
-                                            <span class="fileupload-exists">Change</span>
-                                            <input id="input" name="input" type="file"/>
-                                        </span>
-                                        <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
-                                    </div>
-                                </div>
+                <div class="tab-content" id="top-tab-content">
+                    <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+                        <div class="row m-3">
+                            <div class="col" id="about-content">
+                                <p>The goal of this GROBID module is to identify, extract and link entities in text from
+                                    superconductors-related scientific literature.
+                                    In particular, the goal is to extract superconductor materials and their related
+                                    properties,
+                                    such a Critical Temperature (Tc), Critical pressure, measurement methods.</p>
+                                <p>As the others GROBID models, grobid-supercondcutors relies on machine learning and
+                                    can use linear
+                                    CRF (via <a href="https://github.com/kermitt2/Wapiti">Wapiti</a> JNI integration) or
+                                    Deep Learning model such as BiLSTM-CRF with or without ELMo (via <a
+                                        href="https://github.com/kermitt2/delft">DeLFT</a> JNI integration).</p>
+                                <p>The linking is implemented as Python library in a separate project <a
+                                    href="https://github.com/lfoppiano/grobid-superconductors-tools">grobid-superconductors-tools</a>
+                                    (private), which contains also other utilities.</p>
 
-                                <div id="textInputDiv">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <textarea id="inputTextArea" class="span9" rows="9"
-                                                          name="text"></textarea>
-                                            </td>
-                                            <td>
-                                                <span style='padding-left:20px;'><p>&nbsp;<a id="example0" href="#">example 1</a></p><p>&nbsp;<a
-                                                        id="example1" href="#">example 2</a></p><p>&nbsp;<a
-                                                        id="example2"
-                                                        href="#">example 3</a></p><p>&nbsp;<a
-                                                        id="example3" href="#">example 4</a></p></span>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                <h3><a id="user-content-output-databases" class="anchor" aria-hidden="true"
+                                       href="#output-databases">
+                                </a>Output databases
+                                </h3>
+                                <p>The output database can be easily created by configuring the grobid-superconductors
+                                    service, and processing a set of pdfs using the
+                                    <italic>process</italic>
+                                    sub-project in <a
+                                        href="https://github.com/lfoppiano/grobid-superconductors-tools">grobid-superconductors-tools</a>.
+                                </p>
+                                <p>Example of database output, organised by dates, can be found in the github
+                                    repository:</p>
+                                <ul>
+                                    <li>
+                                        <p><a
+                                            href="https://github.com/lfoppiano/grobid-superconductors-data/tree/master/resources/dataset/database/500-papers">500-papers</a>
+                                            is the output from 500 papers from American Institute of Physics (AIP),
+                                            American
+                                            Physical Society (APS) and Institute of Physics (IOP). They were
+                                            automatically
+                                            selected using keywords relative to the superconductors domain such as 'tc',
+                                            'superconductivity'.</p>
+                                    </li>
+                                    <li>
+                                        <p><a
+                                            href="https://github.com/lfoppiano/grobid-superconductors-data/tree/master/resources/dataset/database/IOP-0953-2048">IOP-0953-2048</a>
+                                            contains the output obtained processing the journal <code>IOP -
+                                                Superconductors
+                                                science and technology</code></p>
+                                    </li>
+                                </ul>
+
+                                <h2><a id="user-content-accuracy" class="anchor" aria-hidden="true" href="#accuracy">
+                                </a>Accuracy
+                                </h2>
+                                <h3><a id="user-content-extraction-sequence-labelling-task" class="anchor"
+                                       aria-hidden="true"
+                                       href="#extraction-sequence-labelling-task">
+                                </a>Extraction (Sequence labelling task)
+                                </h3>
+                                <p>Evaluation made on the 05/01/2020 using 114 papers.
+                                    The results (Precision, Recall, F-score) for all the models have been obtained using
+                                    10-fold
+                                    cross-validation (average metrics over the 10 folds).
+                                    We also indicate the best and worst results over the 10 folds in the complete result
+                                    page.</p>
+                                <table class="table-sm">
+                                    <thead>
+                                    <tr>
+                                        <th>Labels</th>
+                                        <th>CRF</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>BidLSTM+CRF</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>Metrics</td>
+                                        <td>Precision</td>
+                                        <td>Recall</td>
+                                        <td>F1-Score</td>
+                                        <td>Precision</td>
+                                        <td>Recall</td>
+                                        <td>F1-Score</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>&lt;class&gt;</code></td>
+                                        <td>81.66</td>
+                                        <td>72.36</td>
+                                        <td>76.64</td>
+                                        <td>73.75</td>
+                                        <td>65.42</td>
+                                        <td>69.29</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>&lt;material&gt;</code></td>
+                                        <td>81.89</td>
+                                        <td>80.09</td>
+                                        <td>80.96</td>
+                                        <td>74.57</td>
+                                        <td>75.33</td>
+                                        <td>74.91</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>&lt;me_method&gt;</code></td>
+                                        <td>73.57</td>
+                                        <td>71.24</td>
+                                        <td>72.26</td>
+                                        <td>69.75</td>
+                                        <td>82.87</td>
+                                        <td>75.73</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>&lt;pressure&gt;</code></td>
+                                        <td>55.27</td>
+                                        <td>34.4</td>
+                                        <td>41.54</td>
+                                        <td>39.25</td>
+                                        <td>18.89</td>
+                                        <td>23.06</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>&lt;tc&gt;</code></td>
+                                        <td>82.3</td>
+                                        <td>77.61</td>
+                                        <td>79.83</td>
+                                        <td>80.09</td>
+                                        <td>76.85</td>
+                                        <td>78.41</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>&lt;tcValue&gt;</code></td>
+                                        <td>74.64</td>
+                                        <td>61.8</td>
+                                        <td>67.56</td>
+                                        <td>74.85</td>
+                                        <td>67.24</td>
+                                        <td>70.68</td>
+                                    </tr>
+                                    <tr>
+                                        <td>All (micro avg)</td>
+                                        <td>80.41</td>
+                                        <td>75.89</td>
+                                        <td>78.07</td>
+                                        <td>74.82</td>
+                                        <td>73.79</td>
+                                        <td>74.27</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <h3><a id="user-content-end-to-end-evaluation-extraction--linking" class="anchor"
+                                       aria-hidden="true" href="#end-to-end-evaluation-extraction--linking">
+                                </a>End to end evaluation (Extraction + Linking)
+                                </h3>
+                                <p>Corpus of 500 PDF papers from American Institute of Physics (AIP),
+                                    American Physical Society (APS) and Institute of Physics (IOP).
+                                    Results are approximate, they are calculated based on manual correction on the
+                                    output
+                                    data:</p>
+                                <table class="table-sm">
+                                    <thead>
+                                    <tr>
+                                        <th>Total links</th>
+                                        <th>Correct links</th>
+                                        <th>Wrong links</th>
+                                        <th>Error rate</th>
+                                        <th>Precision</th>
+                                        <th>Recall</th>
+                                        <th>F1-score</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>597</td>
+                                        <td>441</td>
+                                        <td>156</td>
+                                        <td>26.13</td>
+                                        <td>73.86</td>
+                                        <td>66.33</td>
+                                        <td>69.90</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                                <h2><a id="user-content-acknowledgement" class="anchor" aria-hidden="true"
+                                       href="#acknowledgement">
+                                </a>Acknowledgement
+                                </h2>
+                                <p>Our warmest thanks to <a href="http://github.com/kermitt2">@kermitt2</a>
+                                    (<a href="http://www.science-miner.com" rel="nofollow">Science-miner</a>):
+                                    Author of <a href="http://github.com/kermitt2/grobid">Grobid</a>, <a
+                                        href="http://github.com/kermitt2/delft">Delft</a> and tons of other interesting
+                                    open source projects.</p>
+                                <p>This project has been developed at the <a href="http://www.nims.go.jp"
+                                                                             rel="nofollow">National
+                                    Institute for Materials Science</a>, in <a
+                                    href="https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki" rel="nofollow">Tsukuba</a>,
+                                    Japan.</p>
+                                <h2><a id="user-content-license" class="anchor" aria-hidden="true" href="#license">
+                                </a>License
+                                </h2>
+                                <p>GROBID and grobid-superconductors are distributed under <a
+                                    href="http://www.apache.org/licenses/LICENSE-2.0" rel="nofollow">Apache 2.0
+                                    license</a>.</p>
+                                <p>Contact: Luca Foppiano (FOPPIANO.Luca <strong>AT</strong> nims.go.jp)</p>
+                                <h2><a id="user-content-references" class="anchor" aria-hidden="true"
+                                       href="#references">
+                                </a>References
+                                </h2>
+                                <p>We described the framework around the system in the following articles (the latest on
+                                    top):</p>
+                                <ul>
+                                    <li>"Proposal for Automatic Extraction of Superconductors properties from scientific
+                                        literature": <a
+                                            href="http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3"
+                                            rel="nofollow">PDF</a></li>
+                                </ul>
+                                <pre><code>@inproceedings{foppiano2019proposal,
+	address = {Tsukuba},
+	title = {Proposal for {Automatic} {Extraction} {Framework} of {Superconductors} {Related} {Information} from {Scientific} {Literature}},
+	volume = {119},
+	copyright = {All rights reserved},
+	abstract = {The automatic collection of materials information from research papers using Natural Language Processing (NLP) is highly required for rapid materials development using big data, namely materials informatics (MI). The difficulty of this automatic collection is mainly caused by the variety of expressions in the papers, a robust system with tolerance to such variety is required to be developed. In this paper, we report an ongoing interdisciplinary work to construct a system for automatic collection of superconductor-related information from scientific literature using text mining techniques. We focused on the identification of superconducting material names and their critical temperature (Tc) key property. We discuss the construction of a prototype for extraction and linking using machine learning (ML) techniques for the physical information collection. From the evaluation using 500 sample documents, we define a baseline and a direction for future improvements.},
+	language = {eng},
+	booktitle = {Letters and {Technology} {News}, vol. 119, no. 66, {SC}2019-1 (no.66)},
+	author = {Foppiano, Luca and Thaer, M. Dieb and Suzuki, Akira and Ishii, Masashi},
+	month = may,
+	year = {2019},
+	note = {ISSN: 2432-6380},
+	pages = {1--5}
+}
+</code></pre>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="process-text" role="tabpanel"
+                         aria-labelledby="process-text-tab">
+                        <div class="row m-3">
+                            <div class="col-7">
+                                <textarea class="form-control" id="inputTextArea" rows="9"></textarea>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="check-disable-linking">
+                                    <label class="form-check-label" for="check-disable-linking">Disable properties
+                                        linking</label>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td colspan="2"><input id="submitRequest" value="Submit" class="btn"/></td>
-                    </tr>
-                </table>
+                            <div class="col-3">
+                                <p><a id="example0" href="#">example 1</a></p>
+                                <p><a id="example1" href="#">example 2</a></p>
+                                <p><a id="example2" href="#">example 3</a></p>
+                                <p><a id="example3" href="#">example 4</a></p>
+                            </div>
+                        </div>
+                        <div class="row m-1 ml-5">
+                            <div class="col-2">
+                                <button type="button" id="submitRequestText" value="Submit"
+                                        class="btn btn-outline-dark btn-block">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="process-pdf" role="tabpanel" aria-labelledby="process-pdf-tab">
+                        <div class="row m-3">
+                            <div class="col-7">
+                                <div class="custom-file">
+                                    <input type="file" name="input" class="custom-file-input" id="file-upload">
+                                    <label class="custom-file-label" for="file-upload">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row m-1 ml-5">
+                            <div class="col-2">
+                                <button type="button" id="submitRequestPdf" value="Submit"
+                                        class="btn btn-outline-dark btn-block">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-        <br>
-        <div id="infoResult"></div>
-        <div id="requestResult"></div>
+        <div id="infoResultBlock">
+            <div class="row m-3">
+                <div id="infoResultMessage"></div>
+            </div>
+        </div>
+
+        <div id="requestResultPdf">
+            <div id="tableResults" style="width:85%;">
+                <div class="row m-4">
+                    <table class="table table-editable">
+                        <thead>
+                        <tr class="d-flex">
+                            <th class="col-1" scope="col"></th>
+                            <th class="col-1" scope="col"></th>
+                            <th class="col-6">Material</th>
+                            <th class="col-4">Critical temperature</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableResultsBody">
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="3">
+                                <button type="button" class="btn btn-outline-dark" id="add-button">+</button>
+                                <button type="button" class="btn btn-outline-dark" id="copy-button">
+                                    Clipboard
+                                </button>
+                                <button type="button" class="btn btn-outline-dark" id="download-rdf-button">
+                                    Download RDF
+                                </button>
+                            </td>
+                        </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+            </div>
+            <div id="requestResultPdfContent">
+
+            </div>
+        </div>
+        <div id="requestResultText" class="border">
+            <ul class="nav nav-tabs m-2" id="requestResultTextTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="result-annotations-tab" data-toggle="tab" href="#result-annotations"
+                       role="tab"
+                       aria-controls="result-annotations" aria-selected="true">Annotations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="result-response-tab" data-toggle="tab" href="#result-response" role="tab"
+                       aria-controls="result-response" aria-selected="false">Response</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="requestResultTextTabContent">
+                <div class="tab-pane fade show active" id="result-annotations" role="tabpanel"
+                     aria-labelledby="result-annotations">
+                    <div class="row m-3">
+                        <div class="col-8 border m-1" id="requestResultTextContent">
+
+                        </div>
+                        <div class="col-3" id="detailed_annot-0-0"></div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="result-response" role="tabpanel" aria-labelledby="result-response">
+                    <pre class='prettyprint lang-json' id='jsonCode'></pre>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer>
-        <p><span style="color:#848484;">&copy; GROBID contributors - 2016 </span></p>
+        <p><span style="color:#848484;">&copy; GROBID contributors, 2019 - 2020 </span>
+        </p>
     </footer>
 </div>
 

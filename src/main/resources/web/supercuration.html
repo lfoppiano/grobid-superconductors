@@ -1,0 +1,123 @@
+<!DOCTYPE XHTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>GROBID Superconductors Text and Data mining Web Application</title>
+    <link rel="icon" type="image/x-icon" href="static/resources/img/favicon.ico"/>
+    <link rel="shortcut icon" type="image/x-icon" href="static/resources/img/favicon.ico"/>
+
+    <!-- JQuery -->
+    <script type="text/javascript" src="static/resources/libs/jquery/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="static/resources/libs/jquery/jquery.form.3.51.js"></script>
+
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="static/resources/libs/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="static/resources/libs/bootstrap/css/bootstrap.min.css" media="screen"/>
+    <script type="text/javascript" src="static/resources/libs/bootstrap/js/prettify.js"></script>
+
+    <script type="text/javascript" src="static/resources/libs/vkbeautify/vkbeautify.js"></script>
+    <link rel="stylesheet" href="static/resources/libs/bootstrap/css/prettify.css"/>
+    <link rel="stylesheet" href="static/resources/libs/font-awesome/css/font-awesome.min.css">
+
+    <!-- X-editable -->
+    <link href="static/resources/libs/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+    <script src="static/resources/libs/bootstrap-editable/js/bootstrap-editable.js"></script>
+
+    <!-- PDF.js stuff -->
+    <link type="text/css" href="static/resources/libs/pdf.js/web/text_layer_builder.css" rel="stylesheet"/>
+    <link type="text/css" href="static/resources/libs/pdf.js/web/annotation_layer_builder.css" rel="stylesheet"/>
+    <script type="text/javascript" src="static/resources/libs/pdf.js/web/text_layer_builder.js"></script>
+    <script type="text/javascript" src="static/resources/libs/pdf.js/web/pdf_link_service.js"></script>
+    <script type="text/javascript" src="static/resources/libs/pdf.js/web/annotation_layer_builder.js"></script>
+    <script type="text/javascript" src="static/resources/libs/pdf.js/build_/pdf.js"></script>
+
+    <!-- Custom stylesheets -->
+    <link rel="stylesheet" href="static/resources/css/style.css"/>
+    <link rel="stylesheet" href="static/resources/css/style-ner.css"/>
+    <link rel="stylesheet" href="static/resources/css/style-quantities.css"/>
+    <link rel="stylesheet" href="static/resources/css/style-superconductors.css"/>
+
+    <!-- The Grobid Javascript library -->
+    <script src="static/grobid/grobid-superconductors.js"></script>
+
+
+</head>
+
+<body>
+<div class="container" style="width:85%;">
+
+    <div class="content">
+
+        <div class="page-header">
+            <h1><span style="color:#333;">GROBID Superconductors Text and Data Mining</span></h1>
+        </div>
+
+        <div id="divRestI">
+            <form class="form-horizontal" method="post" id="gbdForm" target=_blank accept-charset="UTF-8">
+                <!--div class="form-horizontal" method="post" id="gbdForm" target=_blank accept-charset="UTF-8"-->
+                <!--form class="form-horizontal" method="post" id="gbdForm" target=_blank accept-charset="UTF-8"-->
+                <table border="0">
+                    <tr>
+                        <td>
+                            <div class="fileupload fileupload-new" data-provides="fileupload" id="fileInputDiv">
+                                <div class="input-append">
+                                    <div class="uneditable-input span4" style="white-space:normal;">
+                                        <i class="icon-file fileupload-exists" style="white-space:normal;"></i>
+                                        <span class="fileupload-preview" style="white-space:normal;"></span>
+                                    </div>
+                                    <span class=""/>
+
+                                    <span class="btn btn-file">
+                                            <span class="fileupload-new" id="labelFile">Select file</span>
+                                            <span class="fileupload-exists">Change</span>
+                                            <input id="input" name="input" type="file"/>
+                                        </span>
+                                    <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>
+                            <div class="fileupload"><input id="submitRequest" value="Submit" class="btn"/></div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <br>
+
+        <div id="infoResult"></div>
+        <div id="tableResults" style="width:85%;">
+            <table class="table table-editable">
+                <thead>
+                    <tr>
+                        <th class="span1" scope="col"></th>
+                        <th class="span1" scope="col"></th>
+                        <th scope="span6">Material</th>
+                        <th scope="span4">Critical temperature</th>
+                    </tr>
+                </thead>
+                <tbody id="tableResultsBody">
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">
+                            <text class="btn" id="add-button">+</text>
+                            <text class="btn" id="copy-button">Clipboard</text>
+                            <text class="btn disabled" id="download-button">Download</text>
+                        </td>
+                    </tr>
+                </tfoot>
+
+            </table>
+        </div>
+        <div id="requestResult"></div>
+    </div>
+
+    <footer>
+        <p><span style="color:#848484;">&copy; GROBID contributors - 2019 </span></p>
+    </footer>
+</div>
+
+</body>
+</html>

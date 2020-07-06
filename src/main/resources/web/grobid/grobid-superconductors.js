@@ -10,469 +10,243 @@ var grobid = (function ($) {
         var responseJson = null;
 
         // for associating several quantities to a measurement
-        var superconMap = [];
-        var measurementMap = [];
-        var annotationsMap = [];
+        var spansMap = [];
+        var configuration = {};
 
+        function getUrl(action) {
+            var lastIndexOfSlash = $(location).attr('href').lastIndexOf("/");
+            var baseUrl = $(location).attr('href').substring(0, lastIndexOfSlash);
 
-        // Transformers to HTML
-        function defineBaseURL(ext) {
-            var baseUrl = null;
-            if ($(location).attr('href').indexOf("index.html") !== -1)
-                baseUrl = $(location).attr('href').replace("index.html", ext);
-            else
-                baseUrl = $(location).attr('href') + ext;
-            return baseUrl;
+            if (configuration['url_mapping'][action] !== null) {
+                return baseUrl + configuration['url_mapping'][action]
+            } else {
+                onError("Action " + action + " was not found in configuration. ");
+            }
         }
 
-        function setBaseUrl(ext) {
-            var baseUrl = defineBaseURL('service' + '/' + ext);
-            $('#gbdForm').attr('action', baseUrl);
+        function loadExamples(examples_list) {
+            for (var idx_example in examples_list) {
+                $('#example' + idx_example).unbind('click')
+                $('#example' + idx_example).bind('click', {id: idx_example}, function (event) {
+                    event.preventDefault();
+                    $('#inputTextArea').val(examples_list[event.data.id]);
+                });
+            }
+        }
+
+        function copyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+
+            //
+            // *** This styling is an extra step which is likely not required. ***
+            //
+            // Why is it here? To ensure:
+            // 1. the element is able to have focus and selection.
+            // 2. if element was to flash render it has minimal visual impact.
+            // 3. less flakyness with selection and copying which **might** occur if
+            //    the textarea element is not visible.
+            //
+            // The likelihood is the element won't even render, not even a
+            // flash, so some of these are just precautions. However in
+            // Internet Explorer the element is visible whilst the popup
+            // box asking the user for permission for the web page to
+            // copy to the clipboard.
+            //
+
+            // Place in top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+
+            // Avoid flash of white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+            textArea.value = text;
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Copying text command was ' + msg);
+            } catch (err) {
+                console.log('Oops, unable to copy');
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function copyOnClipboard() {
+            console.log("Copying data on clipboard! ");
+            var tableResultsBody = $('#tableResultsBody');
+
+            var textToBeCopied = "";
+
+            var rows = tableResultsBody.find("tr");
+            $.each(rows, function () {
+                var tds = $(this).children();
+                var material = tds[2].textContent;
+                var tc = tds[3].textContent;
+
+                textToBeCopied += material + "\t" + tc + "\n";
+            });
+            copyTextToClipboard(textToBeCopied);
+
+        }
+
+        /** **/
+        function downloadRDF() {
+            var fileName = "export.xml";
+            var a = document.createElement("a");
+            var xml_header = '<?xml version="1.0"?>';
+            var rdf_header = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:supercon="http://falcon.nims.go.jp/supercuration">';
+            var rdf_header_end = '</rdf:RDF>';
+
+            var outputXML = xml_header + "\n" + rdf_header + "\n";
+
+            var tableResultsBody = $('#tableResultsBody');
+
+            var rows = tableResultsBody.find("tr");
+            $.each(rows, function () {
+                var tds = $(this).children();
+                var material = tds[2].textContent;
+                var tcValue = tds[3].textContent;
+                var id = $(this).attr("id").replaceAll("row", "");
+
+                outputXML += "\t" + '<rdf:Supercon rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
+
+                outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
+                outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
+
+                outputXML += "\t" + '</rdf:Supercon>';
+            });
+
+            outputXML += rdf_header_end;
+
+            var file = new Blob([outputXML], {type: 'application/xml'});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+
+            document.body.appendChild(a);
+
+            $(a).ready(function () {
+                a.click();
+                return true;
+            });
         }
 
         $(document).ready(function () {
+            $('#requestResultPdf').hide();
+            $('#requestResultText').hide();
+            // $('#tableResults').hide();
 
-            $("#subTitle").html("About");
-            $("#divAbout").show();
-            $("#divRestI").hide();
-            $("#divDoc").hide();
-            $('#consolidateBlock').show();
+            configuration = {
+                "url_mapping": {
+                    "processPDF": "/service/process/pdf",
+                    "processText": "/service/process/text",
+                    "ping": "/service/isalive",
+                    "feedback": "/service/annotations/feedback"
+                }
+            }
+            $('#submitRequestText').bind('click', 'processText', processText);
+            $('#submitRequestPdf').bind('click', 'processPDF', processPdf);
+            $('#copy-button').bind('click', copyOnClipboard);
+            $('#add-button').bind('click', addRow);
+            $('#download-rdf-button').bind('click', downloadRDF);
 
-            createInputTextArea('text');
-            setBaseUrl('processSuperconductorsText');
-            $('#example0').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[0]);
+            //this mess avoid that pressing the tabs down in the text we reset the wrong div
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                if (e.target) {
+                    if (e.target.parentElement) {
+                        if (e.target.parentElement.parentElement) {
+                            if (e.target.parentElement.parentElement.id === "top-tab") {
+                                $('#requestResultPdf').hide();
+                                $('#requestResultText').hide();
+                            }
+                        }
+                    }
+                }
+
             });
-            setBaseUrl('processQuantityText');
-            $('#example1').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[1]);
-            });
-            $('#example2').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[2]);
-            });
-            $('#example3').bind('click', function (event) {
-                event.preventDefault();
-                $('#inputTextArea').val(examples[3]);
-            });
-            $("#selectedService").val('processSuperconductorsText');
 
-            $('#selectedService').change(function () {
-                processChange();
-                return true;
-            });
+            $('#file-upload').on('change', function () {
+                //get the file name
+                var fileName = $(this).val();
+                //replace the "Choose a file" label
+                $(this).next('.custom-file-label').html(fileName);
+            })
 
-            $('#submitRequest').bind('click', submitQuery);
+            loadExamples(examples_superconductors);
 
-            $("#about").click(function () {
-                $("#about").attr('class', 'section-active');
-                $("#rest").attr('class', 'section-not-active');
-                $("#doc").attr('class', 'section-not-active');
-                $("#demo").attr('class', 'section-not-active');
-
-                $("#subTitle").html("About");
-                $("#subTitle").show();
-
-                $("#divAbout").show();
-                $("#divRestI").hide();
-                $("#divDoc").hide();
-                $("#divDemo").hide();
-                $('#requestResult').hide();
-                return false;
-            });
-            $("#rest").click(function () {
-                $("#rest").attr('class', 'section-active');
-                $("#doc").attr('class', 'section-not-active');
-                $("#about").attr('class', 'section-not-active');
-                $("#demo").attr('class', 'section-not-active');
-
-                $("#subTitle").hide();
-                //$("#subTitle").show();
-                processChange();
-
-                $("#divRestI").show();
-                $("#divAbout").hide();
-                $("#divDoc").hide();
-                $("#divDemo").hide();
-                return false;
-            });
-            $("#doc").click(function () {
-                $("#doc").attr('class', 'section-active');
-                $("#rest").attr('class', 'section-not-active');
-                $("#about").attr('class', 'section-not-active');
-                $("#demo").attr('class', 'section-not-active');
-
-                $("#subTitle").html("Doc");
-                $("#subTitle").show();
-
-                $("#divDoc").show();
-                $("#divAbout").hide();
-                $("#divRestI").hide();
-                $("#divDemo").hide();
-                $('#requestResult').hide();
-                return false;
-            });
+            //turn to inline mode
+            $.fn.editable.defaults.mode = 'inline';
         });
 
-        function ShowRequest(formData, jqForm, options) {
-            var queryString = $.param(formData);
-            $('#requestResult').html('<font color="grey">Requesting server...</font>');
-            return true;
-        }
-
-        function AjaxError(jqXHR, textStatus, errorThrown) {
-            $('#requestResult').html("<font color='red'>Error encountered while requesting the server.<br/>" + jqXHR.responseText + "</font>");
-            responseJson = null;
-        }
-
-        function AjaxError2(message) {
+        function onError(message) {
             if (!message)
-                message = "";
-            message += " - The PDF document cannot be annotated. Please check the server logs.";
-            $('#infoResult').html("<font color='red'>Error encountered while requesting the server.<br/>" + message + "</font>");
-            responseJson = null;
+                message = "The Text or the PDF document cannot be processed. Please check the server logs.";
+
+            $('#infoResultMessage').html("<p class='text-danger'>Error encountered while requesting the server.<br/>" + message + "</p>");
             return true;
         }
 
-        function htmll(s) {
+        function cleanupHtml(s) {
             return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
-        function submitQuery() {
-            var selected = $('#selectedService option:selected').attr('value');
-            var urlLocal = $('#gbdForm').attr('action');
-
-            superconMap = [];
-
-            $('#infoResult').html('<font color="grey">Requesting server...</font>');
-            $('#requestResult').show();
-            $('#requestResult').html('');
-
-            if (selected === 'processSuperconductorsText') {
-                var formData = new FormData();
-                formData.append("text", $('#inputTextArea').val());
-
-                $.ajax({
-                    type: 'POST',
-                    url: urlLocal,
-                    data: formData,
-                    success: onSuccessText,
-                    error: AjaxError,
-                    contentType: false,
-                    processData: false
-                });
-            } else if (selected === 'annotateSuperconductorsPDF') {
-                // we will have JSON annotations to be layered on the PDF
-
-                // request for the annotation information
-                var form = document.getElementById('gbdForm');
-                var formData = new FormData(form);
-                var xhr = new XMLHttpRequest();
-                var url = $('#gbdForm').attr('action');
-                xhr.responseType = 'json';
-                xhr.open('POST', url, true);
-
-                var nbPages = -1;
-                $('#requestResult').show();
-
-                // display the local PDF
-                if ((document.getElementById("input").files[0].type === 'application/pdf') ||
-                    (document.getElementById("input").files[0].name.endsWith(".pdf")) ||
-                    (document.getElementById("input").files[0].name.endsWith(".PDF")))
-                    var reader = new FileReader();
-                reader.onloadend = function () {
-                    // to avoid cross origin issue
-                    //PDFJS.disableWorker = true;
-                    var pdfAsArray = new Uint8Array(reader.result);
-                    // Use PDFJS to render a pdfDocument from pdf array
-                    PDFJS.getDocument(pdfAsArray).then(function (pdf) {
-                        // Get div#container and cache it for later use
-                        var container = document.getElementById("requestResult");
-                        // enable hyperlinks within PDF files.
-                        //var pdfLinkService = new PDFJS.PDFLinkService();
-                        //pdfLinkService.setDocument(pdf, null);
-
-                        //$('#requestResult').html('');
-                        nbPages = pdf.numPages;
-
-                        // Loop from 1 to total_number_of_pages in PDF document
-                        for (var i = 1; i <= nbPages; i++) {
-
-                            // Get desired page
-                            pdf.getPage(i).then(function (page) {
-                                var table = document.createElement("table");
-                                var tr = document.createElement("tr");
-                                var td1 = document.createElement("td");
-                                var td2 = document.createElement("td");
-
-                                tr.appendChild(td1);
-                                tr.appendChild(td2);
-                                table.appendChild(tr);
-
-                                var div0 = document.createElement("div");
-                                div0.setAttribute("style", "text-align: center; margin-top: 1cm; width:80%;");
-                                var pageInfo = document.createElement("p");
-                                var t = document.createTextNode("page " + (page.pageIndex + 1) + "/" + (nbPages));
-                                pageInfo.appendChild(t);
-                                div0.appendChild(pageInfo);
-
-                                td1.appendChild(div0);
-
-                                var scale = 1.5;
-                                var viewport = page.getViewport(scale);
-                                var div = document.createElement("div");
-
-                                // Set id attribute with page-#{pdf_page_number} format
-                                div.setAttribute("id", "page-" + (page.pageIndex + 1));
-
-                                // This will keep positions of child elements as per our needs, and add a light border
-                                div.setAttribute("style", "position: relative; ");
-
-
-                                // Create a new Canvas element
-                                var canvas = document.createElement("canvas");
-                                canvas.setAttribute("style", "border-style: solid; border-width: 1px; border-color: gray;");
-
-                                // Append Canvas within div#page-#{pdf_page_number}
-                                div.appendChild(canvas);
-
-                                // Append div within div#container
-                                td1.appendChild(div);
-
-                                var annot = document.createElement("div");
-                                annot.setAttribute('style', 'vertical-align:top;');
-                                annot.setAttribute('id', 'detailed_annot-' + (page.pageIndex + 1));
-                                td2.setAttribute('style', 'vertical-align:top;');
-                                td2.appendChild(annot);
-
-                                container.appendChild(table);
-
-                                var context = canvas.getContext('2d');
-                                canvas.height = viewport.height;
-                                canvas.width = viewport.width;
-
-                                var renderContext = {
-                                    canvasContext: context,
-                                    viewport: viewport
-                                };
-
-                                // Render PDF page
-                                page.render(renderContext).then(function () {
-                                    // Get text-fragments
-                                    return page.getTextContent();
-                                })
-                                    .then(function (textContent) {
-                                        // Create div which will hold text-fragments
-                                        var textLayerDiv = document.createElement("div");
-
-                                        // Set it's class to textLayer which have required CSS styles
-                                        textLayerDiv.setAttribute("class", "textLayer");
-
-                                        // Append newly created div in `div#page-#{pdf_page_number}`
-                                        div.appendChild(textLayerDiv);
-
-                                        // Create new instance of TextLayerBuilder class
-                                        var textLayer = new TextLayerBuilder({
-                                            textLayerDiv: textLayerDiv,
-                                            pageIndex: page.pageIndex,
-                                            viewport: viewport
-                                        });
-
-                                        // Set text-fragments
-                                        textLayer.setTextContent(textContent);
-
-                                        // Render text-fragments
-                                        textLayer.render();
-                                    });
-                            });
-                        }
-                    });
-                };
-                reader.readAsArrayBuffer(document.getElementById("input").files[0]);
-
-                xhr.onreadystatechange = function (e) {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        var response = e.target.response;
-                        setupAnnotations(response);
-                    } else if (xhr.status !== 200) {
-                        AjaxError2("Response " + xhr.status + ": ");
-                    }
-                };
-                xhr.send(formData);
-            }
+        /* jquery-based movement to an anchor, without modifying the displayed url and a bit smoother */
+        function goToByScroll(id) {
+            console.log("Selecting id " + id.data);
+            $('html,body').animate({scrollTop: $("#" + id.data).offset().top - 100}, 'slow');
         }
 
-        function annotateTextAsHtml(inputText, annotationList) {
-            var newString = "";
-            // console.log("'" + inputText + "'");
-            var lastMaxIndex = inputText.length;
-            if (annotationList) {
-                var pos = 0; // current position in the text
-
-                for (var annotationIndex = 0; annotationIndex < annotationList.length; annotationIndex++) {
-                    var currentAnnotation = annotationList[annotationIndex];
-                    if (currentAnnotation) {
-                        var startUnit = -1;
-                        var endUnit = -1;
-                        var start = parseInt(currentAnnotation.offsetStart, 10);
-                        var end = parseInt(currentAnnotation.offsetEnd, 10);
-
-                        var type = currentAnnotation.type;
-
-                        // Entities has sub-types
-                        if (currentAnnotation.type === "entity") {
-                            type = currentAnnotation.obj.type;
-                        }
-
-                        if ((startUnit !== -1) && ((startUnit === end) || (startUnit === end + 1)))
-                            end = endUnit;
-                        if ((endUnit !== -1) && ((endUnit === start) || (endUnit + 1 === start)))
-                            start = startUnit;
-
-                        if (start < pos) {
-                            // we have a problem in the initial sort of the quantities
-                            // the server response is not compatible with the present client
-                            console.log("Sorting of quantities as present in the server's response not valid for this client.");
-                            // note: this should never happen?
-                        } else {
-                            newString += inputText.substring(pos, start)
-                                + ' <span id="annot_supercon-' + annotationIndex + '" rel="popover" data-color="interval">'
-                                + '<span class="label ' + type + ' style="cursor:hand;cursor:pointer;" >'
-                                + inputText.substring(start, end) + '</span></span>';
-                            pos = end;
-                        }
-                        // superconMap[currentSuperconIndex] = currentAnnotation;
-                        annotationsMap[annotationIndex] = currentAnnotation;
-                    }
-                }
-                newString += inputText.substring(pos, inputText.length);
-            }
-
-            return newString;
+        function scrollUp() {
+            console.log("Scrolling back up");
+            $('html,body').animate({scrollTop: 0}, 'slow');
         }
 
+        function processText(action) {
+            $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
+            var formData = new FormData();
+            formData.append("text", $('#inputTextArea').val());
 
-        function extractOffsetsFromAtomic(quantity) {
-            offsetStart = -1;
-            offsetEnd = -1;
-
-            if (quantity.rawUnit) {
-                if (quantity.offsetStart < quantity.rawUnit.offsetStart) {
-                    offsetStart = quantity.offsetStart;
-                } else {
-                    offsetStart = quantity.rawUnit.offsetStart;
-                }
-
-                if (quantity.offsetEnd > quantity.rawUnit.offsetEnd) {
-                    offsetEnd = quantity.offsetEnd;
-                } else {
-                    offsetEnd = quantity.rawUnit.offsetEnd;
-                }
-            } else {
-                offsetStart = quantity.offsetStart;
-                offsetStart = quantity.offsetEnd;
-            }
-
-            return {'offsetStart': offsetStart, 'offsetEnd': offsetEnd};
+            $.ajax({
+                type: 'POST',
+                url: getUrl(action.data),
+                data: formData,
+                success: onSuccessText,
+                error: onError,
+                contentType: false,
+                processData: false
+            });
         }
 
-        function extractOffsetsFromIntervals(quantityLow, quantityHigh) {
-            offsets = {'offsetStart': -1, 'offsetEnd': -1};
-            offsetLeast = undefined;
-            offsetMost = undefined;
+        function showSpanOnText(span) {
+            var span = span.data;
+            console.log(span.id);
 
-            if (quantityLow) {
-                offsetLeast = extractOffsetsFromAtomic(quantityLow);
-            }
+            var string = spanToHtml(span, -1);
 
-            if (quantityHigh) {
-                offsetMost = extractOffsetsFromAtomic(quantityHigh);
-            }
-
-            if (offsetLeast) {
-                offsets['offsetStart'] = offsetLeast['offsetStart'];
-                if (offsetMost) {
-                    offsets['offsetEnd'] = offsetMost['offsetEnd'];
-                } else {
-                    offsets['offsetEnd'] = offsetLeast['offsetEnd'];
-                }
-            } else {
-                if (offsetMost) {
-                    offsets['offsetStart'] = offsetMost['offsetStart'];
-                    offsets['offsetEnd'] = offsetMost['offsetEnd'];
-                } else {
-                    console.log("Something very wrong here.");
-                }
-            }
-
-            return offsets;
-        }
-
-        function adjustTemperatureObjcts(temperatures) {
-            for (tmpIdx in temperatures) {
-                var temperature = temperatures[tmpIdx];
-
-                var offsets;
-
-                if (temperature.type === 'value') {
-                    var quantity = temperature.quantity;
-                    offsets = extractOffsetsFromAtomic(quantity);
-
-                } else if (temperature.type === 'interval') {
-                    if (temperature.quantityLeast || temperature.quantityMost) {
-                        offsets = extractOffsetsFromIntervals(temperature.quantityLeast, temperature.quantityMost);
-                    } else if (temperature.quantityRange || temperature.quantityBase) {
-                        offsets = extractOffsetsFromIntervals(temperature.quantityBase, temperature.quantityRange);
-                    }
-                } else if (temperature.type === 'list') {
-                    console.log("For now I'm not implementing this. ")
-                }
-
-                temperature.offsetStart = offsets['offsetStart'];
-                temperature.offsetEnd = offsets['offsetEnd'];
-            }
-            return temperatures;
-        }
-
-        function flagCriticalTemperature(quantity, substance) {
-            var quantityType = quantity.type;
-
-            if (quantityType === 'temperature') {
-                if (substance != null && substance['normalizedName'] === 'Critical Temperature') {
-                    quantityType = 'temperature-tc';
-                    quantity.type = quantityType;
-                }
-            }
-            return quantityType;
+            $('#detailed_annot-0-0').html(string);
+            $('#detailed_annot-0-0').show();
         }
 
         function onSuccessText(responseText, statusText) {
-            responseJson = responseText;
-            $('#infoResult').html('');
-            if ((responseJson == null) || (responseJson.length === 0)) {
-                $('#requestResult')
-                    .html("<font color='red'>Error encountered while receiving the server's answer: response is empty.</font>");
-                return;
-            }
-
-            var display = '<div class=\"note-tabs\"> \
-            <ul id=\"resultTab\" class=\"nav nav-tabs\"> \
-                <li class="active"><a href=\"#navbar-fixed-annotation\" data-toggle=\"tab\">Annotations</a></li> \
-                <li><a href=\"#navbar-fixed-json\" data-toggle=\"tab\">Response</a></li> \
-            </ul> \
-            <div class="tab-content"> \
-            <div class="tab-pane active" id="navbar-fixed-annotation">\n';
-
-            display += '<pre style="background-color:#FFF;width:95%;" id="displayAnnotatedText">';
-
-            var inputText = $('#inputTextArea').val();
-
-            display += '<table id="sentenceNER" style="width:100%;table-layout:fixed;" class="table">';
-            //var string = responseJson.text;
-
-            display += '<tr style="background-color:#FFF;">';
+            $('#infoResultMessage').html('');
 
             annotationList = [];
 
@@ -491,72 +265,218 @@ var grobid = (function ($) {
                 return annotationList
             }
 
-            // Custom for measurements
-            addAnnotations(responseJson['entities'], 'entity', annotationList);
-            var temperaturesList = adjustTemperatureObjcts(responseJson.measurements);
+            // var inputText = $('#inputTextArea').val();
 
-            addAnnotations(responseJson.other, 'entity', annotationList);
+            var paragraphs = responseText.paragraphs;
+            var cumulativeOutput = "";
+            if (paragraphs) {
+                paragraphs.forEach(function (paragraph, paragraphIdx) {
+                    var text = paragraph.text;
+                    var spans = [];
+                    if (paragraph.spans) {
+                        spans = paragraph.spans;
+                    }
 
-            addAnnotations(temperaturesList, 'measurement', annotationList);
-
-            annotationList = annotationList.sort(function (a, b) {
-                if (a.offsetStart > b.offsetStart) return 1;
-                else if (a.offsetStart < b.offsetStart) return -1;
-                else return 0;
-            });
-
-            var annotatedTextAsHtml = annotateTextAsHtml(inputText, annotationList);
-
-            annotatedTextAsHtml = "<p>" + annotatedTextAsHtml.replace(/(\r\n|\n|\r)/gm, "</p><p>") + "</p>";
-            //string = string.replace("<p></p>", "");
-
-            display += '<td style="font-size:small;width:60%;border:1px solid #CCC;"><p>' + annotatedTextAsHtml + '</p></td>';
-            display += '<td style="font-size:small;width:40%;padding:0 5px; border:0"><span id="detailed_annot-0-0" /></td>';
-
-            display += '</tr>';
-            display += '</table>\n';
-            display += '</pre>\n';
-            display += '</div> \
-                    <div class="tab-pane " id="navbar-fixed-json">\n';
-
-
-            //JSON Pretty print box
-            display += "<pre class='prettyprint' id='jsonCode'>";
-
-            display += "<pre class='prettyprint lang-json' id='xmlCode'>";
-            var testStr = vkbeautify.json(responseText);
-
-            display += htmll(testStr);
-
-            display += "</pre>";
-            display += '</div></div></div>';
-
-            $('#requestResult').html(display);
-            window.prettyPrint && prettyPrint();
-
-            // Adding events
-            if (annotationList) {
-                for (var annotationIdx = 0; annotationIdx < annotationList.length; annotationIdx++) {
-                    // var measurement = measurements[measurementIndex];
-
-                    $('#annot_supercon-' + annotationIdx).bind('hover', annotationList, viewAnnotation);
-                    $('#annot_supercon-' + annotationIdx).bind('click', annotationList, viewAnnotation);
-                }
+                    cumulativeOutput += annotateTextAsHtml(text, spans);
+                })
             }
 
-            $('#detailed_annot-0').hide();
+            $('#requestResultTextContent').html(cumulativeOutput);
 
-            $('#requestResult').show();
+            //Adding events, unfortunately I need to wait when the HTML tree is updated
+            if (paragraphs) {
+                paragraphs.forEach(function (paragraph, paragraphIdx) {
+                    var spans = [];
+                    if (paragraph.spans) {
+                        spans = paragraph.spans;
+                    }
+
+                    // Adding events
+                    for (var annotationIdx = 0; annotationIdx < spans.length; annotationIdx++) {
+                        let annotationBlock = $('#annot_supercon-' + spans[annotationIdx].id);
+                        annotationBlock.bind('hover', spans[annotationIdx], showSpanOnText);
+                        annotationBlock.bind('click', spans[annotationIdx], showSpanOnText);
+                    }
+                });
+            }
+
+            var testStr = vkbeautify.json(responseText);
+
+            $('#jsonCode').html(cleanupHtml(testStr));
+            window.prettyPrint && prettyPrint();
+
+            $('#detailed_annot-0-0').hide();
+            $('#requestResultPdf').hide();
+            $('#requestResultText').show();
         }
 
-        function setupAnnotations(response) {
+        function processPdf(action) {
+            spansMap = [];
+
+            let resultMessageBlock = $('#infoResultMessage');
+            resultMessageBlock.html('<p class="text-secondary">Requesting server...</p>');
+            var requestResult = $('#requestResultPdfContent');
+            requestResult.html('');
+            requestResult.show();
+
+            $('#tableResultsBody').html('');
+
+
+            // we will have JSON annotations to be layered on the PDF
+            var nbPages = -1;
+
+            // display the local PDF
+            let inputElement = document.getElementById("file-upload");
+
+            if (inputElement.files.length === 0
+                || inputElement.files[0] === undefined
+                || inputElement.files[0].type !== 'application/pdf'
+                || inputElement.files[0].name === undefined
+                || !inputElement.files[0].name.toLowerCase().endsWith(".pdf")) {
+
+                onError("No file or wrong file type selected. Please select a PDF file before pressing 'Submit'");
+                //No file was selected in the form
+                return
+            }
+
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                // to avoid cross origin issue
+                //PDFJS.disableWorker = true;
+                var pdfAsArray = new Uint8Array(reader.result);
+                // Use PDFJS to render a pdfDocument from pdf array
+                PDFJS.getDocument(pdfAsArray).then(function (pdf) {
+                    // Get div#container and cache it for later use
+                    var container = document.getElementById("requestResultPdfContent");
+                    // enable hyperlinks within PDF files.
+                    //var pdfLinkService = new PDFJS.PDFLinkService();
+                    //pdfLinkService.setDocument(pdf, null);
+
+                    //$('#requestResult').html('');
+                    nbPages = pdf.numPages;
+
+                    // Loop from 1 to total_number_of_pages in PDF document
+                    for (var i = 1; i <= nbPages; i++) {
+
+                        // Get desired page
+                        pdf.getPage(i).then(function (page) {
+                            var table = document.createElement("table");
+                            var tr = document.createElement("tr");
+                            var td1 = document.createElement("td");
+                            var td2 = document.createElement("td");
+
+                            tr.appendChild(td1);
+                            tr.appendChild(td2);
+                            table.appendChild(tr);
+
+                            var div0 = document.createElement("div");
+                            div0.setAttribute("style", "text-align: center; margin-top: 1cm; width:80%;");
+                            var pageInfo = document.createElement("p");
+                            var t = document.createTextNode("page " + (page.pageIndex + 1) + "/" + (nbPages));
+                            pageInfo.appendChild(t);
+                            div0.appendChild(pageInfo);
+
+                            td1.appendChild(div0);
+
+                            var scale = 1.5;
+                            var viewport = page.getViewport(scale);
+                            var div = document.createElement("div");
+
+                            // Set id attribute with page-#{pdf_page_number} format
+                            div.setAttribute("id", "page-" + (page.pageIndex + 1));
+
+                            // This will keep positions of child elements as per our needs, and add a light border
+                            div.setAttribute("style", "position: relative; ");
+
+                            // Create a new Canvas element
+                            var canvas = document.createElement("canvas");
+                            canvas.setAttribute("style", "border-style: solid; border-width: 1px; border-color: gray;");
+
+                            // Append Canvas within div#page-#{pdf_page_number}
+                            div.appendChild(canvas);
+
+                            // Append div within div#container
+                            td1.appendChild(div);
+
+                            var annot = document.createElement("div");
+                            annot.setAttribute('style', 'vertical-align:top;');
+                            annot.setAttribute('id', 'detailed_annot-' + (page.pageIndex + 1));
+                            td2.setAttribute('style', 'vertical-align:top;');
+                            td2.appendChild(annot);
+
+                            container.appendChild(table);
+
+                            var context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+
+                            var renderContext = {
+                                canvasContext: context,
+                                viewport: viewport
+                            };
+
+                            // Render PDF page
+                            page.render(renderContext).then(function () {
+                                // Get text-fragments
+                                return page.getTextContent();
+                            })
+                                .then(function (textContent) {
+                                    // Create div which will hold text-fragments
+                                    var textLayerDiv = document.createElement("div");
+
+                                    // Set it's class to textLayer which have required CSS styles
+                                    textLayerDiv.setAttribute("class", "textLayer");
+
+                                    // Append newly created div in `div#page-#{pdf_page_number}`
+                                    div.appendChild(textLayerDiv);
+
+                                    // Create new instance of TextLayerBuilder class
+                                    var textLayer = new TextLayerBuilder({
+                                        textLayerDiv: textLayerDiv,
+                                        pageIndex: page.pageIndex,
+                                        viewport: viewport
+                                    });
+
+                                    // Set text-fragments
+                                    textLayer.setTextContent(textContent);
+
+                                    // Render text-fragments
+                                    textLayer.render();
+                                });
+                        });
+                    }
+                });
+            };
+            reader.readAsArrayBuffer(inputElement.files[0]);
+
+            // request for the annotation information
+            var form = document.getElementById('gbdForm');
+            var formData = new FormData(form);
+            var xhr = new XMLHttpRequest();
+            var url = getUrl(action.data);
+            $('#gbdForm').attr('action', url);
+            xhr.responseType = 'json';
+            xhr.open('POST', url, true);
+
+            xhr.onreadystatechange = function (e) {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = e.target.response;
+                    onSuccessPdf(response);
+                } else if (xhr.status !== 200) {
+                    onError("Response: " + xhr.status);
+                }
+            };
+            xhr.send(formData);
+        }
+
+        function onSuccessPdf(response) {
             // TBD: we must check/wait that the corresponding PDF page is rendered at this point
             if ((response == null) || (0 === response.length)) {
-                $('#infoResult')
-                    .html("<font color='red'>Error encountered while receiving the server's answer: response is empty.</font>");
+                onError("The response is empty.")
                 return;
             } else {
-                $('#infoResult').html('');
+                $('#infoResultMessage').html('');
+                $('#requestResultPdf').show()
             }
 
             var json = response;
@@ -565,102 +485,84 @@ var grobid = (function ($) {
             var page_height = 0.0;
             var page_width = 0.0;
 
-            // Entities (Materials, Tc expressions etc...
-            var entities = json.entities;
-            if (entities) {
+            var paragraphs = json.paragraphs;
+
+            var spanGlobalIndex = 0;
+            var linkId = 0;
+
+            var copyButtonElement = $('#copy-button');
+
+            paragraphs.forEach(function (paragraph, paragraphIdx) {
+                var spans = paragraph.spans;
                 // hey bro, this must be asynchronous to avoid blocking the brothers
-                entities.forEach(function (superconductor, superconIdx) {
-                    superconMap[superconIdx] = superconductor;
-                    var entity_type = superconductor['type'];
 
-                    var theUrl = null;
-                    var pos = superconductor.boundingBoxes;
-                    if ((pos != null) && (pos.length > 0)) {
-                        pos.forEach(function (thePos, positionIdx) {
-                            // get page information for the annotation
-                            var pageNumber = thePos.p;
-                            if (pageInfo[pageNumber - 1]) {
-                                page_height = pageInfo[pageNumber - 1].page_height;
-                                page_width = pageInfo[pageNumber - 1].page_width;
-                            }
-                            annotateEntity(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, entity_type);
-                        });
-                    }
-                });
-            }
+                if (spans) {
+                    spans.forEach(function (span, spanIdx) {
+                        spansMap[span.id] = span;
+                        var entity_type = span['type'].replace("<", "").replace(">", "");
 
-
-            // Measurements
-            var measurements = json.measurements;
-            if (measurements) {
-                // hey bro, this must be asynchronous to avoid blocking the brothers
-                measurements.forEach(function (measurement, n) {
-                    var measurementType = measurement.type;
-                    var quantities = [];
-                    var substance = measurement.quantified;
-
-                    if (measurementType === "value") {
-                        var quantity = measurement.quantity;
-                        if (quantity)
-                            quantities.push(quantity)
-                    } else if (measurementType === "interval") {
-                        var quantityLeast = measurement.quantityLeast;
-                        if (quantityLeast)
-                            quantities.push(quantityLeast);
-                        var quantityMost = measurement.quantityMost;
-                        if (quantityMost)
-                            quantities.push(quantityMost);
-
-                        if (!quantityLeast && !quantityMost) {
-                            var quantityBase = measurement.quantityBase;
-                            if (quantityBase)
-                                quantities.push(quantityBase);
-                            var quantityRange = measurement.quantityRange;
-                            if (quantityRange)
-                                quantities.push(quantityRange);
+                        var theUrl = null;
+                        var boundingBoxes = span.boundingBoxes;
+                        if ((boundingBoxes != null) && (boundingBoxes.length > 0)) {
+                            boundingBoxes.forEach(function (boundingBox, positionIdx) {
+                                // get page information for the annotation
+                                var pageNumber = boundingBox.page;
+                                if (pageInfo[pageNumber - 1]) {
+                                    page_height = pageInfo[pageNumber - 1].page_height;
+                                    page_width = pageInfo[pageNumber - 1].page_width;
+                                }
+                                // let annotationId = 'annot_span-' + spanIdx + '-' + positionIdx;
+                                let annotationId = span.id;
+                                annotateSpanOnPdf(boundingBox, theUrl, page_height, page_width, annotationId, positionIdx, entity_type);
+                            });
                         }
-                    } else {
-                        quantities = measurement.quantities;
-                    }
+                        spanGlobalIndex++;
+                    });
 
-                    var quantityType = null;
-                    if (quantities) {
-                        var quantityMap = [];
-                        for (var currentQuantityIndex = 0; currentQuantityIndex < quantities.length; currentQuantityIndex++) {
-                            var quantity = quantities[currentQuantityIndex];
-                            quantity['quantified'] = substance;
-                            quantityMap[currentQuantityIndex] = quantity;
-                            quantityType = flagCriticalTemperature(quantity, substance);
 
-                            if (quantityType !== undefined) {
-                                break;
-                            }
+                    spans.forEach(function (span, spanIdx) {
+                        if (span.links !== undefined && span.links.length > 0) {
+                            copyButtonElement.show();
+                            span.links.forEach(function (link, linkIdx) {
+                                let link_entity = spansMap[link[0]];
+                                let tcValue_text = link_entity.text;
+                                span['tc'] = tcValue_text;
+
+                                let {row_id, element_id, mat_element_id, tc_element_id, html_code} =
+                                    createRowHtml(span.id, span.text, tcValue_text, true);
+
+                                $('#tableResultsBody').append(html_code);
+
+                                // in case of multiple bounding boxes, we will have multiple IDs, in this case we can point
+                                // to the first box
+                                $("#" + element_id).bind('click', span.id + '0', goToByScroll);
+                                $("#" + mat_element_id).editable();
+                                $("#" + tc_element_id).editable();
+                                appendRemoveButton(row_id);
+
+                                let paragraph_popover = annotateTextAsHtml(paragraph.text, [span, link_entity]);
+
+                                $("#" + row_id).popover({
+                                    content: function () {
+                                        return paragraph_popover;
+                                    },
+                                    html: true,
+                                    // container: 'body',
+                                    trigger: 'hover',
+                                    placement: 'top',
+                                    animation: true
+                                });
+
+                                linkId++;
+                            });
                         }
-                    }
-
-                    measurementMap[n] = quantities;
-
-                    //var theId = measurement.type;
-                    var theUrl = null;
-                    //var theUrl = annotation.url;
-                    var pos = measurement.boundingBoxes;
-                    if ((pos != null) && (pos.length > 0)) {
-                        pos.forEach(function (thePos, m) {
-                            // get page information for the annotation
-                            var pageNumber = thePos.p;
-                            if (pageInfo[pageNumber - 1]) {
-                                page_height = pageInfo[pageNumber - 1].page_height;
-                                page_width = pageInfo[pageNumber - 1].page_width;
-                            }
-                            annotateQuantity(thePos, theUrl, page_height, page_width, n, m, quantityType);
-                        });
-                    }
-                });
-            }
+                    });
+                }
+            });
         }
 
-        function annotateQuantity(thePos, theUrl, page_height, page_width, measurementIndex, positionIndex, type) {
-            var page = thePos.p;
+        function annotateSpanOnPdf(boundingBox, theUrl, page_height, page_width, annotationId, positionIdx, type) {
+            var page = boundingBox.page;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);
 
@@ -669,167 +571,171 @@ var grobid = (function ($) {
             var scale_x = canvasHeight / page_height;
             var scale_y = canvasWidth / page_width;
 
-            var x = thePos.x * scale_x - 1;
-            var y = thePos.y * scale_y - 1;
-            var width = thePos.w * scale_x + 1;
-            var height = thePos.h * scale_y + 1;
-
-            var element = document.createElement("a");
-            var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
-                y + "px; left:" + x + "px;";
-            element.setAttribute("style", attributes + "border:2px solid;");
-            element.setAttribute("class", 'area' + ' ' + type);
-            element.setAttribute("id", 'annot_quantity-' + measurementIndex + '-' + positionIndex);
-            element.setAttribute("page", page);
-
-            pageDiv.append(element);
-
-            $('#annot_quantity-' + measurementIndex + '-' + positionIndex).bind('hover', {
-                'type': 'quantity',
-                'map': measurementMap
-            }, viewEntityPDF);
-            $('#annot_quantity-' + measurementIndex + '-' + positionIndex).bind('click', {
-                'type': 'quantity',
-                'map': measurementMap
-            }, viewEntityPDF);
-        }
-
-        function annotateEntity(thePos, theUrl, page_height, page_width, superconIdx, positionIdx, type) {
-            var page = thePos.p;
-            var pageDiv = $('#page-' + page);
-            var canvas = pageDiv.children('canvas').eq(0);
-            //var canvas = pageDiv.find('canvas').eq(0);;
-
-            var canvasHeight = canvas.height();
-            var canvasWidth = canvas.width();
-            var scale_x = canvasHeight / page_height;
-            var scale_y = canvasWidth / page_width;
-
-            var x = thePos.x * scale_x - 1;
-            var y = thePos.y * scale_y - 1;
-            var width = thePos.w * scale_x + 1;
-            var height = thePos.h * scale_y + 1;
+            var x = boundingBox.x * scale_x - 1;
+            var y = boundingBox.y * scale_y - 1;
+            var width = boundingBox.width * scale_x + 1;
+            var height = boundingBox.height * scale_y + 1;
 
             //make clickable the area
             var element = document.createElement("a");
             var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
                 y + "px; left:" + x + "px;";
-            element.setAttribute("style", attributes + "border:2px solid;");
-            if (superconMap[superconIdx].type === 'material' && superconMap[superconIdx].tc) {
-                element.setAttribute("class", 'area material-tc');
-            } else {
-                element.setAttribute("class", 'area' + ' ' + type);
-            }
-            element.setAttribute("id", 'annot_supercon-' + superconIdx + '-' + positionIdx);
+            element.setAttribute("style", attributes + "border:2px solid; box-sizing: content-box;");
+            element.setAttribute("class", 'area' + ' ' + type);
+            element.setAttribute("id", (annotationId + '' + positionIdx));
             element.setAttribute("page", page);
 
             pageDiv.append(element);
 
-            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('hover', {
-                'type': 'entity',
-                'map': superconMap
-            }, viewEntityPDF);
-            $('#annot_supercon-' + superconIdx + '-' + positionIdx).bind('click', {
-                'type': 'entity',
-                'map': superconMap
-            }, viewEntityPDF);
-        }
-
-
-        function viewAnnotation(annotationsList) {
-
-            if (annotationsList.length === 0) {
-                return;
-            }
-            var localID = $(this).attr('id');
-
-            var ind1 = localID.indexOf('-');
-            var localAnnotationID = parseInt(localID.substring(ind1 + 1));
-            if ((annotationsMap[localAnnotationID] == null) || (annotationsMap[localAnnotationID].length === 0)) {
+            var item = spansMap[annotationId];
+            if (item === null) {
                 // this should never be the case
-                console.log("Error for visualising annotation measurement with id " + localAnnotationID
-                    + ", empty list of measurement");
+                console.log("Error for visualising annotation with id " + annotationId
+                    + ", cannot find the annotation");
+                return
             }
 
-            var annotation = annotationsMap[localAnnotationID];
-            var string = "";
-            if (annotation.type === 'entity') {
-                string = toHtmlEntity(annotation.obj, -1);
-            } else if (annotation.type === 'measurement') {
-                string = toHtmlMeasurement(annotation.obj, -1)
-            }
-
-            $('#detailed_annot-0-0').html(string);
-            $('#detailed_annot-0-0').show();
+            $('#' + (annotationId + '' + positionIdx)).bind('click', {
+                'type': 'entity',
+                'item': item
+            }, showSpanOnPDF);
         }
 
-        function viewEntityPDF(param) {
+        /** Summary table **/
+        function createRowHtml(id, material = "", tcValue = "", viewInPDF = false) {
+
+            let viewInPDFIcon = "";
+            if (viewInPDF === true) {
+                viewInPDFIcon = "<img src='resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
+            }
+
+            let row_id = "row" + id;
+            let element_id = "e" + id;
+            let mat_element_id = "mat" + id;
+            let tc_element_id = "tc" + id;
+
+            let html_code = "<tr class='d-flex' id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
+                "<td class='col-1'><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
+                "<td class='col-1'><img src='resources/icons/trash.svg' alt='-' id='remove-button'/></td>" +
+                "<td class='col-6'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
+                "<td class='col-4'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
+                "</tr>";
+
+            return {row_id, element_id, mat_element_id, tc_element_id, html_code};
+        }
+
+        function appendRemoveButton(row_id) {
+            let remove_button = $("#" + row_id).find("img#remove-button");
+            remove_button.bind("click", function () {
+                // console.log("Removing row with id " + row_id);
+                let item = $("#" + row_id);
+                // Remove eventual popups
+                $("#" + item.attr("aria-describedby")).html("").hide();
+                item.remove();
+            });
+        }
+
+        function addRow() {
+            console.log("Adding new row. ");
+
+            let random_number = '_' + Math.random().toString(36).substr(2, 9);
+
+            let {row_id, element_id, mat_element_id, tc_element_id, html_code} = createRowHtml(random_number);
+            $('#tableResultsBody').append(html_code);
+
+            $("#" + mat_element_id).editable();
+            $("#" + tc_element_id).editable();
+
+            appendRemoveButton(row_id);
+        }
+
+        /** Visualisation **/
+
+        function showSpanOnPDF(param) {
             var type = param.data.type;
-            var map = param.data.map;
+            var item = param.data.item;
 
             var pageIndex = $(this).attr('page');
-            var localID = $(this).attr('id');
+            var string = spanToHtml(item, $(this).position().top);
 
-            var ind1 = localID.indexOf('-');
-            var ind2 = localID.indexOf('-', ind1 + 1);
-            var localMeasurementNumber = parseInt(localID.substring(ind1 + 1, ind2));
-
-            if ((map[localMeasurementNumber] === null) || (map[localMeasurementNumber].length === 0)) {
-                // this should never be the case
-                console.log("Error for visualising annotation with id " + localMeasurementNumber
-                    + ", empty list of measurement");
-            }
-            var string = "";
-            if (type === 'entity') {
-                string = toHtmlEntity(map[localMeasurementNumber], $(this).position().top);
-            } else if (type === 'quantity') {
-                var quantityMap = map[localMeasurementNumber];
-                var measurementType = null;
-
-                if (quantityMap.length === 1) {
-                    measurementType = "Atomic value";
-                    string = toHtml(quantityMap, measurementType, $(this).position().top);
-                } else if (quantityMap.length === 2) {
-                    measurementType = "Interval";
-                    string = intervalToHtml(quantityMap, measurementType, $(this).position().top);
-                } else {
-                    measurementType = "List";
-                    string = toHtml(quantityMap, measurementType, $(this).position().top);
-                }
-            }
             if (type === null || string === "") {
                 console.log("Error in viewing annotation, type unknown or null: " + type);
             }
 
-            $('#detailed_annot-' + pageIndex).html(string).show();
+            var annotationHook = $('#detailed_annot-' + pageIndex);
+            annotationHook.html(string).show();
+            annotationHook.bind('click', scrollUp);
+        }
+
+        function annotateTextAsHtml(inputText, annotationList) {
+            var outputString = "";
+            var pos = 0;
+
+            annotationList.sort(function (a, b) {
+                var startA = parseInt(a.offsetStart, 10);
+                var startB = parseInt(b.offsetStart, 10);
+
+                return startA - startB;
+            });
+
+            annotationList.forEach(function (annotation, annotationIdx) {
+                var start = parseInt(annotation.offsetStart, 10);
+                var end = parseInt(annotation.offsetEnd, 10);
+
+                var type = annotation.type.replace("<", "").replace(">", "");
+                var id = annotation.id;
+
+                outputString += inputText.substring(pos, start)
+                    + ' <span id="annot_supercon-' + id + '" rel="popover" data-color="interval">'
+                    + '<span class="label ' + type + '" style="cursor:hand;cursor:pointer;" >'
+                    + inputText.substring(start, end) + '</span></span>';
+                pos = end;
+            });
+
+            outputString += inputText.substring(pos, inputText.length);
+
+            return outputString;
         }
 
 
         // Transformation to HTML
-        function toHtmlEntity(entity, topPos) {
+        function spanToHtml(span, topPos) {
             var string = "";
             var first = true;
 
-            colorLabel = entity.type;
-            var name = entity.name;
-            var type = entity.type;
+            //We remove the < and > to avoid messing up with HTML
+            var type = span.type.replace("<", "").replace(">", "");
+
+            colorLabel = type;
+            var text = span.text;
+            var formattedText = span.formattedText;
 
             string += "<div class='info-sense-box ___TYPE___'";
             if (topPos !== -1)
-                string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
+                string += " style='vertical-align:top; position:relative; top:" + topPos + ";cursor:hand;cursor:pointer;'";
+            else
+                string += " style='cursor:hand;cursor:pointer;'";
 
             string += ">";
-            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "</h2>";
+            if (span.tc) {
+                var infobox_id = "infobox" + span.id;
+                string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "<img id='" + infobox_id + "' src='resources/icons/arrow-up.svg'/></h2>";
+
+            } else {
+                string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "</h2>";
+            }
 
             string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
                 "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
 
-            if (name) {
-                string += "<p>name: <b>" + name + "</b></p>";
+            if (formattedText) {
+                string += "<p>name: <b>" + formattedText + "</b></p>";
+            } else {
+                string += "<p>name: <b>" + text + "</b></p>";
             }
 
-            if (entity.tc) {
-                string += "<p>Tc: <b>" + entity.tc + "</b></p>";
+            if (span.tc) {
+                string += "<p>Tc: <b>" + span.tc + "</b></p>";
                 string = string.replace("___TYPE___", "material-tc");
             }
             string = string.replace("___TYPE___", type);
@@ -842,296 +748,12 @@ var grobid = (function ($) {
             return string;
         }
 
-        function toHtmlMeasurement(measurement, topPos) {
-            var string = "";
-            var first = true;
-
-            colorLabel = 'measurement';
-
-            string += "<div class='info-sense-box " + colorLabel + "'";
-            if (topPos != -1)
-                string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
-
-            string += ">";
-            string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>Measurement</h2>";
-
-            string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
-                "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
-
-            quantityMap = [];
-            if (measurement.type === 'value') {
-                measurementType = "Atomic value";
-                measurement.quantity['quantified'] = measurement.quantified;
-                quantityMap.push(measurement.quantity);
-                string = toHtml(quantityMap, measurementType, -1);
-            } else if (measurement.type === 'interval') {
-                measurementType = "Interval";
-                if (measurement.quantityLeast) {
-                    measurement.quantityLeast['quantified'] = measurement.quantified;
-                    quantityMap.push(measurement.quantityLeast)
-                }
-
-                if (measurement.quantityBase) {
-                    measurement.quantityBase['quantified'] = measurement.quantified;
-                    quantityMap.push(measurement.quantityBase)
-                }
-
-                if (measurement.quantityMost) {
-                    measurement.quantityMost['quantified'] = measurement.quantified;
-                    quantityMap.push(measurement.quantityMost)
-                }
-
-                if (measurement.quantityRange) {
-                    measurement.quantityMost['quantified'] = measurement.quantified;
-                    quantityMap.push(measurement.quantityRange)
-                }
-
-                if (quantityMap.length > 1)
-                    string = intervalToHtml(quantityMap, measurementType, -1);
-                else
-                    string = toHtml(quantityMap, measurementType, -1);
-            } else {
-                measurementType = "List";
-                quantityMap.push(measurement.list);
-                string = toHtml(quantityMap, measurementType, -1);
-            }
-
-            string += "</td></tr>";
-            string += "</table></div>";
-
-            string += "</div>";
-
-            return string;
-        }
-
-
-        function intervalToHtml(quantityMap, measurementType, topPos) {
-            var string = "";
-            var rawUnitName = null;
-
-            // LEAST value
-            var quantityLeast = quantityMap[0];
-            var type = quantityLeast.type;
-
-            var colorLabel = null;
-            if (type) {
-                colorLabel = type;
-            } else {
-                colorLabel = quantityLeast.rawName;
-            }
-            if (colorLabel)
-                colorLabel = colorLabel.replace(" ", "_");
-            var leastValue = quantityLeast.rawValue;
-            var startUniLeast = -1;
-            var endUnitLeast = -1;
-
-            var unitLeast = quantityLeast.rawUnit;
-            if (unitLeast) {
-                rawUnitName = unitLeast.name;
-                startUniLeast = parseInt(quantityLeast.offsetStart, 10);
-                endUnitLeast = parseInt(quantityLeast.offsetEnd, 10);
-            }
-            var normalizedQuantityLeast = quantityLeast.normalizedQuantity;
-            var normalizedUnit = quantityLeast.normalizedUnit;
-
-            var substance = quantityLeast.quantified;
-
-            // MOST value
-            var quantityMost = quantityMap[1];
-            var mostValue = quantityMost.rawValue;
-            var startUniMost = -1;
-            var endUnitMost = -1;
-
-            var unitMost = quantityMost.rawUnit;
-            if (unitMost) {
-                startUniMost = parseInt(quantityMost.offsetStart, 10);
-                endUnitMost = parseInt(quantityMost.offsetEnd, 10);
-            }
-            var normalizedQuantityMost = quantityMost.normalizedQuantity;
-
-            if (!substance)
-                substance = quantityMost.quantified;
-
-            string += "<div class='info-sense-box " + colorLabel + "'";
-            if (topPos !== -1)
-                string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
-            string += "><h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + measurementType;
-            string += "</h2>";
-            string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
-                "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
-
-            if (type) {
-                string += "<p>quantity type: <b>" + type + "</b></p>";
-            }
-
-            if (leastValue || mostValue) {
-                string += "<p>raw: from <b>" + leastValue + "</b> to <b>" + mostValue + "</b></p>";
-            }
-
-            if (rawUnitName) {
-                string += "<p>raw unit name: <b>" + rawUnitName + "</b></p>";
-            }
-
-            if (normalizedQuantityLeast || normalizedQuantityMost) {
-                string += "<p>normalized: from <b>" + normalizedQuantityLeast + "</b> to <b>"
-                    + normalizedQuantityMost + "</b></p>";
-            }
-
-            if (normalizedUnit) {
-                string += "<p>normalized unit: <b>" + normalizedUnit.name + "</b></p>";
-            }
-
-            if (substance) {
-                string += "</td></tr><tr style='width:100%;display:inline-table;'><td style='border-top-width:1px;width:100%;border-top:1px solid #ddd;display:inline-table;'>";
-                string += "<p style='display:inline-table;'>quantified (experimental):"
-                string += "<table style='width:100%;display:inline-table;'><tr><td>";
-                string += "<p>raw: <b>" + substance.rawName;
-                string += "</b></p>";
-                string += "<p>normalized: <b>" + substance.normalizedName;
-                string += "</b></p></td></tr></table>";
-                string += "</p>";
-            }
-
-            string += "</td><td style='align:right;bgcolor:#fff'></td></tr>";
-            string += "</table></div>";
-
-            return string;
-
-        }
-
-        function toHtml(quantityMap, measurementType, topPos) {
-            var string = "";
-            var first = true;
-            for (var quantityListIndex = 0; quantityListIndex < quantityMap.length; quantityListIndex++) {
-
-                var quantity = quantityMap[quantityListIndex];
-                var type = quantity.type;
-
-                var colorLabel = null;
-                if (type) {
-                    colorLabel = type;
-                } else {
-                    colorLabel = quantity.rawName;
-                }
-
-                var rawValue = quantity.rawValue;
-                var unit = quantity.rawUnit;
-
-                var parsedValue = quantity.parsedValue;
-                var parsedValueStructure = quantity.parsedValue.structure;
-                // var parsedUnit = quantity.parsedUnit;
-
-                var normalizedQuantity = quantity.normalizedQuantity;
-                var normalizedUnit = quantity.normalizedUnit;
-
-                var substance = quantity.quantified;
-
-                var rawUnitName = null;
-                var startUnit = -1;
-                var endUnit = -1;
-                if (unit) {
-                    rawUnitName = unit.name;
-                    startUnit = parseInt(unit.offsetStart, 10);
-                    endUnit = parseInt(unit.offsetEnd, 10);
-                }
-
-                if (first) {
-                    string += "<div class='info-sense-box " + colorLabel + "'";
-                    if (topPos != -1)
-                        string += " style='vertical-align:top; position:relative; top:" + topPos + "'";
-                    string += "><h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + measurementType;
-                    string += "</h2>";
-                    first = false;
-                }
-
-                string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
-                    "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
-
-                if (type) {
-                    string += "<p>quantity type: <b>" + type + "</b></p>";
-                }
-
-                if (rawValue) {
-                    string += "<p>raw value: <b>" + rawValue + "</b></p>";
-                }
-
-                if (parsedValue) {
-                    if (parsedValue.numeric && parsedValue.numeric !== rawValue) {
-                        string += "<p>parsed value: <b>" + parsedValue.numeric + "</b></p>";
-                    } else if (parsedValue.parsed && parsedValue.parsed !== rawValue) {
-                        string += "<p>parsed value: <b>" + parsedValue.parsed + "</b></p>";
-                    }
-                }
-
-                if (parsedValueStructure) {
-                    string += "<p>&nbsp;&nbsp; - type: <b>" + parsedValueStructure.type + "</b></p>";
-                    string += "<p>&nbsp;&nbsp; - formatted: <b>" + parsedValueStructure.formatted + "</b></p>";
-                }
-
-
-                if (rawUnitName) {
-                    string += "<p>raw unit name: <b>" + rawUnitName + "</b></p>";
-                }
-
-                if (normalizedQuantity) {
-                    string += "<p>normalized value: <b>" + normalizedQuantity + "</b></p>";
-                }
-
-                if (normalizedUnit) {
-                    string += "<p>normalized unit name: <b>" + normalizedUnit.name + "</b></p>";
-                }
-
-                if (substance) {
-                    string += "</td></tr><tr style='width:100%;display:inline-table;'><td style='border-top-width:1px;width:100%;border-top:1px solid #ddd;display:inline-table;'>";
-                    string += "<p style='display:inline-table;'>quantified (experimental):"
-                    string += "<table style='width:100%;display:inline-table;'><tr><td>";
-                    string += "<p>raw: <b>" + substance.rawName;
-                    string += "</b></p>";
-                    string += "<p>normalized: <b>" + substance.normalizedName;
-                    string += "</b></p></td></tr></table>";
-                    string += "</p>";
-                }
-
-                string += "</td></tr>";
-                string += "</table></div>";
-            }
-            string += "</div>";
-
-            return string;
-        }
-
-        function processChange() {
-            var selected = $('#selectedService option:selected').attr('value');
-
-            if (selected === 'processSuperconductorsText') {
-                createInputTextArea();
-                setBaseUrl('processSuperconductorsText');
-                $('#requestResult').hide();
-            } else if (selected === 'annotateSuperconductorsPDF') {
-                createInputFile(selected);
-                setBaseUrl('annotateSuperconductorsPDF');
-                $('#requestResult').hide();
-            }
-        }
-
-        function createInputFile() {
-            $('#textInputDiv').hide();
-            $('#fileInputDiv').show();
-
-            $('#gbdForm').attr('enctype', 'multipart/form-data');
-            $('#gbdForm').attr('method', 'post');
-        }
-
-        function createInputTextArea() {
-            $('#fileInputDiv').hide();
-            $('#textInputDiv').show();
-        }
-
-        var examples = [
-            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.", "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
-
+        var examples_superconductors = [
+            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
+            "The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
+            "The highest T c in boron-doped SWNTs (single-walled nanotubes) ranged from 8 to For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K ."
         ]
-
     }
 
 )(jQuery);

@@ -6,13 +6,15 @@ import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationStudy;
 import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreement;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
-import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;

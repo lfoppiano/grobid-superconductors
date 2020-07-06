@@ -6,6 +6,9 @@ chemDataExtractorUrl: http://falcon.nims.go.jp/cde
 
 grobidQuantitiesUrl: http://falcon.nims.go.jp/quantities
 
+pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/grobidSuperconductors
+pythonRedirectOutput: true
+
 server:
   type: custom
   idleTimeout: 120 seconds

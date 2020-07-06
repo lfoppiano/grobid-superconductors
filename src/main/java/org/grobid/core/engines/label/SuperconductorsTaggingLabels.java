@@ -32,12 +32,6 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
 
     public static final TaggingLabel SUPERCONDUCTORS_OTHER = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, OTHER_LABEL);
 
-    private static final String ABBREVIATION_NAME_LABEL = "<acronym>";
-
-    public static final TaggingLabel ABBREVIATION_VALUE_NAME = new TaggingLabelImpl(SuperconductorsModels.ABBREVIATIONS, ABBREVIATION_NAME_LABEL);
-    public static final TaggingLabel ABBREVIATION_OTHER = new TaggingLabelImpl(SuperconductorsModels.ABBREVIATIONS, OTHER_LABEL);
-
-
     static {
         //Superconductor
         register(SUPERCONDUCTORS_CLASS);
@@ -49,10 +43,5 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         register(SUPERCONDUCTORS_PRESSURE);
         register(SUPERCONDUCTORS_MAGNETISATION);
         register(SUPERCONDUCTORS_OTHER);
-
-        //Abbreviation
-        register(ABBREVIATION_VALUE_NAME);
-        register(ABBREVIATION_OTHER);
-
     }
 }

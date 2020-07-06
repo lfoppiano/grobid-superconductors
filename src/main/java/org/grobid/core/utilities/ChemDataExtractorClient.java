@@ -12,7 +12,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.grobid.core.data.chemDataExtractor.Span;
+import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +48,8 @@ public class ChemDataExtractorClient {
         this.httpClient = HttpClientBuilder.create().build();
     }
 
-    public List<Span> processText(String text) {
-        List<Span> mentions = new ArrayList<>();
+    public List<ChemicalSpan> processText(String text) {
+        List<ChemicalSpan> mentions = new ArrayList<>();
         try {
             final HttpPost request = new HttpPost(serverUrl + "/process");
             request.setHeader("Accept", APPLICATION_JSON);
@@ -82,12 +82,12 @@ public class ChemDataExtractorClient {
         return mentions;
     }
 
-    public List<Span> fromJson(InputStream inputLine) {
+    public List<ChemicalSpan> fromJson(InputStream inputLine) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<List<Span>>() {
+            return mapper.readValue(inputLine, new TypeReference<List<ChemicalSpan>>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
