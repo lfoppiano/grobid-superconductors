@@ -6,6 +6,7 @@ import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.hubspot.dropwizard.guicier.DropwizardAwareModule;
 import org.grobid.core.engines.AggregatedProcessing;
+import org.grobid.core.engines.LinkingEngine;
 import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.grobid.core.utilities.ChemspotClient;
@@ -29,7 +30,7 @@ public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSu
         binder.bind(ChemspotClient.class);
         binder.bind(ChemDataExtractorClient.class);
         binder.bind(SuperconductorsParser.class);
-//        binder.bind(AbbreviationsParser.class);
+        binder.bind(LinkingEngine.class);
         binder.bind(AggregatedProcessing.class);
 
         //REST

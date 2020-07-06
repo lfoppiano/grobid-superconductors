@@ -37,7 +37,7 @@ public class AggregatedProcessingTest {
         mockSuperconductorsParser = EasyMock.createMock(SuperconductorsParser.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser);
+        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser, null);
     }
 
     @Test
@@ -63,11 +63,11 @@ public class AggregatedProcessingTest {
         temperature.setAtomicQuantity(quantity);
 
         EasyMock.expect(mockSuperconductorsParser.process(tokens)).andReturn(Arrays.asList(superconductor));
-        EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature)).times(2);
+        EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature));
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        ProcessedParagraph response = target.process(tokens);
+        List<ProcessedParagraph> response = target.process(tokens, true);
 
         EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 

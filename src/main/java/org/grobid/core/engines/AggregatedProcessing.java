@@ -42,18 +42,22 @@ public class AggregatedProcessing {
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
     private SentenceSegmenter sentenceSegmenter;
+    private LinkingEngine linkingEngine;
 
 
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser) {
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser,
+                                QuantityParser quantityParser,
+                                LinkingEngine linkingEngine) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
         this.sentenceSegmenter = new SentenceSegmenter();
+        this.linkingEngine = linkingEngine;
         parsers = new EngineParsers();
     }
 
     @Inject
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser) {
-        this(superconductorsParser, QuantityParser.getInstance(true));
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, LinkingEngine linkingEngine) {
+        this(superconductorsParser, QuantityParser.getInstance(true), linkingEngine);
     }
 
     @Deprecated
@@ -280,12 +284,12 @@ public class AggregatedProcessing {
         processedParagraph.setSpans(pruneOverlappingAnnotations(sortedSpans));
 
         //Because we split into sentences, we may obtain more information
-//        if(disableLinking) {
-        return Arrays.asList(processedParagraph);
-//        }
-//        List<ProcessedParagraph> processedParagraphs = linkingEngine.process(processedParagraph);
-//
-//        return processedParagraphs;
+        if (disableLinking) {
+            return Arrays.asList(processedParagraph);
+        }
+        List<ProcessedParagraph> processedParagraphs = linkingEngine.process(processedParagraph);
+
+        return processedParagraphs;
     }
 
 
