@@ -180,19 +180,6 @@ trainerTasks.each { taskName, mainClassName ->
 
 /*** Packaging and distribution ***/
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-task mainJar(type: ShadowJar, group: 'onejar') {
-    zip64 true
-    from sourceSets.main.output
-    mergeServiceFiles()
-    from {
-        project.configurations.compile.collect {
-            it.isDirectory() ? [] : localLibs.contains(it.getName()) ? zipTree(it) : []
-        }
-    }
-}
-
 shadowJar {
     mainClassName = 'org.grobid.service.GrobidSuperconductorsApplication'
     archiveClassifier = 'onejar'
@@ -201,23 +188,31 @@ shadowJar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
-//    from sourceSets.main.output
-//    configurations = [project.configurations.compile, project.configurations.runtime]
+    from {
+        project.configurations.compile.collect {
+            it.isDirectory() ? [] : localLibs.contains(it.getName()) ? zipTree(it) : []
+        }
+    }
 }
 
-jar {
-    dependsOn mainJar
-    enabled false
-}
+distTar.enabled = false
+shadowDistTar.enabled = false
 
 artifacts {
     archives shadowJar
-    archives mainJar
+    archives jar
 }
 
-distZip.archiveClassifier = 'application'
-//distTar.archiveClassifier = 'application'
-
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
 
 /** Model management **/
 task copyModels(type: Copy) {
