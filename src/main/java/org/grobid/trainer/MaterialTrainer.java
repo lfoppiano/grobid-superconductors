@@ -1,11 +1,9 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.StringEscapeUtils;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.engines.MaterialParser;
 import org.grobid.core.engines.SuperconductorsModels;
@@ -37,10 +35,10 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 public class MaterialTrainer extends AbstractTrainer {
     public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("material");
     public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("formula", "variable",
-        "value", "name", "shape", "doping");
+        "value", "name", "shape", "doping", "fabrication", "substrate");
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(MaterialTrainer.class);
-    private WstxInputFactory inputFactory = new WstxInputFactory();
+    private final WstxInputFactory inputFactory = new WstxInputFactory();
 
     public MaterialTrainer() {
         super(SuperconductorsModels.MATERIAL);

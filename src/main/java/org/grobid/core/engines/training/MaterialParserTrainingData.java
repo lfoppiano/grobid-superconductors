@@ -5,7 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Superconductor;
+import org.grobid.core.data.Span;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.GrobidPDFEngine;
 import org.grobid.core.engines.MaterialParser;
@@ -13,7 +13,6 @@ import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.grobid.core.utilities.LayoutTokensUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +38,7 @@ public class MaterialParserTrainingData {
     public MaterialParserTrainingData() {
         materialParser = MaterialParser.getInstance();
     }
+
     public MaterialParserTrainingData(MaterialParser parser) {
         materialParser = parser;
     }
@@ -128,7 +128,7 @@ public class MaterialParserTrainingData {
 
         StringBuilder textAggregation = new StringBuilder();
         StringBuilder features = new StringBuilder();
-        List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
+        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
         GrobidPDFEngine.processDocument(document, preprocessedLayoutToken -> {
 

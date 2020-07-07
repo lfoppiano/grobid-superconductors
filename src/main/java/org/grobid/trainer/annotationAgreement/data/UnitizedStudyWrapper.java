@@ -8,7 +8,6 @@ import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreem
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
 import org.grobid.trainer.stax.handler.AnnotationOffsetsExtractionStaxHandler;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;

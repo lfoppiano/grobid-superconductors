@@ -74,18 +74,20 @@ public class SuperconductorsParser extends AbstractParser {
         if (isEmpty(layoutTokens))
             return Pair.of("", new ArrayList<>());
 
-        List<Span> measurements = new ArrayList<>();
+        List<Span> entities = new ArrayList<>();
         String features = null;
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
         //Normalisation
-        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
-                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+        List<LayoutToken> layoutTokensNormalised = tokens.stream()
+            .map(layoutToken -> {
+                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
-                return layoutToken;
-            }
-        ).collect(Collectors.toList());
+                    return layoutToken;
+                }
+            )
+            .collect(Collectors.toList());
 
 
         List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
@@ -327,7 +329,7 @@ public class SuperconductorsParser extends AbstractParser {
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
                 superconductor.setText(clusterContent);
-                superconductor.setStructuredMaterials(materialParser.process(theTokens));
+//                superconductor.setStructuredMaterials(materialParser.process(theTokens));
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);

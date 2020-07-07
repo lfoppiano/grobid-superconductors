@@ -35,9 +35,11 @@ public class Span {
     //The source where this span was generated from, namely the model
     private String source;
 
-    // Contains the references to other linked objects
+    // Contains the references (id) to other spans objects
     private List<List<String>> links = new ArrayList<>();
 
+    /** These are internal objects that should not be serialised to JSON **/
+    @JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
     @JsonIgnore

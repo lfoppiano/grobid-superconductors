@@ -30,19 +30,23 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
 
     public static final TaggingLabel SUPERCONDUCTORS_OTHER = new TaggingLabelImpl(SuperconductorsModels.SUPERCONDUCTORS, OTHER_LABEL);
 
+    public static final String MATERIAL_NAME_LABEL = "<name>";
+    public static final String MATERIAL_FORMULA_LABEL = "<formula>";
     public static final String MATERIAL_SHAPE_LABEL = "<shape>";
+    public static final String MATERIAL_DOPING_LABEL = "<doping>";
     public static final String MATERIAL_VARIABLE_LABEL = "<variable>";
     public static final String MATERIAL_VALUE_LABEL = "<value>";
-    public static final String MATERIAL_FORMULA_LABEL = "<formula>";
-    public static final String MATERIAL_NAME_LABEL = "<name>";
-    public static final String MATERIAL_DOPING_LABEL = "<doping>";
+    public static final String MATERIAL_SUBSTRATE_LABEL = "<substrate>";
+    public static final String MATERIAL_FABRICATION_LABEL = "<fabrication>";
 
+    public static final TaggingLabel MATERIAL_NAME = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_NAME_LABEL);
+    public static final TaggingLabel MATERIAL_FORMULA = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_FORMULA_LABEL);
     public static final TaggingLabel MATERIAL_SHAPE = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_SHAPE_LABEL);
+    public static final TaggingLabel MATERIAL_DOPING = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_DOPING_LABEL);
     public static final TaggingLabel MATERIAL_VARIABLE = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_VARIABLE_LABEL);
     public static final TaggingLabel MATERIAL_VALUE = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_VALUE_LABEL);
-    public static final TaggingLabel MATERIAL_FORMULA = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_FORMULA_LABEL);
-    public static final TaggingLabel MATERIAL_NAME = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_NAME_LABEL);
-    public static final TaggingLabel MATERIAL_DOPING = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_DOPING_LABEL);
+    public static final TaggingLabel MATERIAL_SUBSTRATE = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_SUBSTRATE_LABEL);
+    public static final TaggingLabel MATERIAL_FABRICATION = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, MATERIAL_FABRICATION_LABEL);
     public static final TaggingLabel MATERIAL_OTHER = new TaggingLabelImpl(SuperconductorsModels.MATERIAL, OTHER_LABEL);
 
     static {
@@ -63,8 +67,8 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         register(MATERIAL_FORMULA);
         register(MATERIAL_NAME);
         register(MATERIAL_DOPING);
+        register(MATERIAL_SUBSTRATE);
+        register(MATERIAL_FABRICATION);
         register(MATERIAL_OTHER);
-
-
     }
 }
