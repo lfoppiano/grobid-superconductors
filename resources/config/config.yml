@@ -1,5 +1,9 @@
 grobidHome: ../grobid-home
 
+corsAllowedOrigins: "*"
+corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
+corsAllowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
+
 chemspotUrl: http://falcon.nims.go.jp/chemspot
 chemDataExtractorUrl: http://falcon.nims.go.jp/cde
 #chemDataExtractorUrl: http://localhost:8076
