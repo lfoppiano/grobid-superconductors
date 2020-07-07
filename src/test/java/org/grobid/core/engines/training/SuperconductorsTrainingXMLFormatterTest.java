@@ -3,7 +3,7 @@ package org.grobid.core.engines.training;
 import nu.xom.Element;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Superconductor;
+import org.grobid.core.data.Span;
 import org.grobid.core.layout.LayoutToken;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,12 +27,12 @@ public class SuperconductorsTrainingXMLFormatterTest {
 
     @Test
     public void testTrainingData_value() throws Exception {
-        List<Superconductor> superconductorList = new ArrayList<>();
-        Superconductor superconductor = new Superconductor();
+        List<Span> superconductorList = new ArrayList<>();
+        Span superconductor = new Span();
         superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         superconductor.setOffsetStart(19);
         superconductor.setOffsetEnd(30);
-        superconductor.setName("(TMTSF)2PF6");
+        superconductor.setText("(TMTSF)2PF6");
 
         String text = "The Bechgaard salt (TMTSF)2PF6 (TMTSF = tetra- methyltetraselenafulvalene) was";
 
@@ -53,18 +53,18 @@ public class SuperconductorsTrainingXMLFormatterTest {
             l.setOffset(l.getOffset() + 4);
         });
 
-        List<Superconductor> superconductorList = new ArrayList<>();
-        Superconductor superconductor = new Superconductor();
+        List<Span> superconductorList = new ArrayList<>();
+        Span superconductor = new Span();
         superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         superconductor.setOffsetStart(64);
         superconductor.setOffsetEnd(77);
-        superconductor.setName("FeSe 1-x Te x");
+        superconductor.setText("FeSe 1-x Te x");
 
-        Superconductor superconductor2 = new Superconductor();
+        Span superconductor2 = new Span();
         superconductor2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         superconductor2.setOffsetStart(79);
         superconductor2.setOffsetEnd(90);
-        superconductor2.setName("0.6 ≤ x ≤ 1");
+        superconductor2.setText("0.6 ≤ x ≤ 1");
 
         superconductorList.add(superconductor);
         superconductorList.add(superconductor2);
@@ -84,24 +84,24 @@ public class SuperconductorsTrainingXMLFormatterTest {
             l.setOffset(l.getOffset() + 4);
         });
 
-        List<Superconductor> superconductorList = new ArrayList<>();
-        Superconductor superconductor = new Superconductor();
-        superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        superconductor.setOffsetStart(64);
-        superconductor.setOffsetEnd(77);
-        superconductor.setName("FeSe 1-x Te x");
+        List<Span> SpanList = new ArrayList<>();
+        Span Span = new Span();
+        Span.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        Span.setOffsetStart(64);
+        Span.setOffsetEnd(77);
+        Span.setText("FeSe 1-x Te x");
 
-        Superconductor superconductor2 = new Superconductor();
-        superconductor2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        superconductor2.setOffsetStart(79);
-        superconductor2.setOffsetEnd(90);
-        superconductor2.setName("0.6 ≤ x ≤ 1");
+        Span Span2 = new Span();
+        Span2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        Span2.setOffsetStart(79);
+        Span2.setOffsetEnd(90);
+        Span2.setText("0.6 ≤ x ≤ 1");
 
-        superconductorList.add(superconductor);
-        superconductorList.add(superconductor2);
+        SpanList.add(Span);
+        SpanList.add(Span2);
 
-        List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(superconductorList, layoutTokens));
+        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
+        labeledTextList.add(Pair.of(SpanList, layoutTokens));
 
 
         String output = target.format(labeledTextList, 1);
@@ -119,58 +119,58 @@ public class SuperconductorsTrainingXMLFormatterTest {
             l.setOffset(l.getOffset() + 372);
         });
 
-        List<Superconductor> superconductorList = new ArrayList<>();
-        Superconductor superconductor = new Superconductor();
-        superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        superconductor.setOffsetStart(445);
-        superconductor.setOffsetEnd(458);
-        superconductor.setName("FeSe 1-x Te x");
-        superconductorList.add(superconductor);
+        List<Span> SpanList = new ArrayList<>();
+        Span Span = new Span();
+        Span.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        Span.setOffsetStart(445);
+        Span.setOffsetEnd(458);
+        Span.setText("FeSe 1-x Te x");
+        SpanList.add(Span);
 
-        Superconductor superconductor2 = new Superconductor();
-        superconductor2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        superconductor2.setOffsetStart(460);
-        superconductor2.setOffsetEnd(471);
-        superconductor2.setName("0.6 ≤ x ≤ 1");
-        superconductorList.add(superconductor2);
+        Span Span2 = new Span();
+        Span2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        Span2.setOffsetStart(460);
+        Span2.setOffsetEnd(471);
+        Span2.setText("0.6 ≤ x ≤ 1");
+        SpanList.add(Span2);
 
-        Superconductor superconductor3 = new Superconductor();
-        superconductor3.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        superconductor3.setOffsetStart(549);
-        superconductor3.setOffsetEnd(561);
-        superconductor3.setName("x = 0.6 -0.9");
-        superconductorList.add(superconductor3);
+        Span Span3 = new Span();
+        Span3.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        Span3.setOffsetStart(549);
+        Span3.setOffsetEnd(561);
+        Span3.setText("x = 0.6 -0.9");
+        SpanList.add(Span3);
 
-        Superconductor superconductor4 = new Superconductor();
-        superconductor4.setType(SUPERCONDUCTORS_TC_VALUE_LABEL);
-        superconductor4.setOffsetStart(562);
-        superconductor4.setOffsetEnd(569);
-        superconductor4.setName("exhibit");
-        superconductorList.add(superconductor4);
+        Span Span4 = new Span();
+        Span4.setType(SUPERCONDUCTORS_TC_VALUE_LABEL);
+        Span4.setOffsetStart(562);
+        Span4.setOffsetEnd(569);
+        Span4.setText("exhibit");
+        SpanList.add(Span4);
 
-        Superconductor superconductor5 = new Superconductor();
-        superconductor5.setType(SUPERCONDUCTORS_TC_LABEL);
-        superconductor5.setOffsetStart(570);
-        superconductor5.setOffsetEnd(592);
-        superconductor5.setName("bulk superconductivity");
-        superconductorList.add(superconductor5);
+        Span Span5 = new Span();
+        Span5.setType(SUPERCONDUCTORS_TC_LABEL);
+        Span5.setOffsetStart(570);
+        Span5.setOffsetEnd(592);
+        Span5.setText("bulk superconductivity");
+        SpanList.add(Span5);
 
-        Superconductor superconductor6 = new Superconductor();
-        superconductor6.setType(SUPERCONDUCTORS_TC_LABEL);
-        superconductor6.setOffsetStart(632);
-        superconductor6.setOffsetEnd(647);
-        superconductor6.setName("superconducting");
-        superconductorList.add(superconductor6);
+        Span Span6 = new Span();
+        Span6.setType(SUPERCONDUCTORS_TC_LABEL);
+        Span6.setOffsetStart(632);
+        Span6.setOffsetEnd(647);
+        Span6.setText("superconducting");
+        SpanList.add(Span6);
 
-        Superconductor superconductor7 = new Superconductor();
-        superconductor7.setType(SUPERCONDUCTORS_TC_LABEL);
-        superconductor7.setOffsetStart(653);
-        superconductor7.setOffsetEnd(675);
-        superconductor7.setName("transition temperature");
-        superconductorList.add(superconductor7);
+        Span Span7 = new Span();
+        Span7.setType(SUPERCONDUCTORS_TC_LABEL);
+        Span7.setOffsetStart(653);
+        Span7.setOffsetEnd(675);
+        Span7.setText("transition temperature");
+        SpanList.add(Span7);
 
-        List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(superconductorList, layoutTokens));
+        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
+        labeledTextList.add(Pair.of(SpanList, layoutTokens));
 
         String output = target.format(labeledTextList, 1);
 
@@ -188,23 +188,23 @@ public class SuperconductorsTrainingXMLFormatterTest {
             l.setOffset(l.getOffset() + 372);
         });
 
-        List<Superconductor> superconductorList = new ArrayList<>();
-        Superconductor superconductor = new Superconductor();
-        superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        superconductor.setOffsetStart(445);
-        superconductor.setOffsetEnd(458);
-        superconductor.setName("FeSe 1-x Te x");
-        superconductorList.add(superconductor);
+        List<Span> SpanList = new ArrayList<>();
+        Span Span = new Span();
+        Span.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        Span.setOffsetStart(445);
+        Span.setOffsetEnd(458);
+        Span.setText("FeSe 1-x Te x");
+        SpanList.add(Span);
 
-        Superconductor superconductor2 = new Superconductor();
-        superconductor2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        superconductor2.setOffsetStart(460);
-        superconductor2.setOffsetEnd(472);
-        superconductor2.setName("0.6 ≤ x ≤ 1");
-        superconductorList.add(superconductor2);
+        Span Span2 = new Span();
+        Span2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        Span2.setOffsetStart(460);
+        Span2.setOffsetEnd(472);
+        Span2.setText("0.6 ≤ x ≤ 1");
+        SpanList.add(Span2);
 
-        List<Pair<List<Superconductor>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(superconductorList, layoutTokens));
+        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
+        labeledTextList.add(Pair.of(SpanList, layoutTokens));
 
         target.format(labeledTextList, 1);
     }

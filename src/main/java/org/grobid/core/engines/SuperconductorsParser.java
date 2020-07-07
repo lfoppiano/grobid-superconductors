@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Superconductor;
-import org.grobid.core.data.chemDataExtractor.Span;
+import org.grobid.core.data.Span;
+import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
@@ -15,7 +15,10 @@ import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.BoundingBoxCalculator;
+import org.grobid.core.utilities.ChemDataExtractorClient;
+import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.UnicodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
+import static org.grobid.core.engines.AggregatedProcessing.getFormattedString;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 @Singleton
@@ -65,12 +69,12 @@ public class SuperconductorsParser extends AbstractParser {
         instance = this;
     }
 
-    public Pair<String, List<Superconductor>> generateTrainingData(List<LayoutToken> layoutTokens) {
+    public Pair<String, List<Span>> generateTrainingData(List<LayoutToken> layoutTokens) {
 
         if (isEmpty(layoutTokens))
             return Pair.of("", new ArrayList<>());
 
-        List<Superconductor> entities = new ArrayList<>();
+        List<Span> measurements = new ArrayList<>();
         String features = null;
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
@@ -84,7 +88,7 @@ public class SuperconductorsParser extends AbstractParser {
         ).collect(Collectors.toList());
 
 
-        List<Span> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+        List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
         List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
 //        mentions.stream().forEach(m -> System.out.println(">>>>>> " + m.getText() + " --> " + m.getType().name()));
@@ -107,7 +111,7 @@ public class SuperconductorsParser extends AbstractParser {
         return Pair.of(features, entities);
     }
 
-    public Pair<String, List<Superconductor>> generateTrainingData(String text) {
+    public Pair<String, List<Span>> generateTrainingData(String text) {
         text = text.replace("\r\t", " ");
         text = text.replace("\n", " ");
         text = text.replace("\t", " ");
@@ -123,9 +127,9 @@ public class SuperconductorsParser extends AbstractParser {
 
     }
 
-    public List<Superconductor> process(List<LayoutToken> layoutTokens) {
+    public List<Span> process(List<LayoutToken> layoutTokens) {
 
-        List<Superconductor> entities = new ArrayList<>();
+        List<Span> entities = new ArrayList<>();
 
         //Normalisation
         List<LayoutToken> layoutTokensPreNormalised = layoutTokens.stream()
@@ -144,7 +148,7 @@ public class SuperconductorsParser extends AbstractParser {
         // list of textual tokens of the selected segment
         //List<String> texts = getTexts(tokenizationParts);
 
-        List<Span> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
+        List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
         List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
         if (isEmpty(layoutTokensNormalised))
@@ -152,20 +156,20 @@ public class SuperconductorsParser extends AbstractParser {
 
         try {
             // string representation of the feature matrix for CRF lib
-            String ress = addFeatures(layoutTokensNormalised, listAnnotations);
+            String inputWithFeatures = addFeatures(layoutTokensNormalised, listAnnotations);
 
-            if (StringUtils.isEmpty(ress))
+            if (StringUtils.isEmpty(inputWithFeatures))
                 return entities;
 
             // labeled result from CRF lib
-            String res = null;
+            String labelingResult = null;
             try {
-                res = label(ress);
+                labelingResult = label(inputWithFeatures);
             } catch (Exception e) {
                 throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
 
-            List<Superconductor> localEntities = extractResults(layoutTokensNormalised, res);
+            List<Span> localEntities = extractResults(layoutTokensNormalised, labelingResult);
 
             entities.addAll(localEntities);
         } catch (Exception e) {
@@ -175,7 +179,7 @@ public class SuperconductorsParser extends AbstractParser {
         return entities;
     }
 
-    protected List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Span> mentions) {
+    protected List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
         List<Boolean> isChemicalEntity = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(mentions)) {
@@ -185,13 +189,13 @@ public class SuperconductorsParser extends AbstractParser {
         }
 
         mentions = mentions.stream()
-            .sorted(Comparator.comparingInt(Span::getStart))
+            .sorted(Comparator.comparingInt(ChemicalSpan::getStart))
             .collect(Collectors.toList());
 
         int globalOffset = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
 
         int mentionId = 0;
-        Span mention = mentions.get(mentionId);
+        ChemicalSpan mention = mentions.get(mentionId);
 
         for (LayoutToken token : tokens) {
             //normalise the offsets
@@ -231,7 +235,7 @@ public class SuperconductorsParser extends AbstractParser {
     /**
      * Extract all occurrences of measurement/quantities from a simple piece of text.
      */
-    public List<Superconductor> process(String text) {
+    public List<Span> process(String text) {
         if (isBlank(text)) {
             return new ArrayList<>();
         }
@@ -289,13 +293,15 @@ public class SuperconductorsParser extends AbstractParser {
     /**
      * Extract identified quantities from a labeled text.
      */
-    public List<Superconductor> extractResults(List<LayoutToken> tokens, String result) {
-        List<Superconductor> resultList = new ArrayList<>();
+    public List<Span> extractResults(List<LayoutToken> tokens, String result) {
+        List<Span> resultList = new ArrayList<>();
 
         TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.SUPERCONDUCTORS, result, tokens);
         List<TaggingTokenCluster> clusters = clusteror.cluster();
 
-//        int pos = 0; // position in term of characters for creating the offsets
+        int tokenStartPos = 0; // position in term of layout token index
+
+        String source = SuperconductorsModels.SUPERCONDUCTORS.getModelName();
 
         for (TaggingTokenCluster cluster : clusters) {
             if (cluster == null) {
@@ -310,63 +316,76 @@ public class SuperconductorsParser extends AbstractParser {
             if (!clusterLabel.equals(SUPERCONDUCTORS_OTHER))
                 boundingBoxes = BoundingBoxCalculator.calculate(cluster.concatTokens());
 
-//            OffsetPosition calculatedOffset = calculateOffsets(tokens, theTokens, pos);
-//            pos = calculatedOffset.start;
-//            int endPos = calculatedOffset.end;
-
             int startPos = theTokens.get(0).getOffset();
             int endPos = startPos + clusterContent.length();
 
-            Superconductor superconductor = new Superconductor();
+            int tokenEndPos = tokenStartPos + theTokens.size();
+
+            Span superconductor = new Span();
+            superconductor.setSource(source);
 
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-                superconductor.setName(clusterContent);
+                superconductor.setText(clusterContent);
                 superconductor.setStructuredMaterials(materialParser.process(theTokens));
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
+                superconductor.setTokenStart(tokenStartPos);
+                superconductor.setTokenEnd(tokenEndPos);
+                superconductor.setFormattedText(getFormattedString(theTokens));
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_CLASS)) {
                 superconductor.setType(SUPERCONDUCTORS_CLASS_LABEL);
-                superconductor.setName(clusterContent);
+                superconductor.setText(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
+                superconductor.setTokenStart(tokenStartPos);
+                superconductor.setTokenEnd(tokenEndPos);
+                superconductor.setFormattedText(getFormattedString(theTokens));
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_MEASUREMENT_METHOD)) {
                 superconductor.setType(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL);
-                superconductor.setName(clusterContent);
+                superconductor.setText(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
+                superconductor.setTokenStart(tokenStartPos);
+                superconductor.setTokenEnd(tokenEndPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_TC)) {
                 superconductor.setType(SUPERCONDUCTORS_TC_LABEL);
-                superconductor.setName(clusterContent);
+                superconductor.setText(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
+                superconductor.setTokenStart(tokenStartPos);
+                superconductor.setTokenEnd(tokenEndPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_TC_VALUE)) {
                 superconductor.setType(SUPERCONDUCTORS_TC_VALUE_LABEL);
-                superconductor.setName(clusterContent);
+                superconductor.setText(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
+                superconductor.setTokenStart(tokenStartPos);
+                superconductor.setTokenEnd(tokenEndPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_PRESSURE)) {
                 superconductor.setType(SUPERCONDUCTORS_PRESSURE_LABEL);
-                superconductor.setName(clusterContent);
+                superconductor.setText(clusterContent);
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);
                 superconductor.setOffsetEnd(endPos);
+                superconductor.setTokenStart(tokenStartPos);
+                superconductor.setTokenEnd(tokenEndPos);
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_OTHER)) {
 
@@ -374,41 +393,9 @@ public class SuperconductorsParser extends AbstractParser {
                 LOGGER.error("Warning: unexpected label in superconductors parser: " + clusterLabel.getLabel() + " for " + clusterContent);
             }
 
-//            pos = endPos;
+            tokenStartPos = tokenEndPos;
         }
 
         return resultList;
-    }
-
-    /**
-     * Tests on this method are failing ... use at your own risk!
-     **/
-    @Deprecated
-    protected OffsetPosition calculateOffsets(List<LayoutToken> tokens, List<LayoutToken> theTokens, int pos) {
-        String text = LayoutTokensUtil.toText(tokens);
-        // ignore spaces at the beginning
-        if ((pos < text.length() - 1) && (text.charAt(pos) == ' '))
-            pos += 1;
-        int endPos = pos;
-        boolean start = true;
-
-        for (LayoutToken token : theTokens) {
-            if (token.getText() != null) {
-                if (start && token.getText().equals(" ")) {
-                    pos++;
-                    endPos++;
-                    continue;
-                }
-                if (start)
-                    start = false;
-                endPos += token.getText().length();
-            }
-        }
-
-        //Remove the space at the end
-        if ((endPos > 0) && (endPos <= text.length()) && (text.charAt(endPos - 1) == ' '))
-            endPos--;
-
-        return new OffsetPosition(pos, endPos);
     }
 }
