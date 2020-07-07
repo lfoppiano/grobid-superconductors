@@ -126,11 +126,13 @@ public class LinkingEngine {
                 List<ProcessedParagraph> processed = oMapper.readValue(sentencesAsJson, mapType);
 
                 // put the bounding boxes back where they were
-                processed.stream().forEach(p -> {
-                    p.getSpans().stream().forEach(s -> {
-                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                processed.stream()
+                    .forEach(p -> {
+                        p.getSpans().stream()
+                            .forEach(s -> {
+                                s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                            });
                     });
-                });
 
                 return processed;
 

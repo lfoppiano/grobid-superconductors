@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.grobid.core.engines.SuperconductorsModels.MATERIAL;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
@@ -194,11 +195,11 @@ public class MaterialParser extends AbstractParser {
         List<Material> extracted = new ArrayList<>();
         Material currentMaterial = new Material();
 
-        // Usually the shape is shared
-        String shape = null;
-
-        //We assume the doping is shared too, although might not always be the case
-        String doping = null;
+        // Usually the shape, doping and fabrication are shared between the instantiated material objects
+        List<String> shapes = new ArrayList<>();
+        List<String> dopings = new ArrayList<>();
+        List<String> fabrications = new ArrayList<>();
+        List<String> substrates = new ArrayList<>();
 
         String processingVariable = null;
         StringBuilder rawTaggedValue = new StringBuilder();
@@ -241,9 +242,7 @@ public class MaterialParser extends AbstractParser {
                 currentMaterial.addBoundingBoxes(boundingBoxes);
 
             } else if (clusterLabel.equals(MATERIAL_DOPING)) {
-                doping = clusterContent;
-//                dopingOffsets.addAll(new OffsetPosition(startPos, endPos));
-//                dopingBoundingBoxes.addAll(boundingBoxes);
+                dopings.add(clusterContent);
 
             } else if (clusterLabel.equals(MATERIAL_FORMULA)) {
                 if (StringUtils.isNotEmpty(currentMaterial.getFormula())) {
@@ -255,9 +254,7 @@ public class MaterialParser extends AbstractParser {
                 currentMaterial.addBoundingBoxes(boundingBoxes);
 
             } else if (clusterLabel.equals(MATERIAL_SHAPE)) {
-                shape = clusterContent;
-//                shapeOffsets.addAll(new OffsetPosition(startPos, endPos));
-//                shapeBoundingBoxes.addAll(boundingBoxes);
+                shapes.add(clusterContent);
 
             } else if (clusterLabel.equals(MATERIAL_VALUE)) {
                 String value = clusterContent;
@@ -279,6 +276,10 @@ public class MaterialParser extends AbstractParser {
                     processingVariable = variable;
                 }
 
+            } else if (clusterLabel.equals(MATERIAL_FABRICATION)) {
+                fabrications.add(clusterContent);
+            } else if (clusterLabel.equals(MATERIAL_SUBSTRATE)) {
+                substrates.add(clusterContent);
             } else if (clusterLabel.equals(MATERIAL_OTHER)) {
 
             } else {
@@ -288,27 +289,96 @@ public class MaterialParser extends AbstractParser {
 
         extracted.add(currentMaterial);
 
-        /** Post_processing the variables-> values **/
+        /**
+         * if the doping has size > 1  and there is just one material, then it means
+         * the experiment is about different doping ratio, therefore we need to create
+         * more objects with different doping, with the same material name/formula
+         **/
 
+        String singleDoping = "";
+        String singleSubstrate = "";
+        if (dopings.size() > 1) {
+            if (extracted.size() == 1) {
+                Material singleExtractedMaterial = extracted.get(0);
+                extracted = new ArrayList<>();
+                for (String doping : dopings) {
+                    Material newMaterial = new Material();
+                    newMaterial.setName(singleExtractedMaterial.getName());
+                    newMaterial.setFormula(singleExtractedMaterial.getFormula());
+                    newMaterial.setDoping(doping);
+                    singleExtractedMaterial.getVariables().entrySet().stream()
+                        .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
+                    extracted.add(newMaterial);
+                }
+            } else {
+                singleDoping = String.join(", ", dopings);
+            }
+        } else {
+            if (dopings.size() == 1) {
+                singleDoping = String.join(", ", dopings);
+            }
+
+            if (substrates.size() == 1) {
+                singleSubstrate = substrates.get(0);
+            } else if (substrates.size() > 1) {
+                if (extracted.size() == 1) {
+                    Material singleExtractedMaterial = extracted.get(0);
+                    extracted = new ArrayList<>();
+                    for (String substrate : substrates) {
+                        Material newMaterial = new Material();
+                        newMaterial.setName(singleExtractedMaterial.getName());
+                        newMaterial.setFormula(singleExtractedMaterial.getFormula());
+                        newMaterial.setSubstrate(substrate);
+                        singleExtractedMaterial.getVariables().entrySet().stream()
+                            .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
+                        extracted.add(newMaterial);
+                    }
+                } else {
+                    singleSubstrate = String.join(", ", substrates);
+                }
+            } else {
+                singleSubstrate = String.join(", ", substrates);
+            }
+        }
+
+        //TODO: validate this
+        String singleShape = String.join(", ", shapes);
+        String singleFabrication = String.join(", ", fabrications);
+
+        /** Post_processing the variables-> values **/
         for (Material material : extracted) {
             List<String> resolvedFormulas = Material.resolveVariables(material);
 
             //If there are no resolved formulas (no variable) I could still have a (A, B)C1,D2 formula type that can
             // be expanded
-            if(isEmpty(resolvedFormulas) && StringUtils.isNotEmpty(material.getFormula())) {
+            if (isEmpty(resolvedFormulas) && StringUtils.isNotEmpty(material.getFormula())) {
                 resolvedFormulas.add(material.getFormula());
             }
 
-            if(isNotEmpty(resolvedFormulas)) {
+            if (isNotEmpty(resolvedFormulas)) {
                 List<String> resolvedAndExpandedFormulas = resolvedFormulas.stream()
                     .flatMap(f -> Material.expandFormula(f).stream())
                     .collect(Collectors.toList());
                 material.setResolvedFormulas(resolvedAndExpandedFormulas);
             }
 
-            /** Shape and doping are shared properties **/
-            material.setShape(shape);
-            material.setDoping(doping);
+            /** Shape and fabrication are shared properties **/
+            if (isNotBlank(singleShape) && isBlank(material.getShape())) {
+                material.setShape(singleShape);
+            }
+            if (isNotBlank(singleFabrication) && isBlank(material.getFabrication())) {
+                material.setFabrication(singleShape);
+            }
+
+            /** doping and substrate are merged if there are already multiple materials **/
+            if (isNotBlank(singleDoping) && isBlank(material.getDoping())) {
+                material.setDoping(singleDoping);
+            }
+
+            if (isNotBlank(singleSubstrate) && isBlank(material.getSubstrate())) {
+                material.setSubstrate(singleSubstrate);
+            }
+
             material.setRawTaggedValue(rawTaggedValue.toString());
         }
 

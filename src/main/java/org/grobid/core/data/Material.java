@@ -34,6 +34,8 @@ public class Material {
     private String shape;
     private String formula;
     private String doping;
+    private String fabrication;
+    private String substrate;
 
     private List<String> resolvedFormulas = new ArrayList<>();
 
@@ -367,5 +369,21 @@ public class Material {
         }
 
         return expantedFormulas;
+    }
+
+    public String getFabrication() {
+        return fabrication;
+    }
+
+    public void setFabrication(String fabrication) {
+        this.fabrication = fabrication;
+    }
+
+    public String getSubstrate() {
+        return substrate;
+    }
+
+    public void setSubstrate(String substrate) {
+        this.substrate = substrate;
     }
 }

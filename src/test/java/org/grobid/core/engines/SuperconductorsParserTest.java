@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
+import static org.grobid.core.utilities.GrobidTestUtils.getWapitiResult;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
@@ -51,7 +52,9 @@ public class SuperconductorsParserTest {
             Triple.of("<tcValue>", 50, 53),
             Triple.of("<material>", 56, 66)
         );
-        String results = getWapitiResult(layoutTokens, labels);
+
+        List<String> features = getFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
 
         List<Span> spans = target.extractResults(layoutTokens, results);
 
@@ -93,7 +96,9 @@ public class SuperconductorsParserTest {
         List<ChemicalSpan> mentions = Arrays.asList(new ChemicalSpan(29, 44, "Zintl compounds"), new ChemicalSpan(70, 72, "Si"), new ChemicalSpan(74, 76, "Ge"));
         List<Boolean> booleans = target.synchroniseLayoutTokensWithMentions(tokens, mentions);
 
-        List<Boolean> collect = booleans.stream().filter(b -> !b.equals(Boolean.FALSE)).collect(Collectors.toList());
+        List<Boolean> collect = booleans.stream()
+            .filter(b -> !b.equals(Boolean.FALSE))
+            .collect(Collectors.toList());
 
         assertThat(collect, hasSize(5));
 
@@ -141,56 +146,9 @@ public class SuperconductorsParserTest {
         assertThat(annotatedTokens.get(1).getText(), is("Ge"));
     }
 
-    /**
-     * Utility method to generate a hypotetical result from wapiti.
-     * Useful for testing the extraction of the sequence labeling.
-     *
-     * @param layoutTokens layout tokens of the initial text
-     * @param labels       label maps. A list of Tripels, containing label (left), start_index (middle) and end_index exclusive (right)
-     * @return a string containing the resulting features + labels returned by wapiti
-     */
-    public static String getWapitiResult(List<LayoutToken> layoutTokens, List<Triple<String, Integer, Integer>> labels) {
-
-        List<String> features = layoutTokens.stream()
-            .map(token -> FeaturesVectorSuperconductors.addFeatures(token, null, new LayoutToken(), null).printVector())
-            .collect(Collectors.toList());
-
-        List<String> labeled = new ArrayList<>();
-        int idx = 0;
-
-        for (Triple<String, Integer, Integer> label : labels) {
-
-            if (idx < label.getMiddle()) {
-                for (int i = idx; i < label.getMiddle(); i++) {
-                    labeled.add("<other>");
-                    idx++;
-                }
-            }
-
-            for (int i = label.getMiddle(); i < label.getRight(); i++) {
-                labeled.add(label.getLeft());
-                idx++;
-            }
-        }
-
-        if (idx < features.size()) {
-            for (int i = idx; i < features.size(); i++) {
-                labeled.add("<other>");
-                idx++;
-            }
-        }
-
-        assertThat(features, hasSize(labeled.size()));
-
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < features.size(); i++) {
-            if (features.get(i) == null || features.get(i).startsWith(" ")) {
-                continue;
-            }
-            sb.append(features.get(i)).append(" ").append(labeled.get(i)).append("\n");
-        }
-
-        return sb.toString();
+    private static List<String> getFeatures(List<LayoutToken> layoutTokens) {
+        return layoutTokens.stream()
+                .map(token -> FeaturesVectorSuperconductors.addFeatures(token, null, new LayoutToken(), null).printVector())
+                .collect(Collectors.toList());
     }
 }

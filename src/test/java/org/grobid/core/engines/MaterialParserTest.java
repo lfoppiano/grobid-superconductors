@@ -11,11 +11,11 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.grobid.core.utilities.GrobidTestUtils.getWapitiResult;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -30,6 +30,12 @@ public class MaterialParserTest {
     public void setUp() throws Exception {
         LibraryLoader.load();
         target = new MaterialParser(GrobidModels.DUMMY);
+    }
+
+    private List<String> generateFeatures(List<LayoutToken> layoutTokens) {
+        return layoutTokens.stream()
+            .map(token -> FeaturesVectorMaterial.addFeatures(token.getText(), null).printVector())
+            .collect(Collectors.toList());
     }
 
     @Test
@@ -49,7 +55,7 @@ public class MaterialParserTest {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         List<Material> output = target.extractResults(tokens, result);
 
-        System.out.println(output);
+//        System.out.println(output);
 
         assertThat(output, hasSize(1));
         assertThat(output.get(0).getName(), is("LSCO"));
@@ -86,7 +92,7 @@ public class MaterialParserTest {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         List<Material> output = target.extractResults(tokens, result);
 
-        System.out.println(output);
+//        System.out.println(output);
 
         assertThat(output, hasSize(1));
         assertThat(output.get(0).getName(), is(nullValue()));
@@ -109,13 +115,12 @@ public class MaterialParserTest {
             Triple.of("<name>", 2, 5)
         );
 
-        String result = getWapitiResult(layoutTokens, labels);
+        List<String> features = generateFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
 
-
-        List<Material> materials = target.extractResults(layoutTokens, result);
+        List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(1));
-
         assertThat(materials.get(0).getName(), is("Hydrated sulfide"));
         assertThat(materials.get(0).getShape(), is("Polycrystalline"));
     }
@@ -135,7 +140,9 @@ public class MaterialParserTest {
             Triple.of("<variable>", 34, 35),
             Triple.of("<value>", 38, 42)
         );
-        String results = getWapitiResult(layoutTokens, labels);
+        List<String> features = generateFeatures(layoutTokens);
+
+        String results = getWapitiResult(features, labels);
 
         List<Material> materials = target.extractResults(layoutTokens, results);
 
@@ -157,7 +164,9 @@ public class MaterialParserTest {
             Triple.of("<formula>", 0, 9),
             Triple.of("<shape>", 10, 11)
         );
-        String results = getWapitiResult(layoutTokens, labels);
+        List<String> features = generateFeatures(layoutTokens);
+
+        String results = getWapitiResult(features, labels);
 
         List<Material> materials = target.extractResults(layoutTokens, results);
 
@@ -183,7 +192,10 @@ public class MaterialParserTest {
             Triple.of("<variable>", 23, 24),
             Triple.of("<value>", 27, 31)
         );
-        String results = getWapitiResult(layoutTokens, labels);
+
+        List<String> features = generateFeatures(layoutTokens);
+
+        String results = getWapitiResult(features, labels);
 
         List<Material> materials = target.extractResults(layoutTokens, results);
 
@@ -204,7 +216,10 @@ public class MaterialParserTest {
             Triple.of("<formula>", 6, 9),
             Triple.of("<shape>", 10, 11)
         );
-        String results = getWapitiResult(layoutTokens, labels);
+
+        List<String> features = generateFeatures(layoutTokens);
+
+        String results = getWapitiResult(features, labels);
 
         List<Material> materials = target.extractResults(layoutTokens, results);
 
@@ -216,58 +231,104 @@ public class MaterialParserTest {
         assertThat(materials.get(1).getFormula(), is("Bi-2223"));
     }
 
+    @Test
+    public void testExtractResults_singleName_multipleDopings_shouldGenerate2Objects() {
+        String text = "Zn-doped and Cu-doped MgB2";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
-    /**
-     * Utility method to generate a hypotetical result from wapiti.
-     * Useful for testing the extraction of the sequence labeling.
-     *
-     * @param layoutTokens layout tokens of the initial text
-     * @param labels       label maps. A list of Tripels, containing label (left), start_index (middle) and end_index exclusive (right)
-     * @return a string containing the resulting features + labels returned by wapiti
-     */
-    public static String getWapitiResult(List<LayoutToken> layoutTokens, List<Triple<String, Integer, Integer>> labels) {
+        // These triples made in following way: label, starting index (included), ending index (excluded)
+        List<Triple<String, Integer, Integer>> labels = Arrays.asList(
+            Triple.of("<doping>", 0, 1),
+            Triple.of("<doping>", 6, 7),
+            Triple.of("<formula>", 10, 12)
+        );
 
-        List<String> features = layoutTokens.stream()
-            .map(token -> FeaturesVectorMaterial.addFeatures(token.getText(), null).printVector())
-            .collect(Collectors.toList());
+        List<String> features = generateFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
 
-        List<String> labeled = new ArrayList<>();
-        int idx = 0;
+        List<Material> materials = target.extractResults(layoutTokens, results);
 
-        for (Triple<String, Integer, Integer> label : labels) {
+        assertThat(materials, hasSize(2));
+        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getDoping(), is("Zn"));
+        assertThat(materials.get(1).getFormula(), is("MgB2"));
+        assertThat(materials.get(1).getDoping(), is("Cu"));
+    }
 
-            if (idx < label.getMiddle()) {
-                for (int i = idx; i < label.getMiddle(); i++) {
-                    labeled.add("<other>");
-                    idx++;
-                }
-            }
+    @Test
+    public void testExtractResults_singleName_multipleShapes_shouldMergeShapeAndReturn1Object() {
+        String text = "polycrystalline MgB2 thin film";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
-            for (int i = label.getMiddle(); i < label.getRight(); i++) {
-                labeled.add(label.getLeft());
-                idx++;
-            }
-        }
+        // These triples made in following way: label, starting index (included), ending index (excluded)
+        List<Triple<String, Integer, Integer>> labels = Arrays.asList(
+            Triple.of("<shape>", 0, 1),
+            Triple.of("<formula>", 2, 4),
+            Triple.of("<shape>", 5, 8)
+            );
 
-        if (idx < features.size()) {
-            for (int i = idx; i < features.size(); i++) {
-                labeled.add("<other>");
-                idx++;
-            }
-        }
+        List<String> features = generateFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
 
-        assertThat(features, hasSize(labeled.size()));
+        List<Material> materials = target.extractResults(layoutTokens, results);
 
-        StringBuilder sb = new StringBuilder();
+        assertThat(materials, hasSize(1));
+        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getShape(), is("polycrystalline, thin film"));
+    }
 
-        for (int i = 0; i < features.size(); i++) {
-            if (features.get(i).startsWith(" ")) {
-                continue;
-            }
-            sb.append(features.get(i)).append(" ").append(labeled.get(i)).append("\n");
-        }
+    @Test
+    public void testExtractResults_doubleName_multipleShapes_shouldMergeShapeAndAppplyToEachMaterials() {
+        String text = "polycrystalline MgB2 and LaFeO2 thin film";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
-        return sb.toString();
+        // These triples made in following way: label, starting index (included), ending index (excluded)
+        List<Triple<String, Integer, Integer>> labels = Arrays.asList(
+            Triple.of("<shape>", 0, 1),
+            Triple.of("<formula>", 2, 4),
+            Triple.of("<formula>", 7, 9),
+            Triple.of("<shape>", 10, 13)
+        );
+
+        List<String> features = generateFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
+
+        List<Material> materials = target.extractResults(layoutTokens, results);
+
+        assertThat(materials, hasSize(2));
+        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getShape(), is("polycrystalline, thin film"));
+        assertThat(materials.get(1).getFormula(), is("LaFeO2"));
+        assertThat(materials.get(1).getShape(), is("polycrystalline, thin film"));
+    }
+
+    @Test
+    public void testExtractResults_doubleName_multipleShapes_multipleSubstrates_shouldMergeShapeAndSubstratesAndAppplyToEachMaterials() {
+        String text = "polycrystalline MgB2 and LaFeO2 thin film grown on StrO3 and Al";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+
+        // These triples made in following way: label, starting index (included), ending index (excluded)
+        List<Triple<String, Integer, Integer>> labels = Arrays.asList(
+            Triple.of("<shape>", 0, 1),
+            Triple.of("<formula>", 2, 4),
+            Triple.of("<formula>", 7, 9),
+            Triple.of("<shape>", 10, 13),
+            Triple.of("<substrate>", 18, 20),
+            Triple.of("<substrate>", 23, 24)
+        );
+
+        List<String> features = generateFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
+
+        List<Material> materials = target.extractResults(layoutTokens, results);
+
+        assertThat(materials, hasSize(2));
+        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getShape(), is("polycrystalline, thin film"));
+        assertThat(materials.get(0).getSubstrate(), is("StrO3, Al"));
+        assertThat(materials.get(1).getFormula(), is("LaFeO2"));
+        assertThat(materials.get(1).getShape(), is("polycrystalline, thin film"));
+        assertThat(materials.get(1).getSubstrate(), is("StrO3, Al"));
     }
 
     @Test
@@ -290,6 +351,17 @@ public class MaterialParserTest {
         assertThat(expandFormulas, hasSize(2));
         assertThat(expandFormulas.get(0), is("SrFe2As2"));
         assertThat(expandFormulas.get(1), is("KFe2As2"));
+    }
+
+    @Test
+    public void testExpandName() throws Exception {
+        String formula = "(Sr,K)-2222";
+
+        List<String> expandFormulas = Material.expandFormula(formula);
+
+        assertThat(expandFormulas, hasSize(2));
+        assertThat(expandFormulas.get(0), is("Sr-2222"));
+        assertThat(expandFormulas.get(1), is("K-2222"));
     }
 
     @SuppressWarnings("unchecked")

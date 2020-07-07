@@ -1,12 +1,9 @@
 package org.grobid.core.features;
 
-import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.TextUtilities;
 
 import java.util.regex.Matcher;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Class for features used for superconductor identification in raw texts such as scientific articles
