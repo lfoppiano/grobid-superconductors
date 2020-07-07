@@ -127,12 +127,12 @@ var grobid = (function ($) {
                 var tcValue = tds[3].textContent;
                 var id = $(this).attr("id").replaceAll("row", "");
 
-                outputXML += "\t" + '<rdf:Supercon rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
+                outputXML += "\t" + '<rdf:Description rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
 
                 outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
                 outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
 
-                outputXML += "\t" + '</rdf:Supercon>';
+                outputXML += "\t" + '</rdf:Description>';
             });
 
             outputXML += rdf_header_end;
