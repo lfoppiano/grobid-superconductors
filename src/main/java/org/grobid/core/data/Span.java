@@ -7,9 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * This is a generic implementation of a class representing a span, namely an entity
@@ -37,6 +35,9 @@ public class Span {
 
     // Contains the references (id) to other spans objects
     private List<List<String>> links = new ArrayList<>();
+
+    // Attribute map, used for adding lower-models information
+    private Map<String, String> attributes = new HashMap<>();
 
     /** These are internal objects that should not be serialised to JSON **/
     @JsonIgnore
@@ -236,5 +237,17 @@ public class Span {
 
     public void setLinks(List<List<String>> links) {
         this.links = links;
+    }
+
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
+    public void addAttribute(String attributeName, String attributeValue) {
+        this.attributes.put(attributeName, attributeValue);
     }
 }

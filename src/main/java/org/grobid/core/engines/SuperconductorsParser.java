@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.Material;
 import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
@@ -329,7 +330,12 @@ public class SuperconductorsParser extends AbstractParser {
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
                 superconductor.setText(clusterContent);
-//                superconductor.setStructuredMaterials(materialParser.process(theTokens));
+                List<Material> parsedMaterials = materialParser.process(theTokens);
+                int i = 0;
+                for (Material parsedMaterial : parsedMaterials) {
+                    superconductor.getAttributes().putAll(Material.asAttributeMap(parsedMaterial, "material" + i));
+                    i++;
+                }
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);

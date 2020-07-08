@@ -1,15 +1,16 @@
 package org.grobid.core.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.engines.MaterialParser;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.OffsetPosition;
-import org.grobid.core.utilities.UnitUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +21,10 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static org.apache.commons.lang3.StringUtils.*;
-import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
-import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Material {
@@ -36,15 +37,19 @@ public class Material {
     private String doping;
     private String fabrication;
     private String substrate;
+    @JsonIgnore
+    private String rawTaggedValue;
 
     private List<String> resolvedFormulas = new ArrayList<>();
 
+    @JsonIgnore
     private final Map<String, List<String>> variables = new HashMap<>();
+    @JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
-
+    @JsonIgnore
     private List<LayoutToken> layoutTokens = new ArrayList<>();
+    @JsonIgnore
     private List<OffsetPosition> offsets = new ArrayList<>();
-    private String rawTaggedValue;
 
     public String getName() {
         return name;
@@ -385,5 +390,33 @@ public class Material {
 
     public void setSubstrate(String substrate) {
         this.substrate = substrate;
+    }
+
+    public static Map<String, String> asAttributeMap(Material material, final String keyPrefix) {
+        Map<String, String> stringStringMap = asAttributeMap(material);
+
+        ArrayList<String> keys = new ArrayList(stringStringMap.keySet());
+        for (String k : keys) {
+            stringStringMap.put(keyPrefix + "_" + k, stringStringMap.get(k));
+            stringStringMap.remove(k);
+        };
+
+        return stringStringMap;
+    }
+
+    public static Map<String, String> asAttributeMap(Material material) {
+        List<String> resolvedFormulas = material.getResolvedFormulas();
+        material.setResolvedFormulas(null);
+
+        ObjectMapper m = new ObjectMapper();
+        Map<String, String> mappedObject = m.convertValue(material, new TypeReference<Map<String, String>>() {
+        });
+
+        if (CollectionUtils.isNotEmpty(resolvedFormulas)) {
+            IntStream.range(0, resolvedFormulas.size())
+                .forEach(i -> mappedObject.put("resolvedFormula_" + i, resolvedFormulas.get(i)));
+        }
+
+        return mappedObject;
     }
 }
