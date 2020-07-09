@@ -11,7 +11,6 @@ import jep.SharedInterpreter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.grobid.core.data.ProcessedParagraph;
-import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.jni.PythonEnvironmentConfig;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -34,6 +33,7 @@ public class LinkingEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkingEngine.class);
 
     private GrobidSuperconductorsConfiguration configuration;
+    private boolean disabled = false;
 
     @Inject
     public LinkingEngine(GrobidSuperconductorsConfiguration configuration) {
@@ -72,26 +72,30 @@ public class LinkingEngine {
                 } else if (SystemUtils.IS_OS_LINUX) {
                     System.loadLibrary(DELFT_NATIVE_LIB_NAME);
                 } else if (SystemUtils.IS_OS_WINDOWS) {
-                    throw new UnsupportedOperationException("Delft on Windows is not supported.");
+                    throw new UnsupportedOperationException("Linking on Windows is not supported.");
                 }
             }
 
-        } catch (Exception e) {
-            throw new GrobidException("Loading JEP native library for DeLFT failed", e);
-        }
-
-        JepConfig config = new JepConfig();
-        config.setRedirectOutputStreams(true);
-        try {
+            JepConfig config = new JepConfig();
+            config.setRedirectOutputStreams(configuration.isPythonRedirectOutput());
             SharedInterpreter.setConfig(config);
-        } catch (JepException e) {
-            e.printStackTrace();
-        }
+            LOGGER.debug("Configuring JEP to redirect python output.");
 
+            try (Interpreter interp = new SharedInterpreter()) {
+                interp.exec("from linking_module import process_paragraph_json");
+            }
+
+//        } catch (JepException e) {
+//            LOGGER.error("Cannot configure JEP. Disabling linking.", e);
+//            this.disabled = true;
+        } catch (Exception e) {
+            LOGGER.error("Loading JEP native library failed. The linking will be disabled.", e);
+            this.disabled = true;
+        }
     }
 
     public List<ProcessedParagraph> process(ProcessedParagraph paragraph) {
-        if (CollectionUtils.isEmpty(paragraph.getSpans())) {
+        if (CollectionUtils.isEmpty(paragraph.getSpans()) || disabled) {
             return Collections.singletonList(paragraph);
         }
 
