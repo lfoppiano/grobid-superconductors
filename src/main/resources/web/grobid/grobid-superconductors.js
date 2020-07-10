@@ -480,11 +480,7 @@ var grobid = (function ($) {
             }
 
             var json = response;
-            var pageInfo = json['pages'];
-
-            var page_height = 0.0;
-            var page_width = 0.0;
-
+            var pages = json['pages'];
             var paragraphs = json.paragraphs;
 
             var spanGlobalIndex = 0;
@@ -498,22 +494,22 @@ var grobid = (function ($) {
 
                 if (spans) {
                     spans.forEach(function (span, spanIdx) {
-                        spansMap[span.id] = span;
+                        let annotationId = span.id;
+                        spansMap[annotationId] = span;
                         var entity_type = span['type'].replace("<", "").replace(">", "");
 
                         var theUrl = null;
                         var boundingBoxes = span.boundingBoxes;
-                        if ((boundingBoxes != null) && (boundingBoxes.length > 0)) {
-                            boundingBoxes.forEach(function (boundingBox, positionIdx) {
-                                // get page information for the annotation
-                                var pageNumber = boundingBox.page;
-                                if (pageInfo[pageNumber - 1]) {
-                                    page_height = pageInfo[pageNumber - 1].page_height;
-                                    page_width = pageInfo[pageNumber - 1].page_width;
-                                }
-                                // let annotationId = 'annot_span-' + spanIdx + '-' + positionIdx;
-                                let annotationId = span.id;
-                                annotateSpanOnPdf(boundingBox, theUrl, page_height, page_width, annotationId, positionIdx, entity_type);
+                        if ((boundingBoxes !== null) && (boundingBoxes.length > 0)) {
+                            boundingBoxes.forEach(function (boundingBox, boundingBoxId) {
+                                let pageNumber = boundingBox.page;
+                                let pageInfo = pages[pageNumber - 1];
+                                annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, entity_type, pageInfo);
+
+                                $('#' + (annotationId + '' + boundingBoxId)).bind('click', {
+                                    'type': 'entity',
+                                    'item': span
+                                }, showSpanOnPDF);
                             });
                         }
                         spanGlobalIndex++;
@@ -561,10 +557,18 @@ var grobid = (function ($) {
             });
         }
 
-        function annotateSpanOnPdf(boundingBox, theUrl, page_height, page_width, annotationId, positionIdx, type) {
+        function annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, type, pageInfo) {
             var page = boundingBox.page;
             var pageDiv = $('#page-' + page);
             var canvas = pageDiv.children('canvas').eq(0);
+
+            // get page information for the annotation
+            let page_height = 0.0;
+            let page_width = 0.0;
+            if (pageInfo) {
+                page_height = pageInfo.page_height;
+                page_width = pageInfo.page_width;
+            }
 
             var canvasHeight = canvas.height();
             var canvasWidth = canvas.width();
@@ -582,23 +586,10 @@ var grobid = (function ($) {
                 y + "px; left:" + x + "px;";
             element.setAttribute("style", attributes + "border:2px solid; box-sizing: content-box;");
             element.setAttribute("class", 'area' + ' ' + type);
-            element.setAttribute("id", (annotationId + '' + positionIdx));
+            element.setAttribute("id", (annotationId + '' + boundingBoxId));
             element.setAttribute("page", page);
 
             pageDiv.append(element);
-
-            var item = spansMap[annotationId];
-            if (item === null) {
-                // this should never be the case
-                console.log("Error for visualising annotation with id " + annotationId
-                    + ", cannot find the annotation");
-                return
-            }
-
-            $('#' + (annotationId + '' + positionIdx)).bind('click', {
-                'type': 'entity',
-                'item': item
-            }, showSpanOnPDF);
         }
 
         /** Summary table **/
