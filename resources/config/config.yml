@@ -10,7 +10,7 @@ chemDataExtractorUrl: http://falcon.nims.go.jp/cde
 
 grobidQuantitiesUrl: http://falcon.nims.go.jp/quantities
 
-pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/grobidSuperconductors
+pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/grobidSuperconductors2
 pythonRedirectOutput: true
 
 server:
