@@ -13,10 +13,10 @@ import org.grobid.core.utilities.TeiUtils;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.length;
+import static org.apache.commons.lang3.StringUtils.substring;
 import static org.grobid.core.document.xml.XmlBuilderUtils.teiElement;
 import static org.grobid.core.utilities.TextUtilities.restrictedPunctuations;
-import static org.wipo.analyzers.wipokr.utils.StringUtil.length;
-import static org.wipo.analyzers.wipokr.utils.StringUtil.substring;
 
 public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutputFormattter {
 
@@ -54,7 +54,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
             p.appendChild(supercon);
 
             // We stop the process if something doesn't match
-            int accumulatedOffset = startPosition + StringUtils.length(contentBefore) + StringUtils.length(name);
+            int accumulatedOffset = startPosition + length(contentBefore) + length(name);
             if (end != accumulatedOffset) {
                 throw new RuntimeException("Wrong synchronisation between entities and layout tokens. End entity offset: " + end
                     + " different from the expected offset: " + accumulatedOffset);
@@ -64,7 +64,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
         String textStripEnd = StringUtils.stripEnd(LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition)), null);
 
         //If the last chunk starts with punctuation, I trim the space
-        if (StringUtils.containsAny(StringUtils.substring(StringUtils.trim(textStripEnd), 0, 1), restrictedPunctuations)) {
+        if (StringUtils.containsAny(substring(StringUtils.trim(textStripEnd), 0, 1), restrictedPunctuations)) {
             textStripEnd = StringUtils.trim(textStripEnd);
         }
         p.appendChild(textStripEnd);

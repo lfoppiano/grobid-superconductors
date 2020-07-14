@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import static shadedwipo.org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrepareDelftTraining.class);
@@ -103,7 +103,7 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
             System.exit(-1);
         }
         File input = GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS);
-        if(isNotEmpty(inputPath)) {
+        if (isNotEmpty(inputPath)) {
             input = Paths.get(inputPath).toFile();
         }
 

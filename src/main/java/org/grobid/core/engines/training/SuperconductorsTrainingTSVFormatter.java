@@ -9,7 +9,7 @@ import org.grobid.core.utilities.LayoutTokensUtil;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.wipo.analyzers.wipokr.utils.StringUtil.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutputFormattter {
 
