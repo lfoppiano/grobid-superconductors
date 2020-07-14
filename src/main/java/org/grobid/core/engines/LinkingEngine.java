@@ -70,6 +70,7 @@ public class LinkingEngine {
                     System.loadLibrary("python" + pythonEnvironmentConfig.getPythonVersion() + "m");
                     System.loadLibrary(DELFT_NATIVE_LIB_NAME);
                 } else if (SystemUtils.IS_OS_LINUX) {
+                    System.loadLibrary("libpython" + pythonEnvironmentConfig.getPythonVersion() + ".so");
                     System.loadLibrary(DELFT_NATIVE_LIB_NAME);
                 } else if (SystemUtils.IS_OS_WINDOWS) {
                     throw new UnsupportedOperationException("Linking on Windows is not supported.");
@@ -82,6 +83,7 @@ public class LinkingEngine {
             LOGGER.debug("Configuring JEP to redirect python output.");
 
             try (Interpreter interp = new SharedInterpreter()) {
+                interp.exec("import spacy");
                 interp.exec("from linking_module import process_paragraph_json");
             }
 
@@ -138,7 +140,7 @@ public class LinkingEngine {
 
                 return processed;
 
-            } catch (JsonProcessingException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         } catch (JepException e) {
