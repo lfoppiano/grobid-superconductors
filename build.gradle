@@ -11,7 +11,6 @@ buildscript {
         classpath group: 'net.researchgate', name: 'gradle-release', version: '2.6.0'
         classpath 'gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.10.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
     }
 }
 
@@ -20,9 +19,8 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
-
 
 
 repositories {
@@ -57,7 +55,7 @@ dependencies {
 
     //GROBID
     implementation 'org.grobid:grobid-core:0.6.1-SNAPSHOT'
-    implementation 'org.grobid:grobid-trainer:0.6.0'
+    implementation 'org.grobid:grobid-trainer:0.6.1-SNAPSHOT'
     implementation "xom:xom:1.2.5"
 
     //Grobid-quantities
@@ -178,19 +176,6 @@ trainerTasks.each { taskName, mainClassName ->
 
 /*** Packaging and distribution ***/
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-task mainJar(type: ShadowJar, group: 'onejar') {
-    zip64 true
-    from sourceSets.main.output
-    mergeServiceFiles()
-    from {
-        project.configurations.compile.collect {
-            it.isDirectory() ? [] : localLibs.contains(it.getName()) ? zipTree(it) : []
-        }
-    }
-}
-
 shadowJar {
     mainClassName = 'org.grobid.service.GrobidSuperconductorsApplication'
     archiveClassifier = 'onejar'
@@ -199,23 +184,26 @@ shadowJar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
-//    from sourceSets.main.output
-//    configurations = [project.configurations.compile, project.configurations.runtime]
+    from sourceSets.main.output
+    configurations = [project.configurations.runtimeClasspath]
 }
 
 jar {
-    dependsOn mainJar
     enabled false
 }
 
 artifacts {
     archives shadowJar
-    archives mainJar
+//    archives jar
 }
 
-distZip.archiveClassifier = 'application'
+//distZip.archiveClassifier = 'application'
 //distTar.archiveClassifier = 'application'
 
+distZip.enabled = false
+distTar.enabled = false
+shadowDistTar.enabled = false
+shadowDistTar.enabled = false
 
 /** Model management **/
 task copyModels(type: Copy) {
@@ -226,7 +214,7 @@ task copyModels(type: Copy) {
 
 
 wrapper {
-    gradleVersion "6.5"
+    gradleVersion "6.5.1"
 }
 
 
