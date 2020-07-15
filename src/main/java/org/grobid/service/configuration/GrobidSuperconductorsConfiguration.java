@@ -10,6 +10,8 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String grobidQuantitiesUrl;
     private String pythonVirtualEnv;
 
+    private boolean pythonRedirectOutput = false;
+
     public String getGrobidHome() {
         return grobidHome;
     }
@@ -48,5 +50,13 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setPythonVirtualEnv(String pythonVirtualEnv) {
         this.pythonVirtualEnv = pythonVirtualEnv;
+    }
+
+    public boolean isPythonRedirectOutput() {
+        return pythonRedirectOutput;
+    }
+
+    public void setPythonRedirectOutput(boolean pythonRedirectOutput) {
+        this.pythonRedirectOutput = pythonRedirectOutput;
     }
 }

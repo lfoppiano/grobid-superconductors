@@ -240,7 +240,7 @@ let grobid = (function ($) {
             let span = event_data.data;
             console.log(span.id);
 
-            let string = spanToHtml(span, -1);
+            var string = spanToHtml(span, -1);
 
             $('#detailed_annot-0-0').html(string);
             $('#detailed_annot-0-0').show();
@@ -497,12 +497,9 @@ let grobid = (function ($) {
             }
 
             let json = response;
-            let pageInfo = json['pages'];
-
-            let page_height = 0.0;
-            let page_width = 0.0;
-
+            let pages = json['pages'];
             let paragraphs = json.paragraphs;
+
             let spanGlobalIndex = 0;
             let copyButtonElement = $('#copy-button');
 
@@ -512,22 +509,22 @@ let grobid = (function ($) {
 
                 if (spans) {
                     spans.forEach(function (span, spanIdx) {
-                        spansMap[span.id] = span;
+                        let annotationId = span.id;
+                        spansMap[annotationId] = span;
                         let entity_type = span['type'].replace("<", "").replace(">", "");
 
-                        let theUrl = null;
                         let boundingBoxes = span.boundingBoxes;
                         if ((boundingBoxes != null) && (boundingBoxes.length > 0)) {
-                            boundingBoxes.forEach(function (boundingBox, positionIdx) {
-                                // get page information for the annotation
+                            boundingBoxes.forEach(function (boundingBox, boundingBoxId) {
                                 let pageNumber = boundingBox.page;
-                                if (pageInfo[pageNumber - 1]) {
-                                    page_height = pageInfo[pageNumber - 1].page_height;
-                                    page_width = pageInfo[pageNumber - 1].page_width;
-                                }
-                                // let annotationId = 'annot_span-' + spanIdx + '-' + positionIdx;
-                                let annotationId = span.id;
-                                annotateSpanOnPdf(boundingBox, theUrl, page_height, page_width, annotationId, positionIdx, entity_type);
+                                let pageInfo = pages[pageNumber - 1];
+
+                                annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, entity_type, pageInfo);
+
+                                $('#' + (annotationId + '' + boundingBoxId)).bind('click', {
+                                    'type': 'entity',
+                                    'item': span
+                                }, showSpanOnPDF);
                             });
                         }
                         spanGlobalIndex++;
@@ -573,10 +570,18 @@ let grobid = (function ($) {
             });
         }
 
-        function annotateSpanOnPdf(boundingBox, theUrl, page_height, page_width, annotationId, positionIdx, type) {
+        function annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, type, pageInfo) {
             let page = boundingBox.page;
             let pageDiv = $('#page-' + page);
             let canvas = pageDiv.children('canvas').eq(0);
+
+            // get page information for the annotation
+            let page_height = 0.0;
+            let page_width = 0.0;
+            if (pageInfo) {
+                page_height = pageInfo.page_height;
+                page_width = pageInfo.page_width;
+            }
 
             let canvasHeight = canvas.height();
             let canvasWidth = canvas.width();
@@ -594,23 +599,10 @@ let grobid = (function ($) {
                 y + "px; left:" + x + "px;";
             element.setAttribute("style", attributes + "border:2px solid; box-sizing: content-box;");
             element.setAttribute("class", 'area' + ' ' + type);
-            element.setAttribute("id", (annotationId + '' + positionIdx));
+            element.setAttribute("id", (annotationId + '' + boundingBoxId));
             element.setAttribute("page", page);
 
             pageDiv.append(element);
-
-            let item = spansMap[annotationId];
-            if (item === null) {
-                // this should never be the case
-                console.log("Error for visualising annotation with id " + annotationId
-                    + ", cannot find the annotation");
-                return
-            }
-
-            $('#' + (annotationId + '' + positionIdx)).bind('click', {
-                'type': 'entity',
-                'item': item
-            }, showSpanOnPDF);
         }
 
         /** Summary table **/
@@ -781,9 +773,9 @@ let grobid = (function ($) {
         }
 
         let examples_superconductors = [
-            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc leties from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
             "The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
-            "The highest T c in boron-doped SWNTs (single-walled nanotubes) ranged from 8 to For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc leties from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
             "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K ."
         ]
 

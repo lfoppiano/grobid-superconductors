@@ -11,7 +11,6 @@ buildscript {
         classpath group: 'net.researchgate', name: 'gradle-release', version: '2.6.0'
         classpath 'gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.10.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
     }
 }
 
@@ -20,9 +19,8 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
-
 
 
 repositories {
@@ -131,7 +129,6 @@ configurations.all {
 }
 
 /** Other configuration **/
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -188,20 +185,26 @@ shadowJar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
-    from {
-        project.configurations.compile.collect {
-            it.isDirectory() ? [] : localLibs.contains(it.getName()) ? zipTree(it) : []
-        }
-    }
+    from sourceSets.main.output
+    configurations = [project.configurations.runtimeClasspath]
 }
 
-distTar.enabled = false
-shadowDistTar.enabled = false
+jar {
+    enabled false
+}
 
 artifacts {
     archives shadowJar
-    archives jar
+//    archives jar
 }
+
+//distZip.archiveClassifier = 'application'
+//distTar.archiveClassifier = 'application'
+
+distZip.enabled = false
+distTar.enabled = false
+shadowDistTar.enabled = false
+shadowDistTar.enabled = false
 
 publishing {
     publications {

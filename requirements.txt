@@ -1,0 +1,32 @@
+blis==0.4.1
+catalogue==1.0.0
+certifi==2020.6.20
+chardet==3.0.4
+-e git+https://github.com/lfoppiano/grobid-superconductor-web.git@2d6154e209bdeaa491b886c1bfadebbd6e309756#egg=commons&subdirectory=commons
+cymem==2.0.3
+en-core-sci-lg @ https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.5/en_core_sci_lg-0.2.5.tar.gz
+idna==2.10
+importlib-metadata==1.7.0
+jep==3.9.0
+joblib==0.16.0
+-e git+https://github.com/lfoppiano/grobid-superconductor-web.git@2d6154e209bdeaa491b886c1bfadebbd6e309756#egg=linking&subdirectory=linking
+murmurhash==1.0.2
+nmslib==2.0.6
+numpy==1.19.0
+plac==1.1.3
+preshed==3.0.2
+psutil==5.7.0
+pybind11==2.5.0
+pysbd==0.2.3
+requests==2.24.0
+scikit-learn==0.23.1
+scipy==1.5.1
+scispacy==0.2.5
+spacy==2.3.2
+srsly==1.0.2
+thinc==7.4.1
+threadpoolctl==2.1.0
+tqdm==4.47.0
+urllib3==1.25.9
+wasabi==0.7.0
+zipp==3.1.0

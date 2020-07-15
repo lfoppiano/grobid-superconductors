@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import static shadedwipo.org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrepareDelftTrainingCommand.class);
