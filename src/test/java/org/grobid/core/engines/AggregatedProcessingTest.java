@@ -3,6 +3,7 @@ package org.grobid.core.engines;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
@@ -12,7 +13,6 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.UnitUtilities;
 import org.junit.Before;
 import org.junit.Test;
-import shadedwipo.org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;

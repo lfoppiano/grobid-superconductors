@@ -1,6 +1,5 @@
 package org.grobid.core.engines;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Singleton;
@@ -82,12 +81,11 @@ public class LinkingEngine {
             LOGGER.debug("Configuring JEP to redirect python output.");
 
             try (Interpreter interp = new SharedInterpreter()) {
+                interp.exec("import numpy as np");
+                interp.exec("import spacy");
                 interp.exec("from linking_module import process_paragraph_json");
             }
 
-//        } catch (JepException e) {
-//            LOGGER.error("Cannot configure JEP. Disabling linking.", e);
-//            this.disabled = true;
         } catch (Exception e) {
             LOGGER.error("Loading JEP native library failed. The linking will be disabled.", e);
             this.disabled = true;
@@ -138,7 +136,7 @@ public class LinkingEngine {
 
                 return processed;
 
-            } catch (JsonProcessingException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         } catch (JepException e) {
