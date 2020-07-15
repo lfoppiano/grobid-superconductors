@@ -37,7 +37,6 @@ public class Material {
     private String doping;
     private String fabrication;
     private String substrate;
-    @JsonIgnore
     private String rawTaggedValue;
 
     private List<String> resolvedFormulas = new ArrayList<>();

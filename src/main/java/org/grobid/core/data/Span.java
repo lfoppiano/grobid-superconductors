@@ -40,7 +40,7 @@ public class Span {
     private Map<String, String> attributes = new HashMap<>();
 
     /** These are internal objects that should not be serialised to JSON **/
-    @JsonIgnore
+    //@JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
     @JsonIgnore

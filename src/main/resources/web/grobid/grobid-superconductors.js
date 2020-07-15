@@ -24,12 +24,22 @@ let grobid = (function ($) {
             }
         }
 
-        function loadExamples(examples_list) {
+        function loadTextExamples(examples_list) {
             for (let idx_example in examples_list) {
                 $('#example' + idx_example).unbind('click')
                 $('#example' + idx_example).bind('click', {id: idx_example}, function (event) {
                     event.preventDefault();
                     $('#inputTextArea').val(examples_list[event.data.id]);
+                });
+            }
+        }
+
+        function loadMaterialsExamples(examples_list) {
+            for (let idx_example in examples_list) {
+                $('#exampleMaterial' + idx_example).unbind('click')
+                $('#exampleMaterial' + idx_example).bind('click', {id: idx_example}, function (event) {
+                    event.preventDefault();
+                    $('#inputMaterialArea').val(examples_list[event.data.id]);
                 });
             }
         }
@@ -152,18 +162,20 @@ let grobid = (function ($) {
         $(document).ready(function () {
             $('#requestResultPdf').hide();
             $('#requestResultText').hide();
+            $('#requestResultMaterial').hide();
             // $('#tableResults').hide();
 
             configuration = {
                 "url_mapping": {
                     "processPDF": "/service/process/pdf",
                     "processText": "/service/process/text",
-                    // "ping": "/service/isalive",
+                    "processMaterial": "/service/material/parser",
                     "feedback": "/service/annotations/feedback",
                     "processMaterial": "/service/material/parse"
                 }
             }
             $('#submitRequestText').bind('click', 'processText', processText);
+            $('#submitRequestMaterial').bind('click', 'processMaterial', processMaterial);
             $('#submitRequestPdf').bind('click', 'processPDF', processPdf);
             $('#copy-button').bind('click', copyOnClipboard);
             $('#add-button').bind('click', addRow);
@@ -177,6 +189,7 @@ let grobid = (function ($) {
                             if (e.target.parentElement.parentElement.id === "top-tab") {
                                 $('#requestResultPdf').hide();
                                 $('#requestResultText').hide();
+                                $('#requestResultMaterial').hide();
                             }
                         }
                     }
@@ -191,7 +204,8 @@ let grobid = (function ($) {
                 $(this).next('.custom-file-label').html(fileName);
             })
 
-            loadExamples(examples_superconductors);
+            loadTextExamples(examples_superconductors);
+            loadMaterialsExamples(examples_materials);
 
             //turn to inline mode
             $.fn.editable.defaults.mode = 'inline';
@@ -236,6 +250,65 @@ let grobid = (function ($) {
             });
         }
 
+        function processMaterial(action) {
+            $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
+            let formData = new FormData();
+            formData.append("text", $('#inputMaterialArea').val());
+
+            $.ajax({
+                type: 'POST',
+                url: getUrl(action.data),
+                data: formData,
+                success: onSuccessMaterial,
+                error: onError,
+                contentType: false,
+                processData: false
+            });
+        }
+
+        function onSuccessMaterial(materials, status) {
+            $('#infoResultMessage').html('');
+
+            let cumulativeOutput = "";
+            if (materials) {
+                materials.forEach(function (material, materialIdx) {
+                    let annotationStartReplaced = material.rawTaggedValue.replace(/<[^\/<> ]+>/gm, function (matching) {
+                        let label = matching.replace("<", "")
+                            .replace(">", "");
+
+                        return '<span class="label material ' + label + '">';
+                    });
+
+                    let annotationEndReplaced = annotationStartReplaced.replace(/<\/[^\/<> ]+>/gm, function (matching) {
+                        return '</span>';
+                    })
+
+                    cumulativeOutput += "<p>";
+                    for (let prop in material) {
+                        if (prop !== 'rawTaggedValue') {
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop] + " <br>";
+                        }
+                    }
+
+                    cumulativeOutput += "<strong>Original Tags</strong>: " + annotationEndReplaced.replace(/(\r\n|\n|\r)/gm, "</p><p>") + "<br>";
+                    cumulativeOutput += "</p>"
+
+                });
+            }
+
+            $('#requestResultMaterialContent').html(cumulativeOutput);
+
+            let testStr = vkbeautify.json(materials);
+
+            $('#jsonCodeMaterial').html(cleanupHtml(testStr));
+            window.prettyPrint && prettyPrint();
+
+            $('#detailed_annot-0-0').hide();
+            $('#requestResultPdf').hide();
+            $('#requestResultText').hide();
+            $('#requestResultMaterial').show();
+        }
+
         function showSpanOnText_event(event_data) {
             let span = event_data.data;
             console.log(span.id);
@@ -248,27 +321,6 @@ let grobid = (function ($) {
 
         function onSuccessText(responseText, statusText) {
             $('#infoResultMessage').html('');
-
-            let spanMap = [];
-
-            // let annotationList = [];
-
-            // function addAnnotations(responseAnnotations, type, annotationList) {
-            //     if (responseAnnotations) {
-            //         for (let idx in responseAnnotations) {
-            //             let annotation = {
-            //                 'obj': responseAnnotations[idx],
-            //                 'type': type,
-            //                 'offsetStart': responseAnnotations[idx].offsetStart,
-            //                 'offsetEnd': responseAnnotations[idx].offsetEnd
-            //             };
-            //             annotationList.push(annotation);
-            //         }
-            //     }
-            //     return annotationList
-            // }
-
-            // let inputText = $('#inputTextArea').val();
 
             let paragraphs = responseText.paragraphs;
             let cumulativeOutput = "";
@@ -324,6 +376,7 @@ let grobid = (function ($) {
 
             $('#detailed_annot-0-0').hide();
             $('#requestResultPdf').hide();
+            $('#requestResultMaterial').hide();
             $('#requestResultText').show();
         }
 
@@ -728,7 +781,7 @@ let grobid = (function ($) {
             }
 
             string += "<div class='container-fluid border' style='background-color:#FFF;color:#70695C'>";
-                // "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
+            // "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
 
             if (formattedText) {
                 string += "<p>name: <b>" + formattedText + "</b></p>";
