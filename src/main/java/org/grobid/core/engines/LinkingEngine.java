@@ -81,14 +81,11 @@ public class LinkingEngine {
             LOGGER.debug("Configuring JEP to redirect python output.");
 
             try (Interpreter interp = new SharedInterpreter()) {
-                interp.exec("import os");
+                interp.exec("import numpy as np");
                 interp.exec("import spacy");
                 interp.exec("from linking_module import process_paragraph_json");
             }
 
-//        } catch (JepException e) {
-//            LOGGER.error("Cannot configure JEP. Disabling linking.", e);
-//            this.disabled = true;
         } catch (Exception e) {
             LOGGER.error("Loading JEP native library failed. The linking will be disabled.", e);
             this.disabled = true;
