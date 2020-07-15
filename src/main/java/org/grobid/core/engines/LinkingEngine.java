@@ -1,6 +1,5 @@
 package org.grobid.core.engines;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Singleton;
@@ -70,7 +69,6 @@ public class LinkingEngine {
                     System.loadLibrary("python" + pythonEnvironmentConfig.getPythonVersion() + "m");
                     System.loadLibrary(DELFT_NATIVE_LIB_NAME);
                 } else if (SystemUtils.IS_OS_LINUX) {
-                    System.loadLibrary("libpython" + pythonEnvironmentConfig.getPythonVersion() + ".so");
                     System.loadLibrary(DELFT_NATIVE_LIB_NAME);
                 } else if (SystemUtils.IS_OS_WINDOWS) {
                     throw new UnsupportedOperationException("Linking on Windows is not supported.");
@@ -83,6 +81,7 @@ public class LinkingEngine {
             LOGGER.debug("Configuring JEP to redirect python output.");
 
             try (Interpreter interp = new SharedInterpreter()) {
+                interp.exec("import os");
                 interp.exec("import spacy");
                 interp.exec("from linking_module import process_paragraph_json");
             }
