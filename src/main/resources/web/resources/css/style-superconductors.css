@@ -48,7 +48,7 @@
 
 
 .label.abbreviation {
-    background-color: #b92c28;
+    background-color: #a85855;
 }
 
 .label.me_method {
@@ -68,11 +68,19 @@
 }
 
 .label.tc {
-    background-color: #ffe294;
+    background-color: #ffc800;
 }
 
 .label.sample {
     background-color: #5bd2b2;
+}
+
+.label.tcValue {
+    background-color: #356635;
+}
+
+.label.measurement {
+    background-color: #356635;
 }
 
 .label.temperature {
@@ -95,7 +103,33 @@
     background-color: #92d983;
 }
 
+.label.material.name {
+    background-color: #bd4716;
+}
 
+.label.material.formula {
+    background-color: #504895;
+}
+
+.label.material.doping {
+    background-color: #649c55;
+}
+
+.label.material.shape {
+    background-color: #cd9b32;
+}
+
+.label.material.fabrication {
+    background-color: #afba4a;
+}
+
+.label.material.variable {
+    background-color: #2f764c;
+}
+
+.label.material.value {
+    background-color: #ad7c2a;
+}
 
 .area.abbreviation {
     border-color: #b92c28 !important;
@@ -123,6 +157,14 @@
 
 .area.sample {
     border-color: #5bd2b2 !important;
+}
+
+.area.measurement {
+    border-color: #356635 !important;
+}
+
+.area.tcValue {
+    border-color: #356635 !important;
 }
 
 .area.temperature {

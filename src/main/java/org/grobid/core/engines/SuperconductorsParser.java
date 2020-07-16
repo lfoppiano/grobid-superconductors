@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.Material;
 import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
@@ -42,29 +43,30 @@ public class SuperconductorsParser extends AbstractParser {
 
     private static volatile SuperconductorsParser instance;
     public static final String NONE_CHEMSPOT_TYPE = "NONE";
-    private ChemDataExtractorClient chemicalAnnotator;
+    private final MaterialParser materialParser;
+    private final ChemDataExtractorClient chemicalAnnotator;
 
-    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient) {
+    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient, MaterialParser materialParser) {
         if (instance == null) {
-            getNewInstance(chemspotClient);
+            synchronized (SuperconductorsParser.class) {
+                if (instance == null) {
+                    instance = new SuperconductorsParser(chemspotClient, materialParser);
+                }
+            }
         }
         return instance;
     }
 
-    private static synchronized void getNewInstance(ChemDataExtractorClient chemspotClient) {
-        instance = new SuperconductorsParser(chemspotClient);
-    }
-
     @Inject
-    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator) {
-        super(SuperconductorsModels.SUPERCONDUCTORS);
-        this.chemicalAnnotator = chemicalAnnotator;
+    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser) {
+        this(SuperconductorsModels.SUPERCONDUCTORS, chemicalAnnotator, materialParser);
         instance = this;
     }
 
-    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator) {
+    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser) {
         super(model);
         this.chemicalAnnotator = chemicalAnnotator;
+        this.materialParser = materialParser;
         instance = this;
     }
 
@@ -73,18 +75,20 @@ public class SuperconductorsParser extends AbstractParser {
         if (isEmpty(layoutTokens))
             return Pair.of("", new ArrayList<>());
 
-        List<Span> measurements = new ArrayList<>();
-        String ress = null;
+        List<Span> entities = new ArrayList<>();
+        String features = null;
 
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
         //Normalisation
-        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
-                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+        List<LayoutToken> layoutTokensNormalised = tokens.stream()
+            .map(layoutToken -> {
+                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
-                return layoutToken;
-            }
-        ).collect(Collectors.toList());
+                    return layoutToken;
+                }
+            )
+            .collect(Collectors.toList());
 
 
         List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
@@ -94,20 +98,20 @@ public class SuperconductorsParser extends AbstractParser {
 
         try {
             // string representation of the feature matrix for CRF lib
-            ress = addFeatures(layoutTokensNormalised, listAnnotations);
+            features = addFeatures(layoutTokensNormalised, listAnnotations);
 
-            String res = null;
+            String labelledResults = null;
             try {
-                res = label(ress);
+                labelledResults = label(features);
             } catch (Exception e) {
                 throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
-            measurements.addAll(extractResults(tokens, res));
+            entities.addAll(extractResults(tokens, labelledResults));
         } catch (Exception e) {
             throw new GrobidException("An exception occured while running Grobid.", e);
         }
 
-        return Pair.of(ress, measurements);
+        return Pair.of(features, entities);
     }
 
     public Pair<String, List<Span>> generateTrainingData(String text) {
@@ -326,6 +330,12 @@ public class SuperconductorsParser extends AbstractParser {
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
                 superconductor.setText(clusterContent);
+                List<Material> parsedMaterials = materialParser.process(theTokens);
+                int i = 0;
+                for (Material parsedMaterial : parsedMaterials) {
+                    superconductor.getAttributes().putAll(Material.asAttributeMap(parsedMaterial, "material" + i));
+                    i++;
+                }
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);

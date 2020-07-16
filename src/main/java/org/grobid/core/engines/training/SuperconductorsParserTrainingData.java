@@ -11,6 +11,7 @@ import org.grobid.core.data.Span;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.core.engines.GrobidPDFEngine;
+import org.grobid.core.engines.MaterialParser;
 import org.grobid.core.engines.QuantityParser;
 import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
@@ -47,7 +48,7 @@ public class SuperconductorsParserTrainingData {
 
 
     public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient) {
-        this(SuperconductorsParser.getInstance(chemspotClient), QuantityParser.getInstance(true));
+        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance()), QuantityParser.getInstance(true));
     }
 
     public SuperconductorsParserTrainingData(SuperconductorsParser parser, QuantityParser quantityParser) {
@@ -121,7 +122,7 @@ public class SuperconductorsParserTrainingData {
                         + StringUtils.length(normalisedLayoutTokens.get(i - 1).getText());
 
                     if (expectedFollowingOffset != normalisedLayoutTokens.get(i).getOffset()) {
-                        throw new RuntimeException("Crossvalidating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
+                        throw new RuntimeException("Cross-validating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
 //                        normalisedLayoutTokens.get(i).setOffset(expectedFollowingOffset);
                     }
                 });
@@ -173,9 +174,9 @@ public class SuperconductorsParserTrainingData {
 
     /**
      * Remove overlapping annotations
-     *     - sort annotation by starting offset then pairwise check
-     *     - if they have the same type I take the one with the larger entity or the quantity model
-     *     - else if they have different type I take the one with the smaller entity size or the one from quantities model
+     * - sort annotation by starting offset then pairwise check
+     * - if they have the same type I take the one with the larger entity or the quantity model
+     * - else if they have different type I take the one with the smaller entity size or the one from quantities model
      **/
 //    private List<Span> pruneOverlappingAnnotations(List<Span> superconductorList) {
 //        //Sorting by offsets

@@ -104,6 +104,12 @@ public class LinkingEngine {
             s.setBoundingBoxes(new ArrayList<>());
         });
 
+        //Take out the attributes
+        Map<String, Map<String, String>> backupAttributes= new HashMap<>();
+        paragraph.getSpans().forEach(s -> {
+            backupAttributes.put(String.valueOf(s.getId()), s.getAttributes());
+        });
+
         // We convert the initial object in JSON to avoid problems
         Writer jsonWriter = new StringWriter();
         ObjectMapper oMapper = new ObjectMapper();
@@ -128,11 +134,14 @@ public class LinkingEngine {
                 List<ProcessedParagraph> processed = oMapper.readValue(sentencesAsJson, mapType);
 
                 // put the bounding boxes back where they were
-                processed.stream().forEach(p -> {
-                    p.getSpans().stream().forEach(s -> {
-                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                processed.stream()
+                    .forEach(p -> {
+                        p.getSpans().stream()
+                            .forEach(s -> {
+                                s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                                s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                            });
                     });
-                });
 
                 return processed;
 

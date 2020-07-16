@@ -2,14 +2,18 @@ package org.grobid.service.command;
 
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
+import org.grobid.core.GrobidModel;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.grobid.trainer.MaterialTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
+import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,15 +27,15 @@ import java.util.Date;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PrepareDelftTraining.class);
+public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrepareDelftTrainingCommand.class);
 
     private final static String MODEL_NAME = "model";
     private final static String DELFT_PATH = "delft_path";
     private final static String OUTPUT_PATH = "output_path";
     private final static String INPUT_PATH = "input_path";
 
-    public PrepareDelftTraining() {
+    public PrepareDelftTrainingCommand() {
         super("prepare-delft-training", "Prepare training data for Delft.");
     }
 
@@ -39,23 +43,35 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
     public void configure(Subparser subparser) {
         super.configure(subparser);
 
-        subparser.addArgument("-d", "--delft")
+        subparser.addMutuallyExclusiveGroup("output")
+            .addArgument("-d", "--delft")
             .dest(DELFT_PATH)
-            .type(String.class)
+            .type(Arguments.fileType().verifyCanRead())
             .required(false)
             .help("Location of delft (the root directory is enough. If provided a value, the data will be saved in data/sequenceLabelling/grobid/{model_name}/{model_name}-{date}.train, else will be saved as {model_name}.train in the local directory. ");
 
-        subparser.addArgument("-o", "--output")
+        subparser.addMutuallyExclusiveGroup("output")
+            .addArgument("-o", "--output")
             .dest(OUTPUT_PATH)
-            .type(String.class)
+            .type(Arguments.fileType().verifyNotExists().verifyCanCreate().or().verifyIsDirectory().verifyCanWrite())
             .required(false)
             .help("Output path directory. ");
 
-        subparser.addArgument("-i", "--input")
+        subparser.addMutuallyExclusiveGroup()
+            .addArgument("-i", "--input")
             .dest(INPUT_PATH)
-            .type(String.class)
+            .type(Arguments.fileType().verifyCanRead())
             .required(false)
             .help("Input path directory. ");
+
+        subparser.addMutuallyExclusiveGroup()
+            .addArgument("-m", "--model")
+            .dest(MODEL_NAME)
+            .type(String.class)
+            .choices(Arrays.asList("superconductors", "material"))
+            .required(false)
+            .setDefault("superconductors")
+            .help("Model data to use. ");
 
     }
 
@@ -74,52 +90,41 @@ public class PrepareDelftTraining extends ConfiguredCommand<GrobidSuperconductor
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
             exp.printStackTrace();
-
             System.exit(-1);
         }
 
-        String inputPath = namespace.get(INPUT_PATH);
-        String delftPath = namespace.get(DELFT_PATH);
-        String outputPath = namespace.get(OUTPUT_PATH);
-
-        if (delftPath == null && outputPath == null) {
-            System.out.println("Both Delft path (--delft/-d option) and output path (--output/-o) are empty. Aborting. ");
-            System.exit(-1);
-        }
+        File inputPath = namespace.get(INPUT_PATH);
+        File delftPath = namespace.get(DELFT_PATH);
+        File outputPath = namespace.get(OUTPUT_PATH);
+        String modelName = namespace.get(MODEL_NAME);
 
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
 
-        String destination = "";
-        if (isNotEmpty(outputPath)) {
-            destination = outputPath;
-        } else if (isNotEmpty(delftPath)) {
-            destination = delftPath + File.separator + "data" + File.separator + "sequenceLabelling"
-                + File.separator + "grobid" + File.separator
-                + SuperconductorsModels.SUPERCONDUCTORS.getModelName();
+        GrobidModel model = SuperconductorsModels.SUPERCONDUCTORS;
+        Trainer trainer =  new SuperconductorsTrainer();
+
+        if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
+            model = SuperconductorsModels.MATERIAL;
+            trainer = new MaterialTrainer();
+        }
+
+        String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
+
+        File destination = null;
+        if (outputPath != null) {
+            destination = Paths.get(outputPath.getAbsolutePath(), filename).toFile();
         } else {
-            System.out.println("Both Delft path (--delft/-d option) and output path (--output/-o) are are selected." +
-                "Please select only one of them. ");
-            System.exit(-1);
-        }
-        File input = GrobidProperties.getCorpusPath(new File("/"), SuperconductorsModels.SUPERCONDUCTORS);
-        if (isNotEmpty(inputPath)) {
-            input = Paths.get(inputPath).toFile();
+            destination = Paths.get(delftPath.getAbsolutePath(), "data", "sequenceLabelling",
+                "grobid", modelName, filename).toFile();
         }
 
-        Path destinationPath = Paths.get(destination);
-        if (!Files.exists(destinationPath)) {
-            Files.createDirectories(destinationPath);
+        if (inputPath == null) {
+            inputPath = GrobidProperties.getCorpusPath(new File("/"), model);
+            System.out.println("Input directory was not provided, getting the training data from " + inputPath.getAbsolutePath());
         }
+        trainer.createCRFPPData(inputPath, destination);
 
-        String filename = File.separator + SuperconductorsModels.SUPERCONDUCTORS.getModelName()
-            + "-" + formatter.format(date) + ".train";
-
-        destinationPath = Paths.get(destination + filename);
-
-        SuperconductorsTrainer trainer = new SuperconductorsTrainer();
-        trainer.createCRFPPData(input, destinationPath.toFile());
-
-        System.out.println("Writing training data for delft to " + destinationPath.toString());
+        System.out.println("Writing training data for delft to " + destination.toString());
     }
 }
