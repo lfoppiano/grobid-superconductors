@@ -14,7 +14,7 @@ public class ProcessedParagraph {
 
     private List<Span> spans = new ArrayList<>();
 
-    private List<Token> token = new ArrayList<>();
+    private List<Token> tokens = new ArrayList<>();
 
     private List<Relationship> relationships = new ArrayList();
 
@@ -35,11 +35,11 @@ public class ProcessedParagraph {
     }
 
     public List<Token> getTokens() {
-        return token;
+        return tokens;
     }
 
     public void setTokens(List<Token> token) {
-        this.token = token;
+        this.tokens = token;
     }
 
     public List<Relationship> getRelationships() {
