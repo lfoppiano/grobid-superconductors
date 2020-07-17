@@ -55,19 +55,45 @@ Clone the grobid-superconductor repository inside the grobid directory
 
 ### Build
 
-Copy the provided pre-trained model in the standard grobid-home path:
+1. Copy the provided pre-trained model in the standard grobid-home path:
 
-> cd grobid/grobid-superconductors/
+    > cd grobid/grobid-superconductors/
+                                                                            
+    > ./gradlew copyModels 
 
-> ./gradlew copyModels 
+1. Try compiling everything with:
 
-Try compiling everything with:
+    > ./gradlew clean build 
 
-> ./gradlew clean build 
+1. Run some test: 
 
-Run some test: 
+    > ./gradlew clean test
 
-> ./gradlew clean test
+1. Installing the linking module (in python): 
+    Grobid-superconductors runs python code via the JEP integration library. 
+    This integration is still experimental and is not yet fully consolidated, therefore it may fail at any time.
+    *NOTE*: access to the [tools](http://github.com/lfoppiano/grobid-superconductors-tools) repository is required.   
+
+1. Make sure the grobid directory points to the branch `feature/update_jep`, this branch contains the latest version of jep which is used in this module. 
+
+1.  create a virtual environment (for example with conda, specifying python 3.7): 
+
+    > conda create -name grobidSuperconductors pip python=3.7 
+
+1. activate your environment 
+
+    > conda activate grobidSuperconductors
+
+1. make sure you are using the pip within the conda environment and not the global conda pip: 
+
+    > which pip
+
+    should return you a path that is a subdirectory of your environment, for example `/Users/lfoppiano/opt/anaconda3/envs/test/bin/pip` 
+
+1. install the requirements using pip (feel free to find your way using conda, however it may cause troubles)
+
+    > pip install -f requirements.linux.txt
+
 
 ### Run
 To run the service: 

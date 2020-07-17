@@ -7,19 +7,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.Figure;
-import org.grobid.core.data.Table;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
 import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
-import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.layout.LayoutTokenization;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.LayoutTokensUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -396,7 +393,7 @@ public class GrobidPDFEngine {
                     + StringUtils.length(cleanedTokens.get(i - 1).getText());
 
                 if (expectedFollowingOffset != cleanedTokens.get(i).getOffset()) {
-                    LOGGER.debug("Correcting offsets " + i + " from " + cleanedTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
+                    LOGGER.trace("Correcting offsets " + i + " from " + cleanedTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
                     cleanedTokens.get(i).setOffset(expectedFollowingOffset);
                 }
             });

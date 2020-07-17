@@ -9,7 +9,7 @@ import org.codehaus.stax2.XMLStreamReader2;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.annotationAgreement.data.UnitizedStudyWrapper;
-import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationOffsetsExtractionStaxHandler;
 import org.grobid.trainer.stax.StaxUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ public class InterAnnotationAgreementUnitizingProcessor {
             String previousContinuoum = "";
 
             for (Pair<File, Integer> rating : input) {
-                AnnotationExtractionStaxHandler handler = new AnnotationExtractionStaxHandler(this.topLevelTags, this.annotationTags);
+                AnnotationOffsetsExtractionStaxHandler handler = new AnnotationOffsetsExtractionStaxHandler(this.topLevelTags, this.annotationTags);
 
                 try {
                     XMLStreamReader2 reader = inputFactory.createXMLStreamReader(rating.getKey());

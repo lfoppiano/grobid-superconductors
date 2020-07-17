@@ -1,11 +1,9 @@
 package org.grobid.core.engines;
 
-import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.tuple.Triple;
-import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Superconductor;
+import org.grobid.core.data.Span;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.LayoutToken;
 import org.junit.Before;
@@ -21,7 +19,7 @@ import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCO
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class EntityLinkerParserTest {
     EntityLinkerParser target;
@@ -280,25 +278,25 @@ public class EntityLinkerParserTest {
 
         String result = getWapitiResult(layoutTokens, labels);
 
-        Superconductor sup1 = new Superconductor();
-        sup1.setName("MgB 2");
+        Span sup1 = new Span();
+        sup1.setText("MgB 2");
         sup1.setType("superconductor");
         sup1.setOffsetStart(0);
         sup1.setOffsetEnd(6);
         sup1.setLayoutTokens(IntStream.rangeClosed(0, 3).mapToObj(i -> layoutTokens.get(i)).collect(Collectors.toList()));
 
-        Superconductor sup2= new Superconductor();
-        sup2.setName("40 K");
+        Span sup2 = new Span();
+        sup2.setText("40 K");
         sup2.setType("temperature");
         sup2.setOffsetStart(142);
         sup2.setOffsetEnd(146);
         sup2.setLayoutTokens(IntStream.rangeClosed(46, 49).mapToObj(i -> layoutTokens.get(i)).collect(Collectors.toList()));
 
-        List<Superconductor> links = target.extractResults(layoutTokens, result, Arrays.asList(sup1, sup2));
+        List<Span> links = target.extractResults(layoutTokens, result, Arrays.asList(sup1, sup2));
 
         assertThat(links, hasSize(2));
-        assertThat(links.get(0).getName(), is("MgB 2"));
-        assertThat(links.get(0).getLinkedEntity().getName(), is("40 K"));
+        assertThat(links.get(0).getText(), is("MgB 2"));
+        assertThat(links.get(0).getLinkedEntity().getText(), is("40 K"));
 
     }
 

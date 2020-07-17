@@ -13,6 +13,7 @@ import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
 import org.grobid.trainer.EntityLinkerTrainer;
+import org.grobid.trainer.MaterialTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
 import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
@@ -127,6 +128,8 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             trainer = new SuperconductorsTrainer();
+        } else if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
+            trainer = new MaterialTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER.getModelName().equals(modelName)) {
             trainer = new EntityLinkerTrainer();
         } else {
@@ -150,7 +153,6 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
                 name = "train_eval-with-split-" + split;
                 break;
             case "holdout":
-                AbstractTrainer.runTraining(trainer);
                 report = AbstractTrainer.runEvaluation(trainer, true);
                 name = "holdout-evaluation";
                 break;

@@ -3,24 +3,20 @@ package org.grobid.core.engines;
 import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Measurement;
-import org.grobid.core.data.Superconductor;
-import org.grobid.core.data.chemDataExtractor.Span;
-import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
+import org.grobid.core.data.Span;
+import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
-import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.*;
-import org.grobid.trainer.stax.handler.EntityLinkerAnnotationStaxHandler;
+import org.grobid.core.utilities.BoundingBoxCalculator;
+import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.UnicodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +24,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
-import static org.grobid.core.utilities.MeasurementUtils.*;
+import static org.grobid.core.utilities.MeasurementUtils.getLayoutTokenListEndOffset;
+import static org.grobid.core.utilities.MeasurementUtils.getLayoutTokenListStartOffset;
 
 @Singleton
 public class EntityLinkerParser extends AbstractParser {
@@ -126,7 +122,7 @@ public class EntityLinkerParser extends AbstractParser {
 //
 //    }
 
-    public List<Superconductor> process(List<LayoutToken> layoutTokens, List<Superconductor> annotations) {
+    public List<Span> process(List<LayoutToken> layoutTokens, List<Span> annotations) {
 
         //Normalisation
         List<LayoutToken> layoutTokensPreNormalised = layoutTokens.stream()
@@ -149,8 +145,8 @@ public class EntityLinkerParser extends AbstractParser {
             return new ArrayList<>();
 
         try {
-            List<Superconductor> filteredAnnotations = annotations.stream().filter(a -> annotationLinks.contains(a.getType())).collect(Collectors.toList());
-            List<Span> mentions = filteredAnnotations.stream().map(a -> new Span(a.getOffsetStart(), a.getOffsetEnd(), a.getType())).collect(Collectors.toList());
+            List<Span> filteredAnnotations = annotations.stream().filter(a -> annotationLinks.contains(a.getType())).collect(Collectors.toList());
+            List<ChemicalSpan> mentions = filteredAnnotations.stream().map(a -> new ChemicalSpan(a.getOffsetStart(), a.getOffsetEnd(), a.getType())).collect(Collectors.toList());
             List<String> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
             // string representation of the feature matrix for CRF lib
@@ -167,10 +163,10 @@ public class EntityLinkerParser extends AbstractParser {
                 throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
 
-            List<Superconductor> localLinkedEntities = extractResults(layoutTokensNormalised, res, filteredAnnotations);
+            List<Span> localLinkedEntities = extractResults(layoutTokensNormalised, res, filteredAnnotations);
 
-            for(Superconductor annotation : annotations) {
-                for (Superconductor localEntity : localLinkedEntities) {
+            for (Span annotation : annotations) {
+                for (Span localEntity : localLinkedEntities) {
                     if (localEntity.equals(annotation)) {
                         annotation.setLinkedEntity(localEntity.getLinkedEntity());
                         break;
@@ -189,7 +185,7 @@ public class EntityLinkerParser extends AbstractParser {
     /**
      * Extract all occurrences of measurement/quantities from a simple piece of text.
      */
-    public List<Superconductor> process(String text, List<Superconductor> annotations) {
+    public List<Span> process(String text, List<Span> annotations) {
         if (isBlank(text)) {
             return new ArrayList<>();
         }
@@ -240,7 +236,7 @@ public class EntityLinkerParser extends AbstractParser {
     /**
      * Extract identified quantities from a labeled text.
      */
-    public List<Superconductor> extractResults(List<LayoutToken> tokens, String result, List<Superconductor> annotations) {
+    public List<Span> extractResults(List<LayoutToken> tokens, String result, List<Span> annotations) {
         TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.ENTITY_LINKER, result, tokens);
         List<TaggingTokenCluster> clusters = clusteror.cluster();
 
@@ -251,7 +247,7 @@ public class EntityLinkerParser extends AbstractParser {
         if (detectedClusters.size() != annotations.size()) {
             LOGGER.warn("Linking seems not correct. Expected annotations: " + annotations.size() + ", output links: " + detectedClusters.size());
         }
-        Superconductor leftSide = null;
+        Span leftSide = null;
 
         for (TaggingTokenCluster cluster : clusters) {
             if (cluster == null) {
@@ -281,15 +277,15 @@ public class EntityLinkerParser extends AbstractParser {
 
                     int layoutTokenListStartOffset = getLayoutTokenListStartOffset(theTokens);
                     int layoutTokenListEndOffset = getLayoutTokenListEndOffset(theTokens);
-                    List<Superconductor> collect = annotations.stream().filter(a -> {
+                    List<Span> collect = annotations.stream().filter(a -> {
                         int supLayoutStart = getLayoutTokenListStartOffset(a.getLayoutTokens());
                         int supLayoutEnd = getLayoutTokenListEndOffset(a.getLayoutTokens());
 
                         return supLayoutStart == layoutTokenListStartOffset && supLayoutEnd == layoutTokenListEndOffset;
                     }).collect(Collectors.toList());
 
-                    if(collect.size() == 1) {
-                        LOGGER.info("Link left -> " + collect.get(0).getName());
+                    if (collect.size() == 1) {
+                        LOGGER.info("Link left -> " + collect.get(0).getText());
                         leftSide.setLinkedEntity(collect.get(0));
                         collect.get(0).setLinkedEntity(leftSide);
 
@@ -307,7 +303,7 @@ public class EntityLinkerParser extends AbstractParser {
                     LOGGER.info("Linking on the right " + clusterContent);
                     int layoutTokenListStartOffset = getLayoutTokenListStartOffset(theTokens);
                     int layoutTokenListEndOffset = getLayoutTokenListEndOffset(theTokens);
-                    List<Superconductor> collect = annotations.stream().filter(a -> {
+                    List<Span> collect = annotations.stream().filter(a -> {
                         int supLayoutStart = getLayoutTokenListStartOffset(a.getLayoutTokens());
                         int supLayoutEnd = getLayoutTokenListEndOffset(a.getLayoutTokens());
 
@@ -319,8 +315,8 @@ public class EntityLinkerParser extends AbstractParser {
 //                    for (int x = extremitiesAsIndex.getLeft(); x < extremitiesAsIndex.getRight(); x++) {
 //                        link.add(tokens.get(x));
 //                    }
-                    if(collect.size() == 1) {
-                        LOGGER.info("Link right -> " + collect.get(0).getName());
+                    if (collect.size() == 1) {
+                        LOGGER.info("Link right -> " + collect.get(0).getText());
                         leftSide = collect.get(0);
                     } else {
                         LOGGER.error("Cannot find the link ... no matching in the original list of tokens... dammit!");
@@ -343,7 +339,7 @@ public class EntityLinkerParser extends AbstractParser {
         return annotations;
     }
 
-    protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<Span> mentions) {
+    protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
         List<String> output = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(mentions)) {
@@ -353,13 +349,13 @@ public class EntityLinkerParser extends AbstractParser {
         }
 
         mentions = mentions.stream()
-            .sorted(Comparator.comparingInt(Span::getStart))
+            .sorted(Comparator.comparingInt(ChemicalSpan::getStart))
             .collect(Collectors.toList());
 
         int globalOffset = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
 
         int mentionId = 0;
-        Span mention = mentions.get(mentionId);
+        ChemicalSpan mention = mentions.get(mentionId);
 
         for (LayoutToken token : tokens) {
             //normalise the offsets

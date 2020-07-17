@@ -3,18 +3,16 @@ package org.grobid.core.engines;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
-import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.UnitUtilities;
 import org.junit.Before;
 import org.junit.Test;
-import shadedwipo.org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,8 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class AggregatedProcessingTest {
@@ -41,15 +38,15 @@ public class AggregatedProcessingTest {
         mockEntityLinkerParser = EasyMock.createMock(EntityLinkerParser.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser, mockEntityLinkerParser);
+        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser, null, mockEntityLinkerParser);
     }
 
     @Test
     public void testAggregation() throws Exception {
         String text = "The Tc of the BaClE2 is 30K";
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        Superconductor superconductor = new Superconductor();
-        superconductor.setName("BaClE2");
+        Span superconductor = new Span();
+        superconductor.setText("BaClE2");
         superconductor.setLayoutTokens(Arrays.asList(tokens.get(8), tokens.get(9)));
         superconductor.setType(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL);
 
@@ -68,14 +65,13 @@ public class AggregatedProcessingTest {
 
         EasyMock.expect(mockSuperconductorsParser.process(tokens)).andReturn(Arrays.asList(superconductor));
         EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature));
-        EasyMock.expect(mockEntityLinkerParser.process((List<LayoutToken>) EasyMock.anyObject(), EasyMock.anyObject())).andReturn(new ArrayList<Superconductor>());
+//        EasyMock.expect(mockEntityLinkerParser.process((List<LayoutToken>) EasyMock.anyObject(), EasyMock.anyObject())).andReturn(new ArrayList<>());
 
-        EasyMock.replay(mockSuperconductorsParser, mockQuantityParser, mockEntityLinkerParser);
+        EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        PDFAnnotationResponse response = target.annotate(tokens);
-//        System.out.println(response.toJson());
+        List<ProcessedParagraph> response = target.process(tokens, true);
 
-        EasyMock.verify(mockSuperconductorsParser, mockQuantityParser, mockEntityLinkerParser);
+        EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 
     }
 
@@ -133,209 +129,6 @@ public class AggregatedProcessingTest {
     }
 
     @Test
-    public void testMarkTemperature_noExpressions_noMatch_shouldWork() {
-        String text = "The Tc of the BaClE2 is 30K";
-
-        List<Superconductor> extractedEntities = new ArrayList<>();
-
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        Superconductor superconductor = new Superconductor();
-        superconductor.setName("BaClE2");
-        superconductor.setLayoutTokens(Arrays.asList(tokens.get(8), tokens.get(9)));
-        superconductor.setType("material");
-        extractedEntities.add(superconductor);
-
-        Measurement temperature = new Measurement();
-        temperature.setType(UnitUtilities.Measurement_Type.VALUE);
-        Quantity quantity = new Quantity("30", new Unit("K"));
-        Unit parsedUnit = new Unit("K");
-        UnitDefinition parsedUnitDefinition = new UnitDefinition();
-        parsedUnitDefinition.setType(UnitUtilities.Unit_Type.TEMPERATURE);
-        parsedUnit.setUnitDefinition(parsedUnitDefinition);
-        quantity.setParsedUnit(parsedUnit);
-
-        quantity.setLayoutTokens(Arrays.asList(tokens.get(13), tokens.get(14)));
-        temperature.setAtomicQuantity(quantity);
-
-        List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, new ArrayList<>());
-
-        assertThat(measurements, hasSize(1));
-    }
-
-    @Test
-    public void testMarkTemperature_noExpressions_match_shouldWork() {
-        String text = "The material BaClE2 superconducts at 30K";
-
-        List<Superconductor> extractedEntities = new ArrayList<>();
-
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        Superconductor superconductor = new Superconductor();
-        superconductor.setName("BaClE2");
-        superconductor.setLayoutTokens(Arrays.asList(tokens.get(4), tokens.get(5), tokens.get(6)));
-        superconductor.setType("material");
-        extractedEntities.add(superconductor);
-
-//        Superconductor tcExpression = new Superconductor();
-//        tcExpression.setName("Tc");
-//        tcExpression.setLayoutTokens(Arrays.asList(tokens.get(2)));
-//        tcExpression.setType("tc");
-//        extractedEntities.add(tcExpression);
-
-        Measurement temperature = new Measurement();
-        temperature.setType(UnitUtilities.Measurement_Type.VALUE);
-        Quantity quantity = new Quantity("30", new Unit("K"));
-        Unit parsedUnit = new Unit("K");
-        UnitDefinition parsedUnitDefinition = new UnitDefinition();
-        parsedUnitDefinition.setType(UnitUtilities.Unit_Type.TEMPERATURE);
-        parsedUnit.setUnitDefinition(parsedUnitDefinition);
-        quantity.setParsedUnit(parsedUnit);
-
-        quantity.setLayoutTokens(Arrays.asList(tokens.get(11), tokens.get(12)));
-        temperature.setAtomicQuantity(quantity);
-
-//        List<Pair<String, List<LayoutToken>>> tcExpressionList = extractedEntities.stream()
-//                .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
-//                .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
-//                .collect(Collectors.toList());
-
-
-        List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, new ArrayList<>());
-
-        assertThat(measurements, hasSize(1));
-        assertThat(measurements.get(0).getQuantifiedObject(), is(not(nullValue())));
-        assertThat(measurements.get(0).getQuantifiedObject().getNormalizedName(), is("Critical Temperature"));
-    }
-
-    @Test
-    public void testMarkTemperature_noExpressions_MultiSentence_match_shouldWork() {
-        String text = "We are explaining some important notions. The material BaClE2 superconducts at 30K. What about going for a beer? ";
-
-        List<Superconductor> extractedEntities = new ArrayList<>();
-
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        Superconductor superconductor = new Superconductor();
-        superconductor.setName("BaClE2");
-        superconductor.setLayoutTokens(tokens.subList(17, 20));
-        superconductor.setType("material");
-        extractedEntities.add(superconductor);
-
-//        Superconductor tcExpression = new Superconductor();
-//        tcExpression.setName("Tc");
-//        tcExpression.setLayoutTokens(Arrays.asList(tokens.get(2)));
-//        tcExpression.setType("tc");
-//        extractedEntities.add(tcExpression);
-
-        Measurement temperature = new Measurement();
-        temperature.setType(UnitUtilities.Measurement_Type.VALUE);
-        Quantity quantity = new Quantity("30", new Unit("K"));
-        Unit parsedUnit = new Unit("K");
-        UnitDefinition parsedUnitDefinition = new UnitDefinition();
-        parsedUnitDefinition.setType(UnitUtilities.Unit_Type.TEMPERATURE);
-        parsedUnit.setUnitDefinition(parsedUnitDefinition);
-        quantity.setParsedUnit(parsedUnit);
-
-        quantity.setLayoutTokens(tokens.subList(24, 26));
-        temperature.setAtomicQuantity(quantity);
-
-//        List<Pair<String, List<LayoutToken>>> tcExpressionList = extractedEntities.stream()
-//                .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
-//                .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
-//                .collect(Collectors.toList());
-
-
-        List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, new ArrayList<>());
-
-        assertThat(measurements, hasSize(1));
-        assertThat(measurements.get(0).getQuantifiedObject(), is(not(nullValue())));
-        assertThat(measurements.get(0).getQuantifiedObject().getNormalizedName(), is("Critical Temperature"));
-    }
-
-    @Test
-    public void testMarkTemperature_expression_match_shouldWork() {
-        String text = "The material BaClE2 has Tc at 30K";
-
-        List<Superconductor> extractedEntities = new ArrayList<>();
-
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        Superconductor superconductor = new Superconductor();
-        superconductor.setName("BaClE2");
-        superconductor.setLayoutTokens(Arrays.asList(tokens.get(4), tokens.get(5), tokens.get(6)));
-        superconductor.setType(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL);
-        extractedEntities.add(superconductor);
-
-        Superconductor tcExpression = new Superconductor();
-        tcExpression.setName("Tc");
-        tcExpression.setLayoutTokens(Arrays.asList(tokens.get(9)));
-        tcExpression.setType(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL);
-        extractedEntities.add(tcExpression);
-
-        Measurement temperature = new Measurement();
-        temperature.setType(UnitUtilities.Measurement_Type.VALUE);
-        Quantity quantity = new Quantity("30", new Unit("K"));
-        Unit parsedUnit = new Unit("K");
-        UnitDefinition parsedUnitDefinition = new UnitDefinition();
-        parsedUnitDefinition.setType(UnitUtilities.Unit_Type.TEMPERATURE);
-        parsedUnit.setUnitDefinition(parsedUnitDefinition);
-        quantity.setParsedUnit(parsedUnit);
-        quantity.setLayoutTokens(Arrays.asList(tokens.get(13), tokens.get(14)));
-        temperature.setAtomicQuantity(quantity);
-
-        List<Pair<String, List<LayoutToken>>> tcExpressionList = extractedEntities.stream()
-            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
-            .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
-            .collect(Collectors.toList());
-
-        List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, tcExpressionList);
-
-        assertThat(measurements, hasSize(1));
-        assertThat(measurements.get(0).getQuantifiedObject(), is(not(nullValue())));
-        assertThat(measurements.get(0).getQuantifiedObject().getNormalizedName(), is("Critical Temperature"));
-
-    }
-
-    @Test
-    public void testMarkTemperature_expression_nonRelativeNumber_Nomatch_shouldWork() {
-        String text = "The material BaClE2 has Tc at 30K higher than";
-
-        List<Superconductor> extractedEntities = new ArrayList<>();
-
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        Superconductor superconductor = new Superconductor();
-        superconductor.setName("BaClE2");
-        superconductor.setLayoutTokens(Arrays.asList(tokens.get(4), tokens.get(5), tokens.get(6)));
-        superconductor.setType(SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL);
-        extractedEntities.add(superconductor);
-
-        Superconductor tcExpression = new Superconductor();
-        tcExpression.setName("Tc");
-        tcExpression.setLayoutTokens(Arrays.asList(tokens.get(9)));
-        tcExpression.setType(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL);
-        extractedEntities.add(tcExpression);
-
-        Measurement temperature = new Measurement();
-        temperature.setType(UnitUtilities.Measurement_Type.VALUE);
-        Quantity quantity = new Quantity("30", new Unit("K"));
-        Unit parsedUnit = new Unit("K");
-        UnitDefinition parsedUnitDefinition = new UnitDefinition();
-        parsedUnitDefinition.setType(UnitUtilities.Unit_Type.TEMPERATURE);
-        parsedUnit.setUnitDefinition(parsedUnitDefinition);
-        quantity.setParsedUnit(parsedUnit);
-        quantity.setLayoutTokens(Arrays.asList(tokens.get(13), tokens.get(14)));
-        temperature.setAtomicQuantity(quantity);
-
-        List<Pair<String, List<LayoutToken>>> tcExpressionList = extractedEntities.stream()
-            .filter(s -> s.getType().equals(GenericTaggerUtils.getPlainLabel(SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_LABEL)))
-            .map(tc -> new ImmutablePair<>(tc.getName(), tc.getLayoutTokens()))
-            .collect(Collectors.toList());
-
-        List<Measurement> measurements = target.markCriticalTemperatures(Arrays.asList(temperature), tokens, tcExpressionList);
-
-        assertThat(measurements, hasSize(1));
-        assertThat(measurements.get(0).getQuantifiedObject(), is(nullValue()));
-
-    }
-
-    @Test
     public void testToFormattedString_1() throws Exception {
         String text = "La x Fe 1-x";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
@@ -349,7 +142,7 @@ public class AggregatedProcessingTest {
         layoutTokens.get(8).setSuperscript(false);
         layoutTokens.get(8).setSubscript(true);
 
-        String s = target.toFormattedString(layoutTokens);
+        String s = target.getFormattedString(layoutTokens);
 
         assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
     }

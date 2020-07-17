@@ -9,9 +9,8 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.researchgate', name: 'gradle-release', version: '2.6.0'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
+        classpath 'gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.10.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
     }
 }
 
@@ -19,10 +18,9 @@ buildscript {
 plugins {
     id 'java'
     id 'application'
-    id 'maven'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
-
 
 
 repositories {
@@ -30,8 +28,8 @@ repositories {
     mavenCentral()
     jcenter()
     maven { url "https://dl.bintray.com/rookies/maven" }
-    maven { url "http://oss.jfrog.org/artifactory/libs-snapshot" }
-    maven { url "http://oss.jfrog.org/artifactory/libs-release" }
+    maven { url "https://oss.jfrog.org/artifactory/libs-snapshot" }
+    maven { url "https://oss.jfrog.org/artifactory/libs-release" }
     flatDir {
         dirs 'localLibs'
     }
@@ -51,74 +49,77 @@ configurations.all {
 
 dependencies {
     //Tests
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.easymock:easymock:4.0.2'
-    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.easymock:easymock:4.0.2'
+    testImplementation 'org.hamcrest:hamcrest-all:1.3'
 
     //GROBID
-    compile 'org.grobid:grobid-core:0.6.0'
-    compile 'org.grobid:grobid-trainer:0.6.0'
-    compile "xom:xom:1.2.5"
+    implementation 'org.grobid:grobid-core:0.6.0'
+    implementation 'org.grobid:grobid-trainer:0.6.0'
+    implementation "xom:xom:1.2.5"
 
     //Grobid-quantities
-    compile('org.grobid:grobid-quantities:0.6.0') {
+    implementation('org.grobid:grobid-quantities:0.6.0') {
         transitive = false
     }
 
     // grobid-quantities specific dependencies
-//    compile 'tech.units:indriya:1.3'
-    compile group: 'si.uom', name: 'si-units-java8', version: '0.9'
-    compile group: 'si.uom', name: 'si-quantity', version: '0.9'
-    compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
-    compile group: 'systems.uom', name: 'systems-ucum-java8', version: '0.9'
-    compile group: 'systems.uom', name: 'systems-unicode-java8', version: '0.9'
-    compile group: 'systems.uom', name: 'systems-quantity', version: '0.9'
-    compile group: 'systems.uom', name: 'systems-common', version: '0.9'
+//    implementation 'tech.units:indriya:1.3'
+    implementation 'si.uom:si-units-java8:0.9'
+    implementation 'si.uom:si-quantity:0.9'
+    implementation 'tec.uom:uom-se:1.0.9'
+    implementation 'systems.uom:systems-ucum-java8:0.9'
+    implementation 'systems.uom:systems-unicode-java8:0.9'
+    implementation 'systems.uom:systems-quantity:0.9'
+    implementation 'systems.uom:systems-common:0.9'
 
-    compile group: 'com.googlecode.clearnlp', name: 'clearnlp', version: '1.3.1'
+    implementation 'com.googlecode.clearnlp:clearnlp:1.3.1'
 
     //Apache commons
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'org.apache.commons:commons-lang3:3.6'
-    compile 'commons-logging:commons-logging:1.2'
-    compile 'commons-io:commons-io:2.6'
-    compile 'commons-pool:commons-pool:1.6'
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'org.apache.commons:commons-lang3:3.6'
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'commons-pool:commons-pool:1.6'
 
     //Dropwizard
-    compile "io.dropwizard:dropwizard-core:1.3.23"
-    compile "io.dropwizard:dropwizard-assets:1.3.23"
-    compile "com.hubspot.dropwizard:dropwizard-guicier:1.3.5.2"
-    compile "io.dropwizard:dropwizard-testing:1.3.23"
-    compile "io.dropwizard:dropwizard-forms:1.3.23"
-    compile "io.dropwizard:dropwizard-client:1.3.23"
-    compile "io.dropwizard:dropwizard-auth:1.3.23"
-    compile "io.dropwizard.metrics:metrics-core:4.0.0"
-    compile "io.dropwizard.metrics:metrics-servlets:4.0.0"
+    implementation "io.dropwizard:dropwizard-core:1.3.23"
+    implementation "io.dropwizard:dropwizard-assets:1.3.23"
+    implementation "com.hubspot.dropwizard:dropwizard-guicier:1.3.5.2"
+    implementation "io.dropwizard:dropwizard-testing:1.3.23"
+    implementation "io.dropwizard:dropwizard-forms:1.3.23"
+    implementation "io.dropwizard:dropwizard-client:1.3.23"
+    implementation "io.dropwizard:dropwizard-auth:1.3.23"
+    implementation "io.dropwizard.metrics:metrics-core:4.0.0"
+    implementation "io.dropwizard.metrics:metrics-servlets:4.0.0"
 
     //Misc
-    compile 'com.google.guava:guava:28.2-jre'
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.3'
-    compile 'javax.activation:activation:1.1.1'
-    compile 'javax.xml.bind:jaxb-api:2.3.0'
-    compile 'com.sun.xml.bind:jaxb-core:2.3.0'
-    compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'com.google.guava:guava:28.2-jre'
+    implementation 'org.apache.httpcomponents:httpmime:4.5.3'
+    implementation 'javax.activation:activation:1.1.1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
 
-    compile 'org.dkpro.statistics:dkpro-statistics:2.2.0'
-    compile 'org.dkpro.statistics:dkpro-statistics-agreement:2.2.0'
+    implementation 'org.dkpro.statistics:dkpro-statistics:2.2.0'
+    implementation 'org.dkpro.statistics:dkpro-statistics-agreement:2.2.0'
 
-    compile 'edu.emory.mathcs.nlp:nlp4j-api:1.1.3'
-    compile 'edu.emory.mathcs.nlp:nlp4j-english:1.1.3'
+    implementation 'edu.emory.mathcs.nlp:nlp4j-api:1.1.3'
+    implementation 'edu.emory.mathcs.nlp:nlp4j-english:1.1.3'
 
     // XML
     implementation 'org.codehaus.woodstox:stax2-api:3.1.4'
     implementation 'com.fasterxml.woodstox:woodstox-core:5.1.0'
+
+    // Jep
+    implementation 'black.ninia:jep:3.9.0'
 }
 
 
 configurations {
-    compile.exclude group: "org.slf4j", module: "slf4j-jdk14"
-    compile.exclude group: 'org.slf4j', module: "slf4j-log4j12"
-    compile.exclude group: 'log4j', module: "log4j"
+    implementation.exclude group: "org.slf4j", module: "slf4j-jdk14"
+    implementation.exclude group: 'org.slf4j', module: "slf4j-log4j12"
+    implementation.exclude group: 'log4j', module: "log4j"
 }
 
 configurations.all {
@@ -128,7 +129,6 @@ configurations.all {
 }
 
 /** Other configuration **/
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -148,7 +148,7 @@ test {
 
 tasks.run.workingDir = rootProject.rootDir
 
-mainClassName = 'org.grobid.keyterm.service.GrobidKeytermApplication'
+mainClassName = 'org.grobid.service.GrobidSuperconductorsApplication'
 
 run {
     args = ['server', 'resources/config/config.yml']
@@ -160,6 +160,7 @@ run {
 def trainerTasks = [
     //Training models
     "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer",
+    "train_material": "org.grobid.trainer.MaterialTrainer",
     "train_entityLinker": "org.grobid.trainer.EntityLinkerTrainer"
 ]
 
@@ -177,44 +178,45 @@ trainerTasks.each { taskName, mainClassName ->
 
 /*** Packaging and distribution ***/
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-task mainJar(type: ShadowJar, group: 'onejar') {
-    zip64 true
-    from sourceSets.main.output
-    mergeServiceFiles()
-//    from {
-//        project.configurations.compile.collect {
-//            it.isDirectory() ? [] : localLibs.contains(it.getName()) ? zipTree(it) : []
-//        }
-//    }
-}
-
 shadowJar {
     mainClassName = 'org.grobid.service.GrobidSuperconductorsApplication'
-    classifier = 'onejar'
+    archiveClassifier = 'onejar'
     mergeServiceFiles()
     zip64 true
     manifest {
         attributes 'Main-Class': mainClassName
     }
-//    from sourceSets.main.output
-//    configurations = [project.configurations.compile, project.configurations.runtime]
+    from sourceSets.main.output
+    configurations = [project.configurations.runtimeClasspath]
 }
 
 jar {
-    dependsOn mainJar
     enabled false
 }
 
 artifacts {
-//    archives shadowJar
-    archives mainJar
+    archives shadowJar
+//    archives jar
 }
 
-distZip.classifier = 'application'
-distTar.classifier = 'application'
+//distZip.archiveClassifier = 'application'
+//distTar.archiveClassifier = 'application'
 
+distZip.enabled = false
+distTar.enabled = false
+shadowDistTar.enabled = false
+shadowDistTar.enabled = false
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
 
 /** Model management **/
 task copyModels(type: Copy) {
@@ -225,7 +227,7 @@ task copyModels(type: Copy) {
 
 
 wrapper {
-    gradleVersion "6.4.1"
+    gradleVersion "6.5.1"
 }
 
 
