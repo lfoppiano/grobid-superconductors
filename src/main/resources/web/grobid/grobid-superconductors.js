@@ -239,6 +239,11 @@ let grobid = (function ($) {
             let formData = new FormData();
             formData.append("text", $('#inputTextArea').val());
 
+            let disableLinking = $('#check-disable-linking-text')[0].checked;
+            if (disableLinking === true) {
+                formData.append("disableLinking", disableLinking);
+            }
+
             $.ajax({
                 type: 'POST',
                 url: getUrl(action.data),
@@ -285,7 +290,11 @@ let grobid = (function ($) {
 
                     cumulativeOutput += "<p>";
                     for (let prop in material) {
-                        if (prop !== 'rawTaggedValue') {
+                        if (prop === 'rawTaggedValue') {
+                        } else if (prop === 'resolvedFormulas') {
+                            let resolvedFormulas = material[prop].join(", ");
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + resolvedFormulas + " <br>";
+                        } else {
                             cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop] + " <br>";
                         }
                     }
@@ -797,23 +806,31 @@ let grobid = (function ($) {
 
             if (span.attributes) {
                 let previousPrefix = "";
+                let resolvedFormulas = [];
+                let formula = "";
                 let attributeHtmlString = "<div class='border col-12 p-0'>";
                 Object.keys(span.attributes).sort().forEach(function (key) {
                     let splits = key.split("_");
                     let prefix = splits[0];
                     let propertyName = splits[1];
 
-                    // if (previousPrefix !== prefix) {
-                    //     if(previousPrefix === "") {
-                    //         attributeHtmlString += "<p>";
-                    //     } else {
-                    //         attributeHtmlString += "</p><p>";
-                    //     }
-                    // }
-                    attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
+                    if (propertyName === "formula") {
+                        formula = span.attributes[key];
+                        attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
+                    } else if (propertyName === 'rawTaggedValue') {
+                        //Ignoring
 
+                    } else if (propertyName === 'resolvedFormula') {
+                        resolvedFormulas.push(span.attributes[key])
+                    } else {
+                        attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
+                    }
                     previousPrefix = prefix;
                 });
+
+                if (resolvedFormulas.length > 0 && resolvedFormulas[0] !== formula) {
+                    attributeHtmlString += "<row><div class='col-12'>resolvedFormula: <strong>" + resolvedFormulas.join(", ") + "</strong></div></row>";
+                }
                 attributeHtmlString += "</div>";
 
                 string += attributeHtmlString;
