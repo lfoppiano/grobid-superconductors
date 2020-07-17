@@ -159,7 +159,8 @@ run {
 
 def trainerTasks = [
     //Training models
-    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer"
+    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer",
+    "train_material": "org.grobid.trainer.MaterialTrainer"
 ]
 
 trainerTasks.each { taskName, mainClassName ->
@@ -204,6 +205,17 @@ distZip.enabled = false
 distTar.enabled = false
 shadowDistTar.enabled = false
 shadowDistTar.enabled = false
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
 
 /** Model management **/
 task copyModels(type: Copy) {

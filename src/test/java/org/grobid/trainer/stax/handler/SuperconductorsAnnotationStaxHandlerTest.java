@@ -5,15 +5,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.AnnotationExtractionStaxHandler;
-import org.grobid.trainer.stax.handler.SuperconductorAnnotationStaxHandler;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
@@ -59,6 +56,26 @@ public class SuperconductorsAnnotationStaxHandlerTest {
         XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
 
         StaxUtils.traverse(reader, target);
+
+    }
+
+
+    @Test
+    public void testHandler_material_extraction() throws Exception {
+
+        target = new SuperconductorAnnotationStaxHandler(
+            Arrays.asList("p"),
+            Arrays.asList("material")
+        );
+
+        InputStream inputStream = this.getClass().getResourceAsStream("1609.04957.superconductors.2.training.tei.xml");
+
+        XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
+
+        StaxUtils.traverse(reader, target);
+
+        List<Pair<String, String>> data = target.getLabeled();
+        System.out.println(data);
 
     }
 }

@@ -4,18 +4,18 @@
  *  Author: Patrice Lopez
  */
 
-var grobid = (function ($) {
+let grobid = (function ($) {
 
         // for components view
-        var responseJson = null;
+        let responseJson = null;
 
         // for associating several quantities to a measurement
-        var spansMap = [];
-        var configuration = {};
+        let spansMap = [];
+        let configuration = {};
 
         function getUrl(action) {
-            var lastIndexOfSlash = $(location).attr('href').lastIndexOf("/");
-            var baseUrl = $(location).attr('href').substring(0, lastIndexOfSlash);
+            let lastIndexOfSlash = $(location).attr('href').lastIndexOf("/");
+            let baseUrl = $(location).attr('href').substring(0, lastIndexOfSlash);
 
             if (configuration['url_mapping'][action] !== null) {
                 return baseUrl + configuration['url_mapping'][action]
@@ -24,8 +24,8 @@ var grobid = (function ($) {
             }
         }
 
-        function loadExamples(examples_list) {
-            for (var idx_example in examples_list) {
+        function loadTextExamples(examples_list) {
+            for (let idx_example in examples_list) {
                 $('#example' + idx_example).unbind('click')
                 $('#example' + idx_example).bind('click', {id: idx_example}, function (event) {
                     event.preventDefault();
@@ -34,8 +34,18 @@ var grobid = (function ($) {
             }
         }
 
+        function loadMaterialsExamples(examples_list) {
+            for (let idx_example in examples_list) {
+                $('#exampleMaterial' + idx_example).unbind('click')
+                $('#exampleMaterial' + idx_example).bind('click', {id: idx_example}, function (event) {
+                    event.preventDefault();
+                    $('#inputMaterialArea').val(examples_list[event.data.id]);
+                });
+            }
+        }
+
         function copyTextToClipboard(text) {
-            var textArea = document.createElement("textarea");
+            let textArea = document.createElement("textarea");
 
             //
             // *** This styling is an extra step which is likely not required. ***
@@ -80,8 +90,8 @@ var grobid = (function ($) {
             textArea.select();
 
             try {
-                var successful = document.execCommand('copy');
-                var msg = successful ? 'successful' : 'unsuccessful';
+                let successful = document.execCommand('copy');
+                let msg = successful ? 'successful' : 'unsuccessful';
                 console.log('Copying text command was ' + msg);
             } catch (err) {
                 console.log('Oops, unable to copy');
@@ -92,15 +102,15 @@ var grobid = (function ($) {
 
         function copyOnClipboard() {
             console.log("Copying data on clipboard! ");
-            var tableResultsBody = $('#tableResultsBody');
+            let tableResultsBody = $('#tableResultsBody');
 
-            var textToBeCopied = "";
+            let textToBeCopied = "";
 
-            var rows = tableResultsBody.find("tr");
+            let rows = tableResultsBody.find("tr");
             $.each(rows, function () {
-                var tds = $(this).children();
-                var material = tds[2].textContent;
-                var tc = tds[3].textContent;
+                let tds = $(this).children();
+                let material = tds[2].textContent;
+                let tc = tds[3].textContent;
 
                 textToBeCopied += material + "\t" + tc + "\n";
             });
@@ -110,22 +120,22 @@ var grobid = (function ($) {
 
         /** **/
         function downloadRDF() {
-            var fileName = "export.xml";
-            var a = document.createElement("a");
-            var xml_header = '<?xml version="1.0"?>';
-            var rdf_header = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:supercon="http://falcon.nims.go.jp/supercuration">';
-            var rdf_header_end = '</rdf:RDF>';
+            let fileName = "export.xml";
+            let a = document.createElement("a");
+            let xml_header = '<?xml version="1.0"?>';
+            let rdf_header = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:supercon="http://falcon.nims.go.jp/supercuration">';
+            let rdf_header_end = '</rdf:RDF>';
 
-            var outputXML = xml_header + "\n" + rdf_header + "\n";
+            let outputXML = xml_header + "\n" + rdf_header + "\n";
 
-            var tableResultsBody = $('#tableResultsBody');
+            let tableResultsBody = $('#tableResultsBody');
 
-            var rows = tableResultsBody.find("tr");
+            let rows = tableResultsBody.find("tr");
             $.each(rows, function () {
-                var tds = $(this).children();
-                var material = tds[2].textContent;
-                var tcValue = tds[3].textContent;
-                var id = $(this).attr("id").replaceAll("row", "");
+                let tds = $(this).children();
+                let material = tds[2].textContent;
+                let tcValue = tds[3].textContent;
+                let id = $(this).attr("id").replaceAll("row", "");
 
                 outputXML += "\t" + '<rdf:Description rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
 
@@ -137,7 +147,7 @@ var grobid = (function ($) {
 
             outputXML += rdf_header_end;
 
-            var file = new Blob([outputXML], {type: 'application/xml'});
+            let file = new Blob([outputXML], {type: 'application/xml'});
             a.href = URL.createObjectURL(file);
             a.download = fileName;
 
@@ -152,17 +162,20 @@ var grobid = (function ($) {
         $(document).ready(function () {
             $('#requestResultPdf').hide();
             $('#requestResultText').hide();
+            $('#requestResultMaterial').hide();
             // $('#tableResults').hide();
 
             configuration = {
                 "url_mapping": {
                     "processPDF": "/service/process/pdf",
                     "processText": "/service/process/text",
-                    "ping": "/service/isalive",
-                    "feedback": "/service/annotations/feedback"
+                    "processMaterial": "/service/material/parser",
+                    "feedback": "/service/annotations/feedback",
+                    "processMaterial": "/service/material/parse"
                 }
             }
             $('#submitRequestText').bind('click', 'processText', processText);
+            $('#submitRequestMaterial').bind('click', 'processMaterial', processMaterial);
             $('#submitRequestPdf').bind('click', 'processPDF', processPdf);
             $('#copy-button').bind('click', copyOnClipboard);
             $('#add-button').bind('click', addRow);
@@ -176,6 +189,7 @@ var grobid = (function ($) {
                             if (e.target.parentElement.parentElement.id === "top-tab") {
                                 $('#requestResultPdf').hide();
                                 $('#requestResultText').hide();
+                                $('#requestResultMaterial').hide();
                             }
                         }
                     }
@@ -185,12 +199,13 @@ var grobid = (function ($) {
 
             $('#file-upload').on('change', function () {
                 //get the file name
-                var fileName = $(this).val();
+                let fileName = $(this).val();
                 //replace the "Choose a file" label
                 $(this).next('.custom-file-label').html(fileName);
             })
 
-            loadExamples(examples_superconductors);
+            loadTextExamples(examples_superconductors);
+            loadMaterialsExamples(examples_materials);
 
             //turn to inline mode
             $.fn.editable.defaults.mode = 'inline';
@@ -221,7 +236,7 @@ var grobid = (function ($) {
 
         function processText(action) {
             $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
-            var formData = new FormData();
+            let formData = new FormData();
             formData.append("text", $('#inputTextArea').val());
 
             $.ajax({
@@ -235,8 +250,67 @@ var grobid = (function ($) {
             });
         }
 
-        function showSpanOnText(span) {
-            var span = span.data;
+        function processMaterial(action) {
+            $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
+            let formData = new FormData();
+            formData.append("text", $('#inputMaterialArea').val());
+
+            $.ajax({
+                type: 'POST',
+                url: getUrl(action.data),
+                data: formData,
+                success: onSuccessMaterial,
+                error: onError,
+                contentType: false,
+                processData: false
+            });
+        }
+
+        function onSuccessMaterial(materials, status) {
+            $('#infoResultMessage').html('');
+
+            let cumulativeOutput = "";
+            if (materials) {
+                materials.forEach(function (material, materialIdx) {
+                    let annotationStartReplaced = material.rawTaggedValue.replace(/<[^\/<> ]+>/gm, function (matching) {
+                        let label = matching.replace("<", "")
+                            .replace(">", "");
+
+                        return '<span class="label material ' + label + '">';
+                    });
+
+                    let annotationEndReplaced = annotationStartReplaced.replace(/<\/[^\/<> ]+>/gm, function (matching) {
+                        return '</span>';
+                    })
+
+                    cumulativeOutput += "<p>";
+                    for (let prop in material) {
+                        if (prop !== 'rawTaggedValue') {
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop] + " <br>";
+                        }
+                    }
+
+                    cumulativeOutput += "<strong>Original Tags</strong>: " + annotationEndReplaced.replace(/(\r\n|\n|\r)/gm, "</p><p>") + "<br>";
+                    cumulativeOutput += "</p>"
+
+                });
+            }
+
+            $('#requestResultMaterialContent').html(cumulativeOutput);
+
+            let testStr = vkbeautify.json(materials);
+
+            $('#jsonCodeMaterial').html(cleanupHtml(testStr));
+            window.prettyPrint && prettyPrint();
+
+            $('#detailed_annot-0-0').hide();
+            $('#requestResultPdf').hide();
+            $('#requestResultText').hide();
+            $('#requestResultMaterial').show();
+        }
+
+        function showSpanOnText_event(event_data) {
+            let span = event_data.data;
             console.log(span.id);
 
             var string = spanToHtml(span, -1);
@@ -248,34 +322,29 @@ var grobid = (function ($) {
         function onSuccessText(responseText, statusText) {
             $('#infoResultMessage').html('');
 
-            annotationList = [];
-
-            function addAnnotations(responseAnnotations, type, annotationList) {
-                if (responseAnnotations) {
-                    for (idx in responseAnnotations) {
-                        annotation = {
-                            'obj': responseAnnotations[idx],
-                            'type': type,
-                            'offsetStart': responseAnnotations[idx].offsetStart,
-                            'offsetEnd': responseAnnotations[idx].offsetEnd
-                        };
-                        annotationList.push(annotation);
-                    }
-                }
-                return annotationList
-            }
-
-            // var inputText = $('#inputTextArea').val();
-
-            var paragraphs = responseText.paragraphs;
-            var cumulativeOutput = "";
+            let paragraphs = responseText.paragraphs;
+            let cumulativeOutput = "";
             if (paragraphs) {
                 paragraphs.forEach(function (paragraph, paragraphIdx) {
-                    var text = paragraph.text;
-                    var spans = [];
+                    let text = paragraph.text;
+                    let spans = [];
                     if (paragraph.spans) {
                         spans = paragraph.spans;
                     }
+                    //TODO: find a better solution
+                    spans.forEach(function (span, spanIdx) {
+                        spansMap[span.id] = span;
+                    });
+
+                    spans.forEach(function (span, spanIdx) {
+
+                        if (span.links !== undefined && span.links.length > 0) {
+                            span.links.forEach(function (link, linkIdx) {
+                                let link_entity = spansMap[link[0]];
+                                span['tc'] = link_entity.text;
+                            });
+                        }
+                    });
 
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
@@ -286,27 +355,28 @@ var grobid = (function ($) {
             //Adding events, unfortunately I need to wait when the HTML tree is updated
             if (paragraphs) {
                 paragraphs.forEach(function (paragraph, paragraphIdx) {
-                    var spans = [];
+                    let spans = [];
                     if (paragraph.spans) {
                         spans = paragraph.spans;
                     }
 
                     // Adding events
-                    for (var annotationIdx = 0; annotationIdx < spans.length; annotationIdx++) {
+                    for (let annotationIdx = 0; annotationIdx < spans.length; annotationIdx++) {
                         let annotationBlock = $('#annot_supercon-' + spans[annotationIdx].id);
-                        annotationBlock.bind('hover', spans[annotationIdx], showSpanOnText);
-                        annotationBlock.bind('click', spans[annotationIdx], showSpanOnText);
+                        annotationBlock.bind('hover', spans[annotationIdx], showSpanOnText_event);
+                        annotationBlock.bind('click', spans[annotationIdx], showSpanOnText_event);
                     }
                 });
             }
 
-            var testStr = vkbeautify.json(responseText);
+            let testStr = vkbeautify.json(responseText);
 
             $('#jsonCode').html(cleanupHtml(testStr));
             window.prettyPrint && prettyPrint();
 
             $('#detailed_annot-0-0').hide();
             $('#requestResultPdf').hide();
+            $('#requestResultMaterial').hide();
             $('#requestResultText').show();
         }
 
@@ -315,7 +385,7 @@ var grobid = (function ($) {
 
             let resultMessageBlock = $('#infoResultMessage');
             resultMessageBlock.html('<p class="text-secondary">Requesting server...</p>');
-            var requestResult = $('#requestResultPdfContent');
+            let requestResult = $('#requestResultPdfContent');
             requestResult.html('');
             requestResult.show();
 
@@ -323,7 +393,7 @@ var grobid = (function ($) {
 
 
             // we will have JSON annotations to be layered on the PDF
-            var nbPages = -1;
+            let nbPages = -1;
 
             // display the local PDF
             let inputElement = document.getElementById("file-upload");
@@ -339,48 +409,48 @@ var grobid = (function ($) {
                 return
             }
 
-            var reader = new FileReader();
+            let reader = new FileReader();
             reader.onloadend = function () {
                 // to avoid cross origin issue
                 //PDFJS.disableWorker = true;
-                var pdfAsArray = new Uint8Array(reader.result);
+                let pdfAsArray = new Uint8Array(reader.result);
                 // Use PDFJS to render a pdfDocument from pdf array
                 PDFJS.getDocument(pdfAsArray).then(function (pdf) {
                     // Get div#container and cache it for later use
-                    var container = document.getElementById("requestResultPdfContent");
+                    let container = document.getElementById("requestResultPdfContent");
                     // enable hyperlinks within PDF files.
-                    //var pdfLinkService = new PDFJS.PDFLinkService();
+                    //let pdfLinkService = new PDFJS.PDFLinkService();
                     //pdfLinkService.setDocument(pdf, null);
 
                     //$('#requestResult').html('');
                     nbPages = pdf.numPages;
 
                     // Loop from 1 to total_number_of_pages in PDF document
-                    for (var i = 1; i <= nbPages; i++) {
+                    for (let i = 1; i <= nbPages; i++) {
 
                         // Get desired page
                         pdf.getPage(i).then(function (page) {
-                            var table = document.createElement("table");
-                            var tr = document.createElement("tr");
-                            var td1 = document.createElement("td");
-                            var td2 = document.createElement("td");
+                            let table = document.createElement("table");
+                            let tr = document.createElement("tr");
+                            let td1 = document.createElement("td");
+                            let td2 = document.createElement("td");
 
                             tr.appendChild(td1);
                             tr.appendChild(td2);
                             table.appendChild(tr);
 
-                            var div0 = document.createElement("div");
+                            let div0 = document.createElement("div");
                             div0.setAttribute("style", "text-align: center; margin-top: 1cm; width:80%;");
-                            var pageInfo = document.createElement("p");
-                            var t = document.createTextNode("page " + (page.pageIndex + 1) + "/" + (nbPages));
+                            let pageInfo = document.createElement("p");
+                            let t = document.createTextNode("page " + (page.pageIndex + 1) + "/" + (nbPages));
                             pageInfo.appendChild(t);
                             div0.appendChild(pageInfo);
 
                             td1.appendChild(div0);
 
-                            var scale = 1.5;
-                            var viewport = page.getViewport(scale);
-                            var div = document.createElement("div");
+                            let scale = 1.5;
+                            let viewport = page.getViewport(scale);
+                            let div = document.createElement("div");
 
                             // Set id attribute with page-#{pdf_page_number} format
                             div.setAttribute("id", "page-" + (page.pageIndex + 1));
@@ -389,7 +459,7 @@ var grobid = (function ($) {
                             div.setAttribute("style", "position: relative; ");
 
                             // Create a new Canvas element
-                            var canvas = document.createElement("canvas");
+                            let canvas = document.createElement("canvas");
                             canvas.setAttribute("style", "border-style: solid; border-width: 1px; border-color: gray;");
 
                             // Append Canvas within div#page-#{pdf_page_number}
@@ -398,7 +468,7 @@ var grobid = (function ($) {
                             // Append div within div#container
                             td1.appendChild(div);
 
-                            var annot = document.createElement("div");
+                            let annot = document.createElement("div");
                             annot.setAttribute('style', 'vertical-align:top;');
                             annot.setAttribute('id', 'detailed_annot-' + (page.pageIndex + 1));
                             td2.setAttribute('style', 'vertical-align:top;');
@@ -406,11 +476,11 @@ var grobid = (function ($) {
 
                             container.appendChild(table);
 
-                            var context = canvas.getContext('2d');
+                            let context = canvas.getContext('2d');
                             canvas.height = viewport.height;
                             canvas.width = viewport.width;
 
-                            var renderContext = {
+                            let renderContext = {
                                 canvasContext: context,
                                 viewport: viewport
                             };
@@ -422,7 +492,7 @@ var grobid = (function ($) {
                             })
                                 .then(function (textContent) {
                                     // Create div which will hold text-fragments
-                                    var textLayerDiv = document.createElement("div");
+                                    let textLayerDiv = document.createElement("div");
 
                                     // Set it's class to textLayer which have required CSS styles
                                     textLayerDiv.setAttribute("class", "textLayer");
@@ -431,7 +501,7 @@ var grobid = (function ($) {
                                     div.appendChild(textLayerDiv);
 
                                     // Create new instance of TextLayerBuilder class
-                                    var textLayer = new TextLayerBuilder({
+                                    let textLayer = new TextLayerBuilder({
                                         textLayerDiv: textLayerDiv,
                                         pageIndex: page.pageIndex,
                                         viewport: viewport
@@ -450,17 +520,17 @@ var grobid = (function ($) {
             reader.readAsArrayBuffer(inputElement.files[0]);
 
             // request for the annotation information
-            var form = document.getElementById('gbdForm');
-            var formData = new FormData(form);
-            var xhr = new XMLHttpRequest();
-            var url = getUrl(action.data);
+            let form = document.getElementById('gbdForm');
+            let formData = new FormData(form);
+            let xhr = new XMLHttpRequest();
+            let url = getUrl(action.data);
             $('#gbdForm').attr('action', url);
             xhr.responseType = 'json';
             xhr.open('POST', url, true);
 
             xhr.onreadystatechange = function (e) {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    var response = e.target.response;
+                    let response = e.target.response;
                     onSuccessPdf(response);
                 } else if (xhr.status !== 200) {
                     onError("Response: " + xhr.status);
@@ -479,31 +549,29 @@ var grobid = (function ($) {
                 $('#requestResultPdf').show()
             }
 
-            var json = response;
-            var pages = json['pages'];
-            var paragraphs = json.paragraphs;
+            let json = response;
+            let pages = json['pages'];
+            let paragraphs = json.paragraphs;
 
-            var spanGlobalIndex = 0;
-            var linkId = 0;
-
-            var copyButtonElement = $('#copy-button');
+            let spanGlobalIndex = 0;
+            let copyButtonElement = $('#copy-button');
 
             paragraphs.forEach(function (paragraph, paragraphIdx) {
-                var spans = paragraph.spans;
+                let spans = paragraph.spans;
                 // hey bro, this must be asynchronous to avoid blocking the brothers
 
                 if (spans) {
                     spans.forEach(function (span, spanIdx) {
                         let annotationId = span.id;
                         spansMap[annotationId] = span;
-                        var entity_type = span['type'].replace("<", "").replace(">", "");
+                        let entity_type = span['type'].replace("<", "").replace(">", "");
 
-                        var theUrl = null;
-                        var boundingBoxes = span.boundingBoxes;
-                        if ((boundingBoxes !== null) && (boundingBoxes.length > 0)) {
+                        let boundingBoxes = span.boundingBoxes;
+                        if ((boundingBoxes != null) && (boundingBoxes.length > 0)) {
                             boundingBoxes.forEach(function (boundingBox, boundingBoxId) {
                                 let pageNumber = boundingBox.page;
                                 let pageInfo = pages[pageNumber - 1];
+
                                 annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, entity_type, pageInfo);
 
                                 $('#' + (annotationId + '' + boundingBoxId)).bind('click', {
@@ -548,8 +616,6 @@ var grobid = (function ($) {
                                     placement: 'top',
                                     animation: true
                                 });
-
-                                linkId++;
                             });
                         }
                     });
@@ -558,9 +624,9 @@ var grobid = (function ($) {
         }
 
         function annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, type, pageInfo) {
-            var page = boundingBox.page;
-            var pageDiv = $('#page-' + page);
-            var canvas = pageDiv.children('canvas').eq(0);
+            let page = boundingBox.page;
+            let pageDiv = $('#page-' + page);
+            let canvas = pageDiv.children('canvas').eq(0);
 
             // get page information for the annotation
             let page_height = 0.0;
@@ -570,19 +636,19 @@ var grobid = (function ($) {
                 page_width = pageInfo.page_width;
             }
 
-            var canvasHeight = canvas.height();
-            var canvasWidth = canvas.width();
-            var scale_x = canvasHeight / page_height;
-            var scale_y = canvasWidth / page_width;
+            let canvasHeight = canvas.height();
+            let canvasWidth = canvas.width();
+            let scale_x = canvasHeight / page_height;
+            let scale_y = canvasWidth / page_width;
 
-            var x = boundingBox.x * scale_x - 1;
-            var y = boundingBox.y * scale_y - 1;
-            var width = boundingBox.width * scale_x + 1;
-            var height = boundingBox.height * scale_y + 1;
+            let x = boundingBox.x * scale_x - 1;
+            let y = boundingBox.y * scale_y - 1;
+            let width = boundingBox.width * scale_x + 1;
+            let height = boundingBox.height * scale_y + 1;
 
             //make clickable the area
-            var element = document.createElement("a");
-            var attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
+            let element = document.createElement("a");
+            let attributes = "display:block; width:" + width + "px; height:" + height + "px; position:absolute; top:" +
                 y + "px; left:" + x + "px;";
             element.setAttribute("style", attributes + "border:2px solid; box-sizing: content-box;");
             element.setAttribute("class", 'area' + ' ' + type);
@@ -643,38 +709,38 @@ var grobid = (function ($) {
         /** Visualisation **/
 
         function showSpanOnPDF(param) {
-            var type = param.data.type;
-            var item = param.data.item;
+            let type = param.data.type;
+            let item = param.data.item;
 
-            var pageIndex = $(this).attr('page');
-            var string = spanToHtml(item, $(this).position().top);
+            let pageIndex = $(this).attr('page');
+            let string = spanToHtml(item, $(this).position().top);
 
             if (type === null || string === "") {
                 console.log("Error in viewing annotation, type unknown or null: " + type);
             }
 
-            var annotationHook = $('#detailed_annot-' + pageIndex);
+            let annotationHook = $('#detailed_annot-' + pageIndex);
             annotationHook.html(string).show();
             annotationHook.bind('click', scrollUp);
         }
 
         function annotateTextAsHtml(inputText, annotationList) {
-            var outputString = "";
-            var pos = 0;
+            let outputString = "";
+            let pos = 0;
 
             annotationList.sort(function (a, b) {
-                var startA = parseInt(a.offsetStart, 10);
-                var startB = parseInt(b.offsetStart, 10);
+                let startA = parseInt(a.offsetStart, 10);
+                let startB = parseInt(b.offsetStart, 10);
 
                 return startA - startB;
             });
 
             annotationList.forEach(function (annotation, annotationIdx) {
-                var start = parseInt(annotation.offsetStart, 10);
-                var end = parseInt(annotation.offsetEnd, 10);
+                let start = parseInt(annotation.offsetStart, 10);
+                let end = parseInt(annotation.offsetEnd, 10);
 
-                var type = annotation.type.replace("<", "").replace(">", "");
-                var id = annotation.id;
+                let type = annotation.type.replace("<", "").replace(">", "");
+                let id = annotation.id;
 
                 outputString += inputText.substring(pos, start)
                     + ' <span id="annot_supercon-' + id + '" rel="popover" data-color="interval">'
@@ -691,15 +757,14 @@ var grobid = (function ($) {
 
         // Transformation to HTML
         function spanToHtml(span, topPos) {
-            var string = "";
-            var first = true;
+            let string = "";
 
             //We remove the < and > to avoid messing up with HTML
-            var type = span.type.replace("<", "").replace(">", "");
+            let type = span.type.replace("<", "").replace(">", "");
 
             colorLabel = type;
-            var text = span.text;
-            var formattedText = span.formattedText;
+            let text = span.text;
+            let formattedText = span.formattedText;
 
             string += "<div class='info-sense-box ___TYPE___'";
             if (topPos !== -1)
@@ -709,15 +774,14 @@ var grobid = (function ($) {
 
             string += ">";
             if (span.tc) {
-                var infobox_id = "infobox" + span.id;
-                string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "<img id='" + infobox_id + "' src='resources/icons/arrow-up.svg'/></h2>";
-
+                let infobox_id = "infobox" + span.id;
+                string += "<h2 class='ml-1' style='color:#FFF;font-size:16pt;'>" + type + "<img id='" + infobox_id + "' src='resources/icons/arrow-up.svg'/></h2>";
             } else {
-                string += "<h2 style='color:#FFF;padding-left:10px;font-size:16pt;'>" + type + "</h2>";
+                string += "<h2 class='ml-1' style='color:#FFF;font-size:16pt;'>" + type + "</h2>";
             }
 
-            string += "<div class='container-fluid' style='background-color:#FFF;color:#70695C;border:padding:5px;margin-top:5px;'>" +
-                "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
+            string += "<div class='container-fluid border' style='background-color:#FFF;color:#70695C'>";
+            // "<table style='width:100%;display:inline-table;'><tr style='display:inline-table;'><td>";
 
             if (formattedText) {
                 string += "<p>name: <b>" + formattedText + "</b></p>";
@@ -731,19 +795,48 @@ var grobid = (function ($) {
             }
             string = string.replace("___TYPE___", type);
 
-            string += "</td></tr>";
-            string += "</table></div>";
+            if (span.attributes) {
+                let previousPrefix = "";
+                let attributeHtmlString = "<div class='border col-12 p-0'>";
+                Object.keys(span.attributes).sort().forEach(function (key) {
+                    let splits = key.split("_");
+                    let prefix = splits[0];
+                    let propertyName = splits[1];
 
+                    // if (previousPrefix !== prefix) {
+                    //     if(previousPrefix === "") {
+                    //         attributeHtmlString += "<p>";
+                    //     } else {
+                    //         attributeHtmlString += "</p><p>";
+                    //     }
+                    // }
+                    attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
+
+                    previousPrefix = prefix;
+                });
+                attributeHtmlString += "</div>";
+
+                string += attributeHtmlString;
+            }
+
+            string += "</div>";
             string += "</div>";
 
             return string;
         }
 
-        var examples_superconductors = [
-            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc varies from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
+        let examples_superconductors = [
             "The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
-            "The highest T c in boron-doped SWNTs (single-walled nanotubes) ranged from 8 to For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc leties from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
             "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K ."
+        ]
+
+        let examples_materials = [
+            "hole-doped La1−x SrxOyFe1-yAs compound with (x = 0.1, 0.2 and 0.3 and y = 0.1, 0.4 and 0.5)",
+            "polycrystalline samples in the range of 0 < x < 0.42",
+            "(Sr, Na)Fe 2 As 2 thin wire",
+            "hole-doped La1−x SrxOFeAs with x = 0.2, 0.3 and 0.6"
         ]
     }
 

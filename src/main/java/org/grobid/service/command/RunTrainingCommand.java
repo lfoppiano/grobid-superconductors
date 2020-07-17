@@ -12,6 +12,7 @@ import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.AbstractTrainer;
+import org.grobid.trainer.MaterialTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
 import org.grobid.trainer.Trainer;
 import org.slf4j.Logger;
@@ -126,6 +127,8 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             trainer = new SuperconductorsTrainer();
+        } else if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
+            trainer = new MaterialTrainer();
         } else {
             System.out.println("The model name " + modelName + " does not correspond to any model. ");
             System.out.println(super.getDescription());

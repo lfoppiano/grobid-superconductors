@@ -1,0 +1,5 @@
+<materials xmlns="http://www.tei-c.org/ns/1.0">
+	<material><doping>Under-doped</doping> <formula>La 2\u2212x Sr x CuO 4</formula> with <variable>x</variable> = <value>0.063 -0.125</value></material>
+	<material><formula>La2\u2212xSrxCuO4</formula> (<name>LSCO</name>)</material>
+	<material><variable>x</variable> = <value>0.063, 0.07, 0.09, 0.10, 0.111 and 0.125</value></material>
+</materials>
