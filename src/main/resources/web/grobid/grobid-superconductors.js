@@ -228,6 +228,13 @@ let grobid = (function ($) {
 
             });
 
+            // Collapse icon
+            $('a[data-toggle="collapse"]').click(function () {
+                let currentIcon = $(this).find('img').attr("src")
+                let newIcon = currentIcon === 'resources/icons/chevron-down.svg' ? 'resources/icons/chevron-right.svg' : 'resources/icons/chevron-down.svg';
+                $(this).find('img').attr("src", newIcon);
+            })
+
             $('#file-upload').on('change', function () {
                 //get the file name
                 let fileName = $(this).val();
