@@ -118,7 +118,7 @@ let grobid = (function ($) {
 
         }
 
-        /** **/
+        /** Download buttons **/
         function downloadRDF() {
             let fileName = "export.xml";
             let a = document.createElement("a");
@@ -159,6 +159,36 @@ let grobid = (function ($) {
             });
         }
 
+        function downloadCSV() {
+            let fileName = "export.csv";
+            let a = document.createElement("a");
+            let header = 'material, tcValue';
+            let outputCSV = header + "\n";
+
+            let tableResultsBody = $('#tableResultsBody');
+
+            let rows = tableResultsBody.find("tr");
+            $.each(rows, function () {
+                let tds = $(this).children();
+                let material = tds[2].textContent;
+                let tcValue = tds[3].textContent;
+                // let id = $(this).attr("id").replaceAll("row", "");
+
+                outputCSV += material + ',' + tcValue + "\n";
+            });
+
+            let file = new Blob([outputCSV], {type: 'text/csv'});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+
+            document.body.appendChild(a);
+
+            $(a).ready(function () {
+                a.click();
+                return true;
+            });
+        }
+
         $(document).ready(function () {
             $('#requestResultPdf').hide();
             $('#requestResultText').hide();
@@ -180,6 +210,7 @@ let grobid = (function ($) {
             $('#copy-button').bind('click', copyOnClipboard);
             $('#add-button').bind('click', addRow);
             $('#download-rdf-button').bind('click', downloadRDF);
+            $('#download-csv-button').bind('click', downloadCSV);
 
             //this mess avoid that pressing the tabs down in the text we reset the wrong div
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
