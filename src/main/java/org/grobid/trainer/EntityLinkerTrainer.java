@@ -102,20 +102,31 @@ public class EntityLinkerTrainer extends AbstractTrainer {
 
                 Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                 StringBuilder output = new StringBuilder();
+                int materials = 0;
+                int tcValues = 0;
 
                 // we get the label in the labelled data file for the same token
                 for (Triple<String, String, String> labeledToken : labeled) {
                     String token = labeledToken.getLeft();
                     String label = labeledToken.getMiddle();
                     String entity_type = labeledToken.getRight();
+                    if (entity_type.equals("<material>")) {
+                        materials++;
+                    }
 
-                    if(token.equals("\n")) {
+                    if (entity_type.equals("<tcValue>")) {
+                        tcValues++;
+                    }
+
+                    if (token.equals("\n")) {
                         output.append("\n");
                         output.append("\n");
-                        writer.write(output.toString());
-                        writer.flush();
+                        if (materials > 0 && tcValues > 0) {
+                            writer.write(output.toString());
+                            writer.flush();
+                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                        }
                         output = new StringBuilder();
-                        writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                         continue;
                     }
 
