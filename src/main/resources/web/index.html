@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>GROBID Superconductors TDM application</title>
-    <link rel="icon" type="image/x-icon" href="resources/images/favicon.ico"/>
-    <link rel="shortcut icon" type="image/x-icon" href="resources/images/favicon.ico"/>
+    <!--    <link rel="icon" type="image/x-icon" href="resources/images/favicon.ico"/>-->
+    <!--    <link rel="shortcut icon" type="image/x-icon" href="resources/images/favicon.ico"/>-->
 
     <!-- jquery -->
     <script type="text/javascript" src="resources/libs/jquery/jquery-3.4.1.js"></script>
@@ -72,7 +72,8 @@
                            aria-controls="process-pdf" aria-selected="false">PDF documents</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="process-material-tab" data-toggle="tab" href="#process-material" role="tab"
+                        <a class="nav-link" id="process-material-tab" data-toggle="tab" href="#process-material"
+                           role="tab"
                            aria-controls="process-pdf" aria-selected="false">Material parser</a>
                     </li>
                 </ul>
@@ -391,34 +392,48 @@
         </div>
 
         <div id="requestResultPdf">
-            <div id="tableResults" style="width:85%;">
-                <div class="row m-4">
-                    <table class="table table-editable">
-                        <thead>
-                        <tr class="d-flex">
-                            <th class="col-1" scope="col"></th>
-                            <th class="col-1" scope="col"></th>
-                            <th class="col-6">Material</th>
-                            <th class="col-4">Critical temperature</th>
-                        </tr>
-                        </thead>
-                        <tbody id="tableResultsBody">
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <td colspan="3">
-                                <button type="button" class="btn btn-outline-dark" id="add-button">+</button>
-                                <button type="button" class="btn btn-outline-dark" id="copy-button">
-                                    Clipboard
-                                </button>
-                                <button type="button" class="btn btn-outline-dark" id="download-rdf-button">
-                                    Download RDF
-                                </button>
-                            </td>
-                        </tr>
-                        </tfoot>
+            <div id="tableResults">
+                <div class="row">
+                    <div class="col-1">
+                        <a data-toggle="collapse" href="#tableResultCollapseDiv" role="button"
+                           aria-expanded="false" aria-controls="tableResultCollapseDiv">
+                            <svg class="bi" width="32" height="32" viewBox="0 0 20 20" fill="currentColor">
+                                <img src="resources/icons/chevron-right.svg" alt="" width="32" height="32"
+                                     title="Bootstrap"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="collapse show col-9" id="tableResultCollapseDiv">
+                        <table class="table table-editable">
+                            <thead>
+                            <tr class="d-flex">
+                                <th class="col-1" scope="col"></th>
+                                <th class="col-1" scope="col"></th>
+                                <th class="col-6">Material</th>
+                                <th class="col-4">Critical temperature</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tableResultsBody">
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <button type="button" class="btn btn-outline-dark" id="add-button">+</button>
+                                    <button type="button" class="btn btn-outline-dark" id="copy-button">
+                                        Clipboard
+                                    </button>
+                                    <button type="button" class="btn btn-outline-dark" id="download-rdf-button">
+                                        Download RDF
+                                    </button>
+                                    <button type="button" class="btn btn-outline-dark" id="download-csv-button">
+                                        Download CSV
+                                    </button>
+                                </td>
+                            </tr>
+                            </tfoot>
 
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div id="requestResultPdfContent">
@@ -428,12 +443,14 @@
         <div id="requestResultText" class="border">
             <ul class="nav nav-tabs m-2" id="requestResultTextTab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="result-annotations-tab" data-toggle="tab" href="#result-annotations"
+                    <a class="nav-link active" id="result-annotations-tab" data-toggle="tab"
+                       href="#result-annotations"
                        role="tab"
                        aria-controls="result-annotations" aria-selected="true">Annotations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="result-response-tab" data-toggle="tab" href="#result-response" role="tab"
+                    <a class="nav-link" id="result-response-tab" data-toggle="tab" href="#result-response"
+                       role="tab"
                        aria-controls="result-response" aria-selected="false">Response</a>
                 </li>
             </ul>
@@ -462,7 +479,8 @@
                        aria-controls="result-material" aria-selected="true">Annotations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="result-material-response-tab" data-toggle="tab" href="#result-material-response" role="tab"
+                    <a class="nav-link" id="result-material-response-tab" data-toggle="tab"
+                       href="#result-material-response" role="tab"
                        aria-controls="result-response" aria-selected="false">Response</a>
                 </li>
             </ul>
@@ -477,7 +495,8 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="result-material-response" role="tabpanel" aria-labelledby="result-material-response">
+                <div class="tab-pane fade" id="result-material-response" role="tabpanel"
+                     aria-labelledby="result-material-response">
                     <pre class='prettyprint lang-json' id='jsonCodeMaterial'></pre>
                 </div>
             </div>
