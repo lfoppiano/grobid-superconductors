@@ -16,12 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
-
-import static shadedwipo.org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class PrepareMaterialParserTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsConfiguration> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrepareMaterialParserTrainingCommand.class);
