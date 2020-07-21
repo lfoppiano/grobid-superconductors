@@ -9,19 +9,19 @@ In particular, the goal is to extract superconductors material and their propert
 
 As the others GROBID models, the module relies on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
 
-The linking is implemented as Python library, you can find the code in [here](./resources/web/linking). 
+The linking is implemented as Python library, you can find the code in [here](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/linking). 
 
-The following screenshots show the end to end result, also called [Supercuration](./resources/web/supercuration) (Superconductors Curation) is an advanced interface including the linking module on top of the extrated entities: 
+The following screenshots show the end to end result, also called [Supercuration](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/supercuration) (Superconductors Curation) is an advanced interface including the linking module on top of the extrated entities: 
 
-![GROBID superconductors_screenshot](./resources/web/supercuration/docs/images/grobid-superconductors-web-home.png)
+![GROBID superconductors_screenshot](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/supercuration/docs/images/grobid-superconductors-web-home.png)
 
 and provides on-pdf annotations: 
 
-![GROBID superconductors_screenshot](./resources/web/supercuration/docs/images/grobid-superconductors-web-home-2.png) 
+![GROBID superconductors_screenshot](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/supercuration/docs/images/grobid-superconductors-web-home-2.png) 
 
 See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.    
 
-The [web](./resources/web) project contains also other utilities. 
+The [Grobid Superconductors Tool project](https://github.com/lfoppiano/grobid-superconductors-tools) project contains also other utilities. 
 
 ### Output databases
 
@@ -29,9 +29,9 @@ The output database can be easily created using the [Extraction process](./resou
 
 Example of database output, organised by dates, can be found [here](./resources/dataset/database): 
     
- - [500-papers](./resources/dataset/database/500-papers) is the output from 500 papers from American Institute of Physics (AIP), American Physical Society (APS) and Institute of Physics (IOP). They were automatically selected using keywords relative to the superconductors domain such as 'tc', 'superconductivity'. 
+ - [500-papers](https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/500-papers) is the output from 500 papers from American Institute of Physics (AIP), American Physical Society (APS) and Institute of Physics (IOP). They were automatically selected using keywords relative to the superconductors domain such as 'tc', 'superconductivity'. 
     
- - [IOP-0953-2048](./resources/dataset/database/IOP-0953-2048) contains the output obtained processing the journal ``IOP - Superconductors science and technology`` 
+ - [IOP-0953-2048](https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/IOP-0953-2048) contains the output obtained processing the journal ``IOP - Superconductors science and technology`` 
 
 ## Getting started
 
