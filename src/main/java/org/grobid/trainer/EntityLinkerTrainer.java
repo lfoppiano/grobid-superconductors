@@ -125,6 +125,8 @@ public class EntityLinkerTrainer extends AbstractTrainer {
                             writer.write(output.toString());
                             writer.flush();
                             writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                            materials = 0;
+                            tcValues = 0;
                         }
                         output = new StringBuilder();
                         continue;
