@@ -386,6 +386,7 @@ public class MeasurementUtils {
                 lowerOffset - tokens.get(0).getOffset(),
                 higherOffset - tokens.get(0).getOffset(),
                 extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight(),
+                layoutTokens,
                 boundingBoxes);
     }
 }

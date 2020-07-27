@@ -231,7 +231,7 @@ let grobid = (function ($) {
             // Collapse icon
             $('a[data-toggle="collapse"]').click(function () {
                 let currentIcon = $(this).find('img').attr("src")
-                let newIcon = currentIcon === 'resources/icons/chevron-down.svg' ? 'resources/icons/chevron-right.svg' : 'resources/icons/chevron-down.svg';
+                let newIcon = currentIcon === 'resources/icons/chevron-right.svg' ? 'resources/icons/chevron-down.svg' : 'resources/icons/chevron-right.svg';
                 $(this).find('img').attr("src", newIcon);
             })
 
@@ -358,7 +358,7 @@ let grobid = (function ($) {
 
         function showSpanOnText_event(event_data) {
             let span = event_data.data;
-            console.log(span.id);
+            // console.log(span.id);
 
             var string = spanToHtml(span, -1);
 
@@ -379,19 +379,19 @@ let grobid = (function ($) {
                         spans = paragraph.spans;
                     }
                     //TODO: find a better solution
-                    spans.forEach(function (span, spanIdx) {
-                        spansMap[span.id] = span;
-                    });
-
-                    spans.forEach(function (span, spanIdx) {
-
-                        if (span.links !== undefined && span.links.length > 0) {
-                            span.links.forEach(function (link, linkIdx) {
-                                let link_entity = spansMap[link[0]];
-                                span['tc'] = link_entity.text;
-                            });
-                        }
-                    });
+                    // spans.forEach(function (span, spanIdx) {
+                    //     spansMap[span.id] = span;
+                    // });
+                    //
+                    // spans.forEach(function (span, spanIdx) {
+                    //
+                    //     if (span.links !== undefined && span.links.length > 0) {
+                    //         span.links.forEach(function (link, linkIdx) {
+                    //             let link_entity = spansMap[link.targetId];
+                    //             link['targetText'] = link_entity.text;
+                    //         });
+                    //     }
+                    // });
 
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
@@ -611,7 +611,7 @@ let grobid = (function ($) {
                     spans.forEach(function (span, spanIdx) {
                         let annotationId = span.id;
                         spansMap[annotationId] = span;
-                        let entity_type = span['type'].replace("<", "").replace(">", "");
+                        let entity_type = getPlainType(span['type']);
 
                         let boundingBoxes = span.boundingBoxes;
                         if ((boundingBoxes != null) && (boundingBoxes.length > 0)) {
@@ -619,6 +619,7 @@ let grobid = (function ($) {
                                 let pageNumber = boundingBox.page;
                                 let pageInfo = pages[pageNumber - 1];
 
+                                entity_type = transformToLinkableType(entity_type, span.links);
                                 annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, entity_type, pageInfo);
 
                                 $('#' + (annotationId + '' + boundingBoxId)).bind('click', {
@@ -631,16 +632,18 @@ let grobid = (function ($) {
                     });
 
 
-                    spans.forEach(function (span, spanIdx) {
+                    spans.filter(function(span){
+                        return getPlainType(span.type) === "material";
+                    }).forEach(function (span, spanIdx) {
                         if (span.links !== undefined && span.links.length > 0) {
                             copyButtonElement.show();
                             span.links.forEach(function (link, linkIdx) {
-                                let link_entity = spansMap[link[0]];
-                                let tcValue_text = link_entity.text;
-                                span['tc'] = tcValue_text;
+                                let link_entity = spansMap[link.targetId];
 
+                                // span.text == material
+                                // link.targetText == tcValue
                                 let {row_id, element_id, mat_element_id, tc_element_id, html_code} =
-                                    createRowHtml(span.id, span.text, tcValue_text, true);
+                                    createRowHtml(span.id, span.text, link.targetText, link.type,true);
 
                                 $('#tableResultsBody').append(html_code);
 
@@ -706,23 +709,24 @@ let grobid = (function ($) {
         }
 
         /** Summary table **/
-        function createRowHtml(id, material = "", tcValue = "", viewInPDF = false) {
+        function createRowHtml(id, material = "", tcValue = "", type = "", viewInPDF = false) {
 
             let viewInPDFIcon = "";
             if (viewInPDF === true) {
                 viewInPDFIcon = "<img src='resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
             }
 
-            let row_id = "row" + id;
-            let element_id = "e" + id;
-            let mat_element_id = "mat" + id;
-            let tc_element_id = "tc" + id;
+            let row_id = "row" + id + type;
+            let element_id = "e" + id + type;
+            let mat_element_id = "mat" + id + type;
+            let tc_element_id = "tc" + id + type;
 
             let html_code = "<tr class='d-flex' id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
                 "<td class='col-1'><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
                 "<td class='col-1'><img src='resources/icons/trash.svg' alt='-' id='remove-button'/></td>" +
-                "<td class='col-6'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
-                "<td class='col-4'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
+                "<td class='col-5'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
+                "<td class='col-2'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
+                "<td class='col-1'>" + type + "</td>" +
                 "</tr>";
 
             return {row_id, element_id, mat_element_id, tc_element_id, html_code};
@@ -757,18 +761,47 @@ let grobid = (function ($) {
 
         function showSpanOnPDF(param) {
             let type = param.data.type;
-            let item = param.data.item;
+            let span = param.data.item;
 
             let pageIndex = $(this).attr('page');
-            let string = spanToHtml(item, $(this).position().top);
+            let string = spanToHtml(span, $(this).position().top);
 
             if (type === null || string === "") {
                 console.log("Error in viewing annotation, type unknown or null: " + type);
             }
 
             let annotationHook = $('#detailed_annot-' + pageIndex);
+            //Reset the click event before adding a new one - not so clean, but would do for the moment...
+            annotationHook.off('click');
             annotationHook.html(string).show();
-            annotationHook.bind('click', scrollUp);
+            annotationHook.on('click', scrollUp);
+        }
+
+        function transformToLinkableType(type, links) {
+            if (links === undefined || links.length === 0) {
+                return type;
+            }
+
+            if (type === "material") {
+                links.forEach(function (link, linkIdx) {
+                    if (getPlainType(link['targetType']) === 'tcValue') {
+                        type = 'material-tc';
+                    }
+                });
+
+            } else if (type === "tcValue") {
+                links.forEach(function (link, linkIdx) {
+                    if (getPlainType(link['targetType']) === 'material') {
+                        type = 'temperature-tc';
+                    } else if (getPlainType(link['targetType']) === 'pressure') {
+                        type = 'temperature-pressure';
+                    } else if (getPlainType(link['targetType']) === 'me_method') {
+                        type = 'temperature-me_method';
+                    }
+                });
+            }
+
+            return type;
         }
 
         function annotateTextAsHtml(inputText, annotationList) {
@@ -786,7 +819,9 @@ let grobid = (function ($) {
                 let start = parseInt(annotation.offsetStart, 10);
                 let end = parseInt(annotation.offsetEnd, 10);
 
-                let type = annotation.type.replace("<", "").replace(">", "");
+                let type = getPlainType(annotation.type);
+                let links = annotation.links
+                type = transformToLinkableType(type, links)
                 let id = annotation.id;
 
                 outputString += inputText.substring(pos, start)
@@ -802,14 +837,17 @@ let grobid = (function ($) {
         }
 
 
+        function getPlainType(type) {
+            return type.replace("<", "").replace(">", "");
+        }
+
         // Transformation to HTML
         function spanToHtml(span, topPos) {
             let string = "";
 
             //We remove the < and > to avoid messing up with HTML
-            let type = span.type.replace("<", "").replace(">", "");
+            let type = getPlainType(span.type);
 
-            colorLabel = type;
             let text = span.text;
             let formattedText = span.formattedText;
 
@@ -820,7 +858,7 @@ let grobid = (function ($) {
                 string += " style='cursor:hand;cursor:pointer;'";
 
             string += ">";
-            if (span.tc) {
+            if (span.links && topPos > -1) {
                 let infobox_id = "infobox" + span.id;
                 string += "<h2 class='ml-1' style='color:#FFF;font-size:16pt;'>" + type + "<img id='" + infobox_id + "' src='resources/icons/arrow-up.svg'/></h2>";
             } else {
@@ -836,14 +874,20 @@ let grobid = (function ($) {
                 string += "<p>name: <b>" + text + "</b></p>";
             }
 
-            if (span.tc) {
-                string += "<p>Tc: <b>" + span.tc + "</b></p>";
-                string = string.replace("___TYPE___", "material-tc");
-            }
+            if (span.links) {
+                let colorLabel = transformToLinkableType(type, span.links)
+                string = string.replace("___TYPE___", colorLabel);
+                let linkedEntities = "";
+                let first = true;
+                span.links.forEach(function (link, linkIdx) {
+                    if (!first) {
+                        linkedEntities += ", ";
+                    }
+                    first = false;
+                    linkedEntities += "<b>" + link.targetText + "</b> (" + getPlainType(link.targetType) + ") [" + link.type + "]";
 
-            if(entity.linkedEntity) {
-                string += "<p>Linked: <b>" + entity.linkedEntity + "</b></p>";
-                string = string.replace("___TYPE___", "material-tc");
+                });
+                string += "<p>Linked: " + linkedEntities + "</p>";
             }
 
             string = string.replace("___TYPE___", type);

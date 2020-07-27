@@ -60,11 +60,11 @@
 
                 <ul class="nav nav-tabs" id="top-tab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="about-tab" data-toggle="tab" href="#about" role="tab"
+                        <a class="nav-link" id="about-tab" data-toggle="tab" href="#about" role="tab"
                            aria-controls="about" aria-selected="true">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="process-text-tab" data-toggle="tab" href="#process-text" role="tab"
+                        <a class="nav-link active" id="process-text-tab" data-toggle="tab" href="#process-text" role="tab"
                            aria-controls="process-text" aria-selected="false">Text</a>
                     </li>
                     <li class="nav-item">
@@ -79,7 +79,7 @@
                 </ul>
 
                 <div class="tab-content" id="top-tab-content">
-                    <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+                    <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
                         <div class="row m-3">
                             <div class="col" id="about-content">
                                 <p>The goal of this GROBID module is to identify, extract and link entities in text from
@@ -315,7 +315,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="process-text" role="tabpanel"
+                    <div class="tab-pane fade show active" id="process-text" role="tabpanel"
                          aria-labelledby="process-text-tab">
                         <div class="row m-3">
                             <div class="col-7">
@@ -409,8 +409,9 @@
                             <tr class="d-flex">
                                 <th class="col-1" scope="col"></th>
                                 <th class="col-1" scope="col"></th>
-                                <th class="col-6">Material</th>
-                                <th class="col-4">Critical temperature</th>
+                                <th class="col-5">Material</th>
+                                <th class="col-2">Critical temperature</th>
+                                <th class="col-1">Type</th>
                             </tr>
                             </thead>
                             <tbody id="tableResultsBody">

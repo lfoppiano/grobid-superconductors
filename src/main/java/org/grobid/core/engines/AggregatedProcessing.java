@@ -284,12 +284,18 @@ public class AggregatedProcessing {
 
         processedParagraph.setSpans(pruneOverlappingAnnotations(sortedSpans));
 
-        //Because we split into sentences, we may obtain more information
         if (disableLinking) {
-            return Arrays.asList(processedParagraph);
+            return Collections.singletonList(processedParagraph);
         }
+
+        //CRF-based
+        /**Modify the objects **/
+        entityLinkerParser.process(tokens, processedParagraph.getSpans());
+
+        //Rule-based: Because we split into sentences, we may obtain more information
         List<ProcessedParagraph> processedParagraphs = linkingEngine.process(processedParagraph);
 
+        //TODO: Merge
         return processedParagraphs;
     }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 
@@ -30,29 +31,32 @@ public class Span {
     private int tokenStart;
     private int tokenEnd;
 
+    private boolean linkable;
+
     //The source where this span was generated from, namely the model
     private String source;
 
-    // Contains the references (id) to other spans objects
-    private List<List<String>> links = new ArrayList<>();
+    // Contains the references triple (destinationId, destinationType, linkingMethod)
+    private List<Link> links = new ArrayList<>();
 
     // Attribute map, used for adding lower-models information
     private Map<String, String> attributes = new HashMap<>();
 
-    /** These are internal objects that should not be serialised to JSON **/
+    /**
+     * These are internal objects that should not be serialised to JSON
+     **/
     //@JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
     @JsonIgnore
     private List<LayoutToken> layoutTokens = new ArrayList<>();
-    private Span linkedEntity;
 
-    public Span() {
-    }
+    public Span() {}
 
-    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
         this.text = text;
         this.type = type;
+        this.source = source;
         this.offsetStart = offsetStart;
         this.offsetEnd = offsetEnd;
         this.tokenStart = tokenStart;
@@ -60,23 +64,21 @@ public class Span {
         this.id = hashCode();
     }
 
-    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes) {
-        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd);
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
+                List<LayoutToken> layoutTokens) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd);
+        this.layoutTokens = layoutTokens;
+    }
+
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
+                List<LayoutToken> layoutTokens, List<BoundingBox> boundingBoxes) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, layoutTokens);
         this.boundingBoxes = boundingBoxes;
     }
 
-    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes) {
-        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
-        this.source = source;
-    }
-
-    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes, String formattedText) {
-        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
-        this.formattedText = formattedText;
-    }
-
-    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes, String formattedText) {
-        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
+                List<LayoutToken> layoutTokens, List<BoundingBox> boundingBoxes, String formattedText) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, layoutTokens,  boundingBoxes);
         this.formattedText = formattedText;
     }
 
@@ -232,14 +234,6 @@ public class Span {
             .toString();
     }
 
-    public List<List<String>> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<List<String>> links) {
-        this.links = links;
-    }
-
     public Map<String, String> getAttributes() {
         return attributes;
     }
@@ -252,12 +246,23 @@ public class Span {
         this.attributes.put(attributeName, attributeValue);
     }
 
-    public Span getLinkedEntity() {
-        return linkedEntity;
+    public void addLink(Link linkedSpans) {
+        this.links.add(linkedSpans);
     }
 
-    public void setLinkedEntity(Span linkedEntity) {
-        this.linkedEntity = linkedEntity;
+    public List<Link> getLinks() {
+        return links;
     }
 
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+
+    public boolean isLinkable() {
+        return linkable;
+    }
+
+    public void setLinkable(boolean linkable) {
+        this.linkable = linkable;
+    }
 }

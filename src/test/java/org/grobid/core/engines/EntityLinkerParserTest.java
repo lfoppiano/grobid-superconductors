@@ -6,7 +6,9 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Span;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.utilities.LayoutTokensUtil;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class EntityLinkerParserTest {
     }
 
     @Test
+    @Ignore("Still work in progress")
     public void testExtractEntities_missingEntities_shouldReconstructWhatPossible() throws Exception {
         String input = "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K " +
             "in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. " +
@@ -296,7 +299,7 @@ public class EntityLinkerParserTest {
 
         assertThat(links, hasSize(2));
         assertThat(links.get(0).getText(), is("MgB 2"));
-        assertThat(links.get(0).getLinkedEntity().getText(), is("40 K"));
+        assertThat(links.get(0).getLinks().get(0).getTargetId(), is(String.valueOf(sup2.getId())));
 
     }
 

@@ -5,6 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.Link;
 import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
@@ -122,7 +123,19 @@ public class EntityLinkerParser extends AbstractParser {
 //
 //    }
 
-    public List<Span> process(List<LayoutToken> layoutTokens, List<Span> annotations) {
+    // TODO: This cannot work because ProcessedParagraph does not hold a copy of the LayoutTokens
+
+//    public ProcessedParagraph process(ProcessedParagraph paragraph) {
+//        if(isEmpty(paragraph.getSpans())) {
+//            return paragraph;
+//        }
+//
+//        process(Token paragraph.getTokens(), paragraph.getSpans());
+//
+//    }
+
+    /** THis modify the annotations list **/
+    public void process(List<LayoutToken> layoutTokens, List<Span> annotations) {
 
         //Normalisation
         List<LayoutToken> layoutTokensPreNormalised = layoutTokens.stream()
@@ -142,7 +155,7 @@ public class EntityLinkerParser extends AbstractParser {
         //List<String> texts = getTexts(tokenizationParts);
 
         if (isEmpty(layoutTokensNormalised))
-            return new ArrayList<>();
+            return;
 
         try {
             List<Span> filteredAnnotations = annotations.stream().filter(a -> annotationLinks.contains(a.getType())).collect(Collectors.toList());
@@ -153,7 +166,7 @@ public class EntityLinkerParser extends AbstractParser {
             String ress = addFeatures(layoutTokensNormalised, listAnnotations);
 
             if (StringUtils.isEmpty(ress))
-                return annotations;
+                return;
 
             // labeled result from CRF lib
             String res = null;
@@ -168,26 +181,24 @@ public class EntityLinkerParser extends AbstractParser {
             for (Span annotation : annotations) {
                 for (Span localEntity : localLinkedEntities) {
                     if (localEntity.equals(annotation)) {
-                        annotation.setLinkedEntity(localEntity.getLinkedEntity());
+                        annotation.setLinks(localEntity.getLinks());
+                        annotation.setLinkable(true);
                         break;
                     }
                 }
             }
 
-
         } catch (Exception e) {
             throw new GrobidException("An exception occured while running Grobid.", e);
         }
-
-        return annotations;
     }
 
     /**
      * Extract all occurrences of measurement/quantities from a simple piece of text.
      */
-    public List<Span> process(String text, List<Span> annotations) {
+    public void process(String text, List<Span> annotations) {
         if (isBlank(text)) {
-            return new ArrayList<>();
+            return;
         }
 
         text = text.replace("\r", " ");
@@ -202,9 +213,9 @@ public class EntityLinkerParser extends AbstractParser {
         }
 
         if (isEmpty(tokens)) {
-            return new ArrayList<>();
+            return;
         }
-        return process(tokens, annotations);
+        process(tokens, annotations);
     }
 
 
@@ -267,7 +278,7 @@ public class EntityLinkerParser extends AbstractParser {
 
             if (clusterLabel.equals(ENTITY_LINKER_LEFT_ATTACHMENT)) {
                 if (insideLink) {
-                    LOGGER.info("Linking to the left " + clusterContent);
+                    LOGGER.info("Found link-left label with content " + clusterContent);
 
 //                    Pair<Integer, Integer> extremitiesAsIndex = getExtremitiesAsIndex(tokens, startPos, endPos);
 //                    List<LayoutToken> link = new ArrayList<>();
@@ -285,46 +296,56 @@ public class EntityLinkerParser extends AbstractParser {
                     }).collect(Collectors.toList());
 
                     if (collect.size() == 1) {
-                        LOGGER.info("Link left -> " + collect.get(0).getText());
-                        leftSide.setLinkedEntity(collect.get(0));
-                        collect.get(0).setLinkedEntity(leftSide);
-
+                        Span rightSide = collect.get(0);
+                        LOGGER.info("Link left -> " + rightSide.getText());
+//                        leftSide.setType(getLinkedType(leftSide.getType()));
+                        leftSide.addLink(new Link(String.valueOf(rightSide.getId()), rightSide.getText(), rightSide.getType(), "crf"));
+//                        rightSide.setType(getLinkedType(rightSide.getType()));
+                        rightSide.addLink(new Link(String.valueOf(leftSide.getId()), leftSide.getText(), leftSide.getType(), "crf"));
                     } else {
-                        LOGGER.error("Cannot find the link ... no matching in the original list of tokens... dammit!");
+                        LOGGER.error("Cannot find the span corresponding to the link. Ignoring it. ");
                     }
 
                     insideLink = false;
                 } else {
-                    LOGGER.warn("Something is wrong, there is link to the left but not to the right. ");
+                    LOGGER.warn("Something is wrong, there is link to the left but not to the right. Ignoring it. ");
                 }
 
             } else if (clusterLabel.equals(ENTITY_LINKER_RIGHT_ATTACHMENT)) {
-                if (!insideLink) {
-                    LOGGER.info("Linking on the right " + clusterContent);
-                    int layoutTokenListStartOffset = getLayoutTokenListStartOffset(theTokens);
-                    int layoutTokenListEndOffset = getLayoutTokenListEndOffset(theTokens);
-                    List<Span> collect = annotations.stream().filter(a -> {
-                        int supLayoutStart = getLayoutTokenListStartOffset(a.getLayoutTokens());
-                        int supLayoutEnd = getLayoutTokenListEndOffset(a.getLayoutTokens());
+                LOGGER.info("Found link-right label with content " + clusterContent);
 
-                        return supLayoutStart == layoutTokenListStartOffset && supLayoutEnd == layoutTokenListEndOffset;
-                    }).collect(Collectors.toList());
+                int layoutTokenListStartOffset = getLayoutTokenListStartOffset(theTokens);
+                int layoutTokenListEndOffset = getLayoutTokenListEndOffset(theTokens);
+                List<Span> spansCorrespondingToCurrentLink = annotations.stream().filter(a -> {
+                    int supLayoutStart = getLayoutTokenListStartOffset(a.getLayoutTokens());
+                    int supLayoutEnd = getLayoutTokenListEndOffset(a.getLayoutTokens());
+
+                    return supLayoutStart == layoutTokenListStartOffset && supLayoutEnd == layoutTokenListEndOffset;
+                }).collect(Collectors.toList());
 //
 //                    Pair<Integer, Integer> extremitiesAsIndex = getExtremitiesAsIndex(tokens, startPos, endPos);
 //                    List<LayoutToken> link = new ArrayList<>();
 //                    for (int x = extremitiesAsIndex.getLeft(); x < extremitiesAsIndex.getRight(); x++) {
 //                        link.add(tokens.get(x));
 //                    }
-                    if (collect.size() == 1) {
-                        LOGGER.info("Link right -> " + collect.get(0).getText());
-                        leftSide = collect.get(0);
+                if (!insideLink) {
+                    if (spansCorrespondingToCurrentLink.size() == 1) {
+                        LOGGER.info("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
+                        leftSide = spansCorrespondingToCurrentLink.get(0);
                     } else {
-                        LOGGER.error("Cannot find the link ... no matching in the original list of tokens... dammit!");
+                        LOGGER.error("Cannot find the span corresponding to the link. Ignoring it. ");
                     }
 
                     insideLink = true;
                 } else {
-                    LOGGER.warn("Something is wrong, there is link it means I should link on the left . ");
+                    LOGGER.warn("Something is wrong, there is a link, but this means I should link on the left. Let's ignore the previous stored link and start from scratch. ");
+                    if (spansCorrespondingToCurrentLink.size() == 1) {
+                        LOGGER.info("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
+                        leftSide = spansCorrespondingToCurrentLink.get(0);
+                    } else {
+                        LOGGER.error("Cannot find the span corresponding to the link. Ignoring it. ");
+                    }
+                    insideLink = true;
                 }
 
             } else if (clusterLabel.equals(ENTITY_LINKER_OTHER)) {
@@ -332,11 +353,20 @@ public class EntityLinkerParser extends AbstractParser {
             } else {
                 LOGGER.error("Warning: unexpected label in entity-linker parser: " + clusterLabel.getLabel() + " for " + clusterContent);
             }
-
-//            pos = endPos;
         }
 
         return annotations;
+    }
+
+    private String getLinkedType(String type) {
+        if (type.equals("<material>")) {
+            return "<material-tc>";
+        } else if (type.equals("<tcValue>")) {
+            return "<temperature-tc>";
+        } else {
+            LOGGER.error("Something is wrong when updating the entity type. Current type :" + type);
+        }
+        return type;
     }
 
     protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
