@@ -9,8 +9,6 @@ let grobid = (function ($) {
         // for components view
         let responseJson = null;
 
-        // for associating several quantities to a measurement
-        let spansMap = [];
         let configuration = {};
 
         function getUrl(action) {
@@ -378,21 +376,6 @@ let grobid = (function ($) {
                     if (paragraph.spans) {
                         spans = paragraph.spans;
                     }
-                    //TODO: find a better solution
-                    // spans.forEach(function (span, spanIdx) {
-                    //     spansMap[span.id] = span;
-                    // });
-                    //
-                    // spans.forEach(function (span, spanIdx) {
-                    //
-                    //     if (span.links !== undefined && span.links.length > 0) {
-                    //         span.links.forEach(function (link, linkIdx) {
-                    //             let link_entity = spansMap[link.targetId];
-                    //             link['targetText'] = link_entity.text;
-                    //         });
-                    //     }
-                    // });
-
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
             }
@@ -428,8 +411,6 @@ let grobid = (function ($) {
         }
 
         function processPdf(action) {
-            spansMap = [];
-
             let resultMessageBlock = $('#infoResultMessage');
             resultMessageBlock.html('<p class="text-secondary">Requesting server...</p>');
             let requestResult = $('#requestResultPdfContent');
@@ -602,6 +583,8 @@ let grobid = (function ($) {
 
             let spanGlobalIndex = 0;
             let copyButtonElement = $('#copy-button');
+            let unlinkedElements = [];
+            let spansMap = [];
 
             paragraphs.forEach(function (paragraph, paragraphIdx) {
                 let spans = paragraph.spans;
@@ -639,6 +622,10 @@ let grobid = (function ($) {
                             copyButtonElement.show();
                             span.links.forEach(function (link, linkIdx) {
                                 let link_entity = spansMap[link.targetId];
+                                if(link_entity === undefined) {
+                                    unlinkedElements.push(span);
+                                    return;
+                                }
 
                                 // span.text == material
                                 // link.targetText == tcValue
@@ -668,6 +655,44 @@ let grobid = (function ($) {
                                 });
                             });
                         }
+                    });
+                }
+            });
+
+            //Reprocessing the links for which the targetId isn't in the same paragraph
+            unlinkedElements.forEach(function(span, spanIdx){
+                if (span.links !== undefined && span.links.length > 0) {
+                    span.links.forEach(function (link, linkIdx) {
+                        let link_entity = spansMap[link.targetId];
+                        if(link_entity === undefined) {
+                            console.log("The link to " + link.targetId + " cannot be found. This seems to be a serious problem. Get yourself together. ")
+                            return;
+                        }
+
+                        // span.text == material
+                        // link.targetText == tcValue
+                        let {row_id, element_id, mat_element_id, tc_element_id, html_code} =
+                            createRowHtml(span.id, span.text, link.targetText, link.type,true);
+
+                        $('#tableResultsBody').append(html_code);
+
+                        // in case of multiple bounding boxes, we will have multiple IDs, in this case we can point
+                        // to the first box
+                        $("#" + element_id).bind('click', span.id + '0', goToByScroll);
+                        $("#" + mat_element_id).editable();
+                        $("#" + tc_element_id).editable();
+                        appendRemoveButton(row_id);
+
+                        $("#" + row_id).popover({
+                            content: function () {
+                                return "This link is across two sentences, it cannot be previewed for the time being. ";
+                            },
+                            html: true,
+                            // container: 'body',
+                            trigger: 'hover',
+                            placement: 'top',
+                            animation: true
+                        });
                     });
                 }
             });

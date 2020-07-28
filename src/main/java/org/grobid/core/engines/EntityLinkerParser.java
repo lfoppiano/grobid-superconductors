@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
@@ -134,7 +135,9 @@ public class EntityLinkerParser extends AbstractParser {
 //
 //    }
 
-    /** THis modify the annotations list **/
+    /**
+     * THis modify the annotations list
+     **/
     public void process(List<LayoutToken> layoutTokens, List<Span> annotations) {
 
         //Normalisation
@@ -180,7 +183,7 @@ public class EntityLinkerParser extends AbstractParser {
 
             for (Span annotation : annotations) {
                 for (Span localEntity : localLinkedEntities) {
-                    if (localEntity.equals(annotation)) {
+                    if (localEntity.equals(annotation) && isNotEmpty(localEntity.getLinks())) {
                         annotation.setLinks(localEntity.getLinks());
                         annotation.setLinkable(true);
                         break;
@@ -297,11 +300,17 @@ public class EntityLinkerParser extends AbstractParser {
 
                     if (collect.size() == 1) {
                         Span rightSide = collect.get(0);
-                        LOGGER.info("Link left -> " + rightSide.getText());
-//                        leftSide.setType(getLinkedType(leftSide.getType()));
-                        leftSide.addLink(new Link(String.valueOf(rightSide.getId()), rightSide.getText(), rightSide.getType(), "crf"));
-//                        rightSide.setType(getLinkedType(rightSide.getType()));
-                        rightSide.addLink(new Link(String.valueOf(leftSide.getId()), leftSide.getText(), leftSide.getType(), "crf"));
+
+                        if (rightSide.getType().equals(leftSide.getType())) {
+                            LOGGER.warn("Linking two entities of the same type. Ignoring.");
+                        } else {
+                            LOGGER.info("Link left -> " + rightSide.getText());
+                            leftSide.addLink(new Link(String.valueOf(rightSide.getId()), rightSide.getText(), rightSide.getType(), "crf"));
+                            rightSide.addLink(new Link(String.valueOf(leftSide.getId()), leftSide.getText(), leftSide.getType(), "crf"));
+                            // After linking I remove the references to both sides
+                            leftSide = null;
+                            rightSide = null;
+                        }
                     } else {
                         LOGGER.error("Cannot find the span corresponding to the link. Ignoring it. ");
                     }
