@@ -367,17 +367,6 @@ public class EntityLinkerParser extends AbstractParser {
         return annotations;
     }
 
-    private String getLinkedType(String type) {
-        if (type.equals("<material>")) {
-            return "<material-tc>";
-        } else if (type.equals("<tcValue>")) {
-            return "<temperature-tc>";
-        } else {
-            LOGGER.error("Something is wrong when updating the entity type. Current type :" + type);
-        }
-        return type;
-    }
-
     protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
         List<String> output = new ArrayList<>();
 
