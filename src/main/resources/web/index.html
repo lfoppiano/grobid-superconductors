@@ -74,7 +74,12 @@
                     <li class="nav-item">
                         <a class="nav-link" id="process-material-tab" data-toggle="tab" href="#process-material"
                            role="tab"
-                           aria-controls="process-pdf" aria-selected="false">Material parser</a>
+                           aria-controls="process-material" aria-selected="false">Material parser</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="linker-tab" data-toggle="tab" href="#linker"
+                           role="tab"
+                           aria-controls="linker" aria-selected="false">Entities linker</a>
                     </li>
                 </ul>
 
@@ -382,6 +387,28 @@
                             </div>
                         </div>
                     </div>
+                    <div class="tab-pane fade" id="linker" role="tabpanel"
+                         aria-labelledby="linker-tab">
+                        <div class="row m-3">
+                            <div class="col-7">
+                                <textarea class="form-control" id="inputLinkerArea" rows="9"></textarea>
+                            </div>
+                            <div class="col-3">
+                                <p><a id="exampleLinker0" href="#">example 1</a></p>
+                                <p><a id="exampleLinker1" href="#">example 2</a></p>
+                                <p><a id="exampleLinker2" href="#">example 3</a></p>
+                                <p><a id="exampleLinker3" href="#">example 4</a></p>
+                            </div>
+                        </div>
+                        <div class="row m-1 ml-5">
+                            <div class="col-2">
+                                <button type="button" id="submitRequestLinker" value="Submit"
+                                        class="btn btn-outline-dark btn-block">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -499,6 +526,37 @@
                 <div class="tab-pane fade" id="result-material-response" role="tabpanel"
                      aria-labelledby="result-material-response">
                     <pre class='prettyprint lang-json' id='jsonCodeMaterial'></pre>
+                </div>
+            </div>
+        </div>
+        <div id="requestResultLinker" class="border">
+            <ul class="nav nav-tabs m-2" id="requestResultLinkerTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="result-linker-tab" data-toggle="tab" href="#result-linker"
+                       role="tab"
+                       aria-controls="result-linker" aria-selected="true">Annotations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="result-linker-response-tab" data-toggle="tab"
+                       href="#result-linker-response" role="tab"
+                       aria-controls="result-linker-response" aria-selected="false">Response</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="requestResultLinkerTabContent">
+                <div class="tab-pane fade show active" id="result-linker" role="tabpanel"
+                     aria-labelledby="result-linker">
+                    <div class="row m-3">
+                        <div class="col-8 border m-1" id="requestResultLinkerContent">
+
+                        </div>
+                        <div class="col-3" id="detailed_annot_linker-0-0"></div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="result-linker-response" role="tabpanel"
+                     aria-labelledby="result-linker-response">
+                    <pre class='prettyprint lang-json' id='jsonCodeLinker'></pre>
                 </div>
             </div>
         </div>

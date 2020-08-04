@@ -53,9 +53,13 @@ public class Span {
 
     public Span() {}
 
-    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+    public Span(String text, String type) {
         this.text = text;
         this.type = type;
+    }
+
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+        this(text, type);
         this.source = source;
         this.offsetStart = offsetStart;
         this.offsetEnd = offsetEnd;

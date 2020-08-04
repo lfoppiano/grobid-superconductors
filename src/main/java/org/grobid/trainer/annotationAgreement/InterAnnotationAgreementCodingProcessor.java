@@ -9,7 +9,7 @@ import org.dkpro.statistics.agreement.coding.CodingAnnotationStudy;
 import org.dkpro.statistics.agreement.coding.ICodingAnnotationStudy;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.SuperconductorAnnotationStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,23 +69,23 @@ public class InterAnnotationAgreementCodingProcessor {
             SAXParserFactory spf = SAXParserFactory.newInstance();
 
             List<List<String>> labelsOfLabels = input
-                    .stream()
-                    .map(inputStream -> {
-                        SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler();
+                .stream()
+                .map(inputStream -> {
+                    AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler();
 
-                        try {
-                            XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
-                            StaxUtils.traverse(reader, handler);
-                            List<Pair<String, String>> labeled1 = handler.getLabeled();
+                    try {
+                        XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
+                        StaxUtils.traverse(reader, handler);
+                        List<Pair<String, String>> labeled1 = handler.getLabeledEntities();
 
 
-                            return labeled1.stream().map(Pair::getRight).collect(Collectors.toList());
+                        return labeled1.stream().map(Pair::getRight).collect(Collectors.toList());
 
-                        } catch (XMLStreamException e) {
-                            throw new GrobidException("Error parsing XML ", e);
-                        }
-                    })
-                    .collect(Collectors.toList());
+                    } catch (XMLStreamException e) {
+                        throw new GrobidException("Error parsing XML ", e);
+                    }
+                })
+                .collect(Collectors.toList());
 
             //Iteration of different items
             for (int j = 0; j < labelsOfLabels.get(0).size(); j++) {
@@ -114,14 +114,14 @@ public class InterAnnotationAgreementCodingProcessor {
             List<File> collect = directories.stream().filter(f -> !f.exists()).collect(Collectors.toList());
             if (collect.size() > 0) {
                 throw new GrobidException("Input directory 1 cannot be accessed: "
-                        + collect.stream().map(File::getAbsolutePath).collect(Collectors.joining(" \n")));
+                    + collect.stream().map(File::getAbsolutePath).collect(Collectors.joining(" \n")));
             }
 
             // I iterate list one and find (if available the same files in list 2)
             List<File> refFiles = Arrays
-                    .stream(Objects.requireNonNull(directories.get(0).listFiles()))
-                    .filter(file -> StringUtils.endsWithIgnoreCase(file.getName(), ".xml"))
-                    .collect(Collectors.toList());
+                .stream(Objects.requireNonNull(directories.get(0).listFiles()))
+                .filter(file -> StringUtils.endsWithIgnoreCase(file.getName(), ".xml"))
+                .collect(Collectors.toList());
 
             LOGGER.info(refFiles.size() + " files to be processed.");
 

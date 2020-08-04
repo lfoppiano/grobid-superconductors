@@ -16,8 +16,6 @@ import org.grobid.core.utilities.IOUtilities;
 import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.MeasurementUtils;
 import org.grobid.core.utilities.UnitUtilities;
-import org.grobid.core.utilities.*;
-import org.grobid.trainer.EntityLinkerTrainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,21 +42,21 @@ public class AggregatedProcessing {
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
     private SentenceSegmenter sentenceSegmenter;
-    private LinkingEngine linkingEngine;
-    private EntityLinkerParser entityLinkerParser;
+    private RulesBasedLinker rulesBasedLinker;
+    private CRFBasedLinker CRFBasedLinker;
 
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, LinkingEngine linkingEngine, EntityLinkerParser entityLinkerParser) {
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RulesBasedLinker rulesBasedLinker, CRFBasedLinker CRFBasedLinker) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
         this.sentenceSegmenter = new SentenceSegmenter();
-        this.linkingEngine = linkingEngine;
-        this.entityLinkerParser = entityLinkerParser;
+        this.rulesBasedLinker = rulesBasedLinker;
+        this.CRFBasedLinker = CRFBasedLinker;
         parsers = new EngineParsers();
     }
 
     @Inject
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser, LinkingEngine linkingEngine, EntityLinkerParser entityLinkerParser) {
-        this(superconductorsParser, QuantityParser.getInstance(true), linkingEngine, entityLinkerParser);
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, RulesBasedLinker rulesBasedLinker, CRFBasedLinker CRFBasedLinker) {
+        this(superconductorsParser, QuantityParser.getInstance(true), rulesBasedLinker, CRFBasedLinker);
     }
 
     @Deprecated
@@ -290,10 +288,10 @@ public class AggregatedProcessing {
 
         //CRF-based
         /**Modify the objects **/
-        entityLinkerParser.process(tokens, processedParagraph.getSpans());
+        CRFBasedLinker.process(tokens, processedParagraph.getSpans());
 
         //Rule-based: Because we split into sentences, we may obtain more information
-        List<ProcessedParagraph> processedParagraphs = linkingEngine.process(processedParagraph);
+        List<ProcessedParagraph> processedParagraphs = rulesBasedLinker.process(processedParagraph);
 
         //TODO: Merge
         return processedParagraphs;

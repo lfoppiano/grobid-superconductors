@@ -2,6 +2,7 @@ package org.grobid.trainer.stax.handler;
 
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.QuantityAnalyzer;

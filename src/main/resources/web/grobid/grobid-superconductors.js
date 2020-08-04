@@ -24,7 +24,7 @@ let grobid = (function ($) {
 
         function loadTextExamples(examples_list) {
             for (let idx_example in examples_list) {
-                $('#example' + idx_example).unbind('click')
+                $('#example' + idx_example).unbind('click');
                 $('#example' + idx_example).bind('click', {id: idx_example}, function (event) {
                     event.preventDefault();
                     $('#inputTextArea').val(examples_list[event.data.id]);
@@ -34,10 +34,20 @@ let grobid = (function ($) {
 
         function loadMaterialsExamples(examples_list) {
             for (let idx_example in examples_list) {
-                $('#exampleMaterial' + idx_example).unbind('click')
+                $('#exampleMaterial' + idx_example).unbind('click');
                 $('#exampleMaterial' + idx_example).bind('click', {id: idx_example}, function (event) {
                     event.preventDefault();
                     $('#inputMaterialArea').val(examples_list[event.data.id]);
+                });
+            }
+        }
+
+        function loadLinkerExamples(examples_list) {
+            for (let idx_example in examples_list) {
+                $('#exampleLinker' + idx_example).unbind('click');
+                $('#exampleLinker' + idx_example).bind('click', {id: idx_example}, function (event) {
+                    event.preventDefault();
+                    $('#inputLinkerArea').val(examples_list[event.data.id]);
                 });
             }
         }
@@ -188,10 +198,7 @@ let grobid = (function ($) {
         }
 
         $(document).ready(function () {
-            $('#requestResultPdf').hide();
-            $('#requestResultText').hide();
-            $('#requestResultMaterial').hide();
-            // $('#tableResults').hide();
+            hideResultDivs();
 
             configuration = {
                 "url_mapping": {
@@ -199,11 +206,12 @@ let grobid = (function ($) {
                     "processText": "/service/process/text",
                     "processMaterial": "/service/material/parser",
                     "feedback": "/service/annotations/feedback",
-                    "processMaterial": "/service/material/parse"
+                    "linkEntities": "/service/linker/link"
                 }
             }
             $('#submitRequestText').bind('click', 'processText', processText);
             $('#submitRequestMaterial').bind('click', 'processMaterial', processMaterial);
+            $('#submitRequestLinker').bind('click', 'linkEntities', linkEntities);
             $('#submitRequestPdf').bind('click', 'processPDF', processPdf);
             $('#copy-button').bind('click', copyOnClipboard);
             $('#add-button').bind('click', addRow);
@@ -216,9 +224,7 @@ let grobid = (function ($) {
                     if (e.target.parentElement) {
                         if (e.target.parentElement.parentElement) {
                             if (e.target.parentElement.parentElement.id === "top-tab") {
-                                $('#requestResultPdf').hide();
-                                $('#requestResultText').hide();
-                                $('#requestResultMaterial').hide();
+                                hideResultDivs();
                             }
                         }
                     }
@@ -242,6 +248,7 @@ let grobid = (function ($) {
 
             loadTextExamples(examples_superconductors);
             loadMaterialsExamples(examples_materials);
+            loadLinkerExamples(examples_linking);
 
             //turn to inline mode
             $.fn.editable.defaults.mode = 'inline';
@@ -354,6 +361,65 @@ let grobid = (function ($) {
             $('#requestResultMaterial').show();
         }
 
+        function linkEntities(action) {
+            $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
+            let formData = new FormData();
+            formData.append("text", $('#inputLinkerArea').val());
+
+            $.ajax({
+                type: 'POST',
+                url: getUrl(action.data),
+                data: formData,
+                success: onSuccessLinker,
+                error: onError,
+                contentType: false,
+                processData: false
+            });
+        }
+
+        function onSuccessLinker(responseText, statusText) {
+            $('#infoResultMessage').html('');
+
+            let cumulativeOutput = "";
+            if (responseText) {
+                responseText.forEach(function (paragraph, paragraphIdx) {
+                    let text = paragraph.text;
+                    let spans = [];
+                    if (paragraph.spans) {
+                        spans = paragraph.spans;
+                    }
+                    cumulativeOutput += annotateTextAsHtml(text, spans);
+                })
+            }
+
+            $('#requestResultLinkerContent').html(cumulativeOutput);
+
+            //Adding events, unfortunately I need to wait when the HTML tree is updated
+            if (responseText) {
+                responseText.forEach(function (paragraph, paragraphIdx) {
+                    let spans = [];
+                    if (paragraph.spans) {
+                        spans = paragraph.spans;
+                    }
+
+                    // Adding events
+                    for (let annotationIdx = 0; annotationIdx < spans.length; annotationIdx++) {
+                        let annotationBlock = $('#annot_supercon-' + spans[annotationIdx].id);
+                        annotationBlock.bind('hover', spans[annotationIdx], showSpanOnLinker_event);
+                        annotationBlock.bind('click', spans[annotationIdx], showSpanOnLinker_event);
+                    }
+                });
+            }
+
+            let testStr = vkbeautify.json(responseText);
+
+            $('#jsonCodeLinker').html(cleanupHtml(testStr));
+            window.prettyPrint && prettyPrint();
+
+            hideResultDivs();
+            $('#requestResultLinker').show();
+        }
+
         function showSpanOnText_event(event_data) {
             let span = event_data.data;
             // console.log(span.id);
@@ -362,6 +428,24 @@ let grobid = (function ($) {
 
             $('#detailed_annot-0-0').html(string);
             $('#detailed_annot-0-0').show();
+        }
+
+        function showSpanOnLinker_event(event_data) {
+            let span = event_data.data;
+            // console.log(span.id);
+
+            var string = spanToHtml(span, -1);
+
+            $('#detailed_annot_linker-0-0').html(string);
+            $('#detailed_annot_linker-0-0').show();
+        }
+
+        function hideResultDivs() {
+            $('#detailed_annot-0-0').hide();
+            $('#requestResultPdf').hide();
+            $('#requestResultMaterial').hide();
+            $('#requestResultLinker').hide();
+            $('#requestResultText').hide();
         }
 
         function onSuccessText(responseText, statusText) {
@@ -403,10 +487,7 @@ let grobid = (function ($) {
 
             $('#jsonCode').html(cleanupHtml(testStr));
             window.prettyPrint && prettyPrint();
-
-            $('#detailed_annot-0-0').hide();
-            $('#requestResultPdf').hide();
-            $('#requestResultMaterial').hide();
+            hideResultDivs();
             $('#requestResultText').show();
         }
 
@@ -967,6 +1048,13 @@ let grobid = (function ($) {
             "polycrystalline samples in the range of 0 < x < 0.42",
             "(Sr, Na)Fe 2 As 2 thin wire",
             "hole-doped La1−x SrxOFeAs with x = 0.2, 0.3 and 0.6"
+        ]
+
+        let examples_linking = [
+            "The critical temperature T C = <tcValue>4.7 K</tcValue> discovered for <material>La 3 Ir 2 Ge 2</material> in this work is by about 1.2 K higher than that found for <material>La 3 Rh 2 Ge 2</material> .",
+            "For intercalated graphite, T c is reported to be <tcValue>11.4 K</tcValue> for <material>CaC 6</material> , 4 and for alkalidoped fullerides, T c ¼ <tcValue>33 K</tcValue> in <material>RbCs 2 C 60</material> .",
+            "In just a few months, the superconducting transition temperature (Tc) was increased to <tcValue>55 K</tcValue> in the <material>electron-doped</material> system, as well as <tcValue>25 K</tcValue> in <material>hole-doped La1−x SrxOFeAs</material> compound.",
+            "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of <material>0 ⩽ x ⩽ 0.42</material> with a maximum T c of <tcValue>26 K</tcValue> ."
         ]
     }
 

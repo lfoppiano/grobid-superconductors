@@ -28,14 +28,14 @@ import java.util.*;
 import static org.grobid.core.main.LibraryLoader.*;
 
 @Singleton
-public class LinkingEngine {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinkingEngine.class);
+public class RulesBasedLinker {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RulesBasedLinker.class);
 
     private GrobidSuperconductorsConfiguration configuration;
     private boolean disabled = false;
 
     @Inject
-    public LinkingEngine(GrobidSuperconductorsConfiguration configuration) {
+    public RulesBasedLinker(GrobidSuperconductorsConfiguration configuration) {
         this.configuration = configuration;
         init();
     }

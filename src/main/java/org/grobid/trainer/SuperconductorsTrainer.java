@@ -10,7 +10,7 @@ import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.SuperconductorAnnotationStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -99,12 +99,12 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                SuperconductorAnnotationStaxHandler handler = new SuperconductorAnnotationStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
+                AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
                     ANNOTATION_DEFAULT_TAGS);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
-                List<Pair<String, String>> labeled = handler.getLabeled();
+                List<Pair<String, String>> labeled = handler.getLabeledEntities();
 
                 // we can now add the features
                 // we open the featured file

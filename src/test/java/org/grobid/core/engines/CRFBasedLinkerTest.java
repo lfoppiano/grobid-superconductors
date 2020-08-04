@@ -6,7 +6,6 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Span;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.LayoutTokensUtil;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,12 +22,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
-public class EntityLinkerParserTest {
-    EntityLinkerParser target;
+public class CRFBasedLinkerTest {
+    CRFBasedLinker target;
 
     @Before
     public void setUp() throws Exception {
-        target = new EntityLinkerParser(GrobidModels.DUMMY, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL));
+        target = new CRFBasedLinker(GrobidModels.DUMMY, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL));
     }
 
     @Test

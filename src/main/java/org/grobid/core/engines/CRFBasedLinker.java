@@ -3,6 +3,7 @@ package org.grobid.core.engines;
 import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Link;
@@ -17,6 +18,7 @@ import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.BoundingBoxCalculator;
 import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.MeasurementUtils;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +33,17 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
-import static org.grobid.core.utilities.MeasurementUtils.getLayoutTokenListEndOffset;
-import static org.grobid.core.utilities.MeasurementUtils.getLayoutTokenListStartOffset;
+import static org.grobid.core.utilities.MeasurementUtils.*;
 
 @Singleton
-public class EntityLinkerParser extends AbstractParser {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EntityLinkerParser.class);
+public class CRFBasedLinker extends AbstractParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CRFBasedLinker.class);
 
-    private static volatile EntityLinkerParser instance;
+    private static volatile CRFBasedLinker instance;
 
     private List<String> annotationLinks = new ArrayList<>();
 
-    public static EntityLinkerParser getInstance() {
+    public static CRFBasedLinker getInstance() {
         if (instance == null) {
             getNewInstance();
         }
@@ -50,17 +51,17 @@ public class EntityLinkerParser extends AbstractParser {
     }
 
     private static synchronized void getNewInstance() {
-        instance = new EntityLinkerParser();
+        instance = new CRFBasedLinker();
     }
 
     @Inject
-    public EntityLinkerParser() {
+    public CRFBasedLinker() {
         super(SuperconductorsModels.ENTITY_LINKER);
         instance = this;
         annotationLinks = Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL);
     }
 
-    public EntityLinkerParser(GrobidModel model, List<String> validLinkAnnotations) {
+    public CRFBasedLinker(GrobidModel model, List<String> validLinkAnnotations) {
         super(model);
         instance = this;
         annotationLinks = validLinkAnnotations;
@@ -215,6 +216,20 @@ public class EntityLinkerParser extends AbstractParser {
             LOGGER.error("fail to tokenize:, " + text, e);
         }
 
+        // I need to fill up the annotations' layout tokens
+        for (Span span : annotations) {
+            Pair<Integer, Integer> extremitiesAsIndex = getExtremitiesAsIndex(tokens, span.getOffsetStart(), span.getOffsetEnd());
+            // The +1 is simulating the fact that the layout token are coming from an upstream model,
+            // which usually includes the final space of the output. A "feature" that comes from the Clusteror.
+            int endExtremities = extremitiesAsIndex.getRight();
+            if (tokens.get(extremitiesAsIndex.getRight()).getText().equals(" ")) {
+                endExtremities = extremitiesAsIndex.getRight() + 1;
+            }
+            span.setLayoutTokens(tokens.subList(extremitiesAsIndex.getLeft(), endExtremities));
+            span.setTokenStart(extremitiesAsIndex.getLeft());
+            span.setTokenEnd(extremitiesAsIndex.getRight());
+        }
+
         if (isEmpty(tokens)) {
             return;
         }
@@ -259,7 +274,7 @@ public class EntityLinkerParser extends AbstractParser {
         boolean insideLink = false;
         List<TaggingTokenCluster> detectedClusters = clusters.stream().filter(a -> !a.getTaggingLabel().getLabel().equals(OTHER_LABEL)).collect(Collectors.toList());
         if (detectedClusters.size() != annotations.size()) {
-            LOGGER.warn("Linking seems not correct. Expected annotations: " + annotations.size() + ", output links: " + detectedClusters.size());
+            LOGGER.info("Some annotation will not be linked. Input entities: " + annotations.size() + ", output links: " + detectedClusters.size());
         }
         Span leftSide = null;
 
