@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 
@@ -16,32 +15,32 @@ import java.util.*;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Span {
     //We use the hashcode to generate an unique id
-    private Integer id = null;
 
+    private String id = null;
     private String text;
-    private String formattedText;
 
+    private String formattedText;
     private String type;
 
     //offset in the text
+
     private int offsetStart;
     private int offsetEnd;
-
     //tokens index referred to the layout token list
+
     private int tokenStart;
     private int tokenEnd;
-
     private boolean linkable;
 
     //The source where this span was generated from, namely the model
+
     private String source;
-
     // Contains the references triple (destinationId, destinationType, linkingMethod)
+
     private List<Link> links = new ArrayList<>();
-
     // Attribute map, used for adding lower-models information
-    private Map<String, String> attributes = new HashMap<>();
 
+    private Map<String, String> attributes = new HashMap<>();
     /**
      * These are internal objects that should not be serialised to JSON
      **/
@@ -51,7 +50,13 @@ public class Span {
     @JsonIgnore
     private List<LayoutToken> layoutTokens = new ArrayList<>();
 
-    public Span() {}
+    public Span() {
+    }
+
+    public Span(String id, String text, String type) {
+        this(text, type);
+        this.id = id;
+    }
 
     public Span(String text, String type) {
         this.text = text;
@@ -65,7 +70,12 @@ public class Span {
         this.offsetEnd = offsetEnd;
         this.tokenStart = tokenStart;
         this.tokenEnd = tokenEnd;
-        this.id = hashCode();
+        this.id = "" + hashCode();
+    }
+
+    public Span(String id, String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd);
+        this.id = id;
     }
 
     public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
@@ -82,7 +92,7 @@ public class Span {
 
     public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
                 List<LayoutToken> layoutTokens, List<BoundingBox> boundingBoxes, String formattedText) {
-        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, layoutTokens,  boundingBoxes);
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, layoutTokens, boundingBoxes);
         this.formattedText = formattedText;
     }
 
@@ -191,9 +201,9 @@ public class Span {
             .toHashCode();
     }
 
-    public int getId() {
+    public String getId() {
         if (id == null) {
-            this.id = hashCode();
+            this.id = "" + hashCode();
         }
         return id;
     }

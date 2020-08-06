@@ -45,9 +45,12 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     private final List<Integer> offsetsAnnotationsTags = new ArrayList<>();
     private int lastOffset;
     private String currentTag;
+    private String currentId;
 
     private List<Pair<String, String>> labeledEntities = new ArrayList<>();
     private List<Pair<String, String>> labeledStream = new ArrayList<>();
+
+    private final List<Pair<String, String>> identifiers = new ArrayList<>();
 
     public AnnotationValuesStaxHandler(List<String> annotationsTags) {
         this(null, annotationsTags);
@@ -83,6 +86,7 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
             offsetsAnnotationsTags.add(lastOffset);
 
             this.currentTag = localName;
+            this.currentId = getAttributeValue(reader, "id");
         } else if (topLevelTags == null || topLevelTags.contains(localName)) {
             insideParagraph = true;
 
@@ -96,6 +100,7 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
         if (insideParagraph && annotationsTags.contains(localName)) {
             String text = getAccumulatedText();
             writeData(text, getTag(localName));
+            writeId(currentId, getTag(localName));
             writeStreamData(text, getTag(localName));
 //            lastOffset += accumulator.toString().length();
             accumulator.setLength(0);
@@ -158,6 +163,10 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
         labeledEntities.add(ImmutablePair.of(text, label));
     }
 
+    private void writeId(String id, String label) {
+        identifiers.add(ImmutablePair.of(id, label));
+    }
+
     private void writeStreamData(String text, String label) {
 
         List<String> tokens = null;
@@ -197,5 +206,9 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
 
     public String getGlobalAccumulatedText() {
         return accumulatedText.toString();
+    }
+
+    public List<Pair<String, String>> getIdentifiers() {
+        return identifiers;
     }
 }

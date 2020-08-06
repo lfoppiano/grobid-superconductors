@@ -222,7 +222,7 @@ public class CRFBasedLinker extends AbstractParser {
             // The +1 is simulating the fact that the layout token are coming from an upstream model,
             // which usually includes the final space of the output. A "feature" that comes from the Clusteror.
             int endExtremities = extremitiesAsIndex.getRight();
-            if (tokens.get(extremitiesAsIndex.getRight()).getText().equals(" ")) {
+            if (endExtremities < tokens.size() && tokens.get(endExtremities).getText().equals(" ")) {
                 endExtremities = extremitiesAsIndex.getRight() + 1;
             }
             span.setLayoutTokens(tokens.subList(extremitiesAsIndex.getLeft(), endExtremities));
@@ -356,20 +356,22 @@ public class CRFBasedLinker extends AbstractParser {
                     if (spansCorrespondingToCurrentLink.size() == 1) {
                         LOGGER.info("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
                         leftSide = spansCorrespondingToCurrentLink.get(0);
+                        insideLink = true;
                     } else {
                         LOGGER.error("Cannot find the span corresponding to the link. Ignoring it. ");
+                        insideLink = false;
                     }
-
-                    insideLink = true;
                 } else {
                     LOGGER.warn("Something is wrong, there is a link, but this means I should link on the left. Let's ignore the previous stored link and start from scratch. ");
                     if (spansCorrespondingToCurrentLink.size() == 1) {
                         LOGGER.info("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
                         leftSide = spansCorrespondingToCurrentLink.get(0);
+                        insideLink = true;
                     } else {
                         LOGGER.error("Cannot find the span corresponding to the link. Ignoring it. ");
+                        insideLink = false;
                     }
-                    insideLink = true;
+
                 }
 
             } else if (clusterLabel.equals(ENTITY_LINKER_OTHER)) {
