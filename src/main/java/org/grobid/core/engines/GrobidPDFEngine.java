@@ -56,7 +56,7 @@ public class GrobidPDFEngine {
         // from the header, we are interested in title, abstract and keywords
         SortedSet<DocumentPiece> documentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
         if (documentParts != null) {
-            Pair<String, List<LayoutToken>> headerStruct = parsers.getHeaderParser().getSectionHeaderFeatured(doc, documentParts, true);
+            Pair<String, List<LayoutToken>> headerStruct = parsers.getHeaderParser().getSectionHeaderFeatured(doc, documentParts);
             List<LayoutToken> tokenizationHeader = headerStruct.getRight();
             String header = headerStruct.getLeft();
             String labeledResult = null;
