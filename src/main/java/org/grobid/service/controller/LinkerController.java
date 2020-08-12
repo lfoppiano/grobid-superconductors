@@ -84,10 +84,17 @@ public class LinkerController {
                 Integer integer = offsetsAnnotationsTags.get(i);
 
                 String id = identifiers.get(i).getLeft();
+
                 if (!label.equals(identifiers.get(i).getRight())) {
                     throw new RuntimeException("The label " + identifiers.get(i).getRight() + " corresponding to the id " + id + "does not match it's tag: " + label);
                 }
-                Span span = new Span(id, token, label);
+                Span span = null;
+                if ("".equals(id)) {
+                    span = new Span(token, label);
+                } else {
+                    span = new Span(id, token, label);
+                }
+
                 span.setOffsetStart(integer);
                 span.setOffsetEnd(integer + length(token));
 

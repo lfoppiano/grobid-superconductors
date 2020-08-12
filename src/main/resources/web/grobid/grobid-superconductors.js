@@ -204,7 +204,7 @@ let grobid = (function ($) {
                 "url_mapping": {
                     "processPDF": "/service/process/pdf",
                     "processText": "/service/process/text",
-                    "processMaterial": "/service/material/parser",
+                    "processMaterial": "/service/material/parse",
                     "feedback": "/service/annotations/feedback",
                     "linkEntities": "/service/linker/link"
                 }
