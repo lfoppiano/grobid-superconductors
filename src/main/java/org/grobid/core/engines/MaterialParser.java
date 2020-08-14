@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -249,7 +250,7 @@ public class MaterialParser extends AbstractParser {
                     extracted.add(currentMaterial);
                     currentMaterial = new Material();
                 }
-                currentMaterial.setFormula(clusterContent);
+                currentMaterial.setFormula(postProcessFormula(clusterContent));
                 currentMaterial.addOffset(new OffsetPosition(startPos, endPos));
                 currentMaterial.addBoundingBoxes(boundingBoxes);
 
@@ -304,7 +305,7 @@ public class MaterialParser extends AbstractParser {
                 for (String doping : dopings) {
                     Material newMaterial = new Material();
                     newMaterial.setName(singleExtractedMaterial.getName());
-                    newMaterial.setFormula(singleExtractedMaterial.getFormula());
+                    newMaterial.setFormula(postProcessFormula(singleExtractedMaterial.getFormula()));
                     newMaterial.setDoping(doping);
                     singleExtractedMaterial.getVariables().entrySet().stream()
                         .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
@@ -327,7 +328,7 @@ public class MaterialParser extends AbstractParser {
                     for (String substrate : substrates) {
                         Material newMaterial = new Material();
                         newMaterial.setName(singleExtractedMaterial.getName());
-                        newMaterial.setFormula(singleExtractedMaterial.getFormula());
+                        newMaterial.setFormula(postProcessFormula(singleExtractedMaterial.getFormula()));
                         newMaterial.setSubstrate(substrate);
                         singleExtractedMaterial.getVariables().entrySet().stream()
                             .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
@@ -431,6 +432,15 @@ public class MaterialParser extends AbstractParser {
 
         return generateTrainingData(layoutTokens);
 
+    }
+
+    public String postProcessFormula(String formula) {
+        Pattern regex = Pattern.compile("( {0,1})([-−]x) {0,1}(1)( {0,1})");
+        String formulaWithFixedVariableOperations = regex.matcher(formula).replaceAll("$1$3$2$4");
+
+        String formulaWithoutInvalidCharacters = formulaWithFixedVariableOperations.replaceAll("\\p{C}", " ");
+
+        return formulaWithoutInvalidCharacters;
     }
 
 }
