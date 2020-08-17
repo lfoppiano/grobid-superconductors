@@ -29,7 +29,7 @@ public class MaterialParserTest {
     @Before
     public void setUp() throws Exception {
         LibraryLoader.load();
-        target = new MaterialParser(GrobidModels.DUMMY);
+        target = new MaterialParser(GrobidModels.DUMMY, null);
     }
 
     private List<String> generateFeatures(List<LayoutToken> layoutTokens) {

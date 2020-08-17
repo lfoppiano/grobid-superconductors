@@ -23,7 +23,7 @@ import static org.grobid.core.main.LibraryLoader.*;
 
 @Singleton
 public class MaterialClassResolver {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinkingEngine.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaterialClassResolver.class);
 
     private GrobidSuperconductorsConfiguration configuration;
     private boolean disabled = false;
