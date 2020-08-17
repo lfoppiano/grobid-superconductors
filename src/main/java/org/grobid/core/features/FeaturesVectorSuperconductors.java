@@ -185,10 +185,10 @@ public class FeaturesVectorSuperconductors {
         if (featuresVector.punctType == null)
             featuresVector.punctType = "NOPUNCT";
 
-        if (token.getBold())
+        if (token.isBold())
             featuresVector.bold = true;
 
-        if (token.getItalic())
+        if (token.isItalic())
             featuresVector.italic = true;
 
         if (StringUtils.equals(previousToken.getFont(), token.getFont())) {

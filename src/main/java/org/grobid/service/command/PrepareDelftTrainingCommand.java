@@ -11,6 +11,7 @@ import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.grobid.trainer.EntityLinkerTrainer;
 import org.grobid.trainer.MaterialTrainer;
 import org.grobid.trainer.SuperconductorsTrainer;
 import org.grobid.trainer.Trainer;
@@ -64,7 +65,7 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .choices(Arrays.asList("superconductors", "material"))
+            .choices(Arrays.asList("superconductors", "material", "entityLinker"))
             .required(false)
             .setDefault("superconductors")
             .help("Model data to use. ");
@@ -103,6 +104,9 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
             model = SuperconductorsModels.MATERIAL;
             trainer = new MaterialTrainer();
+        } else if (SuperconductorsModels.ENTITY_LINKER.getModelName().equals(modelName)) {
+            model = SuperconductorsModels.ENTITY_LINKER;
+            trainer = new EntityLinkerTrainer();
         }
 
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";

@@ -35,6 +35,7 @@ public class SuperconductorsParserTest {
     @Before
     public void setUp() throws Exception {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
+        mockMaterialParser = EasyMock.createMock(MaterialParser.class);
         target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient, mockMaterialParser);
     }
 
@@ -56,12 +57,17 @@ public class SuperconductorsParserTest {
         List<String> features = getFeatures(layoutTokens);
         String results = getWapitiResult(features, labels);
 
+        EasyMock.expect(mockMaterialParser.process((List<LayoutToken>) EasyMock.anyObject())).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.replay(mockMaterialParser);
+
         List<Span> spans = target.extractResults(layoutTokens, results);
 
         assertThat(spans, hasSize(5));
         assertThat(spans.get(0).getType(), is("<tc>"));
         assertThat(spans.get(4).getType(), is("<material>"));
         assertThat(spans.get(4).getText(), is("hole-doped La1−x SrxOFeAs"));
+        EasyMock.verify(mockMaterialParser);
+
     }
 
     @Test

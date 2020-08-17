@@ -265,7 +265,7 @@ public class MaterialParserTest {
             Triple.of("<shape>", 0, 1),
             Triple.of("<formula>", 2, 4),
             Triple.of("<shape>", 5, 8)
-            );
+        );
 
         List<String> features = generateFeatures(layoutTokens);
         String results = getWapitiResult(features, labels);
@@ -370,4 +370,39 @@ public class MaterialParserTest {
         return mapMatcher;
     }
 
+    @Test
+    public void postProcessFormula_invalidVariable_shouldReplace() throws Exception {
+        String formula = "Mo -x 1 T x ) 3 Sb 7";
+
+        String s = target.postProcessFormula(formula);
+
+        assertThat(s, is("Mo 1-x T x ) 3 Sb 7"));
+    }
+
+    @Test
+    public void postProcessFormula_invalidVariables2_shouldReplace() throws Exception {
+        String formula = "BaFe 2 (As −x 1 P x ) 2 or Ba(Fe −x 1 Co x ) 2 As 2";
+
+        String s = target.postProcessFormula(formula);
+
+        assertThat(s, is("BaFe 2 (As 1−x P x ) 2 or Ba(Fe 1−x Co x ) 2 As 2"));
+    }
+
+    @Test
+    public void postProcessFormula_invalidVariables3_shouldReplace() throws Exception {
+        String formula = "BaFe 2 (As−x1 P x ) 2 ";
+
+        String s = target.postProcessFormula(formula);
+
+        assertThat(s, is("BaFe 2 (As1−x P x ) 2 "));
+    }
+
+    @Test
+    public void postProcessFormula_invalidCharacters_shouldReplace() throws Exception {
+        String formula = "BaFe 2 (As−x1 P x ) 2 and Sr 2 MO 3 FeAs (M\uF0A0=\uF0A0Sc, V, Cr)";
+
+        String s = target.postProcessFormula(formula);
+
+        assertThat(s, is("BaFe 2 (As1−x P x ) 2 and Sr 2 MO 3 FeAs (M = Sc, V, Cr)"));
+    }
 }

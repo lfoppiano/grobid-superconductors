@@ -42,22 +42,21 @@ public class AggregatedProcessing {
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
     private SentenceSegmenter sentenceSegmenter;
-    private LinkingEngine linkingEngine;
+    private RulesBasedLinker rulesBasedLinker;
+    private CRFBasedLinker CRFBasedLinker;
 
-
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser,
-                                QuantityParser quantityParser,
-                                LinkingEngine linkingEngine) {
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RulesBasedLinker rulesBasedLinker, CRFBasedLinker CRFBasedLinker) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
         this.sentenceSegmenter = new SentenceSegmenter();
-        this.linkingEngine = linkingEngine;
+        this.rulesBasedLinker = rulesBasedLinker;
+        this.CRFBasedLinker = CRFBasedLinker;
         parsers = new EngineParsers();
     }
 
     @Inject
-    public AggregatedProcessing(SuperconductorsParser superconductorsParser, LinkingEngine linkingEngine) {
-        this(superconductorsParser, QuantityParser.getInstance(true), linkingEngine);
+    public AggregatedProcessing(SuperconductorsParser superconductorsParser, RulesBasedLinker rulesBasedLinker, CRFBasedLinker CRFBasedLinker) {
+        this(superconductorsParser, QuantityParser.getInstance(true), rulesBasedLinker, CRFBasedLinker);
     }
 
     @Deprecated
@@ -283,12 +282,18 @@ public class AggregatedProcessing {
 
         processedParagraph.setSpans(pruneOverlappingAnnotations(sortedSpans));
 
-        //Because we split into sentences, we may obtain more information
         if (disableLinking) {
-            return Arrays.asList(processedParagraph);
+            return Collections.singletonList(processedParagraph);
         }
-        List<ProcessedParagraph> processedParagraphs = linkingEngine.process(processedParagraph);
 
+        //CRF-based
+        /**Modify the objects **/
+        CRFBasedLinker.process(tokens, processedParagraph.getSpans());
+
+        //Rule-based: Because we split into sentences, we may obtain more information
+        List<ProcessedParagraph> processedParagraphs = rulesBasedLinker.process(processedParagraph);
+
+        //TODO: Merge
         return processedParagraphs;
     }
 
@@ -371,7 +376,7 @@ public class AggregatedProcessing {
                 previous = current;
             } else {
                 if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
-                    System.out.println("Overlapping. " + current.getText() + " <" + current.getType() + "> with " + previous.getText() + " <" + previous.getType() + ">");
+                    LOGGER.debug("Overlapping. " + current.getText() + " <" + current.getType() + "> with " + previous.getText() + " <" + previous.getType() + ">");
 
                     if (current.getType().equals(previous.getType())) {
                         // Type is the same, I take the largest one

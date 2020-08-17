@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class AggregatedProcessingTest {
@@ -29,15 +28,17 @@ public class AggregatedProcessingTest {
     AggregatedProcessing target;
 
     SuperconductorsParser mockSuperconductorsParser;
+    CRFBasedLinker mockCRFBasedLinker;
     QuantityParser mockQuantityParser;
 
     @Before
     public void setUp() throws Exception {
 
         mockSuperconductorsParser = EasyMock.createMock(SuperconductorsParser.class);
+        mockCRFBasedLinker = EasyMock.createMock(CRFBasedLinker.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser, null);
+        target = new AggregatedProcessing(mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker);
     }
 
     @Test
@@ -64,6 +65,7 @@ public class AggregatedProcessingTest {
 
         EasyMock.expect(mockSuperconductorsParser.process(tokens)).andReturn(Arrays.asList(superconductor));
         EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature));
+//        EasyMock.expect(mockEntityLinkerParser.process((List<LayoutToken>) EasyMock.anyObject(), EasyMock.anyObject())).andReturn(new ArrayList<>());
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
@@ -142,7 +144,7 @@ public class AggregatedProcessingTest {
 
         String s = target.getFormattedString(layoutTokens);
 
-        System.out.println(s);
+        assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
     }
 
     public void testNLP4j() throws Exception {

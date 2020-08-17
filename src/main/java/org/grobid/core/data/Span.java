@@ -15,31 +15,35 @@ import java.util.*;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Span {
     //We use the hashcode to generate an unique id
-    private Integer id = null;
 
+    private String id = null;
     private String text;
-    private String formattedText;
 
+    private String formattedText;
     private String type;
 
     //offset in the text
+
     private int offsetStart;
     private int offsetEnd;
-
     //tokens index referred to the layout token list
+
     private int tokenStart;
     private int tokenEnd;
+    private boolean linkable;
 
     //The source where this span was generated from, namely the model
+
     private String source;
+    // Contains the references triple (destinationId, destinationType, linkingMethod)
 
-    // Contains the references (id) to other spans objects
-    private List<List<String>> links = new ArrayList<>();
-
+    private List<Link> links = new ArrayList<>();
     // Attribute map, used for adding lower-models information
-    private Map<String, String> attributes = new HashMap<>();
 
-    /** These are internal objects that should not be serialised to JSON **/
+    private Map<String, String> attributes = new HashMap<>();
+    /**
+     * These are internal objects that should not be serialised to JSON
+     **/
     //@JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
@@ -49,33 +53,46 @@ public class Span {
     public Span() {
     }
 
-    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+    public Span(String id, String text, String type) {
+        this(text, type);
+        this.id = id;
+    }
+
+    public Span(String text, String type) {
         this.text = text;
         this.type = type;
+    }
+
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+        this(text, type);
+        this.source = source;
         this.offsetStart = offsetStart;
         this.offsetEnd = offsetEnd;
         this.tokenStart = tokenStart;
         this.tokenEnd = tokenEnd;
-        this.id = hashCode();
+        this.id = "" + hashCode();
     }
 
-    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes) {
-        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd);
+    public Span(String id, String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd);
+        this.id = id;
+    }
+
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
+                List<LayoutToken> layoutTokens) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd);
+        this.layoutTokens = layoutTokens;
+    }
+
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
+                List<LayoutToken> layoutTokens, List<BoundingBox> boundingBoxes) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, layoutTokens);
         this.boundingBoxes = boundingBoxes;
     }
 
-    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes) {
-        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
-        this.source = source;
-    }
-
-    public Span(String text, String type, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes, String formattedText) {
-        this(text, type, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
-        this.formattedText = formattedText;
-    }
-
-    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd, List<BoundingBox> boundingBoxes, String formattedText) {
-        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, boundingBoxes);
+    public Span(String text, String type, String source, int offsetStart, int offsetEnd, int tokenStart, int tokenEnd,
+                List<LayoutToken> layoutTokens, List<BoundingBox> boundingBoxes, String formattedText) {
+        this(text, type, source, offsetStart, offsetEnd, tokenStart, tokenEnd, layoutTokens, boundingBoxes);
         this.formattedText = formattedText;
     }
 
@@ -184,9 +201,9 @@ public class Span {
             .toHashCode();
     }
 
-    public int getId() {
+    public String getId() {
         if (id == null) {
-            this.id = hashCode();
+            this.id = "" + hashCode();
         }
         return id;
     }
@@ -231,14 +248,6 @@ public class Span {
             .toString();
     }
 
-    public List<List<String>> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<List<String>> links) {
-        this.links = links;
-    }
-
     public Map<String, String> getAttributes() {
         return attributes;
     }
@@ -249,5 +258,25 @@ public class Span {
 
     public void addAttribute(String attributeName, String attributeValue) {
         this.attributes.put(attributeName, attributeValue);
+    }
+
+    public void addLink(Link linkedSpans) {
+        this.links.add(linkedSpans);
+    }
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+
+    public boolean isLinkable() {
+        return linkable;
+    }
+
+    public void setLinkable(boolean linkable) {
+        this.linkable = linkable;
     }
 }

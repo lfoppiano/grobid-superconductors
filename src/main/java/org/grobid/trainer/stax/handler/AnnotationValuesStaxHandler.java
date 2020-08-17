@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,33 +18,51 @@ import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
- * This class extract all annotations labelled with the list of labels provided in input
+ * This class extracts from XML a) the labelled stream b) the list of labelled entities
+ *
+ * The constructor accept the top level tags (e.g. paragraph tags), as optional, and the list of tags that are considered
+ * important to identify each entity.
  */
 public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationValuesStaxHandler.class);
 
     private StringBuilder accumulator = new StringBuilder();
+    private StringBuilder accumulatedText = new StringBuilder();
 
     private boolean insideParagraph = false;
 
     private List<String> annotationsTags;
+    private List<String> topLevelTags;
 
+    // Record the offsets of each annotation tag
+
+    private final List<Integer> offsetsAnnotationsTags = new ArrayList<>();
+    private int lastOffset;
     private String currentTag;
+    private String currentId;
 
-    private List<Pair<String, String>> labeled = new ArrayList<>();
+    private List<Pair<String, String>> labeledEntities = new ArrayList<>();
+    private List<Pair<String, String>> labeledStream = new ArrayList<>();
+
+    private final List<Pair<String, String>> identifiers = new ArrayList<>();
 
     public AnnotationValuesStaxHandler(List<String> annotationsTags) {
+        this(null, annotationsTags);
+    }
+
+    public AnnotationValuesStaxHandler(List<String> topLevelTags, List<String> annotationsTags) {
+        this.topLevelTags = topLevelTags;
         this.annotationsTags = annotationsTags;
     }
 
     public AnnotationValuesStaxHandler() {
-        this.annotationsTags = ANNOTATION_DEFAULT_TAGS;
+        this(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS, ANNOTATION_DEFAULT_TAGS);
     }
 
     @Override
@@ -58,10 +77,19 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     public void onStartElement(XMLStreamReader2 reader) {
         final String localName = reader.getName().getLocalPart();
 
-        if (annotationsTags.contains(localName)) {
+        if (annotationsTags.contains(localName) && insideParagraph) {
+            String text = getAccumulatedText();
+            // I write the remaining data in the accumulated text as "other" label
+            writeStreamData(text, getTag("other"));
+//            lastOffset += accumulator.toString().length();
             accumulator.setLength(0);
+            offsetsAnnotationsTags.add(lastOffset);
 
             this.currentTag = localName;
+            this.currentId = getAttributeValue(reader, "id");
+        } else if (topLevelTags == null || topLevelTags.contains(localName)) {
+            insideParagraph = true;
+
         }
     }
 
@@ -69,9 +97,23 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     public void onEndElement(XMLStreamReader2 reader) {
         final String localName = reader.getName().getLocalPart();
 
-        if (annotationsTags.contains(localName)) {
+        if (insideParagraph && annotationsTags.contains(localName)) {
             String text = getAccumulatedText();
             writeData(text, getTag(localName));
+            writeId(currentId, getTag(localName));
+            writeStreamData(text, getTag(localName));
+//            lastOffset += accumulator.toString().length();
+            accumulator.setLength(0);
+        } else if (topLevelTags != null && topLevelTags.contains(localName)) {
+            String text = getAccumulatedText();
+            writeStreamData(text, getTag("other"));
+            accumulator.setLength(0);
+            insideParagraph = false;
+            labeledStream.add(ImmutablePair.of("\n", null));
+        } else if (topLevelTags == null){
+            String text = getAccumulatedText();
+            writeStreamData(text, getTag("other"));
+            accumulator.setLength(0);
         }
     }
 
@@ -82,7 +124,11 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     @Override
     public void onCharacter(XMLStreamReader2 reader) {
         String text = reader.getText();
-        accumulator.append(text);
+        if (insideParagraph) {
+            accumulator.append(text);
+            accumulatedText.append(text);
+            lastOffset += length(text);
+        }
     }
 
     private String getText(XMLStreamReader2 reader) {
@@ -91,7 +137,7 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
         return text;
     }
 
-    public String getAccumulatedText() {
+    private String getAccumulatedText() {
         return trim(accumulator.toString());
     }
 
@@ -114,12 +160,55 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     }
 
     private void writeData(String text, String label) {
-        labeled.add(ImmutablePair.of(text, label));
-        accumulator.setLength(0);
+        labeledEntities.add(ImmutablePair.of(text, label));
+    }
+
+    private void writeId(String id, String label) {
+        identifiers.add(ImmutablePair.of(id, label));
+    }
+
+    private void writeStreamData(String text, String label) {
+
+        List<String> tokens = null;
+        try {
+            tokens = DeepAnalyzer.getInstance().tokenize(text);
+        } catch (Exception e) {
+            throw new GrobidException("Fail to tokenize:, " + text, e);
+        }
+        boolean begin = true;
+        for (String token : tokens) {
+            String content = trim(token);
+            if (isNotEmpty(content)) {
+                if (begin && (!label.equals("<other>"))) {
+                    labeledStream.add(ImmutablePair.of(content, "I-" + label));
+                    begin = false;
+                } else {
+                    labeledStream.add(ImmutablePair.of(content, label));
+                }
+            }
+
+            begin = false;
+        }
     }
 
 
-    public List<Pair<String, String>> getLabeled() {
-        return labeled;
+    public List<Pair<String, String>> getLabeledEntities() {
+        return labeledEntities;
+    }
+
+    public List<Pair<String, String>> getLabeledStream() {
+        return labeledStream;
+    }
+
+    public List<Integer> getOffsetsAnnotationsTags() {
+        return offsetsAnnotationsTags;
+    }
+
+    public String getGlobalAccumulatedText() {
+        return accumulatedText.toString();
+    }
+
+    public List<Pair<String, String>> getIdentifiers() {
+        return identifiers;
     }
 }

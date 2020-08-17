@@ -9,8 +9,6 @@ let grobid = (function ($) {
         // for components view
         let responseJson = null;
 
-        // for associating several quantities to a measurement
-        let spansMap = [];
         let configuration = {};
 
         function getUrl(action) {
@@ -26,7 +24,7 @@ let grobid = (function ($) {
 
         function loadTextExamples(examples_list) {
             for (let idx_example in examples_list) {
-                $('#example' + idx_example).unbind('click')
+                $('#example' + idx_example).unbind('click');
                 $('#example' + idx_example).bind('click', {id: idx_example}, function (event) {
                     event.preventDefault();
                     $('#inputTextArea').val(examples_list[event.data.id]);
@@ -36,10 +34,20 @@ let grobid = (function ($) {
 
         function loadMaterialsExamples(examples_list) {
             for (let idx_example in examples_list) {
-                $('#exampleMaterial' + idx_example).unbind('click')
+                $('#exampleMaterial' + idx_example).unbind('click');
                 $('#exampleMaterial' + idx_example).bind('click', {id: idx_example}, function (event) {
                     event.preventDefault();
                     $('#inputMaterialArea').val(examples_list[event.data.id]);
+                });
+            }
+        }
+
+        function loadLinkerExamples(examples_list) {
+            for (let idx_example in examples_list) {
+                $('#exampleLinker' + idx_example).unbind('click');
+                $('#exampleLinker' + idx_example).bind('click', {id: idx_example}, function (event) {
+                    event.preventDefault();
+                    $('#inputLinkerArea').val(examples_list[event.data.id]);
                 });
             }
         }
@@ -190,22 +198,20 @@ let grobid = (function ($) {
         }
 
         $(document).ready(function () {
-            $('#requestResultPdf').hide();
-            $('#requestResultText').hide();
-            $('#requestResultMaterial').hide();
-            // $('#tableResults').hide();
+            hideResultDivs();
 
             configuration = {
                 "url_mapping": {
                     "processPDF": "/service/process/pdf",
                     "processText": "/service/process/text",
-                    "processMaterial": "/service/material/parser",
+                    "processMaterial": "/service/material/parse",
                     "feedback": "/service/annotations/feedback",
-                    "processMaterial": "/service/material/parse"
+                    "linkEntities": "/service/linker/link"
                 }
             }
             $('#submitRequestText').bind('click', 'processText', processText);
             $('#submitRequestMaterial').bind('click', 'processMaterial', processMaterial);
+            $('#submitRequestLinker').bind('click', 'linkEntities', linkEntities);
             $('#submitRequestPdf').bind('click', 'processPDF', processPdf);
             $('#copy-button').bind('click', copyOnClipboard);
             $('#add-button').bind('click', addRow);
@@ -218,9 +224,7 @@ let grobid = (function ($) {
                     if (e.target.parentElement) {
                         if (e.target.parentElement.parentElement) {
                             if (e.target.parentElement.parentElement.id === "top-tab") {
-                                $('#requestResultPdf').hide();
-                                $('#requestResultText').hide();
-                                $('#requestResultMaterial').hide();
+                                hideResultDivs();
                             }
                         }
                     }
@@ -231,7 +235,7 @@ let grobid = (function ($) {
             // Collapse icon
             $('a[data-toggle="collapse"]').click(function () {
                 let currentIcon = $(this).find('img').attr("src")
-                let newIcon = currentIcon === 'resources/icons/chevron-down.svg' ? 'resources/icons/chevron-right.svg' : 'resources/icons/chevron-down.svg';
+                let newIcon = currentIcon === 'resources/icons/chevron-right.svg' ? 'resources/icons/chevron-down.svg' : 'resources/icons/chevron-right.svg';
                 $(this).find('img').attr("src", newIcon);
             })
 
@@ -244,6 +248,7 @@ let grobid = (function ($) {
 
             loadTextExamples(examples_superconductors);
             loadMaterialsExamples(examples_materials);
+            loadLinkerExamples(examples_linking);
 
             //turn to inline mode
             $.fn.editable.defaults.mode = 'inline';
@@ -356,14 +361,91 @@ let grobid = (function ($) {
             $('#requestResultMaterial').show();
         }
 
+        function linkEntities(action) {
+            $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
+            let formData = new FormData();
+            formData.append("text", $('#inputLinkerArea').val());
+
+            $.ajax({
+                type: 'POST',
+                url: getUrl(action.data),
+                data: formData,
+                success: onSuccessLinker,
+                error: onError,
+                contentType: false,
+                processData: false
+            });
+        }
+
+        function onSuccessLinker(responseText, statusText) {
+            $('#infoResultMessage').html('');
+
+            let cumulativeOutput = "";
+            if (responseText) {
+                responseText.forEach(function (paragraph, paragraphIdx) {
+                    let text = paragraph.text;
+                    let spans = [];
+                    if (paragraph.spans) {
+                        spans = paragraph.spans;
+                    }
+                    cumulativeOutput += annotateTextAsHtml(text, spans);
+                })
+            }
+
+            $('#requestResultLinkerContent').html(cumulativeOutput);
+
+            //Adding events, unfortunately I need to wait when the HTML tree is updated
+            if (responseText) {
+                responseText.forEach(function (paragraph, paragraphIdx) {
+                    let spans = [];
+                    if (paragraph.spans) {
+                        spans = paragraph.spans;
+                    }
+
+                    // Adding events
+                    for (let annotationIdx = 0; annotationIdx < spans.length; annotationIdx++) {
+                        let annotationBlock = $('#annot_supercon-' + spans[annotationIdx].id);
+                        annotationBlock.bind('hover', spans[annotationIdx], showSpanOnLinker_event);
+                        annotationBlock.bind('click', spans[annotationIdx], showSpanOnLinker_event);
+                    }
+                });
+            }
+
+            let testStr = vkbeautify.json(responseText);
+
+            $('#jsonCodeLinker').html(cleanupHtml(testStr));
+            window.prettyPrint && prettyPrint();
+
+            hideResultDivs();
+            $('#requestResultLinker').show();
+        }
+
         function showSpanOnText_event(event_data) {
             let span = event_data.data;
-            console.log(span.id);
+            // console.log(span.id);
 
             var string = spanToHtml(span, -1);
 
             $('#detailed_annot-0-0').html(string);
             $('#detailed_annot-0-0').show();
+        }
+
+        function showSpanOnLinker_event(event_data) {
+            let span = event_data.data;
+            // console.log(span.id);
+
+            var string = spanToHtml(span, -1);
+
+            $('#detailed_annot_linker-0-0').html(string);
+            $('#detailed_annot_linker-0-0').show();
+        }
+
+        function hideResultDivs() {
+            $('#detailed_annot-0-0').hide();
+            $('#requestResultPdf').hide();
+            $('#requestResultMaterial').hide();
+            $('#requestResultLinker').hide();
+            $('#requestResultText').hide();
         }
 
         function onSuccessText(responseText, statusText) {
@@ -378,21 +460,6 @@ let grobid = (function ($) {
                     if (paragraph.spans) {
                         spans = paragraph.spans;
                     }
-                    //TODO: find a better solution
-                    spans.forEach(function (span, spanIdx) {
-                        spansMap[span.id] = span;
-                    });
-
-                    spans.forEach(function (span, spanIdx) {
-
-                        if (span.links !== undefined && span.links.length > 0) {
-                            span.links.forEach(function (link, linkIdx) {
-                                let link_entity = spansMap[link[0]];
-                                span['tc'] = link_entity.text;
-                            });
-                        }
-                    });
-
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
             }
@@ -420,16 +487,11 @@ let grobid = (function ($) {
 
             $('#jsonCode').html(cleanupHtml(testStr));
             window.prettyPrint && prettyPrint();
-
-            $('#detailed_annot-0-0').hide();
-            $('#requestResultPdf').hide();
-            $('#requestResultMaterial').hide();
+            hideResultDivs();
             $('#requestResultText').show();
         }
 
         function processPdf(action) {
-            spansMap = [];
-
             let resultMessageBlock = $('#infoResultMessage');
             resultMessageBlock.html('<p class="text-secondary">Requesting server...</p>');
             let requestResult = $('#requestResultPdfContent');
@@ -602,6 +664,8 @@ let grobid = (function ($) {
 
             let spanGlobalIndex = 0;
             let copyButtonElement = $('#copy-button');
+            let unlinkedElements = [];
+            let spansMap = [];
 
             paragraphs.forEach(function (paragraph, paragraphIdx) {
                 let spans = paragraph.spans;
@@ -611,7 +675,7 @@ let grobid = (function ($) {
                     spans.forEach(function (span, spanIdx) {
                         let annotationId = span.id;
                         spansMap[annotationId] = span;
-                        let entity_type = span['type'].replace("<", "").replace(">", "");
+                        let entity_type = getPlainType(span['type']);
 
                         let boundingBoxes = span.boundingBoxes;
                         if ((boundingBoxes != null) && (boundingBoxes.length > 0)) {
@@ -619,6 +683,7 @@ let grobid = (function ($) {
                                 let pageNumber = boundingBox.page;
                                 let pageInfo = pages[pageNumber - 1];
 
+                                entity_type = transformToLinkableType(entity_type, span.links);
                                 annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, entity_type, pageInfo);
 
                                 $('#' + (annotationId + '' + boundingBoxId)).bind('click', {
@@ -631,16 +696,22 @@ let grobid = (function ($) {
                     });
 
 
-                    spans.forEach(function (span, spanIdx) {
+                    spans.filter(function(span){
+                        return getPlainType(span.type) === "material";
+                    }).forEach(function (span, spanIdx) {
                         if (span.links !== undefined && span.links.length > 0) {
                             copyButtonElement.show();
                             span.links.forEach(function (link, linkIdx) {
-                                let link_entity = spansMap[link[0]];
-                                let tcValue_text = link_entity.text;
-                                span['tc'] = tcValue_text;
+                                let link_entity = spansMap[link.targetId];
+                                if(link_entity === undefined) {
+                                    unlinkedElements.push(span);
+                                    return;
+                                }
 
+                                // span.text == material
+                                // link.targetText == tcValue
                                 let {row_id, element_id, mat_element_id, tc_element_id, html_code} =
-                                    createRowHtml(span.id, span.text, tcValue_text, true);
+                                    createRowHtml(span.id, span.text, link.targetText, link.type,true);
 
                                 $('#tableResultsBody').append(html_code);
 
@@ -665,6 +736,44 @@ let grobid = (function ($) {
                                 });
                             });
                         }
+                    });
+                }
+            });
+
+            //Reprocessing the links for which the targetId isn't in the same paragraph
+            unlinkedElements.forEach(function(span, spanIdx){
+                if (span.links !== undefined && span.links.length > 0) {
+                    span.links.forEach(function (link, linkIdx) {
+                        let link_entity = spansMap[link.targetId];
+                        if(link_entity === undefined) {
+                            console.log("The link to " + link.targetId + " cannot be found. This seems to be a serious problem. Get yourself together. ")
+                            return;
+                        }
+
+                        // span.text == material
+                        // link.targetText == tcValue
+                        let {row_id, element_id, mat_element_id, tc_element_id, html_code} =
+                            createRowHtml(span.id, span.text, link.targetText, link.type,true);
+
+                        $('#tableResultsBody').append(html_code);
+
+                        // in case of multiple bounding boxes, we will have multiple IDs, in this case we can point
+                        // to the first box
+                        $("#" + element_id).bind('click', span.id + '0', goToByScroll);
+                        $("#" + mat_element_id).editable();
+                        $("#" + tc_element_id).editable();
+                        appendRemoveButton(row_id);
+
+                        $("#" + row_id).popover({
+                            content: function () {
+                                return "This link is across two sentences, it cannot be previewed for the time being. ";
+                            },
+                            html: true,
+                            // container: 'body',
+                            trigger: 'hover',
+                            placement: 'top',
+                            animation: true
+                        });
                     });
                 }
             });
@@ -706,23 +815,24 @@ let grobid = (function ($) {
         }
 
         /** Summary table **/
-        function createRowHtml(id, material = "", tcValue = "", viewInPDF = false) {
+        function createRowHtml(id, material = "", tcValue = "", type = "", viewInPDF = false) {
 
             let viewInPDFIcon = "";
             if (viewInPDF === true) {
                 viewInPDFIcon = "<img src='resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
             }
 
-            let row_id = "row" + id;
-            let element_id = "e" + id;
-            let mat_element_id = "mat" + id;
-            let tc_element_id = "tc" + id;
+            let row_id = "row" + id + type;
+            let element_id = "e" + id + type;
+            let mat_element_id = "mat" + id + type;
+            let tc_element_id = "tc" + id + type;
 
             let html_code = "<tr class='d-flex' id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
                 "<td class='col-1'><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
                 "<td class='col-1'><img src='resources/icons/trash.svg' alt='-' id='remove-button'/></td>" +
-                "<td class='col-6'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
-                "<td class='col-4'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
+                "<td class='col-5'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
+                "<td class='col-2'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
+                "<td class='col-1'>" + type + "</td>" +
                 "</tr>";
 
             return {row_id, element_id, mat_element_id, tc_element_id, html_code};
@@ -757,18 +867,47 @@ let grobid = (function ($) {
 
         function showSpanOnPDF(param) {
             let type = param.data.type;
-            let item = param.data.item;
+            let span = param.data.item;
 
             let pageIndex = $(this).attr('page');
-            let string = spanToHtml(item, $(this).position().top);
+            let string = spanToHtml(span, $(this).position().top);
 
             if (type === null || string === "") {
                 console.log("Error in viewing annotation, type unknown or null: " + type);
             }
 
             let annotationHook = $('#detailed_annot-' + pageIndex);
+            //Reset the click event before adding a new one - not so clean, but would do for the moment...
+            annotationHook.off('click');
             annotationHook.html(string).show();
-            annotationHook.bind('click', scrollUp);
+            annotationHook.on('click', scrollUp);
+        }
+
+        function transformToLinkableType(type, links) {
+            if (links === undefined || links.length === 0) {
+                return type;
+            }
+
+            if (type === "material") {
+                links.forEach(function (link, linkIdx) {
+                    if (getPlainType(link['targetType']) === 'tcValue') {
+                        type = 'material-tc';
+                    }
+                });
+
+            } else if (type === "tcValue") {
+                links.forEach(function (link, linkIdx) {
+                    if (getPlainType(link['targetType']) === 'material') {
+                        type = 'temperature-tc';
+                    } else if (getPlainType(link['targetType']) === 'pressure') {
+                        type = 'temperature-pressure';
+                    } else if (getPlainType(link['targetType']) === 'me_method') {
+                        type = 'temperature-me_method';
+                    }
+                });
+            }
+
+            return type;
         }
 
         function annotateTextAsHtml(inputText, annotationList) {
@@ -786,7 +925,9 @@ let grobid = (function ($) {
                 let start = parseInt(annotation.offsetStart, 10);
                 let end = parseInt(annotation.offsetEnd, 10);
 
-                let type = annotation.type.replace("<", "").replace(">", "");
+                let type = getPlainType(annotation.type);
+                let links = annotation.links
+                type = transformToLinkableType(type, links)
                 let id = annotation.id;
 
                 outputString += inputText.substring(pos, start)
@@ -802,14 +943,17 @@ let grobid = (function ($) {
         }
 
 
+        function getPlainType(type) {
+            return type.replace("<", "").replace(">", "");
+        }
+
         // Transformation to HTML
         function spanToHtml(span, topPos) {
             let string = "";
 
             //We remove the < and > to avoid messing up with HTML
-            let type = span.type.replace("<", "").replace(">", "");
+            let type = getPlainType(span.type);
 
-            colorLabel = type;
             let text = span.text;
             let formattedText = span.formattedText;
 
@@ -820,7 +964,7 @@ let grobid = (function ($) {
                 string += " style='cursor:hand;cursor:pointer;'";
 
             string += ">";
-            if (span.tc) {
+            if (span.links && topPos > -1) {
                 let infobox_id = "infobox" + span.id;
                 string += "<h2 class='ml-1' style='color:#FFF;font-size:16pt;'>" + type + "<img id='" + infobox_id + "' src='resources/icons/arrow-up.svg'/></h2>";
             } else {
@@ -836,10 +980,22 @@ let grobid = (function ($) {
                 string += "<p>name: <b>" + text + "</b></p>";
             }
 
-            if (span.tc) {
-                string += "<p>Tc: <b>" + span.tc + "</b></p>";
-                string = string.replace("___TYPE___", "material-tc");
+            if (span.links) {
+                let colorLabel = transformToLinkableType(type, span.links)
+                string = string.replace("___TYPE___", colorLabel);
+                let linkedEntities = "";
+                let first = true;
+                span.links.forEach(function (link, linkIdx) {
+                    if (!first) {
+                        linkedEntities += ", ";
+                    }
+                    first = false;
+                    linkedEntities += "<b>" + link.targetText + "</b> (" + getPlainType(link.targetType) + ") [" + link.type + "]";
+
+                });
+                string += "<p>Linked: " + linkedEntities + "</p>";
             }
+
             string = string.replace("___TYPE___", type);
 
             if (span.attributes) {
@@ -892,6 +1048,13 @@ let grobid = (function ($) {
             "polycrystalline samples in the range of 0 < x < 0.42",
             "(Sr, Na)Fe 2 As 2 thin wire",
             "hole-doped La1−x SrxOFeAs with x = 0.2, 0.3 and 0.6"
+        ]
+
+        let examples_linking = [
+            "The critical temperature T C = <tcValue>4.7 K</tcValue> discovered for <material>La 3 Ir 2 Ge 2</material> in this work is by about 1.2 K higher than that found for <material>La 3 Rh 2 Ge 2</material> .",
+            "For intercalated graphite, T c is reported to be <tcValue>11.4 K</tcValue> for <material>CaC 6</material> , 4 and for alkalidoped fullerides, T c ¼ <tcValue>33 K</tcValue> in <material>RbCs 2 C 60</material> .",
+            "In just a few months, the superconducting transition temperature (Tc) was increased to <tcValue>55 K</tcValue> in the <material>electron-doped</material> system, as well as <tcValue>25 K</tcValue> in <material>hole-doped La1−x SrxOFeAs</material> compound.",
+            "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of <material>0 ⩽ x ⩽ 0.42</material> with a maximum T c of <tcValue>26 K</tcValue> ."
         ]
     }
 
