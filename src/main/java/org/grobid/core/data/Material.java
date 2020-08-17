@@ -38,6 +38,7 @@ public class Material {
     private String fabrication;
     private String substrate;
     private String rawTaggedValue;
+    private String clazz;
 
     private List<String> resolvedFormulas = new ArrayList<>();
 
@@ -49,6 +50,7 @@ public class Material {
     private List<LayoutToken> layoutTokens = new ArrayList<>();
     @JsonIgnore
     private List<OffsetPosition> offsets = new ArrayList<>();
+
 
     public String getName() {
         return name;
@@ -417,5 +419,13 @@ public class Material {
         }
 
         return mappedObject;
+    }
+
+    public void setClazz(String clazz) {
+        this.clazz = clazz;
+    }
+
+    public String getClazz() {
+        return clazz;
     }
 }

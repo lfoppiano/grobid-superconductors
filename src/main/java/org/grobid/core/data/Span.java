@@ -29,6 +29,7 @@ public class Span {
     //tokens index referred to the layout token list
     private int tokenStart;
     private int tokenEnd;
+    private boolean linkable;
 
     //The source where this span was generated from, namely the model
     private String source;
@@ -249,5 +250,13 @@ public class Span {
 
     public void addAttribute(String attributeName, String attributeValue) {
         this.attributes.put(attributeName, attributeValue);
+    }
+
+    public boolean isLinkable() {
+        return linkable;
+    }
+
+    public void setLinkable(boolean linkable) {
+        this.linkable = linkable;
     }
 }

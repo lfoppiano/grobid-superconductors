@@ -40,25 +40,27 @@ public class MaterialParser extends AbstractParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(MaterialParser.class);
 
     private static MaterialParser instance;
+    private MaterialClassResolver materialClassResolver;
 
-    public static MaterialParser getInstance() {
+    public static MaterialParser getInstance(MaterialClassResolver materialClassResolver) {
         if (instance == null) {
-            getNewInstance();
+            getNewInstance(materialClassResolver);
         }
         return instance;
     }
 
-    private static synchronized void getNewInstance() {
-        instance = new MaterialParser();
+    private static synchronized void getNewInstance(MaterialClassResolver materialClassResolver) {
+        instance = new MaterialParser(materialClassResolver);
     }
 
     @Inject
-    public MaterialParser() {
-        super(MATERIAL);
+    public MaterialParser(MaterialClassResolver materialClassResolver) {
+        this(MATERIAL, materialClassResolver);
     }
 
-    protected MaterialParser(GrobidModel model) {
+    protected MaterialParser(GrobidModel model, MaterialClassResolver materialClassResolver) {
         super(model);
+        this.materialClassResolver = materialClassResolver;
     }
 
     public List<Material> process(String text) {
@@ -381,6 +383,13 @@ public class MaterialParser extends AbstractParser {
             }
 
             material.setRawTaggedValue(rawTaggedValue.toString());
+
+            //THIs modify the material object!
+            if(materialClassResolver != null) {
+                materialClassResolver.process(material);
+            } else {
+                LOGGER.warn("The material class resolver is null - let's avoiding problems and skip this part ;-) ");
+            }
         }
 
         return extracted;
