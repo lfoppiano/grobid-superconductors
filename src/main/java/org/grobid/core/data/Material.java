@@ -224,7 +224,7 @@ public class Material {
                 if (formula.startsWith("-", variableIndex - 1)
                     || formula.startsWith("\u2212", variableIndex - 1)) {
                     Integer endSearch = variableIndex - 1;
-                    while (Character.isDigit(formula.charAt(endSearch - 1))) {
+                    while (endSearch > 0 && Character.isDigit(formula.charAt(endSearch - 1))) {
                         endSearch = endSearch - 1;
                     }
                     if (endSearch < variableIndex - 1) {

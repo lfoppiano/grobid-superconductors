@@ -10,6 +10,7 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnitUtilities;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ public class AggregatedProcessingTest {
 
     @Before
     public void setUp() throws Exception {
+        GrobidProperties.getInstance();
 
         mockSuperconductorsParser = EasyMock.createMock(SuperconductorsParser.class);
         mockCRFBasedLinker = EasyMock.createMock(CRFBasedLinker.class);

@@ -32,54 +32,24 @@ public class RulesBasedLinker {
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesBasedLinker.class);
 
     private GrobidSuperconductorsConfiguration configuration;
+    private final JepEngine engineController;
     private boolean disabled = false;
 
     @Inject
-    public RulesBasedLinker(GrobidSuperconductorsConfiguration configuration) {
+    public RulesBasedLinker(GrobidSuperconductorsConfiguration configuration, JepEngine engineController) {
         this.configuration = configuration;
+        this.engineController = engineController;
         init();
     }
 
 
     public void init() {
-        File libraryFolder = new File(getLibraryFolder());
-
-        LOGGER.info("Loading JEP native library for the linking module... " + libraryFolder.getAbsolutePath());
-        // actual loading will be made at JEP initialization, so we just need to add the path in the
-        // java.library.path (JEP will anyway try to load from java.library.path, so explicit file
-        // loading here will not help)
+        if (this.engineController.getDisabled()) {
+            LOGGER.info("The JEP engine wasn't initialised correct. Disabling all dependent modules. ");
+            this.disabled = true;
+            return;
+        }
         try {
-            addLibraryPath(libraryFolder.getAbsolutePath());
-
-            PythonEnvironmentConfig pythonEnvironmentConfig = PythonEnvironmentConfig.getInstanceForVirtualEnv(configuration.getPythonVirtualEnv(), PythonEnvironmentConfig.getActiveVirtualEnv());
-            if (pythonEnvironmentConfig.isEmpty()) {
-                LOGGER.info("No python environment configured");
-            } else {
-                LOGGER.info("Configuring python environment: " + pythonEnvironmentConfig.getVirtualEnv());
-                LOGGER.info("Adding library paths " + Arrays.toString(pythonEnvironmentConfig.getNativeLibPaths()));
-                for (Path path : pythonEnvironmentConfig.getNativeLibPaths()) {
-                    if (Files.exists(path)) {
-                        addLibraryPath(path.toString());
-                    } else {
-                        LOGGER.warn(path.toString() + " does not exists. Skipping it. ");
-                    }
-                }
-
-                if (SystemUtils.IS_OS_MAC) {
-                    System.loadLibrary("python" + pythonEnvironmentConfig.getPythonVersion() + "m");
-                    System.loadLibrary(DELFT_NATIVE_LIB_NAME);
-                } else if (SystemUtils.IS_OS_LINUX) {
-                    System.loadLibrary(DELFT_NATIVE_LIB_NAME);
-                } else if (SystemUtils.IS_OS_WINDOWS) {
-                    throw new UnsupportedOperationException("Linking on Windows is not supported.");
-                }
-            }
-//TODO: move this in a separate class
-//            JepConfig config = new JepConfig();
-//            config.setRedirectOutputStreams(configuration.isPythonRedirectOutput());
-//            SharedInterpreter.setConfig(config);
-            LOGGER.debug("Configuring JEP to redirect python output.");
-
             try (Interpreter interp = new SharedInterpreter()) {
                 interp.exec("import numpy as np");
                 interp.exec("import spacy");
@@ -105,7 +75,7 @@ public class RulesBasedLinker {
         });
 
         //Take out the attributes
-        Map<String, Map<String, String>> backupAttributes= new HashMap<>();
+        Map<String, Map<String, String>> backupAttributes = new HashMap<>();
         paragraph.getSpans().forEach(s -> {
             backupAttributes.put(String.valueOf(s.getId()), s.getAttributes());
         });

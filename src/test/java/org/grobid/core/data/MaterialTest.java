@@ -79,6 +79,13 @@ public class MaterialTest {
     }
 
     @Test
+    public void testReplaceVariable5() {
+        String output = Material.replaceVariable("1-x Ru x", "x", "0.2");
+
+        assertThat(output, is("0.8 Ru 0.2"));
+    }
+
+    @Test
     public void testToJson() {
         Material material = new Material();
 
