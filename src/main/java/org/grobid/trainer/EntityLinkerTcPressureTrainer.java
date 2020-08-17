@@ -23,12 +23,15 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
-public class EntityLinkerTrainer extends AbstractTrainer {
+public class EntityLinkerTcPressureTrainer extends AbstractTrainer {
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
-    public EntityLinkerTrainer() {
-        super(SuperconductorsModels.ENTITY_LINKER);
+    public static String SOURCE = "pressure";
+    public static String DESTINATION = "tcValue";
+
+    public EntityLinkerTcPressureTrainer() {
+        super(SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
         window = 40;
@@ -92,7 +95,7 @@ public class EntityLinkerTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 EntityLinkerAnnotationStaxHandler handler = new EntityLinkerAnnotationStaxHandler("p",
-                    "tcValue", "material");
+                    SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
@@ -110,11 +113,11 @@ public class EntityLinkerTrainer extends AbstractTrainer {
                     String token = labeledToken.getLeft();
                     String label = labeledToken.getMiddle();
                     String entity_type = labeledToken.getRight();
-                    if (entity_type.equals("<material>")) {
+                    if (entity_type.equals("<" + DESTINATION + ">")) {
                         materials++;
                     }
 
-                    if (entity_type.equals("<tcValue>")) {
+                    if (entity_type.equals("<" + SOURCE + ">")) {
                         tcValues++;
                     }
 
@@ -169,7 +172,7 @@ public class EntityLinkerTrainer extends AbstractTrainer {
     public static void main(String[] args) {
         GrobidProperties.getInstance();
 
-        Trainer trainer = new EntityLinkerTrainer();
+        Trainer trainer = new EntityLinkerTcPressureTrainer();
 
         AbstractTrainer.runTraining(trainer);
     }

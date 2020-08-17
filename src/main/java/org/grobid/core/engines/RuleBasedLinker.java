@@ -4,39 +4,31 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Singleton;
 import jep.Interpreter;
-import jep.JepConfig;
 import jep.JepException;
 import jep.SharedInterpreter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.grobid.core.data.ProcessedParagraph;
-import org.grobid.core.jni.PythonEnvironmentConfig;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
-import static org.grobid.core.main.LibraryLoader.*;
-
 @Singleton
-public class RulesBasedLinker {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RulesBasedLinker.class);
+public class RuleBasedLinker {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuleBasedLinker.class);
 
     private GrobidSuperconductorsConfiguration configuration;
     private final JepEngine engineController;
     private boolean disabled = false;
 
     @Inject
-    public RulesBasedLinker(GrobidSuperconductorsConfiguration configuration, JepEngine engineController) {
+    public RuleBasedLinker(GrobidSuperconductorsConfiguration configuration, JepEngine engineController) {
         this.configuration = configuration;
         this.engineController = engineController;
         init();

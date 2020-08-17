@@ -56,7 +56,7 @@ public class CRFBasedLinker extends AbstractParser {
 
     @Inject
     public CRFBasedLinker() {
-        super(SuperconductorsModels.ENTITY_LINKER);
+        super(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC);
         instance = this;
         annotationLinks = Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL);
     }
@@ -266,7 +266,7 @@ public class CRFBasedLinker extends AbstractParser {
      * Extract identified quantities from a labeled text.
      */
     public List<Span> extractResults(List<LayoutToken> tokens, String result, List<Span> annotations) {
-        TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.ENTITY_LINKER, result, tokens);
+        TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, result, tokens);
         List<TaggingTokenCluster> clusters = clusteror.cluster();
 
         int pos = 0; // position in term of characters for creating the offsets
@@ -294,7 +294,7 @@ public class CRFBasedLinker extends AbstractParser {
             int startPos = theTokens.get(0).getOffset();
             int endPos = startPos + clusterContent.length();
 
-            if (clusterLabel.equals(ENTITY_LINKER_LEFT_ATTACHMENT)) {
+            if (clusterLabel.equals(ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT)) {
                 if (insideLink) {
                     LOGGER.info("Found link-left label with content " + clusterContent);
 
@@ -335,7 +335,7 @@ public class CRFBasedLinker extends AbstractParser {
                     LOGGER.warn("Something is wrong, there is link to the left but not to the right. Ignoring it. ");
                 }
 
-            } else if (clusterLabel.equals(ENTITY_LINKER_RIGHT_ATTACHMENT)) {
+            } else if (clusterLabel.equals(ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT)) {
                 LOGGER.info("Found link-right label with content " + clusterContent);
 
                 int layoutTokenListStartOffset = getLayoutTokenListStartOffset(theTokens);
@@ -374,7 +374,7 @@ public class CRFBasedLinker extends AbstractParser {
 
                 }
 
-            } else if (clusterLabel.equals(ENTITY_LINKER_OTHER)) {
+            } else if (clusterLabel.equals(ENTITY_LINKER_MATERIAL_TC_OTHER)) {
 
             } else {
                 LOGGER.error("Warning: unexpected label in entity-linker parser: " + clusterLabel.getLabel() + " for " + clusterContent);

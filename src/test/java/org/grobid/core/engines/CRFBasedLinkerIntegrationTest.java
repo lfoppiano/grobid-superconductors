@@ -30,7 +30,7 @@ public class CRFBasedLinkerIntegrationTest {
     @Before
     public void setUp() throws Exception {
         LibraryLoader.load();
-        target = new CRFBasedLinker(SuperconductorsModels.ENTITY_LINKER, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL));
+        target = new CRFBasedLinker(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL));
         SuperconductorsParser superParser = new SuperconductorsParser(new ChemDataExtractorClient("http://falcon.nims.go.jp"), new MaterialParser(null));
         this.entityParser = new AggregatedProcessing(superParser, QuantityParser.getInstance(true), null, null);
     }

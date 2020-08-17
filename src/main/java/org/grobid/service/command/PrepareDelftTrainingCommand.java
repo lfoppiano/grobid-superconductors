@@ -11,10 +11,7 @@ import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
-import org.grobid.trainer.EntityLinkerTrainer;
-import org.grobid.trainer.MaterialTrainer;
-import org.grobid.trainer.SuperconductorsTrainer;
-import org.grobid.trainer.Trainer;
+import org.grobid.trainer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,9 +101,15 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
             model = SuperconductorsModels.MATERIAL;
             trainer = new MaterialTrainer();
-        } else if (SuperconductorsModels.ENTITY_LINKER.getModelName().equals(modelName)) {
-            model = SuperconductorsModels.ENTITY_LINKER;
-            trainer = new EntityLinkerTrainer();
+        } else if (SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC.getModelName().equals(modelName)) {
+            model = SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC;
+            trainer = new EntityLinkerMaterialTcTrainer();
+        } else if (SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE.getModelName().equals(modelName)) {
+            model = SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE;
+            trainer = new EntityLinkerTcPressureTrainer();
+        }else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
+            model = SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD;
+            trainer = new EntityLinkerTcMeMethodTrainer();
         }
 
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";

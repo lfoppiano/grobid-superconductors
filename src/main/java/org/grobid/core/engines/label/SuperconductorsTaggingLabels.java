@@ -14,10 +14,17 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
     public static final String ENTITY_LINKER_RIGHT_ATTACHMENT_LABEL = "<link_right>";
     public static final String ENTITY_LINKER_LEFT_ATTACHMENT_LABEL = "<link_left>";
 
-    public static final TaggingLabel ENTITY_LINKER_RIGHT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER, ENTITY_LINKER_RIGHT_ATTACHMENT_LABEL);
-    public static final TaggingLabel ENTITY_LINKER_LEFT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER, ENTITY_LINKER_LEFT_ATTACHMENT_LABEL);
-    public static final TaggingLabel ENTITY_LINKER_OTHER = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER, OTHER_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, ENTITY_LINKER_RIGHT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, ENTITY_LINKER_LEFT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_MATERIAL_TC_OTHER = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, OTHER_LABEL);
 
+    public static final TaggingLabel ENTITY_LINKER_TC_PRESSURE_RIGHT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE, ENTITY_LINKER_RIGHT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_TC_PRESSURE_LEFT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE, ENTITY_LINKER_LEFT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_TC_PRESSURE_OTHER = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE, OTHER_LABEL);
+
+    public static final TaggingLabel ENTITY_LINKER_TC_MEMETHOD_RIGHT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD, ENTITY_LINKER_RIGHT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_TC_MEMETHOD_LEFT_ATTACHMENT = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD, ENTITY_LINKER_LEFT_ATTACHMENT_LABEL);
+    public static final TaggingLabel ENTITY_LINKER_TC_MEMETHOD_OTHER = new TaggingLabelImpl(SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD, OTHER_LABEL);
 
     //Superconductors
     public static final String SUPERCONDUCTORS_CLASS_LABEL = "<class>";
@@ -82,8 +89,15 @@ public class SuperconductorsTaggingLabels extends TaggingLabels {
         register(MATERIAL_OTHER);
 
         //Entity linker
-        register(ENTITY_LINKER_RIGHT_ATTACHMENT);
-        register(ENTITY_LINKER_LEFT_ATTACHMENT);
+        register(ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT);
+        register(ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT);
+        register(ENTITY_LINKER_MATERIAL_TC_OTHER);
+        register(ENTITY_LINKER_TC_PRESSURE_LEFT_ATTACHMENT);
+        register(ENTITY_LINKER_TC_PRESSURE_RIGHT_ATTACHMENT);
+        register(ENTITY_LINKER_TC_PRESSURE_OTHER);
+        register(ENTITY_LINKER_TC_MEMETHOD_LEFT_ATTACHMENT);
+        register(ENTITY_LINKER_TC_MEMETHOD_RIGHT_ATTACHMENT);
+        register(ENTITY_LINKER_TC_MEMETHOD_OTHER);
 
     }
 }

@@ -33,7 +33,7 @@ public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSu
         binder.bind(JepEngine.class);
         binder.bind(MaterialClassResolver.class);
         binder.bind(MaterialParser.class);
-        binder.bind(RulesBasedLinker.class);
+        binder.bind(RuleBasedLinker.class);
         binder.bind(CRFBasedLinker.class);
         binder.bind(AggregatedProcessing.class);
 
