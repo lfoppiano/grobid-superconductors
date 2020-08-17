@@ -74,10 +74,10 @@ public class RulesBasedLinker {
                     throw new UnsupportedOperationException("Linking on Windows is not supported.");
                 }
             }
-
-            JepConfig config = new JepConfig();
-            config.setRedirectOutputStreams(configuration.isPythonRedirectOutput());
-            SharedInterpreter.setConfig(config);
+//TODO: move this in a separate class
+//            JepConfig config = new JepConfig();
+//            config.setRedirectOutputStreams(configuration.isPythonRedirectOutput());
+//            SharedInterpreter.setConfig(config);
             LOGGER.debug("Configuring JEP to redirect python output.");
 
             try (Interpreter interp = new SharedInterpreter()) {

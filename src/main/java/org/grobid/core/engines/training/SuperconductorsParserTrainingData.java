@@ -48,7 +48,8 @@ public class SuperconductorsParserTrainingData {
 
 
     public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient) {
-        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance()), QuantityParser.getInstance(true));
+        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance(null)),
+            QuantityParser.getInstance(true));
     }
 
     public SuperconductorsParserTrainingData(SuperconductorsParser parser, QuantityParser quantityParser) {
@@ -295,7 +296,7 @@ public class SuperconductorsParserTrainingData {
                     }
                     createTrainingPDF(file, outputDirectory, outputFormat, n);
                 } catch (final Exception exp) {
-                    LOGGER.error("An error occured while processing the following pdf: "
+                    LOGGER.error("An error occurred while processing the following pdf: "
                         + file.getPath(), exp);
                 }
                 n++;
@@ -303,7 +304,7 @@ public class SuperconductorsParserTrainingData {
 
             return refFiles.size();
         } catch (final Exception exp) {
-            throw new GrobidException("An exception occured while running Grobid batch.", exp);
+            throw new GrobidException("An exception occurred while running Grobid batch.", exp);
         }
     }
 

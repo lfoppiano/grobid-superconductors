@@ -36,7 +36,7 @@ public class MaterialParserTrainingData {
     private MaterialParser materialParser;
 
     public MaterialParserTrainingData() {
-        materialParser = MaterialParser.getInstance();
+        materialParser = MaterialParser.getInstance(null);
     }
 
     public MaterialParserTrainingData(MaterialParser parser) {
