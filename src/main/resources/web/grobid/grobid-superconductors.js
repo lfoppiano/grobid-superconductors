@@ -900,9 +900,9 @@ let grobid = (function ($) {
                     if (getPlainType(link['targetType']) === 'material') {
                         type = 'temperature-tc';
                     } else if (getPlainType(link['targetType']) === 'pressure') {
-                        type = 'temperature-pressure';
+                        type = 'temperature-tc';
                     } else if (getPlainType(link['targetType']) === 'me_method') {
-                        type = 'temperature-me_method';
+                        type = 'temperature-tc';
                     }
                 });
             }

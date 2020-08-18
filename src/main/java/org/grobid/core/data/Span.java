@@ -279,4 +279,8 @@ public class Span {
     public void setLinkable(boolean linkable) {
         this.linkable = linkable;
     }
+
+    public void addLinks(List<Link> links) {
+        this.links.addAll(links);
+    }
 }
