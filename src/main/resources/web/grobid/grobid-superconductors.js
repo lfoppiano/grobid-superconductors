@@ -725,7 +725,15 @@ let grobid = (function ($) {
             function appendLinkToTable(span, link, addedLinks) {
                 let encodedLinkId = encodeLinkAsString(span, link)
 
-                let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true);
+                let classes = Object.keys(span.attributes)
+                    .filter(function (key) {
+                        return key.endsWith("clazz");
+                    })
+                    .map(function (key) {
+                        return span.attributes[key]
+                    }).join(", ");
+
+                let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes);
                 let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(encodedLinkId);
 
                 if (addedLinks.indexOf(encodedLinkId) >= 0) {
@@ -919,7 +927,9 @@ let grobid = (function ($) {
 
             let random_number = '_' + Math.random().toString(36).substr(2, 9);
 
-            let {row_id, element_id, mat_element_id, tc_element_id, html_code} = createRowHtml(random_number);
+            let html_code = createRowHtml(random_number);
+            let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(random_number);
+
             $('#tableResultsBody').append(html_code);
 
             $("#" + mat_element_id).editable();
