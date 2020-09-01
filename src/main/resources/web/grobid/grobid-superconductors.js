@@ -786,39 +786,58 @@ let grobid = (function ($) {
                         spanGlobalIndex++;
                     });
 
-
+                    //Extracting pressures and respective tcValue
+                    let linkToPressures = []
                     spans.filter(function (span) {
-                        return getPlainType(span.type) === "material";
+                        return getPlainType(span.type) === "pressure";
                     }).forEach(function (span, spanIdx) {
                         if (span.links !== undefined && span.links.length > 0) {
-                            copyButtonElement.show();
                             span.links.forEach(function (link, linkIdx) {
-                                let link_entity = localSpans[link.targetId];
-                                if (link_entity === undefined) {
-                                    unlinkedElements.push(span);
-                                    return;
-                                }
-
-                                // span.text == material
-                                // link.targetText == tcValue
-                                let row_id = appendLinkToTable(span, link, addedLinks);
-                                // appendRemoveButton(row_id);
-
-                                let paragraph_popover = annotateTextAsHtml(paragraph.text, [span, link_entity]);
-
-                                $("#" + row_id).popover({
-                                    content: function () {
-                                        return paragraph_popover;
-                                    },
-                                    html: true,
-                                    // container: 'body',
-                                    trigger: 'hover',
-                                    placement: 'top',
-                                    animation: true
-                                });
+                                linkToPressures[link.targetId] = span.id
                             });
                         }
                     });
+
+
+                    spans.filter(function (span) {
+                        return getPlainType(span.type) === "material";
+                    })
+                        .forEach(function (span, spanIdx) {
+                            if (span.links !== undefined && span.links.length > 0) {
+                                copyButtonElement.show();
+                                span.links.forEach(function (link, linkIdx) {
+                                        let link_entity = localSpans[link.targetId];
+                                        if (link_entity === undefined) {
+                                            unlinkedElements.push(span);
+                                            return;
+                                        }
+
+                                        // span.text == material
+                                        // link.targetText == tcValue
+                                        let row_id = appendLinkToTable(span, link, addedLinks);
+                                        // appendRemoveButton(row_id);
+
+                                        if (linkToPressures[link.targetId] !== undefined) {
+                                            $("#" + row_id + " td:eq(5)").text(spansMap[linkToPressures[link.targetId]].text)
+                                        }
+
+
+                                        let paragraph_popover = annotateTextAsHtml(paragraph.text, [span, link_entity]);
+
+                                        $("#" + row_id).popover({
+                                            content: function () {
+                                                return paragraph_popover;
+                                            },
+                                            html: true,
+                                            // container: 'body',
+                                            trigger: 'hover',
+                                            placement: 'top',
+                                            animation: true
+                                        });
+                                    }
+                                );
+                            }
+                        });
                 }
             });
 
