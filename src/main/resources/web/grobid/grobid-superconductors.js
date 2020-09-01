@@ -117,54 +117,58 @@ let grobid = (function ($) {
             let rows = tableResultsBody.find("tr");
             $.each(rows, function () {
                 let tds = $(this).children();
-                let material = tds[2].textContent;
-                let tc = tds[3].textContent;
-
-                textToBeCopied += material + "\t" + tc + "\n";
+                for (let i = 2; i < 7; i++) {
+                    textToBeCopied += tds[i].textContent
+                    if (i < 6) {
+                        textToBeCopied += "\t";
+                    } else {
+                        textToBeCopied += "\n";
+                    }
+                }
             });
             copyTextToClipboard(textToBeCopied);
 
         }
 
-        // function downloadTEI() {
-        //     let fileName = "exportTEI.xml";
-        //     let a = document.createElement("a");
-        //     let xml_header = '<?xml version="1.0"?>';
-        //     let rdf_header = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:supercon="http://falcon.nims.go.jp/supercuration">';
-        //     let rdf_header_end = '</rdf:RDF>';
-        //
-        //     let outputXML = xml_header + "\n" + rdf_header + "\n";
-        //
-        //     let tableResultsBody = $('#tableResultsBody');
-        //
-        //     let rows = tableResultsBody.find("tr");
-        //     $.each(rows, function () {
-        //         let tds = $(this).children();
-        //         let material = tds[2].textContent;
-        //         let tcValue = tds[3].textContent;
-        //         let id = $(this).attr("id").replaceAll("row", "");
-        //
-        //         outputXML += "\t" + '<rdf:Description rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
-        //
-        //         outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
-        //         outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
-        //
-        //         outputXML += "\t" + '</rdf:Description>';
-        //     });
-        //
-        //     outputXML += rdf_header_end;
-        //
-        //     let file = new Blob([outputXML], {type: 'application/xml'});
-        //     a.href = URL.createObjectURL(file);
-        //     a.download = fileName;
-        //
-        //     document.body.appendChild(a);
-        //
-        //     $(a).ready(function () {
-        //         a.click();
-        //         return true;
-        //     });
-        // }
+        /*function downloadTEI() {
+            let fileName = "exportTEI.xml";
+            let a = document.createElement("a");
+            let xml_header = '<?xml version="1.0"?>';
+            let tei_header = '<tei xmlns="http://www.tei-c.org/ns/1.0">';
+            let tei_header_end = '</tei>';
+
+            let outputXML = xml_header + "\n" + tei_header + "\n";
+
+            let tableResultsBody = $('#tableResultsBody');
+
+            let rows = tableResultsBody.find("tr");
+            $.each(rows, function () {
+                let tds = $(this).children();
+                let material = tds[2].textContent;
+                let tcValue = tds[3].textContent;
+                let id = $(this).attr("id").replaceAll("row", "");
+
+                outputXML += "\t" + '<rdf:Description rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
+
+                outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
+                outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
+
+                outputXML += "\t" + '</rdf:Description>';
+            });
+
+            outputXML += tei_header_end;
+
+            let file = new Blob([outputXML], {type: 'application/xml'});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+
+            document.body.appendChild(a);
+
+            $(a).ready(function () {
+                a.click();
+                return true;
+            });
+        }*/
 
         /** Download buttons **/
         function downloadRDF() {
@@ -182,13 +186,17 @@ let grobid = (function ($) {
             $.each(rows, function () {
                 let tds = $(this).children();
                 let material = tds[2].textContent;
-                let tcValue = tds[3].textContent;
+                let clas = tds[3].textContent;
+                let tcValue = tds[4].textContent;
+                let pressure = tds[5].textContent;
                 let id = $(this).attr("id").replaceAll("row", "");
 
                 outputXML += "\t" + '<rdf:Description rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
 
                 outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
+                outputXML += "\t\t" + '<supercon:class>' + clas + '</supercon:class>' + "\n";
                 outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
+                outputXML += "\t\t" + '<supercon:pressure>' + pressure + '</supercon:pressure>' + "\n";
 
                 outputXML += "\t" + '</rdf:Description>';
             });
@@ -210,7 +218,7 @@ let grobid = (function ($) {
         function downloadCSV() {
             let fileName = "export.csv";
             let a = document.createElement("a");
-            let header = 'material, tcValue';
+            let header = 'material, class, tcValue, applied pressure';
             let outputCSV = header + "\n";
 
             let tableResultsBody = $('#tableResultsBody');
@@ -219,10 +227,12 @@ let grobid = (function ($) {
             $.each(rows, function () {
                 let tds = $(this).children();
                 let material = tds[2].textContent;
-                let tcValue = tds[3].textContent;
+                let clas = tds[3].textContent;
+                let tcValue = tds[4].textContent;
+                let pressure = tds[5].textContent;
                 // let id = $(this).attr("id").replaceAll("row", "");
 
-                outputCSV += material + ',' + tcValue + "\n";
+                outputCSV += material + ',' + clas + ',' + tcValue + ',' + pressure + "\n";
             });
 
             let file = new Blob([outputCSV], {type: 'text/csv'});
