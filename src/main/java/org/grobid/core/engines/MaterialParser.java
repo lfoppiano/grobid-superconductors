@@ -447,7 +447,8 @@ public class MaterialParser extends AbstractParser {
         Pattern regex = Pattern.compile("( {0,1})([-−]x) {0,1}(1)( {0,1})");
         String formulaWithFixedVariableOperations = regex.matcher(formula).replaceAll("$1$3$2$4");
 
-        String formulaWithoutInvalidCharacters = formulaWithFixedVariableOperations.replaceAll("\\p{C}", " ");
+        String formulaWithReplacedMinus = formulaWithFixedVariableOperations.replaceAll("À", "-");
+        String formulaWithoutInvalidCharacters = formulaWithReplacedMinus.replaceAll("\\p{C}", " ");
 
         return formulaWithoutInvalidCharacters;
     }
