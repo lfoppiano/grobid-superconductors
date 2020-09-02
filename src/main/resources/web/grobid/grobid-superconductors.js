@@ -117,24 +117,27 @@ let grobid = (function ($) {
             let rows = tableResultsBody.find("tr");
             $.each(rows, function () {
                 let tds = $(this).children();
-                let material = tds[2].textContent;
-                let tc = tds[3].textContent;
-
-                textToBeCopied += material + "\t" + tc + "\n";
+                for (let i = 2; i < 7; i++) {
+                    textToBeCopied += tds[i].textContent
+                    if (i < 6) {
+                        textToBeCopied += "\t";
+                    } else {
+                        textToBeCopied += "\n";
+                    }
+                }
             });
             copyTextToClipboard(textToBeCopied);
 
         }
 
-        /** Download buttons **/
-        function downloadRDF() {
-            let fileName = "export.xml";
+        /*function downloadTEI() {
+            let fileName = "exportTEI.xml";
             let a = document.createElement("a");
             let xml_header = '<?xml version="1.0"?>';
-            let rdf_header = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:supercon="http://falcon.nims.go.jp/supercuration">';
-            let rdf_header_end = '</rdf:RDF>';
+            let tei_header = '<tei xmlns="http://www.tei-c.org/ns/1.0">';
+            let tei_header_end = '</tei>';
 
-            let outputXML = xml_header + "\n" + rdf_header + "\n";
+            let outputXML = xml_header + "\n" + tei_header + "\n";
 
             let tableResultsBody = $('#tableResultsBody');
 
@@ -149,6 +152,51 @@ let grobid = (function ($) {
 
                 outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
                 outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
+
+                outputXML += "\t" + '</rdf:Description>';
+            });
+
+            outputXML += tei_header_end;
+
+            let file = new Blob([outputXML], {type: 'application/xml'});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+
+            document.body.appendChild(a);
+
+            $(a).ready(function () {
+                a.click();
+                return true;
+            });
+        }*/
+
+        /** Download buttons **/
+        function downloadRDF() {
+            let fileName = "exportRDF.xml";
+            let a = document.createElement("a");
+            let xml_header = '<?xml version="1.0"?>';
+            let rdf_header = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:supercon="http://falcon.nims.go.jp/supercuration">';
+            let rdf_header_end = '</rdf:RDF>';
+
+            let outputXML = xml_header + "\n" + rdf_header + "\n";
+
+            let tableResultsBody = $('#tableResultsBody');
+
+            let rows = tableResultsBody.find("tr");
+            $.each(rows, function () {
+                let tds = $(this).children();
+                let material = tds[2].textContent;
+                let clas = tds[3].textContent;
+                let tcValue = tds[4].textContent;
+                let pressure = tds[5].textContent;
+                let id = $(this).attr("id").replaceAll("row", "");
+
+                outputXML += "\t" + '<rdf:Description rdf:about="http://falcon.nims.go.jp/supercon/' + id + '">';
+
+                outputXML += "\t\t" + '<supercon:material>' + material + '</supercon:material>' + "\n";
+                outputXML += "\t\t" + '<supercon:class>' + clas + '</supercon:class>' + "\n";
+                outputXML += "\t\t" + '<supercon:tcValue>' + tcValue + '</supercon:tcValue>' + "\n";
+                outputXML += "\t\t" + '<supercon:pressure>' + pressure + '</supercon:pressure>' + "\n";
 
                 outputXML += "\t" + '</rdf:Description>';
             });
@@ -170,7 +218,7 @@ let grobid = (function ($) {
         function downloadCSV() {
             let fileName = "export.csv";
             let a = document.createElement("a");
-            let header = 'material, tcValue';
+            let header = 'material, class, tcValue, applied pressure';
             let outputCSV = header + "\n";
 
             let tableResultsBody = $('#tableResultsBody');
@@ -179,10 +227,12 @@ let grobid = (function ($) {
             $.each(rows, function () {
                 let tds = $(this).children();
                 let material = tds[2].textContent;
-                let tcValue = tds[3].textContent;
+                let clas = tds[3].textContent;
+                let tcValue = tds[4].textContent;
+                let pressure = tds[5].textContent;
                 // let id = $(this).attr("id").replaceAll("row", "");
 
-                outputCSV += material + ',' + tcValue + "\n";
+                outputCSV += material + ',' + clas + ',' + tcValue + ',' + pressure + "\n";
             });
 
             let file = new Blob([outputCSV], {type: 'text/csv'});
@@ -648,6 +698,16 @@ let grobid = (function ($) {
             xhr.send(formData);
         }
 
+        function computeTableIds(id) {
+            let row_id = "row" + id;
+            let element_id = "e" + id;
+            let mat_element_id = "mat" + id;
+            let cla_element_id = "cla" + id;
+            let tc_element_id = "tc" + id;
+            let pressure_element_id = "pressure" + id;
+            return {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id};
+        }
+
         function onSuccessPdf(response) {
             // TBD: we must check/wait that the corresponding PDF page is rendered at this point
             if ((response == null) || (0 === response.length)) {
@@ -667,14 +727,55 @@ let grobid = (function ($) {
             let unlinkedElements = [];
             let spansMap = [];
 
+
+            function encodeLinkAsString(span, link) {
+                return [span.id, link.targetId].sort().join("");
+            }
+
+            function appendLinkToTable(span, link, addedLinks) {
+                let encodedLinkId = encodeLinkAsString(span, link)
+
+                let classes = Object.keys(span.attributes)
+                    .filter(function (key) {
+                        return key.endsWith("clazz");
+                    })
+                    .map(function (key) {
+                        return span.attributes[key]
+                    }).join(", ");
+
+                let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes);
+                let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(encodedLinkId);
+
+                if (addedLinks.indexOf(encodedLinkId) >= 0) {
+                    let typeRow = $('#' + row_id + " td:eq(6)");
+                    let currentType = typeRow.text();
+                    currentType += ", " + link.type;
+                    typeRow.text(currentType);
+                } else {
+                    $('#tableResultsBody').append(html_code);
+                    addedLinks.push(encodedLinkId)
+                }
+
+                // in case of multiple bounding boxes, we will have multiple IDs, in this case we can point
+                // to the first box
+                $("#" + element_id).bind('click', span.id + '0', goToByScroll);
+                $("#" + mat_element_id).editable();
+                $("#" + tc_element_id).editable();
+                appendRemoveButton(row_id);
+                return row_id;
+            }
+
             paragraphs.forEach(function (paragraph, paragraphIdx) {
+                let addedLinks = []
                 let spans = paragraph.spans;
+                let localSpans = []
                 // hey bro, this must be asynchronous to avoid blocking the brothers
 
                 if (spans) {
                     spans.forEach(function (span, spanIdx) {
                         let annotationId = span.id;
                         spansMap[annotationId] = span;
+                        localSpans[annotationId] = span;
                         let entity_type = getPlainType(span['type']);
 
                         let boundingBoxes = span.boundingBoxes;
@@ -695,74 +796,76 @@ let grobid = (function ($) {
                         spanGlobalIndex++;
                     });
 
-
-                    spans.filter(function(span){
-                        return getPlainType(span.type) === "material";
+                    //Extracting pressures and respective tcValue
+                    let linkToPressures = []
+                    spans.filter(function (span) {
+                        return getPlainType(span.type) === "pressure";
                     }).forEach(function (span, spanIdx) {
                         if (span.links !== undefined && span.links.length > 0) {
-                            copyButtonElement.show();
                             span.links.forEach(function (link, linkIdx) {
-                                let link_entity = spansMap[link.targetId];
-                                if(link_entity === undefined) {
-                                    unlinkedElements.push(span);
-                                    return;
-                                }
-
-                                // span.text == material
-                                // link.targetText == tcValue
-                                let {row_id, element_id, mat_element_id, tc_element_id, html_code} =
-                                    createRowHtml(span.id, span.text, link.targetText, link.type,true);
-
-                                $('#tableResultsBody').append(html_code);
-
-                                // in case of multiple bounding boxes, we will have multiple IDs, in this case we can point
-                                // to the first box
-                                $("#" + element_id).bind('click', span.id + '0', goToByScroll);
-                                $("#" + mat_element_id).editable();
-                                $("#" + tc_element_id).editable();
-                                appendRemoveButton(row_id);
-
-                                let paragraph_popover = annotateTextAsHtml(paragraph.text, [span, link_entity]);
-
-                                $("#" + row_id).popover({
-                                    content: function () {
-                                        return paragraph_popover;
-                                    },
-                                    html: true,
-                                    // container: 'body',
-                                    trigger: 'hover',
-                                    placement: 'top',
-                                    animation: true
-                                });
+                                linkToPressures[link.targetId] = span.id
                             });
                         }
                     });
+
+
+                    spans.filter(function (span) {
+                        return getPlainType(span.type) === "material";
+                    })
+                        .forEach(function (span, spanIdx) {
+                            if (span.links !== undefined && span.links.length > 0) {
+                                copyButtonElement.show();
+                                span.links.forEach(function (link, linkIdx) {
+                                        let link_entity = localSpans[link.targetId];
+                                        if (link_entity === undefined) {
+                                            unlinkedElements.push(span);
+                                            return;
+                                        }
+
+                                        // span.text == material
+                                        // link.targetText == tcValue
+                                        let row_id = appendLinkToTable(span, link, addedLinks);
+                                        // appendRemoveButton(row_id);
+
+                                        if (linkToPressures[link.targetId] !== undefined) {
+                                            $("#" + row_id + " td:eq(5)").text(spansMap[linkToPressures[link.targetId]].text)
+                                        }
+
+
+                                        let paragraph_popover = annotateTextAsHtml(paragraph.text, [span, link_entity]);
+
+                                        $("#" + row_id).popover({
+                                            content: function () {
+                                                return paragraph_popover;
+                                            },
+                                            html: true,
+                                            // container: 'body',
+                                            trigger: 'hover',
+                                            placement: 'top',
+                                            animation: true
+                                        });
+                                    }
+                                );
+                            }
+                        });
                 }
             });
 
+            let addedLinks = []
+
             //Reprocessing the links for which the targetId isn't in the same paragraph
-            unlinkedElements.forEach(function(span, spanIdx){
+            unlinkedElements.forEach(function (span, spanIdx) {
                 if (span.links !== undefined && span.links.length > 0) {
                     span.links.forEach(function (link, linkIdx) {
                         let link_entity = spansMap[link.targetId];
-                        if(link_entity === undefined) {
+                        if (link_entity === undefined) {
                             console.log("The link to " + link.targetId + " cannot be found. This seems to be a serious problem. Get yourself together. ")
                             return;
                         }
 
                         // span.text == material
                         // link.targetText == tcValue
-                        let {row_id, element_id, mat_element_id, tc_element_id, html_code} =
-                            createRowHtml(span.id, span.text, link.targetText, link.type,true);
-
-                        $('#tableResultsBody').append(html_code);
-
-                        // in case of multiple bounding boxes, we will have multiple IDs, in this case we can point
-                        // to the first box
-                        $("#" + element_id).bind('click', span.id + '0', goToByScroll);
-                        $("#" + mat_element_id).editable();
-                        $("#" + tc_element_id).editable();
-                        appendRemoveButton(row_id);
+                        let row_id = appendLinkToTable(span, link, addedLinks);
 
                         $("#" + row_id).popover({
                             content: function () {
@@ -815,27 +918,26 @@ let grobid = (function ($) {
         }
 
         /** Summary table **/
-        function createRowHtml(id, material = "", tcValue = "", type = "", viewInPDF = false) {
+        function createRowHtml(id, material = "", tcValue = "", type = "", viewInPDF = false, cla = "", appliedPressure = "") {
 
             let viewInPDFIcon = "";
             if (viewInPDF === true) {
                 viewInPDFIcon = "<img src='resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
             }
 
-            let row_id = "row" + id + type;
-            let element_id = "e" + id + type;
-            let mat_element_id = "mat" + id + type;
-            let tc_element_id = "tc" + id + type;
+            let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(id);
 
             let html_code = "<tr class='d-flex' id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
                 "<td class='col-1'><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
                 "<td class='col-1'><img src='resources/icons/trash.svg' alt='-' id='remove-button'/></td>" +
-                "<td class='col-5'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
+                "<td class='col-3'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
+                "<td class='col-2'><a href='#' id=" + cla_element_id + " data-pk='" + cla_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + cla + "</a></td>" +
                 "<td class='col-2'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
+                "<td class='col-2'><a href='#' id=" + pressure_element_id + " data-pk='" + pressure_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + appliedPressure + "</a></td>" +
                 "<td class='col-1'>" + type + "</td>" +
                 "</tr>";
 
-            return {row_id, element_id, mat_element_id, tc_element_id, html_code};
+            return html_code;
         }
 
         function appendRemoveButton(row_id) {
@@ -854,7 +956,9 @@ let grobid = (function ($) {
 
             let random_number = '_' + Math.random().toString(36).substr(2, 9);
 
-            let {row_id, element_id, mat_element_id, tc_element_id, html_code} = createRowHtml(random_number);
+            let html_code = createRowHtml(random_number);
+            let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(random_number);
+
             $('#tableResultsBody').append(html_code);
 
             $("#" + mat_element_id).editable();
@@ -877,10 +981,11 @@ let grobid = (function ($) {
             }
 
             let annotationHook = $('#detailed_annot-' + pageIndex);
-            //Reset the click event before adding a new one - not so clean, but would do for the moment...
-            annotationHook.off('click');
             annotationHook.html(string).show();
-            annotationHook.on('click', scrollUp);
+            //Reset the click event before adding a new one - not so clean, but would do for the moment...
+            let scrollUpHook = $('#infobox' + span.id);
+            scrollUpHook.off('click');
+            scrollUpHook.on('click', scrollUp);
         }
 
         function transformToLinkableType(type, links) {
