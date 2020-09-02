@@ -95,8 +95,8 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
             System.exit(-1);
         }
 
-        String inputDirectory = namespace.get(INPUT_DIRECTORY);
-        String outputDirectory = namespace.get(OUTPUT_DIRECTORY);
+        File inputDirectory = namespace.get(INPUT_DIRECTORY);
+        File outputDirectory = namespace.get(OUTPUT_DIRECTORY);
         String modelName = namespace.get(MODEL_NAME);
         String outputFormat = namespace.get(OUTPUT_FORMAT);
         Boolean recursive = namespace.get(RECURSIVE);
@@ -104,7 +104,8 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
         ChemDataExtractorClient chemspotClient = new ChemDataExtractorClient(configuration);
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory, outputDirectory,
+            new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory.getAbsolutePath(),
+                outputDirectory.getAbsolutePath(),
                 TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)), recursive);
         } else {
             System.out.println(super.getDescription());
