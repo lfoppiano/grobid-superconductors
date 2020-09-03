@@ -1,8 +1,15 @@
 package org.grobid.service.controller;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.lang3.tuple.Pair;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.DocumentResponse;
+import org.grobid.core.data.Link;
+import org.grobid.core.data.ProcessedParagraph;
+import org.grobid.core.data.Span;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
@@ -12,7 +19,18 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 @Singleton
 @Path("/")
@@ -70,5 +88,105 @@ public class AnnotationController {
         response.setRuntime(end - start);
 
         return response;
+    }
+
+    @Path("/process/pdf")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces("text/csv")
+    @POST
+    public String processPdfSuperconductorsCSV(@FormDataParam("input") InputStream uploadedInputStream,
+                                               @FormDataParam("input") FormDataContentDisposition fileDetail,
+                                               @FormDataParam("disableLinking") boolean disableLinking) {
+        DocumentResponse document = aggregatedProcessing.process(uploadedInputStream, disableLinking);
+
+        Map<String, Span> spansById = new HashMap<>();
+        Map<String, String> sentenceById = new HashMap<>();
+        for (ProcessedParagraph paragraph : document.getParagraphs()) {
+            List<Span> linkedSpans = paragraph.getSpans().stream().filter(s -> s.getLinks().size() > 0).collect(Collectors.toList());
+            for (Span span : linkedSpans) {
+                spansById.put(span.getId(), span);
+                sentenceById.put(span.getId(), paragraph.getText());
+            }
+        }
+
+        // Materials
+        List<Span> materials = spansById.entrySet().stream()
+            .filter(span -> span.getValue().getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
+            .map(Map.Entry::getValue)
+            .collect(Collectors.toList());
+
+//        List<Span> tcValues = spansById.entrySet().stream()
+//            .filter(span -> span.getValue().getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+//            .map(Map.Entry::getValue)
+//            .collect(Collectors.toList());
+//
+//        List<Span> pressures = spansById.entrySet().stream()
+//            .filter(span -> span.getValue().getType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
+//            .map(Map.Entry::getValue)
+//            .collect(Collectors.toList());
+
+        List<List<String>> outputCSV = new ArrayList<>();
+        for (Span m : materials) {
+            String formula = "";
+            String name = "";
+            String cla = "";
+            String doping = "";
+            String shape = "";
+
+            for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
+                String[] splits = a.getKey().split("_");
+                String prefix = splits[0];
+                String propertyName = splits[1];
+                String value = a.getValue();
+
+                if (propertyName.equals("formula")) {
+                    formula = value;
+                } else if (propertyName.equals("name")) {
+                    name = value;
+                } else if (propertyName.equals("clazz")) {
+                    cla = value;
+                } else if (propertyName.equals("shape")) {
+                    shape = value;
+                } else if (propertyName.equals("doping")) {
+                    doping = value;
+                }
+            }
+
+            Map<String, String> linkedToMaterial = m.getLinks().stream()
+                .map(l -> Pair.of(l.getTargetId(), l.getType()))
+                .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
+
+            for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
+                Span tcValue = spansById.get(entry.getKey());
+                List<Span> pressures = tcValue.getLinks().stream()
+                    .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
+                    .map(l -> spansById.get(l.getTargetId()))
+                    .collect(Collectors.toList());
+
+                if (isNotEmpty(pressures)) {
+                    for (Span pressure : pressures) {
+                        outputCSV.add(Arrays.asList(m.getText(), name, formula, doping, shape, cla, tcValue.getText(), pressure.getText(), entry.getValue(), sentenceById.get(m.getId())));
+                    }
+                } else {
+                    outputCSV.add(Arrays.asList(m.getText(), name, formula, doping, shape, cla, tcValue.getText(), "", entry.getValue(), sentenceById.get(m.getId())));
+                }
+
+            }
+        }
+
+        StringBuilder out = new StringBuilder();
+        try {
+            final CSVPrinter printer = CSVFormat.DEFAULT
+                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Critical temperature", "Applied pressure", "Link type", "Sentence")
+                .withQuote('"')
+                .withQuoteMode(QuoteMode.ALL)
+                .print(out);
+
+            printer.printRecords(outputCSV);
+        } catch (IOException e) {
+            LOGGER.error("Soemthing wrong when pushing out the CSV", e);
+        }
+
+        return out.toString();
     }
 }
