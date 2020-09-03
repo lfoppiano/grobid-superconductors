@@ -60,6 +60,74 @@ public class RuleBasedLinker {
         }
     }
 
+    public ProcessedParagraph markTemperatures(ProcessedParagraph paragraph) {
+        List<Span> originalSpans = paragraph.getSpans();
+        if (CollectionUtils.isEmpty(originalSpans) || disabled) {
+            return paragraph;
+        }
+
+        //Take out the bounding boxes
+        Map<String, List<BoundingBox>> backupBoundingBoxes = new HashMap<>();
+        originalSpans.forEach(s -> {
+            backupBoundingBoxes.put(String.valueOf(s.getId()), s.getBoundingBoxes());
+            s.setBoundingBoxes(new ArrayList<>());
+        });
+
+        //Take out the attributes
+        Map<String, Map<String, String>> backupAttributes = new HashMap<>();
+        originalSpans.forEach(s -> backupAttributes.put(String.valueOf(s.getId()), s.getAttributes()));
+
+        // We convert the initial object in JSON to avoid problems
+        Writer jsonWriter = new StringWriter();
+        ObjectMapper oMapper = new ObjectMapper();
+        try {
+            oMapper.writeValue(jsonWriter, paragraph);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String jsonTarget = jsonWriter.toString();
+
+        try (Interpreter interp = new SharedInterpreter()) {
+            interp.exec("from linking_module import RuleBasedLinker");
+            interp.set("paragraph", jsonTarget);
+            interp.exec("ruleBasedLinker_material_tc = RuleBasedLinker()");
+            interp.exec("marked_temperatures = ruleBasedLinker_material_tc.mark_temperatures_paragraph_json(paragraph)");
+            String markedTemperatures_Json = interp.getValue("marked_temperatures", String.class);
+
+            try {
+                TypeReference<ProcessedParagraph> mapType = new TypeReference<ProcessedParagraph>() {
+                };
+                ProcessedParagraph processedParagraphWithMarkedTemperatures = oMapper.readValue(markedTemperatures_Json, mapType);
+
+                // put the bounding boxes back where they were
+
+                List<Span> processedSpans = processedParagraphWithMarkedTemperatures.getSpans();
+                originalSpans.stream()
+                    .forEach(s -> {
+                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                        s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                    });
+
+                //Copy linkability
+                for (int i = 0; i < originalSpans.size(); i++) {
+                    Span processedSpan = processedSpans.get(i);
+                    Span originalSpan = originalSpans.get(i);
+                    if (processedSpan.getId().equals(originalSpan.getId())) {
+                        originalSpan.setLinkable(processedSpan.isLinkable());
+                    }
+                }
+                return paragraph;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (JepException e) {
+            e.printStackTrace();
+        }
+        return paragraph;
+    }
+
+
     public List<ProcessedParagraph> process(ProcessedParagraph paragraph) {
         if (CollectionUtils.isEmpty(paragraph.getSpans()) || disabled) {
             return Collections.singletonList(paragraph);

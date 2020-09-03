@@ -30,8 +30,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.grobid.core.data.Token.getStyle;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_PRESSURE_LABEL;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 @Singleton
 public class AggregatedProcessing {
@@ -287,8 +286,16 @@ public class AggregatedProcessing {
         }
 
         //CRF-based
+
+        // Set the materials to be linkable
+        for (Span s : processedParagraph.getSpans()) {
+            if (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL)) {
+                s.setLinkable(true);
+            }
+        }
         /**Modify the objects **/
-        CRFBasedLinker.process(tokens, processedParagraph.getSpans());
+        ProcessedParagraph newProcessedParagraph = ruleBasedLinker.markTemperatures(processedParagraph);
+        CRFBasedLinker.process(tokens, newProcessedParagraph.getSpans());
 
         //Rule-based: Because we split into sentences, we may obtain more information
         List<ProcessedParagraph> processedParagraphs = ruleBasedLinker.process(processedParagraph);

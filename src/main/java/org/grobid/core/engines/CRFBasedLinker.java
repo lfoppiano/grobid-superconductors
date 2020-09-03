@@ -139,7 +139,15 @@ public class CRFBasedLinker extends AbstractParser {
     /**
      * THis modify the annotations list
      **/
-    public void process(List<LayoutToken> layoutTokens, List<Span> annotations) {
+    public void process(List<LayoutToken> layoutTokens, List<Span> rawAnnotations) {
+
+        // for CRF we take only what's come from the superconductors model
+        List<Span> annotations = rawAnnotations.stream()
+//            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) && )
+            .filter(Span::isLinkable)
+//            .filter(s -> s.getSource().equals("superconductors"))
+//            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) && StringUtils.endsWithIgnoreCase(StringUtils.strip(s.getText()), "K"))
+            .collect(Collectors.toList());
 
         //Normalisation
         List<LayoutToken> layoutTokensPreNormalised = layoutTokens.stream()
