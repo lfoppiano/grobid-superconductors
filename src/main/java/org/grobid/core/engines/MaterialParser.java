@@ -444,6 +444,9 @@ public class MaterialParser extends AbstractParser {
     }
 
     public String postProcessFormula(String formula) {
+        if(formula == null) {
+            return "";
+        }
         Pattern regex = Pattern.compile("( {0,1})([-−]x) {0,1}(1)( {0,1})");
         String formulaWithFixedVariableOperations = regex.matcher(formula).replaceAll("$1$3$2$4");
 
