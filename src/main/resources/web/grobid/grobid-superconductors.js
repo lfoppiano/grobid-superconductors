@@ -764,7 +764,7 @@ let grobid = (function ($) {
                 appendRemoveButton(row_id);
                 return row_id;
             }
-
+            let globalLinkToPressures = []
             paragraphs.forEach(function (paragraph, paragraphIdx) {
                 let addedLinks = []
                 let spans = paragraph.spans;
@@ -804,6 +804,7 @@ let grobid = (function ($) {
                         if (span.links !== undefined && span.links.length > 0) {
                             span.links.forEach(function (link, linkIdx) {
                                 linkToPressures[link.targetId] = span.id
+                                globalLinkToPressures[link.targetId] = span.id
                             });
                         }
                     });
@@ -829,6 +830,7 @@ let grobid = (function ($) {
 
                                         if (linkToPressures[link.targetId] !== undefined) {
                                             $("#" + row_id + " td:eq(5)").text(spansMap[linkToPressures[link.targetId]].text)
+                                            delete globalLinkToPressures[link.targetId]
                                         }
 
 
@@ -866,6 +868,10 @@ let grobid = (function ($) {
                         // span.text == material
                         // link.targetText == tcValue
                         let row_id = appendLinkToTable(span, link, addedLinks);
+
+                        if (globalLinkToPressures[link.targetId] !== undefined) {
+                            $("#" + row_id + " td:eq(5)").text(spansMap[globalLinkToPressures[link.targetId]].text)
+                        }
 
                         $("#" + row_id).popover({
                             content: function () {
