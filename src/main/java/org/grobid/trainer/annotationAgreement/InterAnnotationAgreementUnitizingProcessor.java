@@ -159,7 +159,7 @@ public class InterAnnotationAgreementUnitizingProcessor {
             return processFiles(directories, refFiles);
 
         } catch (final Exception exp) {
-            throw new GrobidException("An exception occured while running Grobid batch.", exp);
+            throw new GrobidException("An exception occurred while running Grobid batch.", exp);
         }
     }
 }

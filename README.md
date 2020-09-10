@@ -234,13 +234,15 @@ The Inter Annotation Agreement (IIA) should be calculated from directory in the 
      - file1
      - file2
       
-the filenames `file1`, `file1` names should match. The name will be used to match different annotation of the same original file. 
+the filenames `file1`, `file1` names should match. The name will be used to match different annotation of the same original file.
+
+The argument `--one-vs-all reference-folder` allows to perform only IAA between every forlder and the `reference-folder`.  
 
 The IIA can be calculated using the following command 
 
 > java -Xmx4G -jar build/libs/grobid-superconductor-0.1.onejar.jar iia --input input_directory [--verbose] resources/config/config.yml
 
-The result is structured in four sections:  
+The result can be structured in four sections:  
  1. the list of "annotators" (in the example before `annotation1`, `annotation2`, `annotation3`) 
  1. the general results (average and by label)
  1. the pairwise comparison between each annotators (when they are more than 2)
