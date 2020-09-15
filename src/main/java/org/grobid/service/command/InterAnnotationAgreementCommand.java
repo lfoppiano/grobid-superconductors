@@ -198,6 +198,20 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
                     List<UnitizedStudyWrapper> studies = iiaProcessor.extractAnnotations(Arrays.asList(dir, pivot));
                     System.out.println("Evaluating " + dir.getName() + " vs " + pivot.getName());
                     printEvaluation(studies);
+
+                    // Debug information
+                    if (isVerbose.equals(true)) {
+                        System.out.println();
+                        System.out.println();
+
+                        UnitizingStudyPrinter printer = new UnitizingStudyPrinter();
+                        studies.forEach(s -> {
+                            System.out.println("\t\t\t\t" + s.getContinuums().get(0));
+                            s.getStudy().getCategories().forEach(c -> {
+                                printer.printUnitsForCategory(System.out, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));
+                            });
+                        });
+                    }
                 }
             }
         }
