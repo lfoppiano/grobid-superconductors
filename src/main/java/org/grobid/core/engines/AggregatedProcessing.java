@@ -268,6 +268,7 @@ public class AggregatedProcessing {
             textPassage.setSection(section.getLeft());
             textPassage.setSubSection(section.getRight());
         }
+        textPassage.setType("paragraph");
 
         List<Span> spans = new ArrayList<>();
         List<Span> superconductorsList = superconductorsParser.process(tokens);

@@ -192,10 +192,12 @@ public class RuleBasedLinker {
                             });
                     });
 
-
                 processedMaterialTc.stream().forEach(p -> {
                     p.setSection(paragraph.getSection());
                     p.setSubSection(paragraph.getSubSection());
+
+                    String type = processedMaterialTc.size() == 1 ? "paragraph" : "sentence";
+                    p.setType(type);
 
                     p.getSpans().stream().forEach(s -> {
                         Span correspondingSpan = spans.get(s.getId());
