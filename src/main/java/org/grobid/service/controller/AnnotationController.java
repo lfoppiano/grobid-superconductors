@@ -96,11 +96,16 @@ public class AnnotationController {
 
         Map<String, Span> spansById = new HashMap<>();
         Map<String, String> sentenceById = new HashMap<>();
+        Map<String, Pair<String, String>> sectionsById = new HashMap<>();
         for (TextPassage paragraph : document.getParagraphs()) {
-            List<Span> linkedSpans = paragraph.getSpans().stream().filter(s -> s.getLinks().size() > 0).collect(Collectors.toList());
+            List<Span> linkedSpans = paragraph.getSpans().stream()
+                .filter(s -> s.getLinks().size() > 0)
+                .collect(Collectors.toList());
+
             for (Span span : linkedSpans) {
                 spansById.put(span.getId(), span);
                 sentenceById.put(span.getId(), paragraph.getText());
+                sectionsById.put(span.getId(), Pair.of(paragraph.getSection(), paragraph.getSubSection()));
             }
         }
 
@@ -127,6 +132,8 @@ public class AnnotationController {
             String cla = "";
             String doping = "";
             String shape = "";
+            String fabrication = "";
+            String substrate = "";
 
             for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
                 String[] splits = a.getKey().split("_");
@@ -144,6 +151,10 @@ public class AnnotationController {
                     shape = value;
                 } else if (propertyName.equals("doping")) {
                     doping = value;
+                } else if (propertyName.equals("fabrication")) {
+                    fabrication = value;
+                } else if (propertyName.equals("substrate")) {
+                    substrate = value;
                 }
             }
 
@@ -160,10 +171,14 @@ public class AnnotationController {
 
                 if (isNotEmpty(pressures)) {
                     for (Span pressure : pressures) {
-                        outputCSV.add(Arrays.asList(m.getText(), name, formula, doping, shape, cla, tcValue.getText(), pressure.getText(), entry.getValue(), sentenceById.get(m.getId())));
+                        outputCSV.add(Arrays.asList(m.getText(), name, formula, doping, shape, cla, fabrication, substrate,
+                            tcValue.getText(), pressure.getText(), entry.getValue(), sectionsById.get(m.getId()).getLeft(),
+                            sectionsById.get(m.getId()).getRight(), sentenceById.get(m.getId())));
                     }
                 } else {
-                    outputCSV.add(Arrays.asList(m.getText(), name, formula, doping, shape, cla, tcValue.getText(), "", entry.getValue(), sentenceById.get(m.getId())));
+                    outputCSV.add(Arrays.asList(m.getText(), name, formula, doping, shape, cla, fabrication, substrate,
+                        tcValue.getText(), "", entry.getValue(), sectionsById.get(m.getId()).getLeft(),
+                        sectionsById.get(m.getId()).getRight(), sentenceById.get(m.getId())));
                 }
 
             }
@@ -172,7 +187,7 @@ public class AnnotationController {
         StringBuilder out = new StringBuilder();
         try {
             final CSVPrinter printer = CSVFormat.DEFAULT
-                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Critical temperature", "Applied pressure", "Link type", "Sentence")
+                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication", "Substrate", "Critical temperature", "Applied pressure", "Link type", "Section", "Subsection", "Sentence")
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.ALL)
                 .print(out);
