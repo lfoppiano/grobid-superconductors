@@ -21,12 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.grobid.core.engines.tagging.GenericTaggerUtils.getPlainLabel;
 
 public class GrobidPDFEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrobidPDFEngine.class);
@@ -48,10 +50,12 @@ public class GrobidPDFEngine {
      * segment of interest (e.g. header, body, annex) and possibly apply
      * the corresponding model to further filter by structure types
      */
-    public static void processDocument(Document doc, Consumer<List<LayoutToken>> closure) {
+    public static void processDocument(Document doc, BiConsumer<List<LayoutToken>, Pair<String, String>> closure) {
         EngineParsers parsers = new EngineParsers();
 
         List<List<LayoutToken>> outputLayoutTokens = new ArrayList<>();
+        //left -> section, right-> subsection
+        List<Pair<String, String>> sections = new ArrayList<>();
 
         // from the header, we are interested in title, abstract and keywords
         SortedSet<DocumentPiece> documentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
@@ -71,6 +75,7 @@ public class GrobidPDFEngine {
                 List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
                 if (isNotEmpty(titleTokens)) {
                     outputLayoutTokens.add(normaliseAndCleanup(titleTokens));
+                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.HEADER_LABEL), getPlainLabelName(TaggingLabels.TITLE_LABEL)));
                 }
 
                 // abstract
@@ -81,12 +86,14 @@ public class GrobidPDFEngine {
                     List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
 //                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
                     outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
+                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.HEADER_LABEL), getPlainLabelName(TaggingLabels.ABSTRACT_LABEL)));
                 }
 
                 // keywords
                 List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
                 if (isNotEmpty(keywordTokens)) {
                     outputLayoutTokens.add(normaliseAndCleanup(keywordTokens));
+                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.HEADER_LABEL), getPlainLabelName(TaggingLabels.KEYWORD_LABEL)));
                 }
             }
         }
@@ -132,6 +139,7 @@ public class GrobidPDFEngine {
                             } else {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
                                     outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
+                                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), getPlainLabelName(TaggingLabels.FIGURE_LABEL)));
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
@@ -179,6 +187,7 @@ public class GrobidPDFEngine {
                             if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
                                     outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
+                                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), getPlainLabelName(TaggingLabels.SECTION_LABEL)));
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
                             } else {
@@ -187,6 +196,7 @@ public class GrobidPDFEngine {
 
                                     if (isNotEmpty(outputBodyLayoutTokens)) {
                                         outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
+                                        sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL)));
                                         outputBodyLayoutTokens = new ArrayList<>();
                                     }
                                 }
@@ -201,6 +211,7 @@ public class GrobidPDFEngine {
 
                 if (isNotEmpty(outputBodyLayoutTokens)) {
                     outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
+                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), ""));
                 }
             }
             // we don't process references (although reference titles could be relevant)
@@ -216,12 +227,21 @@ public class GrobidPDFEngine {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
 //                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
                     outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
+                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.ANNEX_LABEL), getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL)));
                 }
             }
 
+            if (outputLayoutTokens.size() != sections.size()) {
+                throw new RuntimeException("Mismatch between sections and token lists ");
+            }
             // process
-            outputLayoutTokens.stream().forEach(closure::accept);
+            IntStream.range(0, outputLayoutTokens.size())
+                .forEach(i ->closure.accept(outputLayoutTokens.get(i), sections.get(i)));
         }
+    }
+
+    protected static String getPlainLabelName(String label) {
+        return label.replaceAll("<|>", "");
     }
 
     /**

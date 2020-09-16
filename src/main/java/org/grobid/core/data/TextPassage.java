@@ -6,11 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represent a processed paragraph
+ * Represent a text passage, such as a sentence or a paragraph
  **/
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ProcessedParagraph {
+public class TextPassage {
     private String text;
+
+    //Type can be "paragraph" or "sentence" for the time being...
+    private String type;
+
+    // Identify Header, Body, Annex (grobid segmentation model)
+    private String section;
+
+    // identify the subsection within the `section` models
+    private String subSection;
 
     private List<Span> spans = new ArrayList<>();
 
@@ -48,5 +57,29 @@ public class ProcessedParagraph {
 
     public void setRelationships(List<Relationship> relationships) {
         this.relationships = relationships;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public String getSubSection() {
+        return subSection;
+    }
+
+    public void setSubSection(String subSection) {
+        this.subSection = subSection;
     }
 }

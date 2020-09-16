@@ -72,7 +72,7 @@ public class AggregatedProcessingTest {
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        List<ProcessedParagraph> response = target.process(tokens, true);
+        List<TextPassage> response = target.process(tokens, true);
 
         EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 

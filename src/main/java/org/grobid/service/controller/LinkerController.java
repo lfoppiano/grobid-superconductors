@@ -4,7 +4,7 @@ import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.grobid.core.data.ProcessedParagraph;
+import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
 import org.grobid.core.engines.CRFBasedLinker;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -48,19 +48,19 @@ public class LinkerController {
     @Path("link")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public List<ProcessedParagraph> processTextSuperconductorsPost(@FormDataParam("text") String text) {
+    public List<TextPassage> processTextSuperconductorsPost(@FormDataParam("text") String text) {
         return link(text);
     }
 
     @Path("link")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<ProcessedParagraph> processTextSuperconductorsGet(@FormDataParam("text") String text) {
+    public List<TextPassage> processTextSuperconductorsGet(@FormDataParam("text") String text) {
         return link(text);
     }
 
-    private List<ProcessedParagraph> link(@FormDataParam("text") String text) {
-        List<ProcessedParagraph> processedParagraphs = new ArrayList<>();
+    private List<TextPassage> link(@FormDataParam("text") String text) {
+        List<TextPassage> textPassages = new ArrayList<>();
 
         String textPreprocessed = text.replace("\r\n", "\n");
         String artificialXml = "<text><p>" + textPreprocessed + "</p></text>";
@@ -109,15 +109,15 @@ public class LinkerController {
 
             linker.process(handler.getGlobalAccumulatedText(), annotations);
 
-            ProcessedParagraph processedParagraph = new ProcessedParagraph();
-            processedParagraph.setText(handler.getGlobalAccumulatedText());
-            processedParagraph.setSpans(annotations);
+            TextPassage textPassage = new TextPassage();
+            textPassage.setText(handler.getGlobalAccumulatedText());
+            textPassage.setSpans(annotations);
 
-            processedParagraphs.add(processedParagraph);
+            textPassages.add(textPassage);
         } catch (XMLStreamException e) {
             e.printStackTrace();
         }
 
-        return processedParagraphs;
+        return textPassages;
     }
 }

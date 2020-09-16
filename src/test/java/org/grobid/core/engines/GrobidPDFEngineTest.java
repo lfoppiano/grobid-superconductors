@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import org.grobid.core.analyzers.GrobidAnalyzer;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -111,6 +112,11 @@ public class GrobidPDFEngineTest {
         assertThat(Iterables.getLast(layoutTokens).getText(), is(" "));
 
         assertThat(layoutTokens, hasSize(27));
+    }
+
+    @Test
+    public void testGetPlainLabelName() throws Exception {
+        assertThat(GrobidPDFEngine.getPlainLabelName("<header>"), is("header"));
     }
 
 }

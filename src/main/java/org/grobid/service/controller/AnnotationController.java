@@ -7,8 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.DocumentResponse;
-import org.grobid.core.data.Link;
-import org.grobid.core.data.ProcessedParagraph;
+import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -22,11 +21,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -101,7 +96,7 @@ public class AnnotationController {
 
         Map<String, Span> spansById = new HashMap<>();
         Map<String, String> sentenceById = new HashMap<>();
-        for (ProcessedParagraph paragraph : document.getParagraphs()) {
+        for (TextPassage paragraph : document.getParagraphs()) {
             List<Span> linkedSpans = paragraph.getSpans().stream().filter(s -> s.getLinks().size() > 0).collect(Collectors.toList());
             for (Span span : linkedSpans) {
                 spansById.put(span.getId(), span);

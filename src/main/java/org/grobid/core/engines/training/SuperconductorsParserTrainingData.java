@@ -110,7 +110,7 @@ public class SuperconductorsParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, preprocessedLayoutToken -> {
+        GrobidPDFEngine.processDocument(document, (preprocessedLayoutToken, section) -> {
 
             // Re-tokenise now
             final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(preprocessedLayoutToken);

@@ -8,7 +8,7 @@ import jep.JepException;
 import jep.SharedInterpreter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.grobid.core.data.Link;
-import org.grobid.core.data.ProcessedParagraph;
+import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -21,9 +21,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.grobid.core.data.Link.TC_PRESSURE_TYPE;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL;
 
 @Singleton
 public class RuleBasedLinker {
@@ -60,7 +57,7 @@ public class RuleBasedLinker {
         }
     }
 
-    public ProcessedParagraph markTemperatures(ProcessedParagraph paragraph) {
+    public TextPassage markTemperatures(TextPassage paragraph) {
         List<Span> originalSpans = paragraph.getSpans();
         if (CollectionUtils.isEmpty(originalSpans) || disabled) {
             return paragraph;
@@ -95,13 +92,13 @@ public class RuleBasedLinker {
             String markedTemperatures_Json = interp.getValue("marked_temperatures", String.class);
 
             try {
-                TypeReference<ProcessedParagraph> mapType = new TypeReference<ProcessedParagraph>() {
+                TypeReference<TextPassage> mapType = new TypeReference<TextPassage>() {
                 };
-                ProcessedParagraph processedParagraphWithMarkedTemperatures = oMapper.readValue(markedTemperatures_Json, mapType);
+                TextPassage textPassageWithMarkedTemperatures = oMapper.readValue(markedTemperatures_Json, mapType);
 
                 // put the bounding boxes back where they were
 
-                List<Span> processedSpans = processedParagraphWithMarkedTemperatures.getSpans();
+                List<Span> processedSpans = textPassageWithMarkedTemperatures.getSpans();
                 originalSpans.stream()
                     .forEach(s -> {
                         s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
@@ -128,7 +125,7 @@ public class RuleBasedLinker {
     }
 
 
-    public List<ProcessedParagraph> process(ProcessedParagraph paragraph) {
+    public List<TextPassage> process(TextPassage paragraph) {
         if (CollectionUtils.isEmpty(paragraph.getSpans()) || disabled) {
             return Collections.singletonList(paragraph);
         }
@@ -166,9 +163,9 @@ public class RuleBasedLinker {
             String extracted_links_tcPressure_Json = interp.getValue("extracted_links_tcPressure", String.class);
 
             try {
-                TypeReference<List<ProcessedParagraph>> mapType = new TypeReference<List<ProcessedParagraph>>() {
+                TypeReference<List<TextPassage>> mapType = new TypeReference<List<TextPassage>>() {
                 };
-                List<ProcessedParagraph> processedMaterialTc = oMapper.readValue(extracted_links_materialTc_Json, mapType);
+                List<TextPassage> processedMaterialTc = oMapper.readValue(extracted_links_materialTc_Json, mapType);
 
                 // put the bounding boxes back where they were
                 processedMaterialTc.stream()
@@ -180,7 +177,7 @@ public class RuleBasedLinker {
                             });
                     });
 
-                List<ProcessedParagraph> processedTcPressure = oMapper.readValue(extracted_links_tcPressure_Json, mapType);
+                List<TextPassage> processedTcPressure = oMapper.readValue(extracted_links_tcPressure_Json, mapType);
 
                 // put the bounding boxes back where they were
                 Map<String, Span> spans = new HashMap<>();
@@ -197,6 +194,9 @@ public class RuleBasedLinker {
 
 
                 processedMaterialTc.stream().forEach(p -> {
+                    p.setSection(paragraph.getSection());
+                    p.setSubSection(paragraph.getSubSection());
+
                     p.getSpans().stream().forEach(s -> {
                         Span correspondingSpan = spans.get(s.getId());
                         if (correspondingSpan != null) {
@@ -204,7 +204,6 @@ public class RuleBasedLinker {
                                 .filter(f -> !f.getType().equals("crf"))
                                 .collect(Collectors.toList());
                             s.addLinks(collect);
-                            return;
                         }
                     });
                 });

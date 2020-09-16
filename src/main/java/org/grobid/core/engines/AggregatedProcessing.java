@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -184,9 +185,9 @@ public class AggregatedProcessing {
     public DocumentResponse process(String text, boolean disableLinking) {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
-        List<ProcessedParagraph> processedParagraph = process(tokens, disableLinking);
+        List<TextPassage> textPassage = process(tokens, disableLinking);
 
-        return new DocumentResponse(processedParagraph);
+        return new DocumentResponse(textPassage);
     }
 
     private List<Span> getQuantities(List<LayoutToken> tokens) {
@@ -238,7 +239,9 @@ public class AggregatedProcessing {
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
-            GrobidPDFEngine.processDocument(doc, l -> documentResponse.addParagraphs(process(l, disableLinking)));
+            GrobidPDFEngine.processDocument(doc, (tokens, sections) -> {
+                documentResponse.addParagraphs(process(tokens, disableLinking, sections));
+            });
 
             List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
 
@@ -252,11 +255,19 @@ public class AggregatedProcessing {
         return documentResponse;
     }
 
-    public List<ProcessedParagraph> process(List<LayoutToken> tokens, boolean disableLinking) {
-        ProcessedParagraph processedParagraph = new ProcessedParagraph();
+    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking) {
+        return process(tokens, disableLinking, null);
+    }
 
-        processedParagraph.setTokens(tokens.stream().map(l -> Token.of(l)).collect(Collectors.toList()));
-        processedParagraph.setText(LayoutTokensUtil.toText(tokens));
+    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking, Pair<String, String> section) {
+        TextPassage textPassage = new TextPassage();
+
+        textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
+        textPassage.setText(LayoutTokensUtil.toText(tokens));
+        if (section != null) {
+            textPassage.setSection(section.getLeft());
+            textPassage.setSubSection(section.getRight());
+        }
 
         List<Span> spans = new ArrayList<>();
         List<Span> superconductorsList = superconductorsParser.process(tokens);
@@ -279,29 +290,29 @@ public class AggregatedProcessing {
             .sorted(Comparator.comparingInt(Span::getOffsetStart))
             .collect(Collectors.toList());
 
-        processedParagraph.setSpans(pruneOverlappingAnnotations(sortedSpans));
+        textPassage.setSpans(pruneOverlappingAnnotations(sortedSpans));
 
         if (disableLinking) {
-            return Collections.singletonList(processedParagraph);
+            return Collections.singletonList(textPassage);
         }
 
         //CRF-based
 
         // Set the materials to be linkable
-        for (Span s : processedParagraph.getSpans()) {
+        for (Span s : textPassage.getSpans()) {
             if (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL)) {
                 s.setLinkable(true);
             }
         }
         /**Modify the objects **/
-        ProcessedParagraph newProcessedParagraph = ruleBasedLinker.markTemperatures(processedParagraph);
-        CRFBasedLinker.process(tokens, newProcessedParagraph.getSpans());
+        TextPassage newTextPassage = ruleBasedLinker.markTemperatures(textPassage);
+        CRFBasedLinker.process(tokens, newTextPassage.getSpans());
 
         //Rule-based: Because we split into sentences, we may obtain more information
-        List<ProcessedParagraph> processedParagraphs = ruleBasedLinker.process(processedParagraph);
+        List<TextPassage> textPassages = ruleBasedLinker.process(textPassage);
 
         //TODO: Merge
-        return processedParagraphs;
+        return textPassages;
     }
 
 

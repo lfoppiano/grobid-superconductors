@@ -1,7 +1,7 @@
 package org.grobid.core.engines;
 
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.ProcessedParagraph;
+import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.main.LibraryLoader;
@@ -59,7 +59,7 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldRecogniseOneLink() throws Exception {
         String input = "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K .";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        List<ProcessedParagraph> paragraphs = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = entityParser.process(layoutTokens, true);
         List<Span> annotations = paragraphs.get(0).getSpans();
         target.process(layoutTokens, annotations);
 
@@ -78,7 +78,7 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldNotLink() throws Exception {
         String input = "Previous studies have shown that pressure of 1 GPa can reduce T c , but only by less than 2 K in MgB 2 .";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        List<ProcessedParagraph> paragraphs = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = entityParser.process(layoutTokens, true);
         List<Span> annotations = paragraphs.get(0).getSpans();
         target.process(layoutTokens, annotations);
 
@@ -90,7 +90,7 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldExtract2Links() throws Exception {
         String input = "Theory-oriented experiments show that the compressed hydride of Group VI (hydrogen sulfide, H 3 S) exhibits a superconducting state at 203 K. Moreover, a Group V hydride (phosphorus hydride, PH 3 ) has also been studied and its T c reached a maximum of 103 K. The experimental realisation of the superconductivity in H 3 S and PH 3 inspired us to search for other hydride superconductors.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        List<ProcessedParagraph> paragraphs = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = entityParser.process(layoutTokens, true);
         List<Span> annotations = paragraphs.get(0).getSpans();
         target.process(layoutTokens, annotations);
 
