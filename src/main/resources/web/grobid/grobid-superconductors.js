@@ -703,9 +703,18 @@ let grobid = (function ($) {
             let element_id = "e" + id;
             let mat_element_id = "mat" + id;
             let cla_element_id = "cla" + id;
+            let shape_element_id = "shape" + id;
             let tc_element_id = "tc" + id;
             let pressure_element_id = "pressure" + id;
-            return {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id};
+            return {
+                row_id,
+                element_id,
+                mat_element_id,
+                cla_element_id,
+                shape_element_id,
+                tc_element_id,
+                pressure_element_id
+            };
         }
 
         function onSuccessPdf(response) {
@@ -743,11 +752,19 @@ let grobid = (function ($) {
                         return span.attributes[key]
                     }).join(", ");
 
-                let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes);
-                let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(encodedLinkId);
+                let shapes = Object.keys(span.attributes)
+                    .filter(function (key) {
+                        return key.endsWith("shape");
+                    })
+                    .map(function (key) {
+                        return span.attributes[key]
+                    }).join(", ");
+
+                let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes, shape=shapes);
+                let {row_id, element_id, mat_element_id, cla_element_id, shape_element_id, tc_element_id, pressure_element_id} = computeTableIds(encodedLinkId);
 
                 if (addedLinks.indexOf(encodedLinkId) >= 0) {
-                    let typeRow = $('#' + row_id + " td:eq(6)");
+                    let typeRow = $('#' + row_id + " td:eq(7)");
                     let currentType = typeRow.text();
                     currentType += ", " + link.type;
                     typeRow.text(currentType);
@@ -764,6 +781,7 @@ let grobid = (function ($) {
                 appendRemoveButton(row_id);
                 return row_id;
             }
+
             let globalLinkToPressures = []
             paragraphs.forEach(function (paragraph, paragraphIdx) {
                 let addedLinks = []
@@ -829,7 +847,7 @@ let grobid = (function ($) {
                                         // appendRemoveButton(row_id);
 
                                         if (linkToPressures[link.targetId] !== undefined) {
-                                            $("#" + row_id + " td:eq(5)").text(spansMap[linkToPressures[link.targetId]].text)
+                                            $("#" + row_id + " td:eq(6)").text(spansMap[linkToPressures[link.targetId]].text)
                                             delete globalLinkToPressures[link.targetId]
                                         }
 
@@ -870,7 +888,7 @@ let grobid = (function ($) {
                         let row_id = appendLinkToTable(span, link, addedLinks);
 
                         if (globalLinkToPressures[link.targetId] !== undefined) {
-                            $("#" + row_id + " td:eq(5)").text(spansMap[globalLinkToPressures[link.targetId]].text)
+                            $("#" + row_id + " td:eq(6)").text(spansMap[globalLinkToPressures[link.targetId]].text)
                         }
 
                         $("#" + row_id).popover({
@@ -924,20 +942,21 @@ let grobid = (function ($) {
         }
 
         /** Summary table **/
-        function createRowHtml(id, material = "", tcValue = "", type = "", viewInPDF = false, cla = "", appliedPressure = "") {
+        function createRowHtml(id, material = "", tcValue = "", type = "", viewInPDF = false, cla = "", shape = "", appliedPressure = "") {
 
             let viewInPDFIcon = "";
             if (viewInPDF === true) {
                 viewInPDFIcon = "<img src='resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
             }
 
-            let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(id);
+            let {row_id, element_id, mat_element_id, cla_element_id, shape_element_id, tc_element_id, pressure_element_id} = computeTableIds(id);
 
             let html_code = "<tr class='d-flex' id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
-                "<td class='col-1'><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
-                "<td class='col-1'><img src='resources/icons/trash.svg' alt='-' id='remove-button'/></td>" +
+                "<td><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
+                "<td><img src='resources/icons/trash.svg' alt='-' id='remove-button'/></td>" +
                 "<td class='col-3'><a href='#' id=" + mat_element_id + " data-pk='" + mat_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + material + "</a></td>" +
                 "<td class='col-2'><a href='#' id=" + cla_element_id + " data-pk='" + cla_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + cla + "</a></td>" +
+                "<td class='col-2'><a href='#' id=" + shape_element_id + " data-pk='" + shape_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + shape + "</a></td>" +
                 "<td class='col-2'><a href='#' id=" + tc_element_id + " data-pk='" + tc_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + tcValue + "</a></td>" +
                 "<td class='col-2'><a href='#' id=" + pressure_element_id + " data-pk='" + pressure_element_id + "' data-url='" + getUrl('feedback') + "' data-type='text'>" + appliedPressure + "</a></td>" +
                 "<td class='col-1'>" + type + "</td>" +
@@ -963,7 +982,7 @@ let grobid = (function ($) {
             let random_number = '_' + Math.random().toString(36).substr(2, 9);
 
             let html_code = createRowHtml(random_number);
-            let {row_id, element_id, mat_element_id, cla_element_id, tc_element_id, pressure_element_id} = computeTableIds(random_number);
+            let {row_id, element_id, mat_element_id, cla_element_id, shape_element_id, tc_element_id, pressure_element_id} = computeTableIds(random_number);
 
             $('#tableResultsBody').append(html_code);
 

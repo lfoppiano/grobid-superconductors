@@ -304,7 +304,8 @@ public class AggregatedProcessing {
                 s.setLinkable(true);
             }
         }
-        /**Modify the objects **/
+
+        /** Modify the objects **/
         TextPassage newTextPassage = ruleBasedLinker.markTemperatures(textPassage);
         CRFBasedLinker.process(tokens, newTextPassage.getSpans());
 
