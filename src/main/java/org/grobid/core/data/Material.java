@@ -40,6 +40,10 @@ public class Material {
     private String rawTaggedValue;
     private String clazz;
 
+    //This is the formula with each variable, replaced with random numbers, and can be used as a second attempt to
+    // calculate the class from the formula
+    private String sampleFormula;
+
     private List<String> resolvedFormulas = new ArrayList<>();
 
     @JsonIgnore
@@ -427,5 +431,13 @@ public class Material {
 
     public String getClazz() {
         return clazz;
+    }
+
+    public String getSampleFormula() {
+        return sampleFormula;
+    }
+
+    public void setSampleFormula(String sampleFormula) {
+        this.sampleFormula = sampleFormula;
     }
 }

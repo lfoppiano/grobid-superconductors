@@ -357,6 +357,7 @@ public class MaterialParser extends AbstractParser {
                 resolvedFormulas.add(material.getFormula());
             }
 
+            //Expand formulas of type (A, B)blabla
             if (isNotEmpty(resolvedFormulas)) {
                 List<String> resolvedAndExpandedFormulas = resolvedFormulas.stream()
                     .flatMap(f -> Material.expandFormula(f).stream())
@@ -383,8 +384,8 @@ public class MaterialParser extends AbstractParser {
 
             material.setRawTaggedValue(rawTaggedValue.toString());
 
-            //THIs modify the material object!
-            if(materialClassResolver != null) {
+            //This modify the material object!
+            if (materialClassResolver != null) {
                 materialClassResolver.process(material);
             } else {
                 LOGGER.warn("The material class resolver is null - let's avoiding problems and skip this part ;-) ");
@@ -446,7 +447,7 @@ public class MaterialParser extends AbstractParser {
     private static final Pattern REGEX_COLON_INSTEAD_DOT = Pattern.compile("([0-9]):([0-9])");
 
     public String postProcessFormula(String formula) {
-        if(formula == null) {
+        if (formula == null) {
             return "";
         }
 

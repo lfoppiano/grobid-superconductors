@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Singleton
@@ -54,12 +59,16 @@ public class MaterialClassResolver {
             return material;
         }
 
+        boolean sampling = false;
         String sampleFormula = material.getFormula();
         if (isNotEmpty(material.getResolvedFormulas())) {
             sampleFormula = material.getResolvedFormulas().get(0);
+        } else if (StringUtils.isNotEmpty(material.getFormula())) {
+            sampleFormula = createSample(material);
+            sampling = true;
         }
 
-        if(StringUtils.isEmpty(sampleFormula)) {
+        if (StringUtils.isEmpty(sampleFormula)) {
             return material;
         }
 
@@ -67,15 +76,48 @@ public class MaterialClassResolver {
             interp.exec("from materialParserWrapper import MaterialParserWrapper");
 
             interp.set("formula", sampleFormula);
-            interp.exec("clazz =  MaterialParserWrapper().formula_to_class(formula)");
-            String clazz = interp.getValue("clazz", String.class);
+//            interp.exec("clazz =  MaterialParserWrapper().formula_to_class(formula)");
+            interp.exec("classes =  MaterialParserWrapper().formula_to_classes(formula)");
+            interp.exec("classes_as_string = ', '.join(list(classes.keys()))");
+            String clazz = interp.getValue("classes_as_string", String.class);
+
+            if (StringUtils.isEmpty(clazz) && !sampling) {
+                String sample = createSample(material);
+                interp.set("formula", sample);
+                interp.exec("classes =  MaterialParserWrapper().formula_to_classes(formula)");
+                interp.exec("classes_as_string = ', '.join(list(classes.keys()))");
+                clazz = interp.getValue("classes_as_string", String.class);
+            }
 
             material.setClazz(clazz);
         } catch (JepException e) {
-            e.printStackTrace();
+            LOGGER.error("An error occurred when extracting the class from the material, something related to JEP or python.", e);
         }
 
         return material;
+    }
+
+    private String createSample(Material material) {
+        String sampleFormula = "";
+
+        Material sampleMaterial = new Material();
+        sampleMaterial.setFormula(material.getFormula());
+        //Best guesses of possible variables
+        sampleMaterial.addVariable("x", Collections.singletonList("0.1"));
+        sampleMaterial.addVariable("y", Collections.singletonList("0.1"));
+        sampleMaterial.addVariable("z", Collections.singletonList("0.1"));
+        List<String> resolvedVariables = Material.resolveVariables(sampleMaterial);
+
+        if (resolvedVariables.size() == 1) {
+            sampleFormula = resolvedVariables.get(0);
+        } else if (resolvedVariables.size() > 1) {
+            LOGGER.warn("Something wrong came out from the material sampling in the class detection. " +
+                "Input formula: " + sampleMaterial.getFormula() + ", resolvedFormula: " + Arrays.toString(resolvedVariables.toArray()));
+        } else {
+            LOGGER.warn("No formula came out from the material sampling in the class detection. " +
+                "Input formula: " + sampleMaterial.getFormula());
+        }
+        return sampleFormula;
     }
 
 }
