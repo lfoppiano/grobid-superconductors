@@ -62,7 +62,13 @@ public class MaterialClassResolver {
         boolean sampling = false;
         String sampleFormula = material.getFormula();
         if (isNotEmpty(material.getResolvedFormulas())) {
-            sampleFormula = material.getResolvedFormulas().get(0);
+            if (material.getResolvedFormulas().size() == 1 && isEmpty(material.getVariables().keySet())) {
+                // if there is one resolved formula and no variables, I might need to sample
+                sampleFormula = createSample(material);
+                sampling = true;
+            } else {
+                sampleFormula = material.getResolvedFormulas().get(0);
+            }
         } else if (StringUtils.isNotEmpty(material.getFormula())) {
             sampleFormula = createSample(material);
             sampling = true;

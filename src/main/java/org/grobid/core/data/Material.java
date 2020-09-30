@@ -194,6 +194,12 @@ public class Material {
         return output;
     }
 
+    /**
+     * generate permutations via a recursive function.
+     *
+     *  depth: right -> valueIndex, left -> variableIndex
+     *
+     */
     public static void generatePermutations(Map<String, List<String>> input, List<String> keyList,
                                             List<String> result, Pair<Integer, Integer> depth, String formula) {
         Integer variableIndex = depth.getLeft();
@@ -201,7 +207,7 @@ public class Material {
         Integer valueIndex = depth.getRight();
 
         String value = input.get(variable).get(valueIndex);
-        if (valueIndex == input.get(variable).size() - 1) {
+        if (valueIndex == input.get(variable).size() - 1 && variableIndex == keyList.size() - 1) {
             result.add(replaceVariable(formula, variable, value));
             return;
         }

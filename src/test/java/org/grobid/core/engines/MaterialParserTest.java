@@ -380,6 +380,25 @@ public class MaterialParserTest {
     }
 
     @Test
+    public void postProcessFormula_invalidVariableZ_shouldReplace() throws Exception {
+        String formula = "Mo -z 1 T z ) 3 Sb 7";
+
+        String s = target.postProcessFormula(formula);
+
+        assertThat(s, is("Mo 1-z T z ) 3 Sb 7"));
+    }
+
+    @Test
+    public void postProcessFormula_invalidVariableZ_shouldReplace2() throws Exception {
+        String formula = "Li x (NH 3 ) y Fe 2 (Te z Se z 1-) 2";
+
+        String s = target.postProcessFormula(formula);
+
+        assertThat(s, is("Li x (NH 3 ) y Fe 2 (Te z Se 1-z) 2"));
+    }
+
+
+    @Test
     public void postProcessFormula_invalidVariables2_shouldReplace() throws Exception {
         String formula = "BaFe 2 (As −x 1 P x ) 2 or Ba(Fe −x 1 Co x ) 2 As 2";
 
