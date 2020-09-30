@@ -65,6 +65,10 @@ public class MaterialClassResolver {
             if (material.getResolvedFormulas().size() == 1 && isEmpty(material.getVariables().keySet())) {
                 // if there is one resolved formula and no variables, I might need to sample
                 sampleFormula = createSample(material);
+                if (StringUtils.isEmpty(sampleFormula)) {
+                    // no variable in the formula...
+                    sampleFormula = material.getResolvedFormulas().get(0);
+                }
                 sampling = true;
             } else {
                 sampleFormula = material.getResolvedFormulas().get(0);
@@ -112,6 +116,7 @@ public class MaterialClassResolver {
         sampleMaterial.addVariable("x", Collections.singletonList("0.1"));
         sampleMaterial.addVariable("y", Collections.singletonList("0.1"));
         sampleMaterial.addVariable("z", Collections.singletonList("0.1"));
+        sampleMaterial.addVariable("δ", Collections.singletonList("0.1"));
         List<String> resolvedVariables = Material.resolveVariables(sampleMaterial);
 
         if (resolvedVariables.size() == 1) {

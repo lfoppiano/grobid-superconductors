@@ -443,8 +443,9 @@ public class MaterialParser extends AbstractParser {
 
     }
 
-    private static final Pattern REGEX_INVERTED_X_MINUS_1_PATTERN1 = Pattern.compile("( {0,1})([-−][xyz]) {0,1}([1-2])( {0,1})");
-    private static final Pattern REGEX_INVERTED_X_MINUS_1_PATTERN2 = Pattern.compile("( {0,1})([xyz]) {0,1}([1-2][-−])( {0,1})");
+    private static final Pattern REGEX_INVERTED_X_MINUS_1_PATTERN1 = Pattern.compile("( {0,1})([-−][xyzδ]) {0,1}([1-2])( {0,1})");
+    private static final Pattern REGEX_INVERTED_X_MINUS_1_PATTERN2 = Pattern.compile("( {0,1})([xyzδ]) {0,1}([1-2][-−])( {0,1})");
+    private static final Pattern REGEX_COMMA_INSTEAD_DOT = Pattern.compile("([A-Za-z]+ {0,1})([0-9])[,]([0-9])");
     private static final Pattern REGEX_COLON_INSTEAD_DOT = Pattern.compile("([0-9]):([0-9])");
 
     public String postProcessFormula(String formula) {
@@ -458,8 +459,10 @@ public class MaterialParser extends AbstractParser {
             .matcher(formulaWithFixedVariableOperations1).replaceAll("$1$3$2$4");
         String formulaWithFixedDots = REGEX_COLON_INSTEAD_DOT
             .matcher(formulaWithFixedVariableOperations).replaceAll("$1.$2");
+        String formulaWithFixedCommas = REGEX_COMMA_INSTEAD_DOT
+            .matcher(formulaWithFixedDots).replaceAll("$1$2.$3");
 
-        String formulaWithReplacedMinus = formulaWithFixedDots.replaceAll("À", "-");
+        String formulaWithReplacedMinus = formulaWithFixedCommas.replaceAll("À", "-");
         String formulaWithoutInvalidCharacters = formulaWithReplacedMinus.replaceAll("\\p{C}", " ");
 
         return formulaWithoutInvalidCharacters;
