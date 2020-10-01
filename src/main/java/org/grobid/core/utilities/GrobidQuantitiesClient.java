@@ -10,7 +10,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -36,7 +38,7 @@ public class GrobidQuantitiesClient {
 
     private final String grobidQuantitiesUrl;
     private GrobidSuperconductorsConfiguration configuration;
-    private HttpClient httpClient;
+    private CloseableHttpClient httpClient;
 
     public GrobidQuantitiesClient(String grobidQuantitiesUrl) {
         this.grobidQuantitiesUrl = grobidQuantitiesUrl;
@@ -68,11 +70,12 @@ public class GrobidQuantitiesClient {
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
             request.setEntity(entity);
 
-            final HttpResponse response = httpClient.execute(request);
-            if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
-            } else {
-                return fromJson(response.getEntity().getContent());
+            try(CloseableHttpResponse response = httpClient.execute(request)) {
+                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
+                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
+                } else {
+                    return fromJson(response.getEntity().getContent());
+                }
             }
 
         } catch (UnknownHostException e) {
