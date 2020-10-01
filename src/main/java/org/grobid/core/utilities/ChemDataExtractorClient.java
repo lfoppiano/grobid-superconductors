@@ -9,8 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -34,7 +36,7 @@ public class ChemDataExtractorClient {
 
     private final String serverUrl;
     private GrobidSuperconductorsConfiguration configuration;
-    private HttpClient httpClient;
+    private CloseableHttpClient httpClient;
 
     public ChemDataExtractorClient(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -66,11 +68,12 @@ public class ChemDataExtractorClient {
 //            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
 //            request.setEntity(entity);
 
-            final HttpResponse response = httpClient.execute(request);
-            if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
-            } else {
-                return fromJson(response.getEntity().getContent());
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
+                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
+                } else {
+                    return fromJson(response.getEntity().getContent());
+                }
             }
 
         } catch (UnknownHostException e) {
