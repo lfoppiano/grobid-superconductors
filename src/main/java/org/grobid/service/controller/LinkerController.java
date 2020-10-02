@@ -97,6 +97,7 @@ public class LinkerController {
 
                 span.setOffsetStart(integer);
                 span.setOffsetEnd(integer + length(token));
+                span.setLinkable(true);
 
                 if (!span.getText().equals(handler.getGlobalAccumulatedText().substring(span.getOffsetStart(), span.getOffsetEnd()))) {
                     LOGGER.warn("Mismatch between the global accumulated text and the extracted entities. Span text: "
