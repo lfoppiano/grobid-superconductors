@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.engines.SuperconductorsModels;
+import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.utilities.GrobidProperties;
@@ -50,7 +51,7 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entityLinker", "superconductors") + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entityLinker-material-tc", "superconductors") + File.separator + "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -112,7 +113,7 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
                 for (Triple<String, String, String> labeledToken : labeled) {
                     String token = labeledToken.getLeft();
                     String label = labeledToken.getMiddle();
-                    String entity_type = labeledToken.getRight();
+                    String entity_type = GenericTaggerUtils.getPlainLabel(labeledToken.getRight());
                     if (entity_type.equals("<" + DESTINATION + ">")) {
                         materials++;
                     }
