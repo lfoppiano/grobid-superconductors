@@ -132,6 +132,8 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             trainer = new EntityLinkerTcPressureTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
             trainer = new EntityLinkerTcMeMethodTrainer();
+        } else if (SuperconductorsModels.ENTITY_LINKER_POLYMER_SOLVENT.getModelName().equals(modelName)) {
+            trainer = new EntityLinkerPolymerSolventTrainer();
         } else {
             System.out.println("The model name " + modelName + " does not correspond to any model. ");
             System.out.println(super.getDescription());

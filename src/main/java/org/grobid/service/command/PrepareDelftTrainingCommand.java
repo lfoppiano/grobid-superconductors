@@ -62,7 +62,7 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .choices(Arrays.asList("superconductors", "material", "entityLinker"))
+            .choices(Arrays.asList("superconductors", "material", "entityLinker", "entityLinker-polymer-solvent"))
             .required(false)
             .setDefault("superconductors")
             .help("Model data to use. ");
@@ -96,7 +96,7 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
 
         GrobidModel model = SuperconductorsModels.SUPERCONDUCTORS;
-        Trainer trainer =  new SuperconductorsTrainer();
+        Trainer trainer = new SuperconductorsTrainer();
 
         if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
             model = SuperconductorsModels.MATERIAL;
@@ -107,9 +107,12 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE;
             trainer = new EntityLinkerTcPressureTrainer();
-        }else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
+        } else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD;
             trainer = new EntityLinkerTcMeMethodTrainer();
+        }else if (SuperconductorsModels.ENTITY_LINKER_POLYMER_SOLVENT.getModelName().equals(modelName)) {
+            model = SuperconductorsModels.ENTITY_LINKER_POLYMER_SOLVENT;
+            trainer = new EntityLinkerPolymerSolventTrainer();
         }
 
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
