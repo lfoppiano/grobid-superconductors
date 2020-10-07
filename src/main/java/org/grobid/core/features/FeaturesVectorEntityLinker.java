@@ -157,9 +157,7 @@ public class FeaturesVectorEntityLinker {
 //
 //        // entity type
 //        featuresVector.entityType = first.orElse(TaggingLabels.OTHER_LABEL);
-        featuresVector.entityType = entityType
-            .replaceAll("^([A-Z]-)?<", "")
-            .replaceAll(">$", "");
+        featuresVector.entityType = entityType;
 
         return featuresVector;
     }
