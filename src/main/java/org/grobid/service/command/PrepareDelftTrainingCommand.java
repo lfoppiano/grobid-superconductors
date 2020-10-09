@@ -62,7 +62,7 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .choices(Arrays.asList("superconductors", "material", "entityLinker"))
+            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc"))
             .required(false)
             .setDefault("superconductors")
             .help("Model data to use. ");
