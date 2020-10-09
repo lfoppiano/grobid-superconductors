@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,8 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entityLinker-material-tc", "superconductors") + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath()
+                .replaceFirst("entityLinker-material-tc", "superconductors"),"final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -96,7 +98,7 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 EntityLinkerAnnotationStaxHandler handler = new EntityLinkerAnnotationStaxHandler("p",
-                    SOURCE, DESTINATION);
+                    Arrays.asList(SOURCE), Arrays.asList(DESTINATION));
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 

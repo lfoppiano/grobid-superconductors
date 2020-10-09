@@ -62,8 +62,8 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .choices(Arrays.asList("superconductors", "material", "entityLinker", "entityLinker-polymer-solvent"))
-            .required(false)
+            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc", "entityLinker-polymer-solvent"))
+            .required(true)
             .setDefault("superconductors")
             .help("Model data to use. ");
 
@@ -110,10 +110,12 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD;
             trainer = new EntityLinkerTcMeMethodTrainer();
-        }else if (SuperconductorsModels.ENTITY_LINKER_POLYMER_SOLVENT.getModelName().equals(modelName)) {
+        } else if (SuperconductorsModels.ENTITY_LINKER_POLYMER_SOLVENT.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_POLYMER_SOLVENT;
             trainer = new EntityLinkerPolymerSolventTrainer();
         }
+
+        System.out.println("Model: " + model.getModelName());
 
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
 

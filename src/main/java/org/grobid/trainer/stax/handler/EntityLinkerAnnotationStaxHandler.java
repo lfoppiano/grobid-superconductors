@@ -24,8 +24,8 @@ import static org.apache.commons.lang3.StringUtils.*;
 public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityLinkerAnnotationStaxHandler.class);
-    private final String sourceLabel;
-    private final String destinationLabel;
+    private final List<String> sourceLabel;
+    private final List<String> destinationLabel;
     private final String topTag;
 
     private StringBuilder accumulator;
@@ -47,7 +47,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
     // tcValue-material link -> (source: tcValue, destination: material)
     // pressure-tcValue link -> (source: pressure, destination tcValue)
 
-    public EntityLinkerAnnotationStaxHandler(String topTag, String sourceLabel, String destinationLabel) {
+    public EntityLinkerAnnotationStaxHandler(String topTag, List<String> sourceLabel, List<String> destinationLabel) {
         this.topTag = topTag;
         this.sourceLabel = sourceLabel;
         this.destinationLabel = destinationLabel;
@@ -73,7 +73,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
             link_id = null;
             insideLink = null;
 
-        } else if (sourceLabel.equals(localName)) {
+        } else if (sourceLabel.contains(localName)) {
             //e.g. tcValue
 
             writeData();
@@ -100,7 +100,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
                 }
             }
 
-        } else if (destinationLabel.equals(localName)) {
+        } else if (destinationLabel.contains(localName)) {
             //e.g. material
             writeData();
 
@@ -154,7 +154,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
             writeData();
             labeled.add(new ImmutableTriple<>("\n", "", ""));
 
-        } else if (sourceLabel.equals(localName)) {
+        } else if (sourceLabel.contains(localName)) {
             if (link_id == null) {
                 //there is not ptr, so I should exclude this
             } else {
@@ -177,7 +177,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
                 }
             }
 
-        } else if (destinationLabel.equals(localName)) {
+        } else if (destinationLabel.contains(localName)) {
 
             // material
 

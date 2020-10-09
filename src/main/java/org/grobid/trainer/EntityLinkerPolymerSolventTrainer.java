@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +29,8 @@ public class EntityLinkerPolymerSolventTrainer extends AbstractTrainer {
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
-    public static String SOURCE = "solvent";
-    public static String DESTINATION = "polymer";
+    public static List<String> SOURCE = Arrays.asList("solvent", "tcValue");
+    public static List<String> DESTINATION = Arrays.asList("polymer", "material");
 
     public EntityLinkerPolymerSolventTrainer() {
         super(SuperconductorsModels.ENTITY_LINKER_POLYMER_SOLVENT);
@@ -82,6 +83,16 @@ public class EntityLinkerPolymerSolventTrainer extends AbstractTrainer {
 
             LOGGER.info(refFiles.size() + " files to be processed.");
 
+            Path adaptedCorpusDir2 = Paths.get(corpusDir.getAbsolutePath()
+                .replaceFirst("entityLinker-polymer-solvent", "superconductors"),"final");
+
+            List<File> refFiles2 = Files.walk(adaptedCorpusDir2, Integer.MAX_VALUE)
+                .filter(path -> Files.isRegularFile(path)
+                    && (StringUtils.endsWithIgnoreCase(path.getFileName().toString(), ".xml")))
+                .map(Path::toFile)
+                .collect(Collectors.toList());
+
+            refFiles.addAll(refFiles2);
             if (isEmpty(refFiles)) {
                 return 0;
             }
@@ -114,11 +125,13 @@ public class EntityLinkerPolymerSolventTrainer extends AbstractTrainer {
                     String token = labeledToken.getLeft();
                     String label = labeledToken.getMiddle();
                     String entity_type = GenericTaggerUtils.getPlainLabel(labeledToken.getRight());
-                    if (entity_type.equals("<" + DESTINATION + ">")) {
+                    if (DESTINATION.contains(entity_type.replaceAll("^([A-Z]-)?<", "")
+                        .replaceAll(">$", ""))) {
                         polymers++;
                     }
 
-                    if (entity_type.equals("<" + SOURCE + ">")) {
+                    if (SOURCE.contains(entity_type.replaceAll("^([A-Z]-)?<", "")
+                        .replaceAll(">$", ""))) {
                         solvents++;
                     }
 

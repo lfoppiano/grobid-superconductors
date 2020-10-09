@@ -17,6 +17,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,7 +96,7 @@ public class EntityLinkerTcPressureTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 EntityLinkerAnnotationStaxHandler handler = new EntityLinkerAnnotationStaxHandler("p",
-                    SOURCE, DESTINATION);
+                    Arrays.asList(SOURCE), Arrays.asList(DESTINATION));
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
