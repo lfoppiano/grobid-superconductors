@@ -44,13 +44,10 @@ public class RuleBasedLinker {
             this.disabled = true;
             return;
         }
-        try {
-            try (Interpreter interp = new SharedInterpreter()) {
-                interp.exec("import numpy as np");
-                interp.exec("import spacy");
-                interp.exec("from linking_module import RuleBasedLinker");
-            }
-
+        try (Interpreter interp = new SharedInterpreter()) {
+            interp.exec("import numpy as np");
+            interp.exec("import spacy");
+            interp.exec("from linking_module import RuleBasedLinker");
         } catch (Exception e) {
             LOGGER.error("Loading JEP native library failed. The linking will be disabled.", e);
             this.disabled = true;

@@ -59,6 +59,9 @@ public class MaterialParser extends AbstractParser {
 
     protected MaterialParser(GrobidModel model, MaterialClassResolver materialClassResolver) {
         super(model);
+        if (materialClassResolver == null) {
+            LOGGER.info("The material class resolver has not specified. Class will not be resolved. ");
+        }
         this.materialClassResolver = materialClassResolver;
     }
 
@@ -387,8 +390,6 @@ public class MaterialParser extends AbstractParser {
             //This modify the material object!
             if (materialClassResolver != null) {
                 materialClassResolver.process(material);
-            } else {
-                LOGGER.warn("The material class resolver is null - let's avoiding problems and skip this part ;-) ");
             }
         }
 

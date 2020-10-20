@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Span;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.LayoutTokensUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,7 +69,13 @@ public class SuperconductorsTrainingXMLFormatterTest {
         superconductorList.add(superconductor);
         superconductorList.add(superconductor2);
 
+        //This will ensure that next time I modify the principle on which the offsets are calculated, will fail
+        int startingOffset = layoutTokens.get(0).getOffset();
+        assertThat(text.substring(superconductor.getOffsetStart() - startingOffset, superconductor.getOffsetEnd() - startingOffset), is(superconductor.getText()));
+        assertThat(text.substring(superconductor2.getOffsetStart() - startingOffset, superconductor2.getOffsetEnd() - startingOffset), is(superconductor2.getText()));
+
         Element out = target.trainingExtraction(superconductorList, layoutTokens);
+
         assertThat(out.toXML(), is("<p xmlns=\"http://www.tei-c.org/ns/1.0\">Specific-Heat Study of Superconducting and Normal States in <material>FeSe 1-x Te x</material> (<material>0.6 ≤ x ≤ 1</material>) Single Crystals: Strong-Coupling Superconductivity, Strong Electron-Correlation, and Inhomogeneity</p>"));
     }
 
@@ -85,25 +90,30 @@ public class SuperconductorsTrainingXMLFormatterTest {
             l.setOffset(l.getOffset() + 4);
         });
 
-        List<Span> SpanList = new ArrayList<>();
-        Span Span = new Span();
-        Span.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        Span.setOffsetStart(64);
-        Span.setOffsetEnd(77);
-        Span.setText("FeSe 1-x Te x");
+        List<Span> spanList = new ArrayList<>();
+        Span span1 = new Span();
+        span1.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        span1.setOffsetStart(64);
+        span1.setOffsetEnd(77);
+        span1.setText("FeSe 1-x Te x");
 
-        Span Span2 = new Span();
-        Span2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-        Span2.setOffsetStart(79);
-        Span2.setOffsetEnd(90);
-        Span2.setText("0.6 ≤ x ≤ 1");
+        Span span2 = new Span();
+        span2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
+        span2.setOffsetStart(79);
+        span2.setOffsetEnd(90);
+        span2.setText("0.6 ≤ x ≤ 1");
 
-        SpanList.add(Span);
-        SpanList.add(Span2);
+        spanList.add(span1);
+        spanList.add(span2);
 
         List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(SpanList, layoutTokens));
+        labeledTextList.add(Pair.of(spanList, layoutTokens));
 
+        //This will ensure that next time I modify the principle on which the offsets are calculated, will fail
+        int startingOffset = layoutTokens.get(0).getOffset();
+        for (Span span : spanList) {
+            assertThat(text.substring(span.getOffsetStart() - startingOffset, span.getOffsetEnd() - startingOffset), is(span.getText()));
+        }
 
         String output = target.format(labeledTextList, 1);
         assertThat(output,
@@ -116,62 +126,69 @@ public class SuperconductorsTrainingXMLFormatterTest {
 
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
+        //Simulating a stream of token that is in the middle of the document
         layoutTokens.stream().forEach(l -> {
             l.setOffset(l.getOffset() + 372);
         });
 
-        List<Span> SpanList = new ArrayList<>();
+        List<Span> spanList = new ArrayList<>();
         Span Span = new Span();
         Span.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         Span.setOffsetStart(445);
         Span.setOffsetEnd(458);
         Span.setText("FeSe 1-x Te x");
-        SpanList.add(Span);
+        spanList.add(Span);
 
         Span Span2 = new Span();
         Span2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         Span2.setOffsetStart(460);
         Span2.setOffsetEnd(471);
         Span2.setText("0.6 ≤ x ≤ 1");
-        SpanList.add(Span2);
+        spanList.add(Span2);
 
         Span Span3 = new Span();
         Span3.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         Span3.setOffsetStart(549);
         Span3.setOffsetEnd(561);
         Span3.setText("x = 0.6 -0.9");
-        SpanList.add(Span3);
+        spanList.add(Span3);
 
         Span Span4 = new Span();
         Span4.setType(SUPERCONDUCTORS_TC_VALUE_LABEL);
         Span4.setOffsetStart(562);
         Span4.setOffsetEnd(569);
         Span4.setText("exhibit");
-        SpanList.add(Span4);
+        spanList.add(Span4);
 
         Span Span5 = new Span();
         Span5.setType(SUPERCONDUCTORS_TC_LABEL);
         Span5.setOffsetStart(570);
         Span5.setOffsetEnd(592);
         Span5.setText("bulk superconductivity");
-        SpanList.add(Span5);
+        spanList.add(Span5);
 
         Span Span6 = new Span();
         Span6.setType(SUPERCONDUCTORS_TC_LABEL);
         Span6.setOffsetStart(632);
         Span6.setOffsetEnd(647);
         Span6.setText("superconducting");
-        SpanList.add(Span6);
+        spanList.add(Span6);
 
         Span Span7 = new Span();
         Span7.setType(SUPERCONDUCTORS_TC_LABEL);
         Span7.setOffsetStart(653);
         Span7.setOffsetEnd(675);
         Span7.setText("transition temperature");
-        SpanList.add(Span7);
+        spanList.add(Span7);
 
         List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(SpanList, layoutTokens));
+        labeledTextList.add(Pair.of(spanList, layoutTokens));
+
+        //This will ensure that next time I modify the principle on which the offsets are calculated, will fail
+        int startingOffset = layoutTokens.get(0).getOffset();
+        for (Span span : spanList) {
+            assertThat(text.substring(span.getOffsetStart() - startingOffset, span.getOffsetEnd() - startingOffset), is(span.getText()));
+        }
 
         String output = target.format(labeledTextList, 1);
 

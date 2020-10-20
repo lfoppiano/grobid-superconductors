@@ -108,7 +108,7 @@ public class SuperconductorsParser extends AbstractParser {
             }
             entities.addAll(extractResults(tokens, labelledResults));
         } catch (Exception e) {
-            throw new GrobidException("An exception occured while running Grobid.", e);
+            throw new GrobidException("An exception occurred while running Grobid.", e);
         }
 
         return Pair.of(features, entities);

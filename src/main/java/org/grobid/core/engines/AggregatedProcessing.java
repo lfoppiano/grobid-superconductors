@@ -282,7 +282,15 @@ public class AggregatedProcessing {
             })
             .collect(Collectors.toList());
 
-        List<Span> quantitiesList = getQuantities(tokens);
+        List<Span> quantitiesList = getQuantities(tokens).stream()
+            .map(s -> {
+                int paragraphOffsetStart = tokens.get(0).getOffset();
+                s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
+                s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
+                return s;
+            })
+            .collect(Collectors.toList());
+
         spans.addAll(correctedSuperconductorsSpans);
         spans.addAll(quantitiesList);
 

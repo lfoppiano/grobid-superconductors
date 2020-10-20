@@ -9,11 +9,7 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Span;
 import org.grobid.core.document.Document;
-import org.grobid.core.engines.AggregatedProcessing;
-import org.grobid.core.engines.GrobidPDFEngine;
-import org.grobid.core.engines.MaterialParser;
-import org.grobid.core.engines.QuantityParser;
-import org.grobid.core.engines.SuperconductorsParser;
+import org.grobid.core.engines.*;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
@@ -113,7 +109,8 @@ public class SuperconductorsParserTrainingData {
         GrobidPDFEngine.processDocument(document, (preprocessedLayoutToken, section) -> {
 
             // Re-tokenise now
-            final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(preprocessedLayoutToken);
+            final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance()
+                .retokenizeLayoutTokens(preprocessedLayoutToken);
 
             // Trying to fix the eventual offset mismatches by rewrite offsets
             IntStream
@@ -123,8 +120,8 @@ public class SuperconductorsParserTrainingData {
                         + StringUtils.length(normalisedLayoutTokens.get(i - 1).getText());
 
                     if (expectedFollowingOffset != normalisedLayoutTokens.get(i).getOffset()) {
-                        throw new RuntimeException("Cross-validating offset. Error at element " + i + " offset: " + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
-//                        normalisedLayoutTokens.get(i).setOffset(expectedFollowingOffset);
+                        throw new RuntimeException("Cross-validating offset. Error at element " + i + " offset: "
+                            + normalisedLayoutTokens.get(i).getOffset() + " but should be " + expectedFollowingOffset);
                     }
                 });
 

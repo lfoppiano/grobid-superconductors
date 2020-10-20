@@ -2,6 +2,7 @@ package org.grobid.core.utilities;
 
 import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.Measurement;
@@ -357,9 +358,12 @@ public class MeasurementUtils {
 
         List<Quantity> quantityList = QuantityOperations.toQuantityList(measurement);
         List<LayoutToken> layoutTokens = QuantityOperations.getLayoutTokens(quantityList);
+        List<LayoutToken> sortedLayoutTokens = layoutTokens.stream()
+            .sorted(Comparator.comparingInt(LayoutToken::getOffset))
+            .collect(Collectors.toList());
 
-        int start = layoutTokens.get(0).getOffset();
-        int end = Iterables.getLast(layoutTokens).getOffset();
+        int start = sortedLayoutTokens.get(0).getOffset();
+        int end = Iterables.getLast(sortedLayoutTokens).getOffset();
 
         // Token start and end
         Pair<Integer, Integer> extremitiesQuantityAsIndex = MeasurementUtils
@@ -380,13 +384,17 @@ public class MeasurementUtils {
         String type = outputLabel;
         String source = QuantitiesModels.QUANTITIES.getModelName();
 
-        return new Span(LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())),
-                type,
-                source,
-                lowerOffset - tokens.get(0).getOffset(),
-                higherOffset - tokens.get(0).getOffset(),
-                extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight(),
-                layoutTokens,
-                boundingBoxes);
+        String text = LayoutTokensUtil.toText(tokens.subList(extremitiesQuantityAsIndex.getLeft(), extremitiesQuantityAsIndex.getRight())).trim();
+
+
+        return new Span(text,
+            type,
+            source,
+            lowerOffset,
+            higherOffset,
+            extremitiesQuantityAsIndex.getLeft(),
+            extremitiesQuantityAsIndex.getRight(),
+            layoutTokens,
+            boundingBoxes);
     }
 }

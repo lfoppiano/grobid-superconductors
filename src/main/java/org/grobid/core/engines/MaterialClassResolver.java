@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,11 +39,9 @@ public class MaterialClassResolver {
             this.disabled = true;
             return;
         }
-        try {
-            try (Interpreter interp = new SharedInterpreter()) {
-                interp.exec("from materialParserWrapper import MaterialParserWrapper");
-            }
 
+        try (Interpreter interp = new SharedInterpreter()) {
+            interp.exec("from materialParserWrapper import MaterialParserWrapper");
         } catch (Exception e) {
             LOGGER.error("Loading JEP native library failed. The linking will be disabled.", e);
             this.disabled = true;
