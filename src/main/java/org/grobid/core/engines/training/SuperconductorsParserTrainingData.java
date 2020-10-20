@@ -5,7 +5,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Span;
 import org.grobid.core.document.Document;
@@ -104,13 +106,13 @@ public class SuperconductorsParserTrainingData {
 
         StringBuilder textAggregation = new StringBuilder();
         StringBuilder features = new StringBuilder();
-        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
+        List<DocumentBlock> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, (preprocessedLayoutToken, section) -> {
+        GrobidPDFEngine.processDocument(document, documentBlock -> {
 
             // Re-tokenise now
             final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance()
-                .retokenizeLayoutTokens(preprocessedLayoutToken);
+                .retokenizeLayoutTokens(documentBlock.getLayoutTokens());
 
             // Trying to fix the eventual offset mismatches by rewrite offsets
             IntStream
@@ -159,8 +161,11 @@ public class SuperconductorsParserTrainingData {
 
             List<Span> sortedEntities = AggregatedProcessing.pruneOverlappingAnnotations(entityList);
 
-            Pair<List<Span>, List<LayoutToken>> labeledText = Pair.of(sortedEntities, normalisedLayoutTokens);
-            labeledTextList.add(labeledText);
+            DocumentBlock newDocumentBlock = new DocumentBlock(documentBlock);
+            newDocumentBlock.setLayoutTokens(normalisedLayoutTokens);
+            newDocumentBlock.setSpans(sortedEntities);
+
+            labeledTextList.add(newDocumentBlock);
 
         });
 
@@ -168,88 +173,6 @@ public class SuperconductorsParserTrainingData {
 
         writeOutput(file, outputDirectory, labelledTextOutput, features.toString(), textAggregation.toString(), outputFormat.toString());
     }
-
-
-    /**
-     * Remove overlapping annotations
-     * - sort annotation by starting offset then pairwise check
-     * - if they have the same type I take the one with the larger entity or the quantity model
-     * - else if they have different type I take the one with the smaller entity size or the one from quantities model
-     **/
-//    private List<Span> pruneOverlappingAnnotations(List<Span> superconductorList) {
-//        //Sorting by offsets
-//        List<Superconductor> sortedEntities = superconductorList
-//            .stream()
-//            .sorted(Comparator.comparingInt(Superconductor::getOffsetStart))
-//            .collect(Collectors.toList());
-//
-////                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());
-//
-//        if (superconductorList.size() <= 1) {
-//            return sortedEntities;
-//        }
-//
-//        List<Superconductor> toBeRemoved = new ArrayList<>();
-//
-//        Superconductor previous = null;
-//        boolean first = true;
-//        for (Superconductor current : sortedEntities) {
-//
-//            if (first) {
-//                first = false;
-//                previous = current;
-//            } else {
-//                if (current.getOffsetEnd() < previous.getOffsetEnd() || previous.getOffsetEnd() > current.getOffsetStart()) {
-//                    System.out.println("Overlapping. " + current.getName() + " <" + current.getType() + "> with " + previous.getName() + " <" + previous.getType() + ">");
-//
-//                    if (current.getType().equals(previous.getType())) {
-//                        // Type is the same, I take the largest one
-//                        if (StringUtils.length(previous.getName()) > StringUtils.length(current.getName())) {
-//                            toBeRemoved.add(previous);
-//                        } else if (StringUtils.length(previous.getName()) < StringUtils.length(current.getName())) {
-//                            toBeRemoved.add(current);
-//                        } else {
-//                            if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-//                                current.setLayoutTokens(previous.getLayoutTokens());
-//                                current.setBoundingBoxes(previous.getBoundingBoxes());
-//                                toBeRemoved.add(previous);
-//                            } else if (previous.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-//                                previous.setLayoutTokens(current.getLayoutTokens());
-//                                previous.setBoundingBoxes(current.getBoundingBoxes());
-//                                toBeRemoved.add(current);
-//                            } else {
-//                                toBeRemoved.add(previous);
-//                            }
-//                        }
-//                    } else if (!current.getType().equals(previous.getType())) {
-//                        // Type is different I take the shorter match
-//
-//                        if (StringUtils.length(previous.getName()) < StringUtils.length(current.getName())) {
-//                            toBeRemoved.add(current);
-//                        } else if (StringUtils.length(previous.getName()) > StringUtils.length(current.getName())) {
-//                            toBeRemoved.add(previous);
-//                        } else {
-//                            if (current.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-//                                current.setLayoutTokens(previous.getLayoutTokens());
-//                                current.setBoundingBoxes(previous.getBoundingBoxes());
-//                                toBeRemoved.add(previous);
-//                            } else if (previous.getSource().equals(Superconductor.SOURCE_QUANTITIES)) {
-//                                previous.setLayoutTokens(current.getLayoutTokens());
-//                                previous.setBoundingBoxes(current.getBoundingBoxes());
-//                                toBeRemoved.add(current);
-//                            } else {
-//                                toBeRemoved.add(previous);
-//                            }
-//                        }
-//                    }
-//                }
-//                previous = current;
-//            }
-//        }
-//
-//        sortedEntities.removeAll(toBeRemoved);
-//        return sortedEntities;
-//    }
 
     /**
      * Create training data for a list of pdf/text/xml-tei files

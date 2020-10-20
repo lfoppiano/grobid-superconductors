@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BiblioItem;
+import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Figure;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
@@ -50,12 +51,10 @@ public class GrobidPDFEngine {
      * segment of interest (e.g. header, body, annex) and possibly apply
      * the corresponding model to further filter by structure types
      */
-    public static void processDocument(Document doc, BiConsumer<List<LayoutToken>, Pair<String, String>> closure) {
+    public static void processDocument(Document doc, Consumer<DocumentBlock> closure) {
         EngineParsers parsers = new EngineParsers();
 
-        List<List<LayoutToken>> outputLayoutTokens = new ArrayList<>();
-        //left -> section, right-> subsection
-        List<Pair<String, String>> sections = new ArrayList<>();
+        List<DocumentBlock> documentBlocks = new ArrayList<>();
 
         // from the header, we are interested in title, abstract and keywords
         SortedSet<DocumentPiece> documentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
@@ -74,8 +73,9 @@ public class GrobidPDFEngine {
                 // title
                 List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
                 if (isNotEmpty(titleTokens)) {
-                    outputLayoutTokens.add(normaliseAndCleanup(titleTokens));
-                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.HEADER_LABEL), getPlainLabelName(TaggingLabels.TITLE_LABEL)));
+                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.HEADER_LABEL),
+                        getPlainLabelName(TaggingLabels.TITLE_LABEL),
+                        normaliseAndCleanup(titleTokens)));
                 }
 
                 // abstract
@@ -85,15 +85,17 @@ public class GrobidPDFEngine {
                     Pair<String, List<LayoutToken>> abstractTokenPostProcessed = parsers.getFullTextParser().processShort(abstractTokens, doc);
                     List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
 //                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
-                    outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
-                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.HEADER_LABEL), getPlainLabelName(TaggingLabels.ABSTRACT_LABEL)));
+
+                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.HEADER_LABEL),
+                        getPlainLabelName(TaggingLabels.ABSTRACT_LABEL), normaliseAndCleanup(restructuredLayoutTokens)));
                 }
 
                 // keywords
                 List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
                 if (isNotEmpty(keywordTokens)) {
-                    outputLayoutTokens.add(normaliseAndCleanup(keywordTokens));
-                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.HEADER_LABEL), getPlainLabelName(TaggingLabels.KEYWORD_LABEL)));
+                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.HEADER_LABEL),
+                        getPlainLabelName(TaggingLabels.KEYWORD_LABEL), normaliseAndCleanup(keywordTokens)));
+
                 }
             }
         }
@@ -138,8 +140,8 @@ public class GrobidPDFEngine {
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                             } else {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
-                                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), getPlainLabelName(TaggingLabels.FIGURE_LABEL)));
+                                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL),
+                                        getPlainLabelName(TaggingLabels.FIGURE_LABEL), normaliseAndCleanup(outputBodyLayoutTokens)));
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
@@ -186,8 +188,9 @@ public class GrobidPDFEngine {
                         if (isNotEmpty(normalisedLayoutTokens)) {
                             if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
-                                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), getPlainLabelName(TaggingLabels.SECTION_LABEL)));
+                                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL),
+                                        getPlainLabelName(TaggingLabels.SECTION_LABEL), normaliseAndCleanup(outputBodyLayoutTokens)));
+
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
                             } else {
@@ -195,8 +198,8 @@ public class GrobidPDFEngine {
                                 if (isNewParagraph(previousCluster, normalisedLayoutTokens)) {
 
                                     if (isNotEmpty(outputBodyLayoutTokens)) {
-                                        outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
-                                        sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL)));
+                                        documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL),
+                                            getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL), normaliseAndCleanup(outputBodyLayoutTokens)));
                                         outputBodyLayoutTokens = new ArrayList<>();
                                     }
                                 }
@@ -210,8 +213,7 @@ public class GrobidPDFEngine {
                 }
 
                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                    outputLayoutTokens.add(normaliseAndCleanup(outputBodyLayoutTokens));
-                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.BODY_LABEL), ""));
+                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL), "", normaliseAndCleanup(outputBodyLayoutTokens)));
                 }
             }
             // we don't process references (although reference titles could be relevant)
@@ -226,17 +228,14 @@ public class GrobidPDFEngine {
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
 //                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
-                    outputLayoutTokens.add(normaliseAndCleanup(restructuredLayoutTokens));
-                    sections.add(Pair.of(getPlainLabelName(SegmentationLabels.ANNEX_LABEL), getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL)));
+                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.ANNEX_LABEL),
+                        getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL), normaliseAndCleanup(restructuredLayoutTokens)));
                 }
             }
 
-            if (outputLayoutTokens.size() != sections.size()) {
-                throw new RuntimeException("Mismatch between sections and token lists ");
-            }
             // process
-            IntStream.range(0, outputLayoutTokens.size())
-                .forEach(i ->closure.accept(outputLayoutTokens.get(i), sections.get(i)));
+            IntStream.range(0, documentBlocks.size())
+                .forEach(i ->closure.accept(documentBlocks.get(i)));
         }
     }
 

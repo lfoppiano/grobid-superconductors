@@ -208,7 +208,7 @@ artifacts {
 
 distZip.enabled = false
 distTar.enabled = false
-shadowDistTar.enabled = false
+shadowDistZip.enabled = false
 shadowDistTar.enabled = false
 
 publishing {

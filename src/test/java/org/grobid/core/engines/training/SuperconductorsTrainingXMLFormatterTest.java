@@ -1,8 +1,8 @@
 package org.grobid.core.engines.training;
 
 import nu.xom.Element;
-import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Span;
 import org.grobid.core.layout.LayoutToken;
 import org.junit.Before;
@@ -106,8 +106,8 @@ public class SuperconductorsTrainingXMLFormatterTest {
         spanList.add(span1);
         spanList.add(span2);
 
-        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(spanList, layoutTokens));
+        List<DocumentBlock> documentBlocks = new ArrayList<>();
+        documentBlocks.add(new DocumentBlock(layoutTokens, spanList));
 
         //This will ensure that next time I modify the principle on which the offsets are calculated, will fail
         int startingOffset = layoutTokens.get(0).getOffset();
@@ -115,7 +115,7 @@ public class SuperconductorsTrainingXMLFormatterTest {
             assertThat(text.substring(span.getOffsetStart() - startingOffset, span.getOffsetEnd() - startingOffset), is(span.getText()));
         }
 
-        String output = target.format(labeledTextList, 1);
+        String output = target.format(documentBlocks, 1);
         assertThat(output,
             endsWith("<text xml:lang=\"en\"><p>Specific-Heat Study of Superconducting and Normal States in <material>FeSe 1-x Te x</material> (<material>0.6 ≤ x ≤ 1</material>) Single Crystals: Strong-Coupling Superconductivity, Strong Electron-Correlation, and Inhomogeneity</p></text></tei>"));
     }
@@ -181,8 +181,8 @@ public class SuperconductorsTrainingXMLFormatterTest {
         Span7.setText("transition temperature");
         spanList.add(Span7);
 
-        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(spanList, layoutTokens));
+        List<DocumentBlock> documentBlocks = new ArrayList<>();
+        documentBlocks.add(new DocumentBlock(layoutTokens, spanList));
 
         //This will ensure that next time I modify the principle on which the offsets are calculated, will fail
         int startingOffset = layoutTokens.get(0).getOffset();
@@ -190,7 +190,7 @@ public class SuperconductorsTrainingXMLFormatterTest {
             assertThat(text.substring(span.getOffsetStart() - startingOffset, span.getOffsetEnd() - startingOffset), is(span.getText()));
         }
 
-        String output = target.format(labeledTextList, 1);
+        String output = target.format(documentBlocks, 1);
 
         assertThat(output.substring(output.indexOf("<text xml:lang=\"en\">")),
             is("<text xml:lang=\"en\"><p>The electronic specific heat of as-grown and annealed single-crystals of <material>FeSe 1-x Te x</material> (<material>0.6 ≤ x ≤ 1</material>) has been investigated. It has been found that annealed single-crystals with <material>x = 0.6 -0.9</material> <tcValue>exhibit</tcValue> <tc>bulk superconductivity</tc> with a clear specific-heat jump at the <tc>superconducting</tc> (SC) <tc>transition temperature</tc>, T c . Both 2Δ 0 /k B T c [Δ 0 : the SC gap at 0 K estimated using the single-band BCS s-wave model] and ⊿C/(γ n -γ 0 )T c [⊿C: the specific-heat jump at T c , γ n : the electronic specific-heat coefficient in the normal state, γ 0 : the residual electronic specific-heat coefficient at 0 K in the SC state] are largest in the well-annealed single-crystal with x = 0.7, i.e., 4.29 and 2.76, respectively, indicating that the superconductivity is of the strong coupling. The thermodynamic critical field has also been estimated. γ n has been found to be one order of magnitude larger than those estimated from the band calculations and increases with increasing x at x = 0.6 -0.9, which is surmised to be due to the increase in the electronic effective mass, namely, the enhancement of the electron correlation. It has been found that there remains a finite value of γ 0 in the SC state even in the well-annealed single-crystals with x = 0.8 -0.9, suggesting an inhomogeneous electronic state in real space and/or momentum space.</p></text></tei>"));
@@ -206,24 +206,24 @@ public class SuperconductorsTrainingXMLFormatterTest {
             l.setOffset(l.getOffset() + 372);
         });
 
-        List<Span> SpanList = new ArrayList<>();
+        List<Span> spanList = new ArrayList<>();
         Span Span = new Span();
         Span.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         Span.setOffsetStart(445);
         Span.setOffsetEnd(458);
         Span.setText("FeSe 1-x Te x");
-        SpanList.add(Span);
+        spanList.add(Span);
 
         Span Span2 = new Span();
         Span2.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
         Span2.setOffsetStart(460);
         Span2.setOffsetEnd(472);
         Span2.setText("0.6 ≤ x ≤ 1");
-        SpanList.add(Span2);
+        spanList.add(Span2);
 
-        List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
-        labeledTextList.add(Pair.of(SpanList, layoutTokens));
+        List<DocumentBlock> documentBlocks = new ArrayList<>();
+        documentBlocks.add(new DocumentBlock(layoutTokens, spanList));
 
-        target.format(labeledTextList, 1);
+        target.format(documentBlocks, 1);
     }
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Span;
 import org.grobid.core.document.xml.XmlBuilderUtils;
 import org.grobid.core.layout.LayoutToken;
@@ -21,12 +21,12 @@ import static org.grobid.core.utilities.TextUtilities.restrictedPunctuations;
 public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutputFormattter {
 
     @Override
-    public String format(List<Pair<List<Span>, List<LayoutToken>>> labeledTextList, int id) {
+    public String format(List<DocumentBlock> documentBlocks, int id) {
         Element textNode = teiElement("text");
         textNode.addAttribute(new Attribute("xml:lang", "http://www.w3.org/XML/1998/namespace", "en"));
 
-        for (Pair<List<Span>, List<LayoutToken>> labeledText : labeledTextList) {
-            textNode.appendChild(trainingExtraction(labeledText.getLeft(), labeledText.getRight()));
+        for (DocumentBlock block : documentBlocks) {
+            textNode.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
         }
 
         Element quantityDocumentRoot = TeiUtils.getTeiHeader(id);
@@ -35,11 +35,11 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
         return XmlBuilderUtils.toXml(quantityDocumentRoot);
     }
 
-    protected Element trainingExtraction(List<Span> superconductorList, List<LayoutToken> tokens) {
+    protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens) {
         Element p = teiElement("p");
 
         int startPosition = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
-        for (Span superconductor : superconductorList) {
+        for (Span superconductor : spanList) {
 
             int start = superconductor.getOffsetStart();
             int end = superconductor.getOffsetEnd();
