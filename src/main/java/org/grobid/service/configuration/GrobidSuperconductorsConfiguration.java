@@ -1,14 +1,29 @@
 package org.grobid.service.configuration;
 
 import io.dropwizard.Configuration;
+import org.apache.commons.io.IOUtils;
+import org.grobid.core.utilities.GrobidProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class GrobidSuperconductorsConfiguration extends Configuration {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(GrobidSuperconductorsConfiguration.class);
 
     private String grobidHome;
     private String chemspotUrl;
     private String chemDataExtractorUrl;
     private String grobidQuantitiesUrl;
     private String pythonVirtualEnv;
+
+    // Version
+    private static String VERSION = null;
+    private static final String UNKNOWN_VERSION_STR = "unknown";
+    private static final String GROBID_VERSION_FILE = "/version.txt";
 
     private boolean pythonRedirectOutput = false;
 
@@ -58,5 +73,23 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setPythonRedirectOutput(boolean pythonRedirectOutput) {
         this.pythonRedirectOutput = pythonRedirectOutput;
+    }
+
+    public static String getVersion() {
+        if (VERSION != null) {
+            return VERSION;
+        }
+        synchronized (GrobidProperties.class) {
+            if (VERSION == null) {
+                String grobidVersion = UNKNOWN_VERSION_STR;
+                try (InputStream is = GrobidProperties.class.getResourceAsStream(GROBID_VERSION_FILE)) {
+                    grobidVersion = IOUtils.toString(is, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    LOGGER.error("Cannot read Grobid version from resources", e);
+                }
+                VERSION = grobidVersion;
+            }
+        }
+        return VERSION;
     }
 }

@@ -175,6 +175,14 @@ trainerTasks.each { taskName, mainClassName ->
     }
 }
 
+processResources {
+    filesMatching('version.txt') {
+        filter {
+            it.replace('project.version', project.property('version'))
+        }
+    }
+}
+
 //// return the default value if the property has not been specified in command line
 //ext.getArg = { propName, defaultVal ->
 //    return project.hasProperty(propName) ? project.getProperty(propName) : defaultVal;
