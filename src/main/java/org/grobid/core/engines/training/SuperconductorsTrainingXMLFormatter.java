@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Span;
 import org.grobid.core.document.xml.XmlBuilderUtils;
@@ -22,36 +23,97 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 
     @Override
     public String format(List<DocumentBlock> documentBlocks, int id) {
+        Element outputDocumentRoot = TeiUtils.getTeiHeader(id);
+
+        Element teiHeader = TeiUtils.getElement(outputDocumentRoot, "teiHeader");
+        Element fileDesc = TeiUtils.getElement(teiHeader, "fileDesc");
+
+        Element profileDesc = TeiUtils.getElement(teiHeader, "profileDesc");
+
         Element textNode = teiElement("text");
         textNode.addAttribute(new Attribute("xml:lang", "http://www.w3.org/XML/1998/namespace", "en"));
 
+        Element body = teiElement("body");
+
         for (DocumentBlock block : documentBlocks) {
-            textNode.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+            if (block.getSection().equals(DocumentBlock.SECTION_BODY)) {
+                if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_FIGURE)) {
+                    body.appendChild(trainingExtraction(block.getSpans(),
+                        block.getLayoutTokens(), "ab", Pair.of("type", "figureCaption")));
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TABLE)) {
+                    body.appendChild(trainingExtraction(block.getSpans(),
+                        block.getLayoutTokens(), "ab", Pair.of("type", "tableCaption")));
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_PARAGRAPH)) {
+                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE_SECTION)) {
+                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "head"));
+                }
+            } else if (block.getSection().equals(DocumentBlock.SECTION_HEADER)) {
+                if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE)) {
+                    Element titleStatement = teiElement("titleStmt");
+                    Element title = trainingExtraction(block.getSpans(), block.getLayoutTokens(), "title");
+                    titleStatement.appendChild(title);
+                    fileDesc.insertChild(titleStatement, 0);
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_KEYWORDS)) {
+                    Element abKeywords = TeiUtils.getElement(profileDesc, "ab");
+                    if(abKeywords == null) {
+                        abKeywords = trainingExtraction(block.getSpans(), block.getLayoutTokens(), "ab", Pair.of("type", "keywords"));
+                        profileDesc.appendChild(abKeywords);
+                    } else {
+                        throw new RuntimeException("new keywords, but no space for them... ");
+                    }
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_ABSTRACT)) {
+
+                    Element abstractElement = TeiUtils.getElement(profileDesc, "abstract");
+                    if (abstractElement == null) {
+                        abstractElement = teiElement("abstract");
+                        profileDesc.appendChild(abstractElement);
+                    }
+                    abstractElement.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                }
+            } else if (block.getSection().equals(DocumentBlock.SECTION_ANNEX)) {
+                body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+            }
         }
 
-        Element quantityDocumentRoot = TeiUtils.getTeiHeader(id);
-        quantityDocumentRoot.appendChild(textNode);
+        textNode.appendChild(body);
+        outputDocumentRoot.appendChild(textNode);
 
-        return XmlBuilderUtils.toXml(quantityDocumentRoot);
+        return XmlBuilderUtils.toPrettyXml(outputDocumentRoot);
     }
 
     protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens) {
-        Element p = teiElement("p");
+        return trainingExtraction(spanList, tokens, "p");
+    }
 
-        int startPosition = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
+    protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens, String parentTag) {
+        return trainingExtraction(spanList, tokens, parentTag, null);
+    }
+
+    protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens, String
+        parentTag, Pair<String, String> parentTagAttribute) {
+        Element p = teiElement(parentTag);
+        if (parentTagAttribute != null) {
+            p.addAttribute(new Attribute(parentTagAttribute.getKey(), parentTagAttribute.getValue()));
+        }
+
+        LayoutToken first = Iterables.getFirst(tokens, new LayoutToken());
+        int startPosition = first != null ? first.getOffset() : 0;
         for (Span superconductor : spanList) {
 
             int start = superconductor.getOffsetStart();
             int end = superconductor.getOffsetEnd();
 
             String name = superconductor.getText();
+            Element entityElement = teiElement("rs");
             // remove < and > from the material name \o/
-            Element supercon = teiElement(prepareType(superconductor.getType()));
-            supercon.appendChild(name);
+//            entityElement.addAttribute(new Attribute("type", prepareType(superconductor.getType())));
+            entityElement.addAttribute(new Attribute("type", prepareType(superconductor.getType())));
+            entityElement.appendChild(name);
 
             String contentBefore = LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition, start));
             p.appendChild(contentBefore);
-            p.appendChild(supercon);
+            p.appendChild(entityElement);
 
             // We stop the process if something doesn't match
             int accumulatedOffset = startPosition + length(contentBefore) + length(name);

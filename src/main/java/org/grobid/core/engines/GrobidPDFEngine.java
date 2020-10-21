@@ -73,8 +73,8 @@ public class GrobidPDFEngine {
                 // title
                 List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
                 if (isNotEmpty(titleTokens)) {
-                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.HEADER_LABEL),
-                        getPlainLabelName(TaggingLabels.TITLE_LABEL),
+                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
+                        DocumentBlock.SUB_SECTION_TITLE,
                         normaliseAndCleanup(titleTokens)));
                 }
 
@@ -86,15 +86,15 @@ public class GrobidPDFEngine {
                     List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
 //                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
 
-                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.HEADER_LABEL),
-                        getPlainLabelName(TaggingLabels.ABSTRACT_LABEL), normaliseAndCleanup(restructuredLayoutTokens)));
+                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
+                        DocumentBlock.SUB_SECTION_ABSTRACT, normaliseAndCleanup(restructuredLayoutTokens)));
                 }
 
                 // keywords
                 List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
                 if (isNotEmpty(keywordTokens)) {
-                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.HEADER_LABEL),
-                        getPlainLabelName(TaggingLabels.KEYWORD_LABEL), normaliseAndCleanup(keywordTokens)));
+                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
+                        DocumentBlock.SUB_SECTION_KEYWORDS, normaliseAndCleanup(keywordTokens)));
 
                 }
             }
@@ -140,8 +140,8 @@ public class GrobidPDFEngine {
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                             } else {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL),
-                                        getPlainLabelName(TaggingLabels.FIGURE_LABEL), normaliseAndCleanup(outputBodyLayoutTokens)));
+                                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY,
+                                        DocumentBlock.SUB_SECTION_FIGURE, normaliseAndCleanup(outputBodyLayoutTokens)));
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
@@ -188,8 +188,8 @@ public class GrobidPDFEngine {
                         if (isNotEmpty(normalisedLayoutTokens)) {
                             if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL),
-                                        getPlainLabelName(TaggingLabels.SECTION_LABEL), normaliseAndCleanup(outputBodyLayoutTokens)));
+                                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY,
+                                        DocumentBlock.SUB_SECTION_TITLE_SECTION, normaliseAndCleanup(outputBodyLayoutTokens)));
 
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
@@ -198,8 +198,8 @@ public class GrobidPDFEngine {
                                 if (isNewParagraph(previousCluster, normalisedLayoutTokens)) {
 
                                     if (isNotEmpty(outputBodyLayoutTokens)) {
-                                        documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL),
-                                            getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL), normaliseAndCleanup(outputBodyLayoutTokens)));
+                                        documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY,
+                                            DocumentBlock.SUB_SECTION_PARAGRAPH, normaliseAndCleanup(outputBodyLayoutTokens)));
                                         outputBodyLayoutTokens = new ArrayList<>();
                                     }
                                 }
@@ -213,7 +213,7 @@ public class GrobidPDFEngine {
                 }
 
                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.BODY_LABEL), "", normaliseAndCleanup(outputBodyLayoutTokens)));
+                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY, "", normaliseAndCleanup(outputBodyLayoutTokens)));
                 }
             }
             // we don't process references (although reference titles could be relevant)
