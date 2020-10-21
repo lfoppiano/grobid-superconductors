@@ -187,9 +187,11 @@ public class GrobidPDFEngine {
 
                         if (isNotEmpty(normalisedLayoutTokens)) {
                             if (cluster.getTaggingLabel().equals(TaggingLabels.SECTION)) {
+                                //Since we merge sections and paragraphs, we avoid adding sections titles if
+                                // there is no text already in the same block
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
                                     documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY,
-                                        DocumentBlock.SUB_SECTION_TITLE_SECTION, normaliseAndCleanup(outputBodyLayoutTokens)));
+                                        DocumentBlock.SUB_SECTION_PARAGRAPH, normaliseAndCleanup(outputBodyLayoutTokens)));
 
                                     outputBodyLayoutTokens = new ArrayList<>();
                                 }
@@ -235,7 +237,7 @@ public class GrobidPDFEngine {
 
             // process
             IntStream.range(0, documentBlocks.size())
-                .forEach(i ->closure.accept(documentBlocks.get(i)));
+                .forEach(i -> closure.accept(documentBlocks.get(i)));
         }
     }
 

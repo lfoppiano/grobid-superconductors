@@ -3,6 +3,7 @@ package org.grobid.core.engines.training;
 import com.google.common.collect.Iterables;
 import nu.xom.Attribute;
 import nu.xom.Element;
+import nu.xom.Serializer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.DocumentBlock;
@@ -78,8 +79,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 
         textNode.appendChild(body);
         outputDocumentRoot.appendChild(textNode);
-
-        return XmlBuilderUtils.toPrettyXml(outputDocumentRoot);
+        return XmlBuilderUtils.toXml(outputDocumentRoot);
     }
 
     protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens) {
