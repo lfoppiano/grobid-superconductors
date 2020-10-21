@@ -10,10 +10,15 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnitUtilities;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +30,8 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Lexicon.class)
 public class AggregatedProcessingTest {
 
     AggregatedProcessing target;
@@ -35,8 +42,7 @@ public class AggregatedProcessingTest {
 
     @Before
     public void setUp() throws Exception {
-        GrobidProperties.getInstance();
-
+        PowerMock.mockStatic(Lexicon.class);
         mockSuperconductorsParser = EasyMock.createMock(SuperconductorsParser.class);
         mockCRFBasedLinker = EasyMock.createMock(CRFBasedLinker.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);

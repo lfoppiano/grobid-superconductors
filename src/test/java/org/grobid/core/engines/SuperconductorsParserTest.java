@@ -8,9 +8,14 @@ import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +30,8 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertThat;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Lexicon.class)
 public class SuperconductorsParserTest {
 
     private SuperconductorsParser target;
@@ -36,6 +43,7 @@ public class SuperconductorsParserTest {
     public void setUp() throws Exception {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
         mockMaterialParser = EasyMock.createMock(MaterialParser.class);
+        PowerMock.mockStatic(Lexicon.class);
         target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient, mockMaterialParser);
     }
 
@@ -153,6 +161,7 @@ public class SuperconductorsParserTest {
     }
 
     private static List<String> getFeatures(List<LayoutToken> layoutTokens) {
+
         return layoutTokens.stream()
                 .map(token -> FeaturesVectorSuperconductors.addFeatures(token, null, new LayoutToken(), null).printVector())
                 .collect(Collectors.toList());

@@ -6,9 +6,14 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Span;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.lexicon.Lexicon;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +27,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Lexicon.class)
 public class CRFBasedLinkerTest {
     CRFBasedLinker target;
 
@@ -807,7 +814,7 @@ public class CRFBasedLinkerTest {
      * @return a string containing the resulting features + labels returned by wapiti
      */
     public static String getWapitiResult(List<LayoutToken> layoutTokens, List<Triple<String, Integer, Integer>> labels) {
-
+        PowerMock.mockStatic(Lexicon.class);
         List<String> features = layoutTokens.stream()
             .map(token -> FeaturesVectorEntityLinker.addFeatures(token.getText(), null, "other").printVector())
             .collect(Collectors.toList());
