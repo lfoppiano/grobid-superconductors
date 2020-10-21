@@ -6,10 +6,15 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Material;
 import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.main.LibraryLoader;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,13 +27,15 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Lexicon.class)
 public class MaterialParserTest {
 
     private MaterialParser target;
 
     @Before
     public void setUp() throws Exception {
-        LibraryLoader.load();
+        PowerMock.mockStatic(Lexicon.class);
         target = new MaterialParser(GrobidModels.DUMMY, null);
     }
 
