@@ -36,8 +36,8 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     private final static String VERBOSE_OUTPUT = "verbose output";
     private final static String ONE_VS_ALL = "one-vs-all";
     private final static String MODE = "Method of calculation";
-    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("p");
-    public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc",
+    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("title", "p", "ab", "ab#type,tableCaption");
+    public static final List<String> ANNOTATION_DEFAULT_TAG_TYPES = Arrays.asList("material", "tc",
         "tcValue", "pressure", "me_method", "class");
     public static final List<String> ANNOTATION_EXTRA_TAGS = Arrays.asList("sample", "magnetisation", "shape");
 
@@ -120,7 +120,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
         } else {
             InterAnnotationAgreementUnitizingProcessor iiaProcessor
                 = new InterAnnotationAgreementUnitizingProcessor(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                ANNOTATION_DEFAULT_TAGS);
+                ANNOTATION_DEFAULT_TAG_TYPES);
 
             String pivotDirectory = namespace.get(ONE_VS_ALL);
 

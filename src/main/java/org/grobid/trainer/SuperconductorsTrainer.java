@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
@@ -100,7 +100,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 LOGGER.info(name);
 
                 AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                    ANNOTATION_DEFAULT_TAGS);
+                    ANNOTATION_DEFAULT_TAG_TYPES);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 

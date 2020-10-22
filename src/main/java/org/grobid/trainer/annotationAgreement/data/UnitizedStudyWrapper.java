@@ -6,8 +6,8 @@ import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationStudy;
 import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreement;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
-import org.grobid.trainer.stax.handler.AnnotationOffsetsExtractionStaxHandler;
 import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.handler.AnnotationOffsetsExtractionStaxHandler;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
@@ -45,7 +45,7 @@ public class UnitizedStudyWrapper {
         for (InputStream file : filenames) {
             try {
                 AnnotationOffsetsExtractionStaxHandler handler = new AnnotationOffsetsExtractionStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                        ANNOTATION_DEFAULT_TAGS);
+                        ANNOTATION_DEFAULT_TAG_TYPES);
 
                 XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(file);
                 StaxUtils.traverse(reader, handler);

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.*;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
@@ -62,7 +62,7 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     }
 
     public AnnotationValuesStaxHandler() {
-        this(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS, ANNOTATION_DEFAULT_TAGS);
+        this(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS, ANNOTATION_DEFAULT_TAG_TYPES);
     }
 
     @Override

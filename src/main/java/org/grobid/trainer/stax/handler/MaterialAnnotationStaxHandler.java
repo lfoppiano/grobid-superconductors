@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
@@ -52,7 +52,7 @@ public class MaterialAnnotationStaxHandler implements StaxParserContentHandler {
 
     public MaterialAnnotationStaxHandler() {
         this.topLevelTags = TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
-        this.annotationsTags = ANNOTATION_DEFAULT_TAGS;
+        this.annotationsTags = ANNOTATION_DEFAULT_TAG_TYPES;
     }
 
     @Override

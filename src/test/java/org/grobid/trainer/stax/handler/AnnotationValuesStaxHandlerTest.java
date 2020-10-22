@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.length;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -105,7 +105,7 @@ public class AnnotationValuesStaxHandlerTest {
 
     @Test
     public void testHandler_defaultTags_extractStream() throws Exception {
-        target = new AnnotationValuesStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS, ANNOTATION_DEFAULT_TAGS);
+        target = new AnnotationValuesStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS, ANNOTATION_DEFAULT_TAG_TYPES);
 
         InputStream inputStream = this.getClass().getResourceAsStream("1609.04957.superconductors.2.training.tei.xml");
 
