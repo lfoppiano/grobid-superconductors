@@ -84,13 +84,19 @@ public class TeiUtils {
     public static Element getElement(Element root, String elementName) {
         Elements childElements = root.getChildElements();
         List<Element> foundElements = new ArrayList<>();
-        Iterator<Element> iterator = childElements.iterator();
-        while (iterator.hasNext()) {
-            Element e = iterator.next();
+//        Iterator<Element> iterator = childElements.iterator();
+//        while (iterator.hasNext()) {
+//            Element e = iterator.next();
+//            if (e.getLocalName().equals(elementName)) {
+//                foundElements.add(e);
+//            }
+//        }
+
+        childElements.forEach(e -> {
             if (e.getLocalName().equals(elementName)) {
                 foundElements.add(e);
             }
-        }
+        });
 
         Element first = Iterables.getFirst(foundElements, null);
         return first;
