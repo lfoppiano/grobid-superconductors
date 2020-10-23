@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.trim;
@@ -56,6 +57,11 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
     private StringBuilder continuum = new StringBuilder();
 
     private List<Triple<String, Integer, Integer>> data = new ArrayList<>();
+
+    public AnnotationOffsetsTEIExtractionStaxHandler(List<String> annotationTypes) {
+        this(Arrays.asList(StackTags.from("/tei/text/body/p"),
+            StackTags.from("/tei/text/body/p")), annotationTypes);
+    }
 
     /**
      * @param containerPaths  specifies the path where the data should be extracted, e.g. /tei/teiHeader/titleStmt/title
@@ -100,7 +106,7 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
         if (currentPosition.equals(currentContainerPath)) {
             currentContainerPath = null;
 
-        } else if (currentContainerPath != null && insideEntity == true && "rs".equals(localName)) {
+        } else if (currentContainerPath != null && insideEntity && "rs".equals(localName)) {
             currentLength = offset - this.currentStartingPosition;
             data.add(Triple.of(currentAnnotationType, currentStartingPosition, currentLength));
 

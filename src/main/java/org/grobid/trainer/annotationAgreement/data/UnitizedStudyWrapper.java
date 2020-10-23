@@ -16,8 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.*;
 
 /**
  * Wrapper around the UnifiedStudy which will simplify the processing of inter annotation agreement measures

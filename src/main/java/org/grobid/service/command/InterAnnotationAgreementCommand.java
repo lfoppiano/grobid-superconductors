@@ -20,6 +20,7 @@ import org.grobid.trainer.annotationAgreement.InterAnnotationAgreementUnitizingP
 import org.grobid.trainer.annotationAgreement.data.InterAnnotationAgreementPairwiseComparisonEntry;
 import org.grobid.trainer.annotationAgreement.data.InterAnnotationAgreementType;
 import org.grobid.trainer.annotationAgreement.data.UnitizedStudyWrapper;
+import org.grobid.trainer.stax.StackTags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +37,19 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     private final static String VERBOSE_OUTPUT = "verbose output";
     private final static String ONE_VS_ALL = "one-vs-all";
     private final static String MODE = "Method of calculation";
-    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("title", "p", "ab", "ab#type,tableCaption");
+
+    public static final List<StackTags> TOP_LEVEL_ANNOTATION_DEFAULT_PATHS = Arrays.asList(
+        StackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
+        StackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
+        StackTags.from("/tei/teiHeader/profileDesc/ab"),
+        StackTags.from("/tei/text/body/p"),
+        StackTags.from("/tei/text/body/ab")
+    );
     public static final List<String> ANNOTATION_DEFAULT_TAG_TYPES = Arrays.asList("material", "tc",
+        "tcValue", "pressure", "me_method", "class");
+
+    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("p");
+    public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc",
         "tcValue", "pressure", "me_method", "class");
     public static final List<String> ANNOTATION_EXTRA_TAGS = Arrays.asList("sample", "magnetisation", "shape");
 

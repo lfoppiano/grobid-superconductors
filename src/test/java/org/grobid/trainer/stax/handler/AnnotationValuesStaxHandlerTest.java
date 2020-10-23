@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.length;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.*;

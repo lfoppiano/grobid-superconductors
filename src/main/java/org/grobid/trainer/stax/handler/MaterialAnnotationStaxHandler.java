@@ -21,7 +21,8 @@ import java.util.List;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
+import static org.grobid.trainer.MaterialTrainer.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
 
 /**
  * This class takes in account the top level tag and the list of the annotation tags.
