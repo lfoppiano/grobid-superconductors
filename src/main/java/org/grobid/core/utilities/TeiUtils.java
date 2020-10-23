@@ -9,6 +9,7 @@ import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -83,11 +84,14 @@ public class TeiUtils {
     public static Element getElement(Element root, String elementName) {
         Elements childElements = root.getChildElements();
         List<Element> foundElements = new ArrayList<>();
-        childElements.forEach(e -> {
+        Iterator<Element> iterator = childElements.iterator();
+        while (iterator.hasNext()) {
+            Element e = iterator.next();
             if (e.getLocalName().equals(elementName)) {
                 foundElements.add(e);
             }
-        });
+        }
+
         Element first = Iterables.getFirst(foundElements, null);
         return first;
 
