@@ -92,6 +92,12 @@ public class CRFBasedLinkerIntegrationTest {
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
         List<TextPassage> paragraphs = entityParser.process(layoutTokens, true);
         List<Span> annotations = paragraphs.get(0).getSpans();
+
+        // Set the materials to be linkable
+        paragraphs.get(0).getSpans().stream()
+            .filter(s -> Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL).contains(s.getType()))
+            .forEach(s -> s.setLinkable(true));
+
         target.process(layoutTokens, annotations);
 
         List<Span> linkedEntities = annotations.stream().filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL)).collect(Collectors.toList());
