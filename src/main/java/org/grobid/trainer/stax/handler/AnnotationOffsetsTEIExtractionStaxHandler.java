@@ -43,6 +43,9 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
     private Integer currentLength = 0;
     private boolean insideEntity = false;
 
+    // With paragraph I meant any chunk of text
+    private Integer paragraphNumbers = 0;
+
     private List<String> annotationTypes;
     private List<StackTags> containerPaths;
 
@@ -105,6 +108,7 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
 
         if (currentPosition.equals(currentContainerPath)) {
             currentContainerPath = null;
+            paragraphNumbers++;
 
         } else if (currentContainerPath != null && insideEntity && "rs".equals(localName)) {
             currentLength = offset - this.currentStartingPosition;
@@ -162,5 +166,9 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
 
     public void setData(List<Triple<String, Integer, Integer>> data) {
         this.data = data;
+    }
+
+    public Integer getParagraphNumbers() {
+        return paragraphNumbers;
     }
 }
