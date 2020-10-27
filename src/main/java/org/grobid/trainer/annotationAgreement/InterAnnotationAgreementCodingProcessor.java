@@ -10,6 +10,7 @@ import org.dkpro.statistics.agreement.coding.ICodingAnnotationStudy;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class InterAnnotationAgreementCodingProcessor {
             List<List<String>> labelsOfLabels = input
                 .stream()
                 .map(inputStream -> {
-                    AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler();
+                    AnnotationValuesTEIStaxHandler handler = new AnnotationValuesTEIStaxHandler();
 
                     try {
                         XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);

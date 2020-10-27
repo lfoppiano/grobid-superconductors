@@ -131,7 +131,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             new ReliabilityMatrixPrinter().print(System.out, study);
         } else {
             InterAnnotationAgreementUnitizingProcessor iiaProcessor
-                = new InterAnnotationAgreementUnitizingProcessor(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
+                = new InterAnnotationAgreementUnitizingProcessor(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
                 ANNOTATION_DEFAULT_TAG_TYPES);
 
             String pivotDirectory = namespace.get(ONE_VS_ALL);
@@ -218,6 +218,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
                         UnitizingStudyPrinter printer = new UnitizingStudyPrinter();
                         studies.forEach(s -> {
+//                            printer.printContinuum(System.out, s.getStudy(), "");
                             System.out.println("\t\t\t\t" + s.getContinuums().get(0));
                             s.getStudy().getCategories().forEach(c -> {
                                 printer.printUnitsForCategory(System.out, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));

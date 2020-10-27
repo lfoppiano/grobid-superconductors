@@ -6,8 +6,10 @@ import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationStudy;
 import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreement;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
+import org.grobid.trainer.stax.StackTags;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationOffsetsExtractionStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationOffsetsTEIExtractionStaxHandler;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
@@ -38,13 +40,17 @@ public class UnitizedStudyWrapper {
      * If there are parsing problems or one of the files has a different text, the process is interrupted with an exception.
      **/
     public UnitizedStudyWrapper(List<InputStream> filenames) {
+        this(filenames, TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, ANNOTATION_DEFAULT_TAG_TYPES);
+    }
+
+    public UnitizedStudyWrapper(List<InputStream> filenames, List<StackTags> topLevelAannotationPaths, List<String> annotationTypes) {
         String firstContinuum = null;
 
         int count = 0;
         for (InputStream file : filenames) {
             try {
-                AnnotationOffsetsExtractionStaxHandler handler = new AnnotationOffsetsExtractionStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
-                        ANNOTATION_DEFAULT_TAG_TYPES);
+                AnnotationOffsetsTEIExtractionStaxHandler handler = new AnnotationOffsetsTEIExtractionStaxHandler(topLevelAannotationPaths,
+                    annotationTypes);
 
                 XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(file);
                 StaxUtils.traverse(reader, handler);
@@ -55,8 +61,8 @@ public class UnitizedStudyWrapper {
                 if (firstContinuum != null) {
                     if (handler.getContinuum().length() != firstContinuum.length()) {
                         throw new RuntimeException("Continuum between different annotators are not matching, please fix it before re-trying. " +
-                                firstContinuum.length() + " vs " + handler.getContinuum().length() + "\n\n" +
-                                "1: " + firstContinuum + "\n\n" + "2: " + handler.getContinuum());
+                            firstContinuum.length() + " vs " + handler.getContinuum().length() + "\n\n" +
+                            "1: " + firstContinuum + "\n\n" + "2: " + handler.getContinuum());
                     }
 
                     handler.getData().forEach(annotation -> {
@@ -142,7 +148,7 @@ public class UnitizedStudyWrapper {
                 }
 
                 InterAnnotationAgreementPairwiseComparisonEntry interAnnotationAgreementPairwiseComparisonEntry
-                        = new InterAnnotationAgreementPairwiseComparisonEntry(idx1, idx2);
+                    = new InterAnnotationAgreementPairwiseComparisonEntry(idx1, idx2);
 
                 Map<String, Double> agreementByCategory = getAgreementByCategory(localStudy);
 
