@@ -94,10 +94,14 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
             }
         } else {
             String attributeValue = getAttributeValue(reader, "type");
-            if ("rs".equals(localName) && annotationTypes.contains(attributeValue)) {
+            if (("rs".equals(localName) && annotationTypes.contains(attributeValue))
+            || (annotationTypes.contains(localName))) {
                 this.currentStartingPosition = offset;
                 this.insideEntity = true;
                 currentAnnotationType = attributeValue;
+                if (annotationTypes.contains(localName)) {
+                    this.currentAnnotationType = localName;
+                }
             }
         }
     }
@@ -110,7 +114,8 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
             currentContainerPath = null;
             paragraphNumbers++;
 
-        } else if (currentContainerPath != null && insideEntity && "rs".equals(localName)) {
+        } else if (currentContainerPath != null && insideEntity
+            && ("rs".equals(localName) || this.currentAnnotationType.equals(localName))) {
             currentLength = offset - this.currentStartingPosition;
             data.add(Triple.of(currentAnnotationType, currentStartingPosition, currentLength));
 

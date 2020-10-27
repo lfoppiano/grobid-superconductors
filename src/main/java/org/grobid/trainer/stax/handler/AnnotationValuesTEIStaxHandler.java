@@ -125,15 +125,15 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
             String text = getAccumulatedText();
             writeStreamData(text, getTag("other"));
             accumulator.setLength(0);
-            this.insideEntity = false;
             labeledStream.add(ImmutablePair.of("\n", null));
         } else if (currentContainerPath != null && insideEntity
-            && ("rs".contains(localName) || this.currentAnnotationType.equals(localName))) {
+            && ("rs".equals(localName) || this.currentAnnotationType.equals(localName))) {
             String text = getAccumulatedText();
             writeData(text, getTag(currentAnnotationType));
             writeId(currentId, getTag(currentAnnotationType));
             writeStreamData(text, getTag(currentAnnotationType));
             accumulator.setLength(0);
+            this.insideEntity = false;
         }
 //        } else if (containerPaths == null) {
 //            String text = getAccumulatedText();
