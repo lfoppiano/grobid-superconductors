@@ -74,6 +74,10 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                 }
             } else if (block.getSection().equals(DocumentBlock.SECTION_ANNEX)) {
                 body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+            } else {
+                throw new RuntimeException("The section or subsection have the wrong name. " +
+                    "This will cause loss of data in the output generated files. Section name: " + block.getSection() +
+                    ", " + block.getSubSection());
             }
         }
 

@@ -22,14 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.grobid.core.engines.tagging.GenericTaggerUtils.getPlainLabel;
 
 public class GrobidPDFEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrobidPDFEngine.class);
@@ -230,8 +228,8 @@ public class GrobidPDFEngine {
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
 //                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
-                    documentBlocks.add(new DocumentBlock(getPlainLabelName(SegmentationLabels.ANNEX_LABEL),
-                        getPlainLabelName(TaggingLabels.PARAGRAPH_LABEL), normaliseAndCleanup(restructuredLayoutTokens)));
+                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_ANNEX,
+                        DocumentBlock.SUB_SECTION_PARAGRAPH, normaliseAndCleanup(restructuredLayoutTokens)));
                 }
             }
 
