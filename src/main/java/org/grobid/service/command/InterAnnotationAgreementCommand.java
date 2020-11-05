@@ -12,8 +12,11 @@ import org.dkpro.statistics.agreement.coding.ICodingAnnotationStudy;
 import org.dkpro.statistics.agreement.coding.KrippendorffAlphaAgreement;
 import org.dkpro.statistics.agreement.coding.PercentageAgreement;
 import org.dkpro.statistics.agreement.distance.NominalDistanceFunction;
+import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
+import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.visualization.ReliabilityMatrixPrinter;
 import org.dkpro.statistics.agreement.visualization.UnitizingStudyPrinter;
+import org.grobid.core.exceptions.GrobidException;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.annotationAgreement.InterAnnotationAgreementCodingProcessor;
 import org.grobid.trainer.annotationAgreement.InterAnnotationAgreementUnitizingProcessor;
@@ -24,8 +27,17 @@ import org.grobid.trainer.stax.StackTags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -43,6 +55,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
         StackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
         StackTags.from("/tei/teiHeader/profileDesc/ab"),
         StackTags.from("/tei/text/body/p"),
+        StackTags.from("/tei/text/p"),
         StackTags.from("/tei/text/body/ab")
     );
     public static final List<String> ANNOTATION_DEFAULT_TAG_TYPES = Arrays.asList("material", "tc",
@@ -103,11 +116,26 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
         File inputDirectory = namespace.get(INPUT_DIRECTORY);
         File[] directories = inputDirectory.listFiles(File::isDirectory);
 
+        File outputDirectory = namespace.get(OUTPUT_DIRECTORY);
+
         InterAnnotationAgreementType mode = namespace.get(MODE);
 
         Boolean isVerbose = namespace.get(VERBOSE_OUTPUT);
 
-        System.out.println("Calculating IAA between the following directories: \n" +
+        final PrintStream printStream;
+
+        if (outputDirectory == null) {
+            printStream = System.out;
+        } else {
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+
+            String outputFileName = "iaa-result-" + formatter.format(date);
+            printStream = new PrintStream(Paths.get(outputDirectory.getAbsolutePath(), outputFileName).toFile());
+        }
+
+
+        printStream.println("Calculating IAA between the following directories: \n" +
             Arrays.stream(directories).map(f -> f.getAbsolutePath()).collect(Collectors.joining(", \n")));
 
         if (mode.equals(InterAnnotationAgreementType.CODING)) {
@@ -138,7 +166,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
             if (isEmpty(pivotDirectory)) {
                 List<UnitizedStudyWrapper> studies = iiaProcessor.extractAnnotations(Arrays.asList(directories));
-                printEvaluation(studies);
+                printEvaluation(studies, printStream);
 
                 if (directories.length > 2) {
                     // Pairwise evaluation
@@ -156,16 +184,16 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
                         .collect(Collectors.groupingBy(a -> ImmutablePair.of(a.getRater0(), a.getRater1()), Collectors.toList()));
 
                     collect.forEach((k, v) -> {
-                        System.out.println();
+                        printStream.println();
 
                         int column = k.getRight();
                         int row = k.getLeft();
 
-                        System.out.println(row + " vs " + column);
-                        System.out.println("General Agreement: " + pairwiseAverage.get(k));
-                        System.out.println("");
+                        printStream.println(row + " vs " + column);
+                        printStream.println("General Agreement: " + pairwiseAverage.get(k));
+                        printStream.println("");
 
-                        System.out.println("Agreement by categories: ");
+                        printStream.println("Agreement by categories: ");
                         Map<String, Double> collect1 = v
                             .stream()
                             .map(InterAnnotationAgreementPairwiseComparisonEntry::getAgreementByCategory)
@@ -174,25 +202,25 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
                                 Collectors.averagingDouble(Map.Entry::getValue)));
 
                         collect1.keySet().forEach(a -> {
-                            System.out.println(a + ": " + collect1.get(a));
+                            printStream.println(a + ": " + collect1.get(a));
                         });
-                        System.out.println("");
+                        printStream.println("");
 
                     });
                 } else {
-                    System.out.println("IAA ran only on two annotators. Ignoring the pairwise comparison. ");
+                    printStream.println("IAA ran only on two annotators. Ignoring the pairwise comparison. ");
                 }
 
                 // Debug information
                 if (isVerbose.equals(true)) {
-                    System.out.println();
-                    System.out.println();
+                    printStream.println();
+                    printStream.println();
 
                     UnitizingStudyPrinter printer = new UnitizingStudyPrinter();
                     studies.forEach(s -> {
-                        System.out.println("\t\t\t\t" + s.getContinuums().get(0));
+                        printStream.println("\t\t\t\t" + s.getContinuums().get(0));
                         s.getStudy().getCategories().forEach(c -> {
-                            printer.printUnitsForCategory(System.out, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));
+                            printer.printUnitsForCategory(printStream, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));
                         });
                     });
                 }
@@ -208,22 +236,55 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
                 for (File dir : others) {
                     List<UnitizedStudyWrapper> studies = iiaProcessor.extractAnnotations(Arrays.asList(dir, pivot));
-                    System.out.println("Evaluating " + dir.getName() + " vs " + pivot.getName());
-                    printEvaluation(studies);
+                    printStream.println("Evaluating " + dir.getName() + " vs " + pivot.getName());
+                    printEvaluation(studies, printStream);
 
                     // Debug information
                     if (isVerbose.equals(true)) {
-                        System.out.println();
-                        System.out.println();
+                        printStream.println();
+                        printStream.println();
+
+                        Map<String, List<String>> mismatchesByCategory = new HashMap<>();
+                        Map<String, Long> correctByCategory = new HashMap<>();
 
                         UnitizingStudyPrinter printer = new UnitizingStudyPrinter();
                         studies.forEach(s -> {
-//                            printer.printContinuum(System.out, s.getStudy(), "");
-                            System.out.println("\t\t\t\t" + s.getContinuums().get(0));
+//                            printer.printContinuum(printStream, s.getStudy(), "");
+                            printStream.println("\t\t\t\t" + s.getContinuums().get(0));
                             s.getStudy().getCategories().forEach(c -> {
-                                printer.printUnitsForCategory(System.out, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));
+                                printer.printUnitsForCategory(printStream, s.getStudy(), c, String.format("%1$" + 12 + "s", c.toString()));
                             });
+
+                            printStream.println();
+                            printStream.println();
+
+                            for (Object category : s.getStudy().getCategories()) {
+                                String categoryAsString = String.valueOf(category);
+                                mismatchesByCategory.putIfAbsent(categoryAsString, new ArrayList<>());
+                                correctByCategory.putIfAbsent(categoryAsString, 0L);
+                                List<String> mismatches = s.getStudy().getUnits().stream()
+                                    .filter(s_ -> s_.getCategory().equals(category))
+                                    .collect(Collectors.groupingBy(b -> b.getLength() + '-' + b.getOffset()))
+                                    .entrySet().stream().filter(e -> e.getValue().size() == 1)
+                                    .flatMap(e -> e.getValue().stream())
+                                    .map(s_ -> s_.getRaterIdx() + "-(" + s_.getOffset() + "-" + s_.getLength() + ") '" + s.getContinuums().get(0).substring((int) s_.getOffset(), (int) s_.getEndOffset()) + "'")
+                                    .collect(Collectors.toList());
+                                mismatchesByCategory.get(categoryAsString).addAll(mismatches);
+
+                                Long correct = s.getStudy().getUnits().stream()
+                                    .filter(s_ -> s_.getCategory().equals(category))
+                                    .collect(Collectors.groupingBy(b -> b.getLength() + '-' + b.getOffset()))
+                                    .entrySet().stream().filter(e -> e.getValue().size() == 2)
+                                    .flatMap(e -> e.getValue().stream()).count();
+                                correctByCategory.put(categoryAsString, correctByCategory.get(categoryAsString) + correct);
+                            }
                         });
+
+                        for (String category : mismatchesByCategory.keySet()) {
+                            printStream.println("Mismatches in " + category + " (" + mismatchesByCategory.get(category).size() + ", correct: " + correctByCategory.get(category) + ")");
+                            printStream.println(mismatchesByCategory.get(category));
+                            printStream.println();
+                        }
                     }
                 }
             }
@@ -231,16 +292,16 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
     }
 
-    private void printEvaluation(List<UnitizedStudyWrapper> studies) {
+    private void printEvaluation(List<UnitizedStudyWrapper> studies, PrintStream printStream) {
         // General evaluation
-        System.out.println("== General evaluation (considering all the annotators) ==");
+        printStream.println("== General evaluation (considering all the annotators) ==");
         double averageAlpha = studies.stream()
             .mapToDouble(UnitizedStudyWrapper::getAgreement).summaryStatistics().getAverage();
-        System.out.println("Krippendorf alpha agreements: " + averageAlpha);
-        System.out.println(" ");
+        printStream.println("Krippendorf alpha agreements: " + averageAlpha);
+        printStream.println(" ");
 
         // Evaluation by category
-        System.out.println("Krippendorf alpha agreement by category: ");
+        printStream.println("Krippendorf alpha agreement by category: ");
 
         Map<String, Double> averageByCategory = studies.stream()
             .map(UnitizedStudyWrapper::getAgreementByCategory)
@@ -249,9 +310,9 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
                 Collectors.averagingDouble(Map.Entry::getValue)));
 
         averageByCategory.forEach((c, d) -> {
-            System.out.println(c + ": \t" + d);
+            printStream.println(c + ": \t" + d);
         });
-        System.out.println(" ");
+        printStream.println(" ");
     }
 
 

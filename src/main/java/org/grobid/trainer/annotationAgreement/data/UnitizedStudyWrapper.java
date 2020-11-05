@@ -58,7 +58,18 @@ public class UnitizedStudyWrapper {
                 this.filenames.add(file);
                 this.continuums.add(handler.getContinuum());
 
-                if (firstContinuum != null) {
+                if (firstContinuum == null) {
+                    firstContinuum = handler.getContinuum();
+                    study = new UnitizingAnnotationStudy(filenames.size(), firstContinuum.length());
+
+                    handler.getData().forEach(annotation -> {
+                        String annotationName = annotation.getLeft();
+                        Integer start = annotation.getMiddle();
+                        Integer length = annotation.getRight();
+
+                        study.addUnit(start, length, filenames.indexOf(file), annotationName);
+                    });
+                } else {
                     if (handler.getContinuum().length() != firstContinuum.length()) {
                         throw new RuntimeException("Continuum between different annotators are not matching, please fix it before re-trying. " +
                             firstContinuum.length() + " vs " + handler.getContinuum().length() + "\n\n" +
@@ -73,17 +84,6 @@ public class UnitizedStudyWrapper {
                         study.addUnit(start, length, filenames.indexOf(file), annotationName);
                     });
 
-                } else {
-                    firstContinuum = handler.getContinuum();
-                    study = new UnitizingAnnotationStudy(filenames.size(), firstContinuum.length());
-
-                    handler.getData().forEach(annotation -> {
-                        String annotationName = annotation.getLeft();
-                        Integer start = annotation.getMiddle();
-                        Integer length = annotation.getRight();
-
-                        study.addUnit(start, length, filenames.indexOf(file), annotationName);
-                    });
                 }
                 count++;
 
@@ -171,5 +171,9 @@ public class UnitizedStudyWrapper {
 
     public List<String> getContinuums() {
         return continuums;
+    }
+
+    public List<InputStream> getFilenames() {
+        return filenames;
     }
 }
