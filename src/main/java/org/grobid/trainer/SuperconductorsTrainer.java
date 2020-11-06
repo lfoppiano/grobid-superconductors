@@ -11,6 +11,7 @@ import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -52,7 +53,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath() + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final", "batch-2");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -98,12 +99,12 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS,
+                AnnotationValuesTEIStaxHandler handler = new AnnotationValuesTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
                     ANNOTATION_DEFAULT_TAG_TYPES);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
-                List<Pair<String, String>> labeled = handler.getLabeledEntities();
+                List<Pair<String, String>> labeled = handler.getLabeledStream();
 
                 // we can now add the features
                 // we open the featured file
@@ -149,6 +150,10 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             output.append(line).append(" ").append(tag).append("\n");
                             q = pp + 1;
                             pp = q + 10;
+                        } else {
+                            if (token != null) {
+                                LOGGER.info("Token not matching " + localToken + " -> " + token);
+                            }
                         }
 
                         if (pp - q > 5) {

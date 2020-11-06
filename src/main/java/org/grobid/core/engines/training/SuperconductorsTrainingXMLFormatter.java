@@ -48,6 +48,8 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                     body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE_SECTION)) {
                     body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "head"));
+                } else {
+                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
                 }
             } else if (block.getSection().equals(DocumentBlock.SECTION_HEADER)) {
                 if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE)) {
@@ -71,6 +73,10 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                         profileDesc.appendChild(abstractElement);
                     }
                     abstractElement.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                } else {
+                    throw new RuntimeException("The section or subsection have the wrong name. " +
+                        "This will cause loss of data in the output generated files. Section name: " + block.getSection() +
+                        ", " + block.getSubSection());
                 }
             } else if (block.getSection().equals(DocumentBlock.SECTION_ANNEX)) {
                 body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
