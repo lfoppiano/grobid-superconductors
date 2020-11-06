@@ -165,7 +165,7 @@ public class FeaturesVectorSuperconductors {
             featuresVector.punctType = "OPENBRACKET";
         } else if ((string.equals(")")) || (string.equals("]"))) {
             featuresVector.punctType = "ENDBRACKET";
-        } else if (string.equals(".")) {
+        } else if (string.equals(".") || string.equals("⋅") || string.equals("•")) {
             featuresVector.punctType = "DOT";
         } else if (string.equals(",")) {
             featuresVector.punctType = "COMMA";
@@ -205,7 +205,7 @@ public class FeaturesVectorSuperconductors {
             featuresVector.fontSize = "LOWERFONT";
         }
 
-        if(token.isSuperscript()) {
+        if (token.isSuperscript()) {
             featuresVector.fontStyle = "SUPERSCRIPT";
         } else if (token.isSubscript()) {
             featuresVector.fontStyle = "SUBSCRIPT";
