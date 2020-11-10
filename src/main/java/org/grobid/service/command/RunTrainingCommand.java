@@ -124,6 +124,8 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             trainer = new SuperconductorsTrainer();
+        }else if ("superconductorsNoFeatures".equals(modelName)) {
+            trainer = new SuperconductorsNoFeaturesTrainer();
         } else if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
             trainer = new MaterialTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC.getModelName().equals(modelName)) {
