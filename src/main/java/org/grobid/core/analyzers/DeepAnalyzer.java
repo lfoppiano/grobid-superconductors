@@ -43,7 +43,7 @@ public class DeepAnalyzer implements Analyzer {
     private DeepAnalyzer() {
     }
 
-    public static final String DELIMITERS = " \n\r\t\f\u00A0([^%‰°•⋅,:;?.!/)-–−‐=≈~<>+\"“”‘’'`$]*\u2666\u2665\u2663\u2660\u00A0";
+    public static final String DELIMITERS = " \n\r\t\f\u00A0([^%‰°•⋅·,:;?.!/)-–−‐=≈~<>+\"“”‘’'`$]*\u2666\u2665\u2663\u2660\u00A0";
     private static final String REGEX = "(?<=[a-zA-Z])(?=\\d)|(?<=\\d)(?=\\D)";
 
     public String getName() {
