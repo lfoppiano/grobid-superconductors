@@ -174,7 +174,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                         if (StringUtils.equals(paragraphBeginning, paragraphBeginningXml)) {
                             featureFileAligned.add(featureParagraph);
                             xmlFileAligned.add(xmlParagraph);
-                            previousIdx = j;
+                            previousIdx = j + 1;
                             continue outer;
                         }
                     }
