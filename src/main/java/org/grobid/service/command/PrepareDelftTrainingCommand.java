@@ -110,6 +110,8 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         }else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD;
             trainer = new EntityLinkerTcMeMethodTrainer();
+        } else if ("superconductors-no-features".equals(modelName)) {
+            trainer = new SuperconductorsNoFeaturesTrainer();
         }
 
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
