@@ -130,6 +130,7 @@ public class SuperconductorsNoFeaturesTrainer extends AbstractTrainer {
 
                 // we can now add the features
                 for (List<Pair<String, String>> paragraph : xmlFile) {
+                    long entityLabels = 0;
                     for (Pair<String, String> token : paragraph) {
                         String value = token.getLeft();
                         String label = token.getRight();
@@ -138,9 +139,12 @@ public class SuperconductorsNoFeaturesTrainer extends AbstractTrainer {
                         TaggingLabel taggingLabel = TaggingLabels.labelFor(SuperconductorsModels.SUPERCONDUCTORS, label);
                         FeaturesVectorSuperconductors featuresVectorSuperconductors = FeaturesVectorSuperconductors.addFeatures(new LayoutToken(value, taggingLabel), label, null, "false");
                         output.append(featuresVectorSuperconductors.printVector()).append("\n");
+                        if (!token.getRight().equals(TaggingLabels.OTHER_LABEL)) {
+                            entityLabels++;
+                        }
                     }
 
-                    if (isNotBlank(output.toString())) {
+                    if (isNotBlank(output.toString()) && entityLabels > 0) {
                         output.append("\n");
                         writer.write(output.toString() + "\n");
                         writer.flush();
