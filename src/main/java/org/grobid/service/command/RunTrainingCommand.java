@@ -60,7 +60,8 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .dest(MODEL_NAME)
             .type(String.class)
             .required(false)
-            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc", "superconductors-no-features"))
+            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc", "superconductors-no-features",
+                "superconductors-no-features-abstracts"))
             .setDefault("superconductors")
             .help("Model to train");
 
@@ -125,8 +126,10 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
             trainer = new SuperconductorsTrainer();
-        }else if ("superconductors-no-features".equals(modelName)) {
+        } else if ("superconductors-no-features".equals(modelName)) {
             trainer = new SuperconductorsNoFeaturesTrainer();
+        } else if ("superconductors-no-features-abstracts".equals(modelName)) {
+            trainer = new SuperconductorsNoFeaturesOnlyAbstractsTrainer();
         } else if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
             trainer = new MaterialTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC.getModelName().equals(modelName)) {

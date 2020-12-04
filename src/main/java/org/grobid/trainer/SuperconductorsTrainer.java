@@ -55,8 +55,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
         try {
 
-//            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final", "batch-2", "test");
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final", "batch-3");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -176,12 +175,19 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             xmlFileAligned.add(xmlParagraph);
                             previousIdx = j + 1;
                             continue outer;
+                        } else {
+                            LOGGER.warn("Paragraphs " + paragraphBeginning + " not found in the xml " + paragraphBeginningXml);
                         }
                     }
                     LOGGER.error("The feature file (" + theRawFile.getName() + ") and the xml file (" + theFile.getName() + ") have different number of paragraphs and cannot be matched back. Skipping it.");
                     LOGGER.error("Paragraph beginning: " + paragraphBeginning);
                     skipFile = true;
                     break;
+                }
+
+                if (xmlFile.size() != featureFile.size()) {
+                    LOGGER.info("Initial paragraphs: XML: " + xmlFile.size() + ", Features: " + featureFile.size()
+                        + ". Output: " + xmlFileAligned.size());
                 }
 
                 if (skipFile)
