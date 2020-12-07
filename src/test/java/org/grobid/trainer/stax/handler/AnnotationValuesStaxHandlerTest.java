@@ -112,7 +112,7 @@ public class AnnotationValuesStaxHandlerTest {
         StaxUtils.traverse(reader, target);
 
         List<Pair<String, String>> labeled = target.getLabeledStream();
-        assertThat(labeled, hasSize(2916));
+        assertThat(labeled, hasSize(2918));
 
         assertThat(labeled.get(0).getLeft(), is("The"));
         assertThat(labeled.get(0).getRight(), is("<other>"));
