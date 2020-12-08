@@ -87,6 +87,7 @@ public class CRFBasedLinkerIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testRealCase_shouldExtract2Links() throws Exception {
         String input = "Theory-oriented experiments show that the compressed hydride of Group VI (hydrogen sulfide, H 3 S) exhibits a superconducting state at 203 K. Moreover, a Group V hydride (phosphorus hydride, PH 3 ) has also been studied and its T c reached a maximum of 103 K. The experimental realisation of the superconductivity in H 3 S and PH 3 inspired us to search for other hydride superconductors.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);

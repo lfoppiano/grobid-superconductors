@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +26,7 @@ public class EntityLinkerAnnotationStaxHandlerTest {
 
     @Before
     public void setUp() {
-        target = new EntityLinkerAnnotationStaxHandler("p", "tcValue", "material");
+        target = new EntityLinkerAnnotationStaxHandler("p", Arrays.asList("tcValue"), Arrays.asList("material"));
     }
 
     @Test
@@ -171,7 +172,7 @@ public class EntityLinkerAnnotationStaxHandlerTest {
 
     @Test
     public void testHandler_realCase_pressure_tcValue() throws Exception {
-        target = new EntityLinkerAnnotationStaxHandler("p", "pressure", "tcValue");
+        target = new EntityLinkerAnnotationStaxHandler("p", Arrays.asList("pressure"), Arrays.asList("tcValue"));
 
         InputStream inputStream = this.getClass().getResourceAsStream("linked.annotations.test.xml");
 

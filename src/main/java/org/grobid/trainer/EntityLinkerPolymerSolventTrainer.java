@@ -83,16 +83,16 @@ public class EntityLinkerPolymerSolventTrainer extends AbstractTrainer {
 
             LOGGER.info(refFiles.size() + " files to be processed.");
 
-            Path adaptedCorpusDir2 = Paths.get(corpusDir.getAbsolutePath()
-                .replaceFirst("entityLinker-polymer-solvent", "superconductors"),"final");
-
-            List<File> refFiles2 = Files.walk(adaptedCorpusDir2, Integer.MAX_VALUE)
-                .filter(path -> Files.isRegularFile(path)
-                    && (StringUtils.endsWithIgnoreCase(path.getFileName().toString(), ".xml")))
-                .map(Path::toFile)
-                .collect(Collectors.toList());
-
-            refFiles.addAll(refFiles2);
+//            Path adaptedCorpusDir2 = Paths.get(corpusDir.getAbsolutePath()
+//                .replaceFirst("entityLinker-polymer-solvent", "superconductors"),"final");
+//
+//            List<File> refFiles2 = Files.walk(adaptedCorpusDir2, Integer.MAX_VALUE)
+//                .filter(path -> Files.isRegularFile(path)
+//                    && (StringUtils.endsWithIgnoreCase(path.getFileName().toString(), ".xml")))
+//                .map(Path::toFile)
+//                .collect(Collectors.toList());
+//
+//            refFiles.addAll(refFiles2);
             if (isEmpty(refFiles)) {
                 return 0;
             }

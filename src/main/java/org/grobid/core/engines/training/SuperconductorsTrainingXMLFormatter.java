@@ -9,7 +9,7 @@ import org.grobid.core.data.Span;
 import org.grobid.core.document.xml.XmlBuilderUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.TeiUtils;
+import org.grobid.core.utilities.TeiUtilsSuperconductors;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
             textNode.appendChild(trainingExtraction(labeledText.getLeft(), labeledText.getRight()));
         }
 
-        Element quantityDocumentRoot = TeiUtils.getTeiHeader(id);
+        Element quantityDocumentRoot = TeiUtilsSuperconductors.getTeiHeader(id);
         quantityDocumentRoot.appendChild(textNode);
 
         return XmlBuilderUtils.toXml(quantityDocumentRoot);

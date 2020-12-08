@@ -141,7 +141,7 @@ tasks.withType(JavaCompile) {
 }
 
 sourceSets.main.resources {
-    srcDirs = ["src/main/resources", "resources"]
+    srcDirs = ["src/main/resources", "resources/config"]
 }
 
 test {
@@ -206,7 +206,7 @@ artifacts {
 
 distZip.enabled = false
 distTar.enabled = false
-shadowDistTar.enabled = false
+shadowDistZip.enabled = false
 shadowDistTar.enabled = false
 
 publishing {
