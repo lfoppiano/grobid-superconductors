@@ -6,7 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
     private StringBuilder accumulatedText = new StringBuilder();
 
     private List<String> annotationTypes = new ArrayList<>();
-    private List<StackTags> containerPaths = new ArrayList<>();
+    private List<SuperconductorsStackTags> containerPaths = new ArrayList<>();
 
     // Record the offsets of each annotation tag
     private final List<Integer> offsetsAnnotationsTags = new ArrayList<>();
@@ -49,10 +49,10 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
     private List<Pair<String, String>> labeledStream = new ArrayList<>();
 
     private final List<Pair<String, String>> identifiers = new ArrayList<>();
-    private StackTags currentPosition = new StackTags();
+    private SuperconductorsStackTags currentPosition = new SuperconductorsStackTags();
 
     //When I find a relevant path, I store it here
-    private StackTags currentContainerPath = null;
+    private SuperconductorsStackTags currentContainerPath = null;
     private boolean insideEntity = false;
     private String currentAnnotationType;
 
@@ -60,15 +60,15 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
      * Process only from the body, trying to keep compatibility with the previous version
      */
     public AnnotationValuesTEIStaxHandler(List<String> annotationTypes) {
-        this(Arrays.asList(StackTags.from("/tei/text/body/p"),
-            StackTags.from("/tei/text/p")), annotationTypes);
+        this(Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/p"),
+            SuperconductorsStackTags.from("/tei/text/p")), annotationTypes);
     }
 
     /**
      * @param containerPaths  specifies the path where the data should be extracted, e.g. /tei/teiHeader/titleStmt/title
      * @param annotationTypes specifies the types of the <rs type="type"></rs> annotation to be extracted
      */
-    public AnnotationValuesTEIStaxHandler(List<StackTags> containerPaths, List<String> annotationTypes) {
+    public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes) {
         this.containerPaths = containerPaths;
         this.annotationTypes = annotationTypes;
     }
@@ -92,7 +92,7 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
 
         if (currentContainerPath == null) {
             if (containerPaths.contains(currentPosition)) {
-                currentContainerPath = StackTags.from(currentPosition);
+                currentContainerPath = SuperconductorsStackTags.from(currentPosition);
             }
         } else {
             String attributeValue = getAttributeValue(reader, "type");

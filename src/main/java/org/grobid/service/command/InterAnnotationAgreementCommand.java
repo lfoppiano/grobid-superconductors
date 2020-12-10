@@ -12,32 +12,23 @@ import org.dkpro.statistics.agreement.coding.ICodingAnnotationStudy;
 import org.dkpro.statistics.agreement.coding.KrippendorffAlphaAgreement;
 import org.dkpro.statistics.agreement.coding.PercentageAgreement;
 import org.dkpro.statistics.agreement.distance.NominalDistanceFunction;
-import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
-import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.visualization.ReliabilityMatrixPrinter;
 import org.dkpro.statistics.agreement.visualization.UnitizingStudyPrinter;
-import org.grobid.core.exceptions.GrobidException;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.annotationAgreement.InterAnnotationAgreementCodingProcessor;
 import org.grobid.trainer.annotationAgreement.InterAnnotationAgreementUnitizingProcessor;
 import org.grobid.trainer.annotationAgreement.data.InterAnnotationAgreementPairwiseComparisonEntry;
 import org.grobid.trainer.annotationAgreement.data.InterAnnotationAgreementType;
 import org.grobid.trainer.annotationAgreement.data.UnitizedStudyWrapper;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -50,13 +41,13 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     private final static String ONE_VS_ALL = "one-vs-all";
     private final static String MODE = "Method of calculation";
 
-    public static final List<StackTags> TOP_LEVEL_ANNOTATION_DEFAULT_PATHS = Arrays.asList(
-        StackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
-        StackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
-        StackTags.from("/tei/teiHeader/profileDesc/ab"),
-        StackTags.from("/tei/text/body/p"),
-        StackTags.from("/tei/text/p"),
-        StackTags.from("/tei/text/body/ab")
+    public static final List<SuperconductorsStackTags> TOP_LEVEL_ANNOTATION_DEFAULT_PATHS = Arrays.asList(
+        SuperconductorsStackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
+        SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
+        SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/ab"),
+        SuperconductorsStackTags.from("/tei/text/body/p"),
+        SuperconductorsStackTags.from("/tei/text/p"),
+        SuperconductorsStackTags.from("/tei/text/body/ab")
     );
     public static final List<String> ANNOTATION_DEFAULT_TAG_TYPES = Arrays.asList("material", "tc",
         "tcValue", "pressure", "me_method", "class");

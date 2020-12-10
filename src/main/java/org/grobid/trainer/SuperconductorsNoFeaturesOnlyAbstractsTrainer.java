@@ -13,7 +13,7 @@ import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 
@@ -31,7 +31,6 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 
 public class SuperconductorsNoFeaturesOnlyAbstractsTrainer extends AbstractTrainer {
@@ -106,7 +105,7 @@ public class SuperconductorsNoFeaturesOnlyAbstractsTrainer extends AbstractTrain
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                AnnotationValuesTEIStaxHandler handler = new AnnotationValuesTEIStaxHandler(Arrays.asList(StackTags.from("/tei/teiHeader/profileDesc/abstract/p")),
+                AnnotationValuesTEIStaxHandler handler = new AnnotationValuesTEIStaxHandler(Arrays.asList(SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/abstract/p")),
                     ANNOTATION_DEFAULT_TAG_TYPES);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);

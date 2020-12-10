@@ -2,7 +2,7 @@ package org.grobid.trainer.annotationAgreement.data;
 
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
 import org.easymock.EasyMock;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class UnitizedStudyWrapperTest {
         inputStreams.add(this.getClass().getResourceAsStream("study3.xml"));
 
         UnitizedStudyWrapper unitizedStudyWrapper = new UnitizedStudyWrapper(inputStreams,
-            Arrays.asList(StackTags.from("/tei/text/p")), Arrays.asList("material", "class"));
+            Arrays.asList(SuperconductorsStackTags.from("/tei/text/p")), Arrays.asList("material", "class"));
 
         assertThat(unitizedStudyWrapper.getContinuums(), hasSize(3));
         assertThat(unitizedStudyWrapper.getAgreementByCategory().keySet(), hasSize(2));
@@ -73,7 +73,7 @@ public class UnitizedStudyWrapperTest {
         inputStreams.add(this.getClass().getResourceAsStream("study3.xml"));
 
         UnitizedStudyWrapper unitizedStudyWrapper = new UnitizedStudyWrapper(inputStreams,
-            Arrays.asList(StackTags.from("/tei/text/p")), Arrays.asList("material", "class"));
+            Arrays.asList(SuperconductorsStackTags.from("/tei/text/p")), Arrays.asList("material", "class"));
 
         assertThat(unitizedStudyWrapper.getAgreement(), is(UnitizedStudyWrapper.getAgreement(unitizedStudyWrapper.getStudy())));
     }
@@ -87,7 +87,7 @@ public class UnitizedStudyWrapperTest {
         inputStreams.add(this.getClass().getResourceAsStream("study3.xml"));
 
         UnitizedStudyWrapper unitizedStudyWrapper = new UnitizedStudyWrapper(inputStreams,
-            Arrays.asList(StackTags.from("/tei/text/p")), Arrays.asList("material", "class"));
+            Arrays.asList(SuperconductorsStackTags.from("/tei/text/p")), Arrays.asList("material", "class"));
 
         List<InterAnnotationAgreementPairwiseComparisonEntry> matrices
                 = unitizedStudyWrapper.getPairwiseRaterAgreementMatrices();

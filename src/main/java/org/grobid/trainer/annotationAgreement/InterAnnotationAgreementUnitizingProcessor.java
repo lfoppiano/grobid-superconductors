@@ -5,7 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.annotationAgreement.data.UnitizedStudyWrapper;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public class InterAnnotationAgreementUnitizingProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(InterAnnotationAgreementUnitizingProcessor.class);
 
     private List<String> annotationTags = new ArrayList<>();
-    private List<StackTags> topLevelTags = new ArrayList<>();
+    private List<SuperconductorsStackTags> topLevelTags = new ArrayList<>();
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
@@ -33,7 +33,7 @@ public class InterAnnotationAgreementUnitizingProcessor {
 
     }
 
-    public InterAnnotationAgreementUnitizingProcessor(List<StackTags> topLevelTags, List<String> annotationTags) {
+    public InterAnnotationAgreementUnitizingProcessor(List<SuperconductorsStackTags> topLevelTags, List<String> annotationTags) {
         this.topLevelTags = topLevelTags;
         this.annotationTags = annotationTags;
     }

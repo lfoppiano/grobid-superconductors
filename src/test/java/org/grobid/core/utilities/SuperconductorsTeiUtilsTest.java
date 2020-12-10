@@ -8,7 +8,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
-public class TeiUtilsTest {
+public class SuperconductorsTeiUtilsTest {
 
     @Before
     public void setUp() throws Exception {
@@ -17,9 +17,9 @@ public class TeiUtilsTest {
 
     @Test
     public void testGetElement() {
-        Element root = TeiUtils.getTeiHeader(123);
-        Element teiHeader = TeiUtils.getElement(root, "teiHeader");
-        Element fileDesc = TeiUtils.getElement(teiHeader, "fileDesc");
+        Element root = SuperconductorsTeiUtils.getTeiHeader(123);
+        Element teiHeader = SuperconductorsTeiUtils.getElement(root, "teiHeader");
+        Element fileDesc = SuperconductorsTeiUtils.getElement(teiHeader, "fileDesc");
 
         assertThat(fileDesc, is(notNullValue()));
 

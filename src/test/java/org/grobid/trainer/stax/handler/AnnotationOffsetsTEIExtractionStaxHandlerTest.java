@@ -3,7 +3,7 @@ package org.grobid.trainer.stax.handler;
 import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,19 +24,19 @@ public class AnnotationOffsetsTEIExtractionStaxHandlerTest {
 
     @Before
     public void setUp() {
-        List<StackTags> stackTags = Arrays.asList(StackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
-            StackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
-            StackTags.from("/tei/teiHeader/profileDesc/ab"),
-            StackTags.from("/tei/text/body/p"),
-            StackTags.from("/tei/text/body/ab"));
-        target = new AnnotationOffsetsTEIExtractionStaxHandler(stackTags, Arrays.asList("material", "tc", "tcValue"));
+        List<SuperconductorsStackTags> superconductorsStackTags = Arrays.asList(SuperconductorsStackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
+            SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
+            SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/ab"),
+            SuperconductorsStackTags.from("/tei/text/body/p"),
+            SuperconductorsStackTags.from("/tei/text/body/ab"));
+        target = new AnnotationOffsetsTEIExtractionStaxHandler(superconductorsStackTags, Arrays.asList("material", "tc", "tcValue"));
     }
 
     @Test
     public void testHandler_singleSection_noAnnotations() throws Exception {
-        List<StackTags> stackTags = Arrays.asList(StackTags.from("/tei/text/body/ab"));
+        List<SuperconductorsStackTags> superconductorsStackTags = Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/ab"));
 
-        target = new AnnotationOffsetsTEIExtractionStaxHandler(stackTags, Arrays.asList("material", "tc", "tcValue"));
+        target = new AnnotationOffsetsTEIExtractionStaxHandler(superconductorsStackTags, Arrays.asList("material", "tc", "tcValue"));
 
         InputStream inputStream = this.getClass().getResourceAsStream("annotations.tei2.test.xml");
 
@@ -54,9 +54,9 @@ public class AnnotationOffsetsTEIExtractionStaxHandlerTest {
 
     @Test
     public void testHandler_singleSection_withAnnotations() throws Exception {
-        List<StackTags> stackTags = Arrays.asList(StackTags.from("/tei/text/body/p"));
+        List<SuperconductorsStackTags> superconductorsStackTags = Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/p"));
 
-        target = new AnnotationOffsetsTEIExtractionStaxHandler(stackTags, Arrays.asList("material", "tc", "tcValue"));
+        target = new AnnotationOffsetsTEIExtractionStaxHandler(superconductorsStackTags, Arrays.asList("material", "tc", "tcValue"));
 
         InputStream inputStream = this.getClass().getResourceAsStream("annotations.tei2.test.xml");
 
@@ -109,12 +109,12 @@ public class AnnotationOffsetsTEIExtractionStaxHandlerTest {
 
     @Test
     public void testHandler_multipleSections_noTypeExtracted() throws Exception {
-        List<StackTags> stackTags = Arrays.asList(StackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
-            StackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
-            StackTags.from("/tei/teiHeader/profileDesc/ab"),
-            StackTags.from("/tei/text/body/p"),
-            StackTags.from("/tei/text/body/ab"));
-        target = new AnnotationOffsetsTEIExtractionStaxHandler(stackTags, Arrays.asList("material", "tc"));
+        List<SuperconductorsStackTags> superconductorsStackTags = Arrays.asList(SuperconductorsStackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
+            SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
+            SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/ab"),
+            SuperconductorsStackTags.from("/tei/text/body/p"),
+            SuperconductorsStackTags.from("/tei/text/body/ab"));
+        target = new AnnotationOffsetsTEIExtractionStaxHandler(superconductorsStackTags, Arrays.asList("material", "tc"));
 
         InputStream inputStream = this.getClass().getResourceAsStream("annotations.tei2.test.xml");
 

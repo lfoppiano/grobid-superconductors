@@ -3,7 +3,7 @@ package org.grobid.trainer.stax.handler;
 import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public class AnnotationValuesTEIStaxHandlerTest {
     @Test
     public void testHandler_simple_extractStreamAndEntities_onlyFromTitle() throws Exception {
         target = new AnnotationValuesTEIStaxHandler(
-            Arrays.asList(StackTags.from("/tei/teiHeader/fileDesc/titleStmt/title")),
+            Arrays.asList(SuperconductorsStackTags.from("/tei/teiHeader/fileDesc/titleStmt/title")),
             Arrays.asList("class", "tcValue"));
 
         InputStream inputStream = this.getClass().getResourceAsStream("annotations.tei2.test.xml");

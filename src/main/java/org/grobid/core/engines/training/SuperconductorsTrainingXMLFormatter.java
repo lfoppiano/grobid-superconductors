@@ -3,7 +3,6 @@ package org.grobid.core.engines.training;
 import com.google.common.collect.Iterables;
 import nu.xom.Attribute;
 import nu.xom.Element;
-import nu.xom.Serializer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.DocumentBlock;
@@ -11,7 +10,7 @@ import org.grobid.core.data.Span;
 import org.grobid.core.document.xml.XmlBuilderUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.TeiUtils;
+import org.grobid.core.utilities.SuperconductorsTeiUtils;
 
 import java.util.List;
 
@@ -24,12 +23,12 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 
     @Override
     public String format(List<DocumentBlock> documentBlocks, int id) {
-        Element outputDocumentRoot = TeiUtils.getTeiHeader(id);
+        Element outputDocumentRoot = SuperconductorsTeiUtils.getTeiHeader(id);
 
-        Element teiHeader = TeiUtils.getElement(outputDocumentRoot, "teiHeader");
-        Element fileDesc = TeiUtils.getElement(teiHeader, "fileDesc");
+        Element teiHeader = SuperconductorsTeiUtils.getElement(outputDocumentRoot, "teiHeader");
+        Element fileDesc = SuperconductorsTeiUtils.getElement(teiHeader, "fileDesc");
 
-        Element profileDesc = TeiUtils.getElement(teiHeader, "profileDesc");
+        Element profileDesc = SuperconductorsTeiUtils.getElement(teiHeader, "profileDesc");
 
         Element textNode = teiElement("text");
         textNode.addAttribute(new Attribute("xml:lang", "http://www.w3.org/XML/1998/namespace", "en"));
@@ -58,7 +57,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                     titleStatement.appendChild(title);
                     fileDesc.insertChild(titleStatement, 0);
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_KEYWORDS)) {
-                    Element abKeywords = TeiUtils.getElement(profileDesc, "ab");
+                    Element abKeywords = SuperconductorsTeiUtils.getElement(profileDesc, "ab");
                     if(abKeywords == null) {
                         abKeywords = trainingExtraction(block.getSpans(), block.getLayoutTokens(), "ab", Pair.of("type", "keywords"));
                         profileDesc.appendChild(abKeywords);
@@ -67,7 +66,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                     }
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_ABSTRACT)) {
 
-                    Element abstractElement = TeiUtils.getElement(profileDesc, "abstract");
+                    Element abstractElement = SuperconductorsTeiUtils.getElement(profileDesc, "abstract");
                     if (abstractElement == null) {
                         abstractElement = teiElement("abstract");
                         profileDesc.appendChild(abstractElement);

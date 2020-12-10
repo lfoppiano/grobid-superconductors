@@ -6,9 +6,8 @@ import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationStudy;
 import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreement;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.AnnotationOffsetsExtractionStaxHandler;
 import org.grobid.trainer.stax.handler.AnnotationOffsetsTEIExtractionStaxHandler;
 
 import javax.xml.stream.XMLStreamException;
@@ -43,7 +42,7 @@ public class UnitizedStudyWrapper {
         this(filenames, TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, ANNOTATION_DEFAULT_TAG_TYPES);
     }
 
-    public UnitizedStudyWrapper(List<InputStream> filenames, List<StackTags> topLevelAannotationPaths, List<String> annotationTypes) {
+    public UnitizedStudyWrapper(List<InputStream> filenames, List<SuperconductorsStackTags> topLevelAannotationPaths, List<String> annotationTypes) {
         String firstContinuum = null;
 
         int count = 0;

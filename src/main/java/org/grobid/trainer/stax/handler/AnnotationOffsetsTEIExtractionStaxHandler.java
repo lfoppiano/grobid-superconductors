@@ -3,7 +3,7 @@ package org.grobid.trainer.stax.handler;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.grobid.trainer.stax.StackTags;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,30 +47,30 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
     private Integer paragraphNumbers = 0;
 
     private List<String> annotationTypes;
-    private List<StackTags> containerPaths;
+    private List<SuperconductorsStackTags> containerPaths;
 
     //When I find a relevant path, I store it here
-    private StackTags currentContainerPath = null;
+    private SuperconductorsStackTags currentContainerPath = null;
 
     private String currentAnnotationType = null;
 
     //Store the current position in the tree
-    private StackTags currentPosition = new StackTags();
+    private SuperconductorsStackTags currentPosition = new SuperconductorsStackTags();
 
     private StringBuilder continuum = new StringBuilder();
 
     private List<Triple<String, Integer, Integer>> data = new ArrayList<>();
 
     public AnnotationOffsetsTEIExtractionStaxHandler(List<String> annotationTypes) {
-        this(Arrays.asList(StackTags.from("/tei/text/body/p"),
-            StackTags.from("/tei/text/body/p")), annotationTypes);
+        this(Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/p"),
+            SuperconductorsStackTags.from("/tei/text/body/p")), annotationTypes);
     }
 
     /**
      * @param containerPaths  specifies the path where the data should be extracted, e.g. /tei/teiHeader/titleStmt/title
      * @param annotationTypes specifies the types of the <rs type="type"></rs> annotation to be extracted
      */
-    public AnnotationOffsetsTEIExtractionStaxHandler(List<StackTags> containerPaths, List<String> annotationTypes) {
+    public AnnotationOffsetsTEIExtractionStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes) {
         this.annotationTypes = annotationTypes;
         this.containerPaths = containerPaths;
     }
@@ -90,7 +90,7 @@ public class AnnotationOffsetsTEIExtractionStaxHandler implements StaxParserCont
 
         if (currentContainerPath == null) {
             if (containerPaths.contains(currentPosition)) {
-                currentContainerPath = StackTags.from(currentPosition);
+                currentContainerPath = SuperconductorsStackTags.from(currentPosition);
             }
         } else {
             String attributeValue = getAttributeValue(reader, "type");
