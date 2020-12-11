@@ -63,11 +63,6 @@ dependencies {
     implementation "net.arnx:jsonic:1.3.10"
 implementation "org.apache.lucene:lucene-analyzers-common:4.5.1"
 
-    //Grobid-quantities
-    implementation('org.grobid:grobid-quantities:0.6.0') {
-        transitive = false
-    }
-
     // grobid-quantities specific dependencies
 //    implementation 'tech.units:indriya:1.3'
     implementation 'si.uom:si-units-java8:0.9'
@@ -120,6 +115,11 @@ implementation "org.apache.lucene:lucene-analyzers-common:4.5.1"
 
     // Jep
     implementation 'black.ninia:jep:3.9.1'
+
+    //Grobid-quantities
+    implementation('org.grobid:grobid-quantities:0.6.0') {
+        transitive = false
+    }
 }
 
 
