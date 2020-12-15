@@ -211,6 +211,47 @@ public class EntityLinkerAnnotationStaxHandlerTest {
         assertThat(getLast(leftAttachments.iterator()).getLeft(), is("3"));
     }
 
+    @Test
+    public void testHandler2_realCase_polymer_solvent() throws Exception {
+        target = new EntityLinkerAnnotationStaxHandler("p", Arrays.asList("solvent"), Arrays.asList("polymer"));
+
+        InputStream inputStream = this.getClass().getResourceAsStream("109.xml");
+
+        XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
+
+        StaxUtils.traverse(reader, target);
+
+        List<Triple<String, String, String>> labeled = target.getLabeled();
+
+//        labeled.stream().map(Pair::toString).forEach(System.out::println);
+
+        assertThat(target.getLabeled(), hasSize(125));
+
+        List<Triple> rightAttachments = labeled
+                .stream()
+                .filter(v -> v.getMiddle().startsWith("I-<link_right>"))
+                .collect(Collectors.toList());
+
+        List<Triple> leftAttachments = labeled
+                .stream()
+                .filter(v -> v.getMiddle().startsWith("I-<link_left>"))
+                .collect(Collectors.toList());
+
+        assertThat(rightAttachments, hasSize(1));
+        assertThat(leftAttachments, hasSize(1));
+
+        for (int i = 0; i < leftAttachments.size(); i++) {
+            assertThat(rightAttachments.get(i).getRight(), is(not(leftAttachments.get(i).getRight())));
+//            System.out.println(rightAttachments.get(i) + " > "+ leftAttachments.get(i));
+        }
+
+        assertThat(rightAttachments.get(0).getLeft(), is("PDMA"));
+        assertThat(leftAttachments.get(0).getLeft(), is("water"));
+
+        assertThat(getLast(rightAttachments.iterator()).getLeft(), is("PDMA"));
+        assertThat(getLast(leftAttachments.iterator()).getLeft(), is("water"));
+    }
+
 
 
 //    @Test(expected = GrobidException.class)

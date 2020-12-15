@@ -156,7 +156,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
 
         } else if (sourceLabel.contains(localName)) {
             if (link_id == null) {
-                //there is not ptr, so I should exclude this
+                writeData(null, localName);
             } else {
                 if (isNotEmpty(insideLink)) {
                     if (LINK_DESTINATION.equals(insideLink)) {
@@ -182,7 +182,7 @@ public class EntityLinkerAnnotationStaxHandler implements StaxParserContentHandl
             // material
 
             if (link_id == null) {
-                //ignore
+                writeData(null, localName);
             } else {
                 if (insideLink != null) {
                     if (LINK_SOURCE.equals(insideLink)) {
