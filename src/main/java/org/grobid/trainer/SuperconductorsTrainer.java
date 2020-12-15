@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.engines.SuperconductorsModels;
+import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
@@ -200,6 +201,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                     paragraphFeatureFile = featureFileAligned.get(i);
                     paragraphXmlFile = xmlFileAligned.get(i);
                     int featureFileIndex = 0;
+                    long entityLabels = 0;
                     outer:
                     for (String line : paragraphFeatureFile) {
                         int secondFeatureTokenIndex = line.indexOf('\t');
@@ -224,6 +226,9 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             if (localToken.equals(token)) {
                                 line = line.replace("\t", " ").replace("  ", " ");
                                 output.append(line).append(" ").append(tag).append("\n");
+                                if (!tag.equals(TaggingLabels.OTHER_LABEL)) {
+                                    entityLabels++;
+                                }
                                 featureFileIndex = labeledIndex + 1;
                                 labeledIndex = featureFileIndex + 10;
                                 break;
@@ -234,6 +239,8 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                                     LOGGER.info("Out of sync. Moving to the next paragraph. Faulty paragraph: \n" +
                                         "\t- XML: " + paragraphXmlFile.stream().map(Pair::getLeft).collect(Collectors.joining(" ")) + "\n" +
                                         "\t- fea: " + paragraphFeatureFile.stream().map(s -> s.split(" ")[0]).collect(Collectors.joining(" ")));
+//                                    entityLabels = 0;
+//                                    output = new StringBuilder();
                                     continue outer;
                                 }
                                 break;
@@ -241,7 +248,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                         }
                     }
 
-                    if (isNotBlank(output.toString())) {
+                    if (isNotBlank(output.toString()) && entityLabels > 0) {
                         output.append("\n");
                         writer.write(output.toString() + "\n");
                         writer.flush();
