@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,53 +17,64 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_TAGS;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 /**
  * This class extracts from XML a) the labelled stream b) the list of labelled entities
- *
+ * <p>
  * The constructor accept the top level tags (e.g. paragraph tags), as optional, and the list of tags that are considered
  * important to identify each entity.
  */
-public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
+public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationValuesStaxHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationValuesTEIStaxHandler.class);
 
     private StringBuilder accumulator = new StringBuilder();
     private StringBuilder accumulatedText = new StringBuilder();
 
-    private boolean insideParagraph = false;
-
-    private List<String> annotationsTags;
-    private List<String> topLevelTags;
+    private List<String> annotationTypes = new ArrayList<>();
+    private List<SuperconductorsStackTags> containerPaths = new ArrayList<>();
 
     // Record the offsets of each annotation tag
-
     private final List<Integer> offsetsAnnotationsTags = new ArrayList<>();
     private int lastOffset;
-    private String currentTag;
     private String currentId;
 
     private List<Pair<String, String>> labeledEntities = new ArrayList<>();
     private List<Pair<String, String>> labeledStream = new ArrayList<>();
 
     private final List<Pair<String, String>> identifiers = new ArrayList<>();
+    private SuperconductorsStackTags currentPosition = new SuperconductorsStackTags();
 
-    public AnnotationValuesStaxHandler(List<String> annotationsTags) {
-        this(null, annotationsTags);
+    //When I find a relevant path, I store it here
+    private SuperconductorsStackTags currentContainerPath = null;
+    private boolean insideEntity = false;
+    private String currentAnnotationType;
+
+    /**
+     * Process only from the body, trying to keep compatibility with the previous version
+     */
+    public AnnotationValuesTEIStaxHandler(List<String> annotationTypes) {
+        this(Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/p"),
+            SuperconductorsStackTags.from("/tei/text/p")), annotationTypes);
     }
 
-    public AnnotationValuesStaxHandler(List<String> topLevelTags, List<String> annotationsTags) {
-        this.topLevelTags = topLevelTags;
-        this.annotationsTags = annotationsTags;
+    /**
+     * @param containerPaths  specifies the path where the data should be extracted, e.g. /tei/teiHeader/titleStmt/title
+     * @param annotationTypes specifies the types of the <rs type="type"></rs> annotation to be extracted
+     */
+    public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes) {
+        this.containerPaths = containerPaths;
+        this.annotationTypes = annotationTypes;
     }
 
-    public AnnotationValuesStaxHandler() {
-        this(TOP_LEVEL_ANNOTATION_DEFAULT_TAGS, ANNOTATION_DEFAULT_TAG_TYPES);
+    public AnnotationValuesTEIStaxHandler() {
+        this(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, ANNOTATION_DEFAULT_TAG_TYPES);
     }
 
     @Override
@@ -76,20 +88,30 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     @Override
     public void onStartElement(XMLStreamReader2 reader) {
         final String localName = reader.getName().getLocalPart();
+        currentPosition.append(localName);
 
-        if (annotationsTags.contains(localName) && insideParagraph) {
-            String text = getAccumulatedText();
-            // I write the remaining data in the accumulated text as "other" label
-            writeStreamData(text, getTag("other"));
+        if (currentContainerPath == null) {
+            if (containerPaths.contains(currentPosition)) {
+                currentContainerPath = SuperconductorsStackTags.from(currentPosition);
+            }
+        } else {
+            String attributeValue = getAttributeValue(reader, "type");
+            if (("rs".equals(localName) && annotationTypes.contains(attributeValue))
+                || (annotationTypes.contains(localName))) {
+                String text = getAccumulatedText();
+                // I write the remaining data in the accumulated text as "other" label
+                writeStreamData(text, getTag("other"));
 //            lastOffset += accumulator.toString().length();
-            accumulator.setLength(0);
-            offsetsAnnotationsTags.add(lastOffset);
+                accumulator.setLength(0);
+                offsetsAnnotationsTags.add(lastOffset);
 
-            this.currentTag = localName;
-            this.currentId = getAttributeValue(reader, "id");
-        } else if (topLevelTags == null || topLevelTags.contains(localName)) {
-            insideParagraph = true;
-
+                this.currentId = getAttributeValue(reader, "id");
+                this.insideEntity = true;
+                this.currentAnnotationType = attributeValue;
+                if (annotationTypes.contains(localName)) {
+                    this.currentAnnotationType = localName;
+                }
+            }
         }
     }
 
@@ -97,24 +119,29 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     public void onEndElement(XMLStreamReader2 reader) {
         final String localName = reader.getName().getLocalPart();
 
-        if (insideParagraph && annotationsTags.contains(localName)) {
-            String text = getAccumulatedText();
-            writeData(text, getTag(localName));
-            writeId(currentId, getTag(localName));
-            writeStreamData(text, getTag(localName));
-//            lastOffset += accumulator.toString().length();
-            accumulator.setLength(0);
-        } else if (topLevelTags != null && topLevelTags.contains(localName)) {
+        if (currentPosition.equals(currentContainerPath)) {
+            // we are closing the container
+            currentContainerPath = null;
             String text = getAccumulatedText();
             writeStreamData(text, getTag("other"));
             accumulator.setLength(0);
-            insideParagraph = false;
             labeledStream.add(ImmutablePair.of("\n", null));
-        } else if (topLevelTags == null){
+        } else if (currentContainerPath != null && insideEntity
+            && ("rs".equals(localName) || this.currentAnnotationType.equals(localName))) {
             String text = getAccumulatedText();
-            writeStreamData(text, getTag("other"));
+            writeData(text, getTag(currentAnnotationType));
+            writeId(currentId, getTag(currentAnnotationType));
+            writeStreamData(text, getTag(currentAnnotationType));
             accumulator.setLength(0);
+            this.insideEntity = false;
         }
+//        } else if (containerPaths == null) {
+//            String text = getAccumulatedText();
+//            writeStreamData(text, getTag("other"));
+//            accumulator.setLength(0);
+//        }
+
+        this.currentPosition.peek();
     }
 
     private String getTag(String localName) {
@@ -124,7 +151,7 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
     @Override
     public void onCharacter(XMLStreamReader2 reader) {
         String text = reader.getText();
-        if (insideParagraph) {
+        if (currentContainerPath != null) {
             accumulator.append(text);
             accumulatedText.append(text);
             lastOffset += length(text);

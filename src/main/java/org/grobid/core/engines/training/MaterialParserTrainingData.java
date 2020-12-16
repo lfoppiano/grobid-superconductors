@@ -130,10 +130,11 @@ public class MaterialParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, (preprocessedLayoutToken, section) -> {
+        GrobidPDFEngine.processDocument(document, (documentBlock) -> {
 
             // Re-tokenise now
-            final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(preprocessedLayoutToken);
+            final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance()
+                .retokenizeLayoutTokens(documentBlock.getLayoutTokens());
 
             // Trying to fix the eventual offset mismatches by rewrite offsets
             IntStream

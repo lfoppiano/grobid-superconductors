@@ -5,11 +5,12 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Span;
 import org.grobid.core.document.xml.XmlBuilderUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.TeiUtils;
+import org.grobid.core.utilities.SuperconductorsTeiUtils;
 
 import java.util.List;
 
@@ -21,37 +22,107 @@ import static org.grobid.core.utilities.TextUtilities.restrictedPunctuations;
 public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutputFormattter {
 
     @Override
-    public String format(List<Pair<List<Span>, List<LayoutToken>>> labeledTextList, int id) {
+    public String format(List<DocumentBlock> documentBlocks, int id) {
+        Element outputDocumentRoot = SuperconductorsTeiUtils.getTeiHeader(id);
+
+        Element teiHeader = SuperconductorsTeiUtils.getElement(outputDocumentRoot, "teiHeader");
+        Element fileDesc = SuperconductorsTeiUtils.getElement(teiHeader, "fileDesc");
+
+        Element profileDesc = SuperconductorsTeiUtils.getElement(teiHeader, "profileDesc");
+
         Element textNode = teiElement("text");
         textNode.addAttribute(new Attribute("xml:lang", "http://www.w3.org/XML/1998/namespace", "en"));
 
-        for (Pair<List<Span>, List<LayoutToken>> labeledText : labeledTextList) {
-            textNode.appendChild(trainingExtraction(labeledText.getLeft(), labeledText.getRight()));
+        Element body = teiElement("body");
+
+        for (DocumentBlock block : documentBlocks) {
+            if (block.getSection().equals(DocumentBlock.SECTION_BODY)) {
+                if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_FIGURE)) {
+                    body.appendChild(trainingExtraction(block.getSpans(),
+                        block.getLayoutTokens(), "ab", Pair.of("type", "figureCaption")));
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TABLE)) {
+                    body.appendChild(trainingExtraction(block.getSpans(),
+                        block.getLayoutTokens(), "ab", Pair.of("type", "tableCaption")));
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_PARAGRAPH)) {
+                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE_SECTION)) {
+                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "head"));
+                } else {
+                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                }
+            } else if (block.getSection().equals(DocumentBlock.SECTION_HEADER)) {
+                if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE)) {
+                    Element titleStatement = teiElement("titleStmt");
+                    Element title = trainingExtraction(block.getSpans(), block.getLayoutTokens(), "title");
+                    titleStatement.appendChild(title);
+                    fileDesc.insertChild(titleStatement, 0);
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_KEYWORDS)) {
+                    Element abKeywords = SuperconductorsTeiUtils.getElement(profileDesc, "ab");
+                    if(abKeywords == null) {
+                        abKeywords = trainingExtraction(block.getSpans(), block.getLayoutTokens(), "ab", Pair.of("type", "keywords"));
+                        profileDesc.appendChild(abKeywords);
+                    } else {
+                        throw new RuntimeException("new keywords, but no space for them... ");
+                    }
+                } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_ABSTRACT)) {
+
+                    Element abstractElement = SuperconductorsTeiUtils.getElement(profileDesc, "abstract");
+                    if (abstractElement == null) {
+                        abstractElement = teiElement("abstract");
+                        profileDesc.appendChild(abstractElement);
+                    }
+                    abstractElement.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                } else {
+                    throw new RuntimeException("The section or subsection have the wrong name. " +
+                        "This will cause loss of data in the output generated files. Section name: " + block.getSection() +
+                        ", " + block.getSubSection());
+                }
+            } else if (block.getSection().equals(DocumentBlock.SECTION_ANNEX)) {
+                body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+            } else {
+                throw new RuntimeException("The section or subsection have the wrong name. " +
+                    "This will cause loss of data in the output generated files. Section name: " + block.getSection() +
+                    ", " + block.getSubSection());
+            }
         }
 
-        Element quantityDocumentRoot = TeiUtils.getTeiHeader(id);
-        quantityDocumentRoot.appendChild(textNode);
-
-        return XmlBuilderUtils.toXml(quantityDocumentRoot);
+        textNode.appendChild(body);
+        outputDocumentRoot.appendChild(textNode);
+        return XmlBuilderUtils.toXml(outputDocumentRoot);
     }
 
-    protected Element trainingExtraction(List<Span> superconductorList, List<LayoutToken> tokens) {
-        Element p = teiElement("p");
+    protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens) {
+        return trainingExtraction(spanList, tokens, "p");
+    }
 
-        int startPosition = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
-        for (Span superconductor : superconductorList) {
+    protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens, String parentTag) {
+        return trainingExtraction(spanList, tokens, parentTag, null);
+    }
+
+    protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens, String
+        parentTag, Pair<String, String> parentTagAttribute) {
+        Element p = teiElement(parentTag);
+        if (parentTagAttribute != null) {
+            p.addAttribute(new Attribute(parentTagAttribute.getKey(), parentTagAttribute.getValue()));
+        }
+
+        LayoutToken first = Iterables.getFirst(tokens, new LayoutToken());
+        int startPosition = first != null ? first.getOffset() : 0;
+        for (Span superconductor : spanList) {
 
             int start = superconductor.getOffsetStart();
             int end = superconductor.getOffsetEnd();
 
             String name = superconductor.getText();
+            Element entityElement = teiElement("rs");
             // remove < and > from the material name \o/
-            Element supercon = teiElement(prepareType(superconductor.getType()));
-            supercon.appendChild(name);
+//            entityElement.addAttribute(new Attribute("type", prepareType(superconductor.getType())));
+            entityElement.addAttribute(new Attribute("type", prepareType(superconductor.getType())));
+            entityElement.appendChild(name);
 
             String contentBefore = LayoutTokensUtil.toText(LayoutTokensUtil.subListByOffset(tokens, startPosition, start));
             p.appendChild(contentBefore);
-            p.appendChild(supercon);
+            p.appendChild(entityElement);
 
             // We stop the process if something doesn't match
             int accumulatedOffset = startPosition + length(contentBefore) + length(name);

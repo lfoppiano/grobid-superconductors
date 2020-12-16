@@ -90,7 +90,7 @@ public class MaterialTrainer extends AbstractTrainer {
 
                 StaxUtils.traverse(reader, target);
 
-                List<Pair<String, String>> materials = target.getLabeledEntities();
+                List<Pair<String, String>> materials = target.getLabeledStream();
 
                 for (Pair<String, String> material : materials) {
                     String materialName = material.getLeft();

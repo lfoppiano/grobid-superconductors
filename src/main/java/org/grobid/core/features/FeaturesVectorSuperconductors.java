@@ -165,7 +165,7 @@ public class FeaturesVectorSuperconductors {
             featuresVector.punctType = "OPENBRACKET";
         } else if ((string.equals(")")) || (string.equals("]"))) {
             featuresVector.punctType = "ENDBRACKET";
-        } else if (string.equals(".")) {
+        } else if (string.equals(".") || string.equals("⋅") || string.equals("•") || string.equals("·")) {
             featuresVector.punctType = "DOT";
         } else if (string.equals(",")) {
             featuresVector.punctType = "COMMA";
@@ -191,21 +191,26 @@ public class FeaturesVectorSuperconductors {
         if (token.isItalic())
             featuresVector.italic = true;
 
-        if (StringUtils.equals(previousToken.getFont(), token.getFont())) {
+        if (previousToken == null) {
             featuresVector.fontStatus = "SAMEFONT";
-        } else {
-            featuresVector.fontStatus = "DIFFERENTFONT";
-        }
-
-        if (previousToken.fontSize < token.fontSize) {
-            featuresVector.fontSize = "HIGHERFONT";
-        } else if (previousToken.fontSize == token.fontSize) {
             featuresVector.fontSize = "SAMEFONTSIZE";
         } else {
-            featuresVector.fontSize = "LOWERFONT";
+            if (StringUtils.equals(previousToken.getFont(), token.getFont())) {
+                featuresVector.fontStatus = "SAMEFONT";
+            } else {
+                featuresVector.fontStatus = "DIFFERENTFONT";
+            }
+
+            if (previousToken.fontSize < token.fontSize) {
+                featuresVector.fontSize = "HIGHERFONT";
+            } else if (previousToken.fontSize == token.fontSize) {
+                featuresVector.fontSize = "SAMEFONTSIZE";
+            } else {
+                featuresVector.fontSize = "LOWERFONT";
+            }
         }
 
-        if(token.isSuperscript()) {
+        if (token.isSuperscript()) {
             featuresVector.fontStyle = "SUPERSCRIPT";
         } else if (token.isSubscript()) {
             featuresVector.fontStyle = "SUBSCRIPT";

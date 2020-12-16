@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -76,8 +77,8 @@ public class ChemDataExtractorClient {
                 }
             }
 
-        } catch (UnknownHostException e) {
-            LOGGER.warn("Chemspot is unreachable. Ignoring it. ");
+        } catch (UnknownHostException | ConnectException e) {
+            LOGGER.warn("Chemdata extractor is unreachable. Ignoring it. ");
         } catch (IOException e) {
             LOGGER.error("Something generically bad happened. ", e);
         }

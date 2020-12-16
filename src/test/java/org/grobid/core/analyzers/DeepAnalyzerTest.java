@@ -5,7 +5,6 @@ import org.grobid.core.utilities.LayoutTokensUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;

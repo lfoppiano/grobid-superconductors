@@ -2,6 +2,7 @@ package org.grobid.core.engines.training;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Span;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
@@ -14,7 +15,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutputFormattter {
 
     @Override
-    public String format(List<Pair<List<Span>, List<LayoutToken>>> labeledTextList, int id) {
+    public String format(List<DocumentBlock> documentBlocks, int id) {
         StringBuilder accumulator = new StringBuilder();
 
         accumulator.append("#FORMAT=WebAnno TSV 3.2").append("\n");
@@ -24,14 +25,13 @@ public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutpu
         int paragraphId = 1;
         AtomicInteger tokenOffset = new AtomicInteger(0);
 
-        for (Pair<List<Span>,  List<LayoutToken>> labeledText : labeledTextList) {
+        for (DocumentBlock block : documentBlocks) {
             accumulator.append("\n");
-            List<LayoutToken> layoutTokens = labeledText.getRight();
+            List<LayoutToken> layoutTokens = block.getLayoutTokens();
             accumulator.append("#Text=").append(LayoutTokensUtil.toText(layoutTokens)).append("\n");
-            accumulator.append(trainingExtraction(labeledText.getLeft(), layoutTokens, paragraphId, annotationId, tokenOffset));
+            accumulator.append(trainingExtraction(block.getSpans(), layoutTokens, paragraphId, annotationId, tokenOffset));
             paragraphId++;
         }
-
 
         return accumulator.toString();
     }

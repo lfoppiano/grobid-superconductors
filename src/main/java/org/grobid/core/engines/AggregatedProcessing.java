@@ -239,8 +239,9 @@ public class AggregatedProcessing {
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
-            GrobidPDFEngine.processDocument(doc, (tokens, sections) -> {
-                documentResponse.addParagraphs(process(tokens, disableLinking, sections));
+            GrobidPDFEngine.processDocument(doc, (documentBlock) -> {
+                documentResponse.addParagraphs(process(documentBlock.getLayoutTokens(), disableLinking,
+                    documentBlock.getSection(), documentBlock.getSubSection()));
             });
 
             List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
@@ -256,17 +257,17 @@ public class AggregatedProcessing {
     }
 
     public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking) {
-        return process(tokens, disableLinking, null);
+        return process(tokens, disableLinking, null, null);
     }
 
-    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking, Pair<String, String> section) {
+    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking, String section, String subSection) {
         TextPassage textPassage = new TextPassage();
 
         textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
         textPassage.setText(LayoutTokensUtil.toText(tokens));
         if (section != null) {
-            textPassage.setSection(section.getLeft());
-            textPassage.setSubSection(section.getRight());
+            textPassage.setSection(section);
+            textPassage.setSubSection(subSection);
         }
         textPassage.setType("paragraph");
 
