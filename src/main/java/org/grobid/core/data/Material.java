@@ -196,9 +196,8 @@ public class Material {
 
     /**
      * generate permutations via a recursive function.
-     *
-     *  depth: right -> valueIndex, left -> variableIndex
-     *
+     * <p>
+     * depth: right -> valueIndex, left -> variableIndex
      */
     public static void generatePermutations(Map<String, List<String>> input, List<String> keyList,
                                             List<String> result, Pair<Integer, Integer> depth, String formula) {
@@ -376,10 +375,11 @@ public class Material {
             String formulaWithoutDopants = m.group(2);
 
             String[] splittedDopants = dopants.split(",");
-
-            for (String dopant : splittedDopants) {
-                expantedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
+            if (splittedDopants.length > 2) {
+                throw new RuntimeException("The formula " + formula + "cannot be expanded. ")    ;
             }
+
+            expantedFormulas.add(trim(splittedDopants[0]) + " x " + trim(splittedDopants[1]) + " 1-x " + trim(formulaWithoutDopants));
         } else {
             return Arrays.asList(formula);
         }
@@ -410,7 +410,8 @@ public class Material {
         for (String k : keys) {
             stringStringMap.put(keyPrefix + "_" + k, stringStringMap.get(k));
             stringStringMap.remove(k);
-        };
+        }
+        ;
 
         return stringStringMap;
     }

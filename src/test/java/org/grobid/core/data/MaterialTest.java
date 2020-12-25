@@ -13,6 +13,24 @@ import static org.junit.Assert.assertThat;
 public class MaterialTest {
 
     @Test
+    public void testExpandFormula() throws Exception {
+        String inputFormula = "(Sr, La) Fe 2 O 7";
+
+        List<String> expandedFormulas = Material.expandFormula(inputFormula);
+
+        assertThat(expandedFormulas, hasSize(1));
+        assertThat(expandedFormulas.get(0), is("Sr x La 1-x Fe 2 O 7"))  ;
+
+    }
+
+    @Test(expected=RuntimeException.class)
+    public void testExpandFormula2() throws Exception {
+        String inputFormula = "(Sr, Fe, La) Cu 2 O 13";
+
+        Material.expandFormula(inputFormula);
+    }
+
+    @Test
     public void testResolveVariable_1() throws Exception {
         Material material = new Material();
         material.setFormula("Fe1-xCuxO2");
