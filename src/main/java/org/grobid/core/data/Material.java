@@ -366,25 +366,33 @@ public class Material {
 
         String regex = "^ ?\\(([A-Za-z, ]+)\\)(.*)";
         Pattern formulaDopantPattern = Pattern.compile(regex);
+        Matcher formulaDopantMatcher = formulaDopantPattern.matcher(formula);
 
-        Matcher m = formulaDopantPattern.matcher(formula);
-        List<String> expantedFormulas = new ArrayList<>();
+        Pattern nameMaterialPattern = Pattern.compile("-[0-9]+");
+        List<String> expandedFormulas = new ArrayList<>();
 
-        if (m.find()) {
-            String dopants = m.group(1);
-            String formulaWithoutDopants = m.group(2);
-
+        if (formulaDopantMatcher.find()) {
+            String dopants = formulaDopantMatcher.group(1);
+            String formulaWithoutDopants = formulaDopantMatcher.group(2);
             String[] splittedDopants = dopants.split(",");
-            if (splittedDopants.length > 2) {
-                throw new RuntimeException("The formula " + formula + "cannot be expanded. ")    ;
-            }
 
-            expantedFormulas.add(trim(splittedDopants[0]) + " x " + trim(splittedDopants[1]) + " 1-x " + trim(formulaWithoutDopants));
+            Matcher nameMaterialMatcher = nameMaterialPattern.matcher(formulaWithoutDopants);
+            if (nameMaterialMatcher.find()) {
+                for (String dopant : splittedDopants) {
+                    expandedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
+                }
+            } else {
+                if (splittedDopants.length > 2) {
+                    throw new RuntimeException("The formula " + formula + "cannot be expanded. ");
+                }
+
+                expandedFormulas.add(trim(splittedDopants[0]) + " x " + trim(splittedDopants[1]) + " 1-x " + trim(formulaWithoutDopants));
+            }
         } else {
             return Arrays.asList(formula);
         }
 
-        return expantedFormulas;
+        return expandedFormulas;
     }
 
     public String getFabrication() {

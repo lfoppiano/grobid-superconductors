@@ -1,6 +1,7 @@
 package org.grobid.core.data;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -11,6 +12,37 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 public class MaterialTest {
+
+    @Test
+    public void testExpandFormula3() throws Exception {
+        String formula = "(Sr,K)Fe2As2";
+
+        List<String> expandFormulas = Material.expandFormula(formula);
+
+        assertThat(expandFormulas, IsCollectionWithSize.hasSize(1));
+        assertThat(expandFormulas.get(0), is("Sr x K 1-x Fe2As2"));
+    }
+
+    @Test
+    public void testExpandFormula4() throws Exception {
+        String formula = "(Sr , K ) Fe2As2";
+
+        List<String> expandFormulas = Material.expandFormula(formula);
+
+        assertThat(expandFormulas, IsCollectionWithSize.hasSize(1));
+        assertThat(expandFormulas.get(0), is("Sr x K 1-x Fe2As2"));
+    }
+
+    @Test
+    public void testExpandName() throws Exception {
+        String formula = "(Sr,K)-2222";
+
+        List<String> expandFormulas = Material.expandFormula(formula);
+
+        assertThat(expandFormulas, IsCollectionWithSize.hasSize(2));
+        assertThat(expandFormulas.get(0), is("Sr-2222"));
+        assertThat(expandFormulas.get(1), is("K-2222"));
+    }
 
     @Test
     public void testExpandFormula() throws Exception {

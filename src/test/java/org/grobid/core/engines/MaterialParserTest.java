@@ -180,9 +180,8 @@ public class MaterialParserTest {
         assertThat(materials, hasSize(1));
         assertThat(materials.get(0).getFormula(), is("(Sr,K)Fe2As2"));
         assertThat(materials.get(0).getShape(), is("films"));
-        assertThat(materials.get(0).getResolvedFormulas(), hasSize(2));
-        assertThat(materials.get(0).getResolvedFormulas().get(0), is("SrFe2As2"));
-        assertThat(materials.get(0).getResolvedFormulas().get(1), is("KFe2As2"));
+        assertThat(materials.get(0).getResolvedFormulas(), hasSize(1));
+        assertThat(materials.get(0).getResolvedFormulas().get(0), is("Sr x K 1-x Fe2As2"));
 
     }
 
@@ -336,39 +335,6 @@ public class MaterialParserTest {
         assertThat(materials.get(1).getFormula(), is("LaFeO2"));
         assertThat(materials.get(1).getShape(), is("polycrystalline, thin film"));
         assertThat(materials.get(1).getSubstrate(), is("StrO3, Al"));
-    }
-
-    @Test
-    public void testExpandFormula() throws Exception {
-        String formula = "(Sr,K)Fe2As2";
-
-        List<String> expandFormulas = Material.expandFormula(formula);
-
-        assertThat(expandFormulas, hasSize(2));
-        assertThat(expandFormulas.get(0), is("SrFe2As2"));
-        assertThat(expandFormulas.get(1), is("KFe2As2"));
-    }
-
-    @Test
-    public void testExpandFormula2() throws Exception {
-        String formula = "(Sr , K ) Fe2As2";
-
-        List<String> expandFormulas = Material.expandFormula(formula);
-
-        assertThat(expandFormulas, hasSize(2));
-        assertThat(expandFormulas.get(0), is("SrFe2As2"));
-        assertThat(expandFormulas.get(1), is("KFe2As2"));
-    }
-
-    @Test
-    public void testExpandName() throws Exception {
-        String formula = "(Sr,K)-2222";
-
-        List<String> expandFormulas = Material.expandFormula(formula);
-
-        assertThat(expandFormulas, hasSize(2));
-        assertThat(expandFormulas.get(0), is("Sr-2222"));
-        assertThat(expandFormulas.get(1), is("K-2222"));
     }
 
     @SuppressWarnings("unchecked")
