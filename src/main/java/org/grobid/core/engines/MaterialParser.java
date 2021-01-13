@@ -464,9 +464,8 @@ public class MaterialParser extends AbstractParser {
             .matcher(formulaWithFixedDots).replaceAll("$1$2.$3");
 
         String formulaWithReplacedMinus = formulaWithFixedCommas.replaceAll("À", "-");
-        String formulaWithoutInvalidCharacters = formulaWithReplacedMinus.replaceAll("\\p{C}", " ");
 
-        return formulaWithoutInvalidCharacters;
+        return formulaWithReplacedMinus.replaceAll("\\p{C}", " ");
     }
 
 }

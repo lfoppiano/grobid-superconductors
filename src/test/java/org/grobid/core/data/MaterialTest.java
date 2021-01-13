@@ -14,6 +14,14 @@ import static org.junit.Assert.assertThat;
 public class MaterialTest {
 
     @Test
+    public void testResolveFormula() throws Exception {
+        List<String> outputFormulas = Material.expandFormula("(Sr, Na)Fe 2 As 2");
+
+        assertThat(outputFormulas, hasSize(1));
+        assertThat(outputFormulas.get(0), is("Sr x Na 1-x Fe 2 As 2"));
+    }
+
+    @Test
     public void testExpandFormula3() throws Exception {
         String formula = "(Sr,K)Fe2As2";
 

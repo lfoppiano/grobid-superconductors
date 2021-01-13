@@ -360,7 +360,7 @@ public class Material {
     }
 
     /**
-     * Expand a formula in the form (A, B, C)Formula in AFormula, BFormula, CFormula ...
+     * Expand a formula in the form (A, B)Formula in A x B 1-x Formula...
      */
     public static List<String> expandFormula(String formula) {
 
