@@ -1,5 +1,6 @@
 package org.grobid.service.configuration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import org.apache.commons.io.IOUtils;
 import org.grobid.core.utilities.GrobidProperties;
@@ -24,6 +25,14 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private static String VERSION = null;
     private static final String UNKNOWN_VERSION_STR = "unknown";
     private static final String GROBID_VERSION_FILE = "/version.txt";
+
+    // CORS
+    @JsonProperty
+    private String corsAllowedOrigins = "*";
+    @JsonProperty
+    private String corsAllowedMethods = "OPTIONS,GET,PUT,POST,DELETE,HEAD";
+    @JsonProperty
+    private String corsAllowedHeaders = "X-Requested-With,Content-Type,Accept,Origin";
 
     private boolean pythonRedirectOutput = false;
 
@@ -91,5 +100,29 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
             }
         }
         return VERSION;
+    }
+
+    public String getCorsAllowedOrigins() {
+        return corsAllowedOrigins;
+    }
+
+    public void setCorsAllowedOrigins(String corsAllowedOrigins) {
+        this.corsAllowedOrigins = corsAllowedOrigins;
+    }
+
+    public String getCorsAllowedMethods() {
+        return corsAllowedMethods;
+    }
+
+    public void setCorsAllowedMethods(String corsAllowedMethods) {
+        this.corsAllowedMethods = corsAllowedMethods;
+    }
+
+    public String getCorsAllowedHeaders() {
+        return corsAllowedHeaders;
+    }
+
+    public void setCorsAllowedHeaders(String corsAllowedHeaders) {
+        this.corsAllowedHeaders = corsAllowedHeaders;
     }
 }

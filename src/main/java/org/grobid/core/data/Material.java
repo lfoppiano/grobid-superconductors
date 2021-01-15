@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
@@ -374,7 +375,9 @@ public class Material {
         if (formulaDopantMatcher.find()) {
             String dopants = formulaDopantMatcher.group(1);
             String formulaWithoutDopants = formulaDopantMatcher.group(2);
-            String[] splittedDopants = dopants.split(",");
+            List<String> splittedDopants = Arrays.stream(dopants.split(","))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
 
             Matcher nameMaterialMatcher = nameMaterialPattern.matcher(formulaWithoutDopants);
             if (nameMaterialMatcher.find()) {
@@ -382,11 +385,11 @@ public class Material {
                     expandedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
                 }
             } else {
-                if (splittedDopants.length > 2) {
-                    throw new RuntimeException("The formula " + formula + "cannot be expanded. ");
+                if (splittedDopants.size() > 2) {
+                    throw new RuntimeException("The formula " + formula + " cannot be expanded. ");
                 }
 
-                expandedFormulas.add(trim(splittedDopants[0]) + " x " + trim(splittedDopants[1]) + " 1-x " + trim(formulaWithoutDopants));
+                expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
             }
         } else {
             return Arrays.asList(formula);

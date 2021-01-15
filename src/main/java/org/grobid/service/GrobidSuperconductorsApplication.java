@@ -50,14 +50,18 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
 
     @Override
     public void run(GrobidSuperconductorsConfiguration configuration, Environment environment) {
+        String allowedOrigins = configuration.getCorsAllowedOrigins();
+        String allowedMethods = configuration.getCorsAllowedMethods();
+        String allowedHeaders = configuration.getCorsAllowedHeaders();
+
         // Enable CORS headers
         final FilterRegistration.Dynamic cors =
             environment.servlets().addFilter("CORS", CrossOriginFilter.class);
 
         // Configure CORS parameters
-        cors.setInitParameter("allowedOrigins", "*");
-        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
-        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, allowedOrigins);
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, allowedMethods);
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, allowedHeaders);
 
         // Add URL mapping
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
