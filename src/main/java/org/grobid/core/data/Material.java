@@ -24,8 +24,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.*;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Material {
@@ -385,11 +384,29 @@ public class Material {
                     expandedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
                 }
             } else {
-                if (splittedDopants.size() > 2) {
+                if (splittedDopants.size() == 2) {
+                    expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
+                } else if (splittedDopants.size() > 2 && splittedDopants.size() < "xyzabcdefghijklmnopqrstuvw".length()) {
+                    char[] alphabet = "xyzabcdefghijklmnopqrstuvw".toCharArray();
+                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb2 = new StringBuilder();
+                    for (int i = 0; i < splittedDopants.size() -1; i++) {
+                        sb2.append("-").append(alphabet[i]);
+                    }
+                    sb2.append(" ");
+                    sb.append(splittedDopants.get(0)).append(" 1").append(sb2.toString());
+                    for (int i = 1; i < splittedDopants.size(); i++) {
+                        String split = splittedDopants.get(i);
+                        sb.append(trim(split));
+                        sb.append(" ");
+                        sb.append(alphabet[i - 1]);
+                        sb.append(" ");
+                    }
+                    sb.append(trim(formulaWithoutDopants));
+                    expandedFormulas.add(sb.toString());
+                } else {
                     throw new RuntimeException("The formula " + formula + " cannot be expanded. ");
                 }
-
-                expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
             }
         } else {
             return Arrays.asList(formula);

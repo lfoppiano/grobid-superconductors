@@ -53,7 +53,7 @@ public class MaterialTest {
     }
 
     @Test
-    public void testExpandFormula() throws Exception {
+    public void testExpandFormula_2variables() throws Exception {
         String inputFormula = "(Sr, La) Fe 2 O 7";
 
         List<String> expandedFormulas = Material.expandFormula(inputFormula);
@@ -63,11 +63,22 @@ public class MaterialTest {
 
     }
 
-    @Test(expected=RuntimeException.class)
-    public void testExpandFormula2() throws Exception {
-        String inputFormula = "(Sr, Fe, La) Cu 2 O 13";
+    @Test
+    public void testExpandFormula_4variables() throws Exception {
+        String inputFormula = "(Sr, La, Cu, K) Fe 2 O 7";
 
-        Material.expandFormula(inputFormula);
+        List<String> expandedFormulas = Material.expandFormula(inputFormula);
+
+        assertThat(expandedFormulas, hasSize(1));
+        assertThat(expandedFormulas.get(0), is("Sr 1-x-y-z La x Cu y K z Fe 2 O 7"))  ;
+
+    }
+
+    @Test(expected=RuntimeException.class)
+    public void testExpandFormulaWithTooManyVariables_shouldThrowsException() throws Exception {
+        String inputFormula = "(Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe) Cu 2 O 13";
+
+        System.out.println(Material.expandFormula(inputFormula));
     }
 
     @Test
