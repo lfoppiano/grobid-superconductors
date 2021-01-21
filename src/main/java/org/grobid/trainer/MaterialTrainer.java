@@ -13,6 +13,7 @@ import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 import org.grobid.trainer.stax.handler.MaterialAnnotationStaxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 public class MaterialTrainer extends AbstractTrainer {
     public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("material");
@@ -83,19 +85,18 @@ public class MaterialTrainer extends AbstractTrainer {
                 outputWriter.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
                 outputWriter.write("<materials>\n");
 
-                AnnotationValuesStaxHandler target = new AnnotationValuesStaxHandler(Collections.singletonList("material"));
+                AnnotationValuesTEIStaxHandler target = new AnnotationValuesTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, Collections.singletonList("material"));
 
                 InputStream inputStream = IOUtils.getInputStream(inputFile.getAbsolutePath());
                 XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
 
                 StaxUtils.traverse(reader, target);
 
-                List<Pair<String, String>> materials = target.getLabeledStream();
+                List<Pair<String, String>> materials = target.getLabeledEntities();
 
                 for (Pair<String, String> material : materials) {
                     String materialName = material.getLeft();
                     String tagged = materialParser.generateTrainingData(materialName);
-
 
                     outputWriter.write("\t<material>");
                     outputWriter.write(tagged);
