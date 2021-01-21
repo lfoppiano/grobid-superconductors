@@ -1,0 +1,19 @@
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<class>              98.01        69.44        70.42        69.93        142
+<material>           92.07        79.85        76.98        78.39        808
+<me_method>          96.83        68.45        66.2         67.3         213
+<pressure>           99.44        80           51.28        62.5         39
+<tc>                 95.93        79.29        74.42        76.78        391
+<tcValue>            98.54        75.25        66.67        70.7         114
+
+all (micro avg.)     96.8         77.07        73.23        75.1         1707
+all (macro avg.)     96.8         75.38        67.66        70.93        1707
+
+===== Instance-level results =====
+
+Total expected instances:   304
+Correct instances:          101
+Instance-level recall:      33.22
