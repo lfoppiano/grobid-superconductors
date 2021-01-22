@@ -312,7 +312,14 @@ let grobid = (function ($) {
                     let type = message.responseJSON['type']
                     let split = message.responseJSON['description'].split(type);
                     message = split[split.length - 1]
+                } else if (message) {
+                    let type = message.type
+                    let split = message.description.split(type);
+                    message = split[split.length - 1]
+                } else {
+                    message = "The Text or the PDF document cannot be processed. Please check the server logs. "
                 }
+
             }   
 
             $('#infoResultMessage').html("<p class='text-danger'>Error encountered while requesting the server.<br/>" + message + "</p>");
@@ -695,13 +702,23 @@ let grobid = (function ($) {
             xhr.open('POST', url, true);
 
             xhr.onreadystatechange = function (e) {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    let response = e.target.response;
-                    onSuccessPdf(response);
-                } else if (xhr.status !== 200) {
-                    onError("Response: " + xhr.status);
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        onSuccessPdf(e.target.response);
+                    } else {
+                        onError(e.target.response);
+                    }
                 }
             };
+
+            // xhr.onreadystatechange = function (e) {
+            //     if (xhr.readyState === 4 && xhr.status === 200) {
+            //         let response = e.target.response;
+            //         onSuccessPdf(response);
+            //     } else if (xhr.status !== 200) {
+            //         onError("Response: " + xhr.status);
+            //     }
+            // };
             xhr.send(formData);
         }
 
