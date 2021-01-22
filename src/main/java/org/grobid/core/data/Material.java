@@ -230,6 +230,7 @@ public class Material {
             Integer variableIndex = formula.indexOf(variable, startSearching);
 
             if (variableIndex > -1) {
+                // If the variable is prefixed by - indicate the case 1-x, 2-x which require a more thoughful rewrite
                 if (formula.startsWith("-", variableIndex - 1)
                     || formula.startsWith("\u2212", variableIndex - 1)) {
                     Integer endSearch = variableIndex - 1;
@@ -249,16 +250,20 @@ public class Material {
                         }
                     }
                 } else {
-                    // if the variable is followed by a lowercase character, I skip the substitution
-                    if (variableIndex == formula.length() - 1
-                        || !Character.isLowerCase(formula.charAt(variableIndex + variable.length()))) {
+                    //The variable is appearing alone, we apply direct substitution
+                    if (variableIndex + variable.length() < formula.length() - 1) {
+                        if (!Character.isLowerCase(formula.charAt(variableIndex + variable.length()))) {
+                            returnFormula = returnFormula.replaceFirst(variable, value);
+                        }
+                    } else if (variableIndex + variable.length() == formula.length()) {
                         returnFormula = returnFormula.replaceFirst(variable, value);
+                    } else {
+                        LOGGER.warn("The variable " + variable + " substitution with value " + value + " into " + formula);
                     }
                 }
             }
             startSearching = variableIndex + 1;
         }
-
         return returnFormula;
     }
 
@@ -384,13 +389,15 @@ public class Material {
                     expandedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
                 }
             } else {
-                if (splittedDopants.size() == 2) {
+                if (splittedDopants.size() == 1) {
+                    expandedFormulas.add(formula);
+                } else if (splittedDopants.size() == 2) {
                     expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
                 } else if (splittedDopants.size() > 2 && splittedDopants.size() < "xyzabcdefghijklmnopqrstuvw".length()) {
                     char[] alphabet = "xyzabcdefghijklmnopqrstuvw".toCharArray();
                     StringBuilder sb = new StringBuilder();
                     StringBuilder sb2 = new StringBuilder();
-                    for (int i = 0; i < splittedDopants.size() -1; i++) {
+                    for (int i = 0; i < splittedDopants.size() - 1; i++) {
                         sb2.append("-").append(alphabet[i]);
                     }
                     sb2.append(" ");
@@ -405,7 +412,8 @@ public class Material {
                     sb.append(trim(formulaWithoutDopants));
                     expandedFormulas.add(sb.toString());
                 } else {
-                    throw new RuntimeException("The formula " + formula + " cannot be expanded. ");
+                    String message = "The formula " + formula + " cannot be expanded. ";
+                    throw new RuntimeException(message);
                 }
             }
         } else {

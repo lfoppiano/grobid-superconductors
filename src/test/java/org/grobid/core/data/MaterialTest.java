@@ -14,6 +14,13 @@ import static org.junit.Assert.assertThat;
 public class MaterialTest {
 
     @Test
+    public void testResolveFormula_shouldNotExpandNorThrowException() throws Exception {
+        List<String> outputFormulas = Material.expandFormula("(TMTTF) 2 PF 6");
+
+        assertThat(outputFormulas, hasSize(1));
+        assertThat(outputFormulas.get(0), is("(TMTTF) 2 PF 6"));
+    }
+    @Test
     public void testResolveFormula() throws Exception {
         List<String> outputFormulas = Material.expandFormula("(Sr, Na)Fe 2 As 2");
 
@@ -165,6 +172,13 @@ public class MaterialTest {
         String output = Material.replaceVariable("1-x Ru x", "x", "0.2");
 
         assertThat(output, is("0.8 Ru 0.2"));
+    }
+
+    @Test
+    public void testReplaceVariable_errorCase_1() {
+        String output = Material.replaceVariable("RE", "RE", "Sc");
+
+        assertThat(output, is("Sc"));
     }
 
     @Test
