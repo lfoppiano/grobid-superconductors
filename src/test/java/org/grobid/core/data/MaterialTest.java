@@ -140,6 +140,18 @@ public class MaterialTest {
     }
 
     @Test
+    public void testResolveVariable_interval() throws Exception {
+        Material material = new Material();
+        material.setFormula("Li x (NH 3 ) 1-x Fe 2 (Te x Se 1−x ) 2");
+        material.getVariables().put("x", Arrays.asList("< 0.1", "> 0.01"));
+        List<String> outputMaterials = Material.resolveVariables(material);
+
+        assertThat(outputMaterials, hasSize(2));
+        assertThat(outputMaterials.get(0), is("Li 0.1 (NH 3 ) 0.9 Fe 2 (Te 0.1 Se 0.9 ) 2"));
+        assertThat(outputMaterials.get(1), is("Li 0.01 (NH 3 ) 0.99 Fe 2 (Te 0.01 Se 0.99 ) 2"));
+    }
+
+    @Test
     public void testReplaceVariable() {
         String output = Material.replaceVariable("Fe1-xCuxO2", "x", "0.8");
 

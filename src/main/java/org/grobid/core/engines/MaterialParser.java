@@ -265,8 +265,7 @@ public class MaterialParser extends AbstractParser {
                 String value = clusterContent;
 
                 if (StringUtils.isNotEmpty(processingVariable)) {
-                    String[] split = value.split(",|;|or|and");
-                    List<String> listValues = Arrays.stream(split).map(StringUtils::trim).collect(Collectors.toList());
+                    List<String> listValues = extractVariableValues(value);
                     currentMaterial.getVariables().put(processingVariable, listValues);
                 } else {
                     LOGGER.error("Got a value but the processing variable is empty. Value: " + value);
@@ -394,6 +393,11 @@ public class MaterialParser extends AbstractParser {
         }
 
         return extracted;
+    }
+
+    protected List<String> extractVariableValues(String value) {
+        String[] split = value.split(",|;|or|and");
+        return Arrays.stream(split).map(StringUtils::trim).collect(Collectors.toList());
     }
 
     public String generateTrainingData(List<LayoutToken> layoutTokens) {

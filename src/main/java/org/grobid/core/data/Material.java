@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -181,7 +182,20 @@ public class Material {
         try {
             generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
         } catch (NumberFormatException e) {
-            LOGGER.warn("Cannot replace variables " + Arrays.toString(variables.toArray()));
+
+            Map<String, List<String>> cleanedMapOfContainedVariables = new HashMap<>();
+            mapOfContainedVariables.keySet().forEach(variable -> {
+                List<String> cleanedList = mapOfContainedVariables.get(variable).stream()
+                    .map(value -> value.replaceAll("[^\\-0-9\\.]+", ""))
+                    .collect(Collectors.toList());
+                cleanedMapOfContainedVariables.put(variable, cleanedList);
+            });
+
+            try {
+                generatePermutations(cleanedMapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
+            } catch (NumberFormatException e2) {
+                LOGGER.warn("Cannot replace variables " + Arrays.toString(variables.toArray()));
+            }
         }
 
 //        material.getResolvedFormulas().addAll(output);
