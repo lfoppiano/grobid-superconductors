@@ -45,6 +45,7 @@ public class MaterialTrainer extends AbstractTrainer {
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
         window = 20;
+//        algorithm = "rprop";
     }
 
     /**
