@@ -205,6 +205,7 @@ public class MaterialParser extends AbstractParser {
         List<String> dopings = new ArrayList<>();
         List<String> fabrications = new ArrayList<>();
         List<String> substrates = new ArrayList<>();
+        List<String> prefixedValues = new ArrayList<>();
 
         String processingVariable = null;
         StringBuilder rawTaggedValue = new StringBuilder();
@@ -267,8 +268,16 @@ public class MaterialParser extends AbstractParser {
                 if (StringUtils.isNotEmpty(processingVariable)) {
                     List<String> listValues = extractVariableValues(value);
                     currentMaterial.getVariables().put(processingVariable, listValues);
+                    if (isNotEmpty(prefixedValues)) {
+                        currentMaterial.getVariables().get(processingVariable).addAll(prefixedValues);
+                        prefixedValues = new ArrayList<>();
+                    }
                 } else {
-                    LOGGER.error("Got a value but the processing variable is empty. Value: " + value);
+                    if (value.contains("<")) {
+                        prefixedValues.add(value);
+                    } else {
+                        LOGGER.error("Got a value but the processing variable is empty. Value: " + value);
+                    }
                 }
             } else if (clusterLabel.equals(MATERIAL_VARIABLE)) {
                 String variable = clusterContent;

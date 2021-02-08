@@ -337,6 +337,32 @@ public class MaterialParserTest {
         assertThat(materials.get(1).getSubstrate(), is("StrO3, Al"));
     }
 
+    @Test
+    public void testExtraction_intervals() throws Exception {
+        String text = "polycrystalline samples in the range of 0 < x < 0.42";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+
+        // These triples made in following way: label, starting index (included), ending index (excluded)
+        List<Triple<String, Integer, Integer>> labels = Arrays.asList(
+            Triple.of("<shape>", 0, 1),
+            Triple.of("<value>", 12, 15),
+            Triple.of("<variable>", 16, 17),
+            Triple.of("<value>", 18, 23)
+        );
+
+        List<String> features = generateFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
+
+        List<Material> materials = target.extractResults(layoutTokens, results);
+
+        assertThat(materials, hasSize(1));
+        assertThat(materials.get(0).getShape(), is("polycrystalline"));
+        assertThat(materials.get(0).getVariables().keySet(), hasSize(1));
+        assertThat(materials.get(0).getVariables().get("x"), hasSize(2));
+        assertThat(materials.get(0).getVariables().get("x").get(1), is("0 <"));
+        assertThat(materials.get(0).getVariables().get("x").get(0), is("< 0.42"));
+    }
+
     @SuppressWarnings("unchecked")
     public static org.hamcrest.Matcher<java.util.Map<String, Object>> hasListEntry(org.hamcrest.Matcher<String> keyMatcher, org.hamcrest.Matcher<java.lang.Iterable<?>> valueMatcher) {
         Matcher mapMatcher = org.hamcrest.collection.IsMapContaining.<String, List<?>>hasEntry(keyMatcher, valueMatcher);
