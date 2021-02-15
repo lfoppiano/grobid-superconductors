@@ -41,6 +41,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
         window = 50;
+	algorithm = "rprop"
     }
 
     /**
