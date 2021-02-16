@@ -1,14 +1,9 @@
 package org.grobid.service.controller;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.DocumentResponse;
-import org.grobid.core.data.TextPassage;
-import org.grobid.core.data.Span;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
@@ -18,14 +13,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.*;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
+import java.util.Optional;
 
 @Singleton
 @Path("/")
@@ -89,7 +78,7 @@ public class AnnotationController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/csv")
     @POST
-    public String processPdfSuperconductorsCSV(@FormDataParam("input") InputStream uploadedInputStream,
+    public Optional<String> processPdfSuperconductorsCSV(@FormDataParam("input") InputStream uploadedInputStream,
                                                @FormDataParam("input") FormDataContentDisposition fileDetail,
                                                @FormDataParam("disableLinking") boolean disableLinking) {
         long start = System.currentTimeMillis();
@@ -98,6 +87,11 @@ public class AnnotationController {
 
         documentResponse.setRuntime(end - start);
 
-        return documentResponse.toCsv();
+        String csvOutput = documentResponse.toCsv();
+        if (StringUtils.isBlank(csvOutput) || csvOutput.split("\n").length == 1) {
+            return Optional.empty();
+        }
+
+        return Optional.of(csvOutput);
     }
 }

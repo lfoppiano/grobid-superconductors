@@ -68,5 +68,7 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
 
 
         environment.jersey().setUrlPattern(RESOURCES + "/*");
+        environment.jersey().register(new EmptyOptionalNoContentExceptionMapper());
+
     }
 }
