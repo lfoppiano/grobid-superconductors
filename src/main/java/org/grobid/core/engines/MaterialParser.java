@@ -205,6 +205,7 @@ public class MaterialParser extends AbstractParser {
         List<String> dopings = new ArrayList<>();
         List<String> fabrications = new ArrayList<>();
         List<String> substrates = new ArrayList<>();
+        List<String> prefixedValues = new ArrayList<>();
 
         String processingVariable = null;
         StringBuilder rawTaggedValue = new StringBuilder();
@@ -265,11 +266,18 @@ public class MaterialParser extends AbstractParser {
                 String value = clusterContent;
 
                 if (StringUtils.isNotEmpty(processingVariable)) {
-                    String[] split = value.split(",|;|or|and");
-                    List<String> listValues = Arrays.stream(split).map(StringUtils::trim).collect(Collectors.toList());
+                    List<String> listValues = extractVariableValues(value);
                     currentMaterial.getVariables().put(processingVariable, listValues);
+                    if (isNotEmpty(prefixedValues)) {
+                        currentMaterial.getVariables().get(processingVariable).addAll(prefixedValues);
+                        prefixedValues = new ArrayList<>();
+                    }
                 } else {
-                    LOGGER.error("Got a value but the processing variable is empty. Value: " + value);
+                    if (value.contains("<")) {
+                        prefixedValues.add(value);
+                    } else {
+                        LOGGER.error("Got a value but the processing variable is empty. Value: " + value);
+                    }
                 }
             } else if (clusterLabel.equals(MATERIAL_VARIABLE)) {
                 String variable = clusterContent;
@@ -394,6 +402,11 @@ public class MaterialParser extends AbstractParser {
         }
 
         return extracted;
+    }
+
+    protected List<String> extractVariableValues(String value) {
+        String[] split = value.split(",|;|or|and");
+        return Arrays.stream(split).map(StringUtils::trim).collect(Collectors.toList());
     }
 
     public String generateTrainingData(List<LayoutToken> layoutTokens) {

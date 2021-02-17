@@ -337,6 +337,32 @@ public class MaterialParserTest {
         assertThat(materials.get(1).getSubstrate(), is("StrO3, Al"));
     }
 
+    @Test
+    public void testExtraction_intervals() throws Exception {
+        String text = "polycrystalline samples in the range of 0 < x < 0.42";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+
+        // These triples made in following way: label, starting index (included), ending index (excluded)
+        List<Triple<String, Integer, Integer>> labels = Arrays.asList(
+            Triple.of("<shape>", 0, 1),
+            Triple.of("<value>", 12, 15),
+            Triple.of("<variable>", 16, 17),
+            Triple.of("<value>", 18, 23)
+        );
+
+        List<String> features = generateFeatures(layoutTokens);
+        String results = getWapitiResult(features, labels);
+
+        List<Material> materials = target.extractResults(layoutTokens, results);
+
+        assertThat(materials, hasSize(1));
+        assertThat(materials.get(0).getShape(), is("polycrystalline"));
+        assertThat(materials.get(0).getVariables().keySet(), hasSize(1));
+        assertThat(materials.get(0).getVariables().get("x"), hasSize(2));
+        assertThat(materials.get(0).getVariables().get("x").get(1), is("0 <"));
+        assertThat(materials.get(0).getVariables().get("x").get(0), is("< 0.42"));
+    }
+
     @SuppressWarnings("unchecked")
     public static org.hamcrest.Matcher<java.util.Map<String, Object>> hasListEntry(org.hamcrest.Matcher<String> keyMatcher, org.hamcrest.Matcher<java.lang.Iterable<?>> valueMatcher) {
         Matcher mapMatcher = org.hamcrest.collection.IsMapContaining.<String, List<?>>hasEntry(keyMatcher, valueMatcher);
@@ -344,7 +370,7 @@ public class MaterialParserTest {
     }
 
     @Test
-    public void postProcessFormula_invalidVariable_shouldReplace() throws Exception {
+    public void testPostProcessFormula_invalidVariable_shouldReplace() throws Exception {
         String formula = "Mo -x 1 T x ) 3 Sb 7";
 
         String s = target.postProcessFormula(formula);
@@ -353,7 +379,7 @@ public class MaterialParserTest {
     }
 
     @Test
-    public void postProcessFormula_invalidVariableZ_shouldReplace() throws Exception {
+    public void testPostProcessFormula_invalidVariableZ_shouldReplace() throws Exception {
         String formula = "Mo -z 1 T z ) 3 Sb 7";
 
         String s = target.postProcessFormula(formula);
@@ -362,7 +388,7 @@ public class MaterialParserTest {
     }
 
     @Test
-    public void postProcessFormula_invalidVariableZ_shouldReplace2() throws Exception {
+    public void testPostProcessFormula_invalidVariableZ_shouldReplace2() throws Exception {
         String formula = "Li x (NH 3 ) y Fe 2 (Te z Se z 1-) 2";
 
         String s = target.postProcessFormula(formula);
@@ -372,7 +398,7 @@ public class MaterialParserTest {
 
 
     @Test
-    public void postProcessFormula_invalidVariables2_shouldReplace() throws Exception {
+    public void testPostProcessFormula_invalidVariables2_shouldReplace() throws Exception {
         String formula = "BaFe 2 (As −x 1 P x ) 2 or Ba(Fe −x 1 Co x ) 2 As 2";
 
         String s = target.postProcessFormula(formula);
@@ -381,7 +407,7 @@ public class MaterialParserTest {
     }
 
     @Test
-    public void postProcessFormula_invalidVariables3_shouldReplace() throws Exception {
+    public void testPostProcessFormula_invalidVariables3_shouldReplace() throws Exception {
         String formula = "BaFe 2 (As−x1 P x ) 2 ";
 
         String s = target.postProcessFormula(formula);
@@ -390,11 +416,48 @@ public class MaterialParserTest {
     }
 
     @Test
-    public void postProcessFormula_invalidCharacters_shouldReplace() throws Exception {
+    public void testPostProcessFormula_invalidCharacters_shouldReplace() throws Exception {
         String formula = "BaFe 2 (As−x1 P x ) 2 and Sr 2 MO 3 FeAs (M\uF0A0=\uF0A0Sc, V, Cr)";
 
         String s = target.postProcessFormula(formula);
 
         assertThat(s, is("BaFe 2 (As1−x P x ) 2 and Sr 2 MO 3 FeAs (M = Sc, V, Cr)"));
+    }
+
+    @Test
+    public void testExtractVariableValues_singleLessThan() throws Exception {
+        String value = "1 <";
+
+        List<String> parsedValues = target.extractVariableValues(value);
+        assertThat(parsedValues, hasSize(1));
+    }
+
+    @Test
+    public void testExtractVariableValues_singleGreaterThan() throws Exception {
+        String value = "> 2";
+
+        List<String> parsedValues = target.extractVariableValues(value);
+        assertThat(parsedValues, hasSize(1));
+    }
+
+    @Test
+    public void testExtractVariableValues_list() throws Exception {
+        String value = "1,2,3 and 4";
+
+        List<String> parsedValues = target.extractVariableValues(value);
+
+        assertThat(parsedValues, hasSize(4));
+        assertThat(parsedValues.get(0), is("1"));
+        assertThat(parsedValues.get(1), is("2"));
+        assertThat(parsedValues.get(2), is("3"));
+        assertThat(parsedValues.get(3), is("4"));
+    }
+
+    @Test
+    public void testExtractVariableValues_interval() throws Exception {
+        String value = "<2";
+
+        List<String> parsedValues = target.extractVariableValues(value);
+        assertThat(parsedValues, hasSize(1));
     }
 }
