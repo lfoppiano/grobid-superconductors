@@ -7,3 +7,6 @@ out
 annotated/*
 doc/_build/*
 logs/*
+**/.ipynb_checkpoints
+**/__pycache__/
+**/~*
