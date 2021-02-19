@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
@@ -17,14 +18,14 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.*;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Material {
@@ -181,7 +182,20 @@ public class Material {
         try {
             generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
         } catch (NumberFormatException e) {
-            LOGGER.warn("Cannot replace variables " + Arrays.toString(variables.toArray()));
+
+            Map<String, List<String>> cleanedMapOfContainedVariables = new HashMap<>();
+            mapOfContainedVariables.keySet().forEach(variable -> {
+                List<String> cleanedList = mapOfContainedVariables.get(variable).stream()
+                    .map(value -> value.replaceAll("[^\\-0-9\\.]+", ""))
+                    .collect(Collectors.toList());
+                cleanedMapOfContainedVariables.put(variable, cleanedList);
+            });
+
+            try {
+                generatePermutations(cleanedMapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
+            } catch (NumberFormatException e2) {
+                LOGGER.warn("Cannot replace variables " + Arrays.toString(variables.toArray()));
+            }
         }
 
 //        material.getResolvedFormulas().addAll(output);
@@ -230,6 +244,7 @@ public class Material {
             Integer variableIndex = formula.indexOf(variable, startSearching);
 
             if (variableIndex > -1) {
+                // If the variable is prefixed by - indicate the case 1-x, 2-x which require a more thoughful rewrite
                 if (formula.startsWith("-", variableIndex - 1)
                     || formula.startsWith("\u2212", variableIndex - 1)) {
                     Integer endSearch = variableIndex - 1;
@@ -249,16 +264,20 @@ public class Material {
                         }
                     }
                 } else {
-                    // if the variable is followed by a lowercase character, I skip the substitution
-                    if (variableIndex == formula.length() - 1
-                        || !Character.isLowerCase(formula.charAt(variableIndex + variable.length()))) {
+                    //The variable is appearing alone, we apply direct substitution
+                    if (variableIndex + variable.length() < formula.length() - 1) {
+                        if (!Character.isLowerCase(formula.charAt(variableIndex + variable.length()))) {
+                            returnFormula = returnFormula.replaceFirst(variable, value);
+                        }
+                    } else if (variableIndex + variable.length() == formula.length()) {
                         returnFormula = returnFormula.replaceFirst(variable, value);
+                    } else {
+                        LOGGER.warn("The variable " + variable + " substitution with value " + value + " into " + formula);
                     }
                 }
             }
             startSearching = variableIndex + 1;
         }
-
         return returnFormula;
     }
 
@@ -374,7 +393,9 @@ public class Material {
         if (formulaDopantMatcher.find()) {
             String dopants = formulaDopantMatcher.group(1);
             String formulaWithoutDopants = formulaDopantMatcher.group(2);
-            String[] splittedDopants = dopants.split(",");
+            List<String> splittedDopants = Arrays.stream(dopants.split(","))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
 
             Matcher nameMaterialMatcher = nameMaterialPattern.matcher(formulaWithoutDopants);
             if (nameMaterialMatcher.find()) {
@@ -382,11 +403,32 @@ public class Material {
                     expandedFormulas.add(trim(dopant) + trim(formulaWithoutDopants));
                 }
             } else {
-                if (splittedDopants.length > 2) {
-                    throw new RuntimeException("The formula " + formula + "cannot be expanded. ");
+                if (splittedDopants.size() == 1) {
+                    expandedFormulas.add(formula);
+                } else if (splittedDopants.size() == 2) {
+                    expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
+                } else if (splittedDopants.size() > 2 && splittedDopants.size() < "xyzabcdefghijklmnopqrstuvw".length()) {
+                    char[] alphabet = "xyzabcdefghijklmnopqrstuvw".toCharArray();
+                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb2 = new StringBuilder();
+                    for (int i = 0; i < splittedDopants.size() - 1; i++) {
+                        sb2.append("-").append(alphabet[i]);
+                    }
+                    sb2.append(" ");
+                    sb.append(splittedDopants.get(0)).append(" 1").append(sb2.toString());
+                    for (int i = 1; i < splittedDopants.size(); i++) {
+                        String split = splittedDopants.get(i);
+                        sb.append(trim(split));
+                        sb.append(" ");
+                        sb.append(alphabet[i - 1]);
+                        sb.append(" ");
+                    }
+                    sb.append(trim(formulaWithoutDopants));
+                    expandedFormulas.add(sb.toString());
+                } else {
+                    String message = "The formula " + formula + " cannot be expanded. ";
+                    throw new RuntimeException(message);
                 }
-
-                expandedFormulas.add(trim(splittedDopants[0]) + " x " + trim(splittedDopants[1]) + " 1-x " + trim(formulaWithoutDopants));
             }
         } else {
             return Arrays.asList(formula);

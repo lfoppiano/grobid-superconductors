@@ -14,6 +14,13 @@ import static org.junit.Assert.assertThat;
 public class MaterialTest {
 
     @Test
+    public void testResolveFormula_shouldNotExpandNorThrowException() throws Exception {
+        List<String> outputFormulas = Material.expandFormula("(TMTTF) 2 PF 6");
+
+        assertThat(outputFormulas, hasSize(1));
+        assertThat(outputFormulas.get(0), is("(TMTTF) 2 PF 6"));
+    }
+    @Test
     public void testResolveFormula() throws Exception {
         List<String> outputFormulas = Material.expandFormula("(Sr, Na)Fe 2 As 2");
 
@@ -53,7 +60,7 @@ public class MaterialTest {
     }
 
     @Test
-    public void testExpandFormula() throws Exception {
+    public void testExpandFormula_2variables() throws Exception {
         String inputFormula = "(Sr, La) Fe 2 O 7";
 
         List<String> expandedFormulas = Material.expandFormula(inputFormula);
@@ -63,11 +70,22 @@ public class MaterialTest {
 
     }
 
-    @Test(expected=RuntimeException.class)
-    public void testExpandFormula2() throws Exception {
-        String inputFormula = "(Sr, Fe, La) Cu 2 O 13";
+    @Test
+    public void testExpandFormula_4variables() throws Exception {
+        String inputFormula = "(Sr, La, Cu, K) Fe 2 O 7";
 
-        Material.expandFormula(inputFormula);
+        List<String> expandedFormulas = Material.expandFormula(inputFormula);
+
+        assertThat(expandedFormulas, hasSize(1));
+        assertThat(expandedFormulas.get(0), is("Sr 1-x-y-z La x Cu y K z Fe 2 O 7"))  ;
+
+    }
+
+    @Test(expected=RuntimeException.class)
+    public void testExpandFormulaWithTooManyVariables_shouldThrowsException() throws Exception {
+        String inputFormula = "(Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe) Cu 2 O 13";
+
+        System.out.println(Material.expandFormula(inputFormula));
     }
 
     @Test
@@ -122,6 +140,18 @@ public class MaterialTest {
     }
 
     @Test
+    public void testResolveVariable_interval() throws Exception {
+        Material material = new Material();
+        material.setFormula("Li x (NH 3 ) 1-x Fe 2 (Te x Se 1−x ) 2");
+        material.getVariables().put("x", Arrays.asList("< 0.1", "> 0.01"));
+        List<String> outputMaterials = Material.resolveVariables(material);
+
+        assertThat(outputMaterials, hasSize(2));
+        assertThat(outputMaterials.get(0), is("Li 0.1 (NH 3 ) 0.9 Fe 2 (Te 0.1 Se 0.9 ) 2"));
+        assertThat(outputMaterials.get(1), is("Li 0.01 (NH 3 ) 0.99 Fe 2 (Te 0.01 Se 0.99 ) 2"));
+    }
+
+    @Test
     public void testReplaceVariable() {
         String output = Material.replaceVariable("Fe1-xCuxO2", "x", "0.8");
 
@@ -154,6 +184,13 @@ public class MaterialTest {
         String output = Material.replaceVariable("1-x Ru x", "x", "0.2");
 
         assertThat(output, is("0.8 Ru 0.2"));
+    }
+
+    @Test
+    public void testReplaceVariable_errorCase_1() {
+        String output = Material.replaceVariable("RE", "RE", "Sc");
+
+        assertThat(output, is("Sc"));
     }
 
     @Test

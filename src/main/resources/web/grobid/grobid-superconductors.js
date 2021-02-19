@@ -305,8 +305,22 @@ let grobid = (function ($) {
         });
 
         function onError(message) {
-            if (!message)
+            if (!message) {
                 message = "The Text or the PDF document cannot be processed. Please check the server logs.";
+            } else {
+                if (message.responseJSON) {
+                    let type = message.responseJSON['type']
+                    let split = message.responseJSON['description'].split(type);
+                    message = split[split.length - 1]
+                } else if (message) {
+                    let type = message.type
+                    let split = message.description.split(type);
+                    message = split[split.length - 1]
+                } else {
+                    message = "The Text or the PDF document cannot be processed. Please check the server logs. "
+                }
+
+            }   
 
             $('#infoResultMessage').html("<p class='text-danger'>Error encountered while requesting the server.<br/>" + message + "</p>");
             return true;
@@ -688,13 +702,23 @@ let grobid = (function ($) {
             xhr.open('POST', url, true);
 
             xhr.onreadystatechange = function (e) {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    let response = e.target.response;
-                    onSuccessPdf(response);
-                } else if (xhr.status !== 200) {
-                    onError("Response: " + xhr.status);
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        onSuccessPdf(e.target.response);
+                    } else {
+                        onError(e.target.response);
+                    }
                 }
             };
+
+            // xhr.onreadystatechange = function (e) {
+            //     if (xhr.readyState === 4 && xhr.status === 200) {
+            //         let response = e.target.response;
+            //         onSuccessPdf(response);
+            //     } else if (xhr.status !== 200) {
+            //         onError("Response: " + xhr.status);
+            //     }
+            // };
             xhr.send(formData);
         }
 
@@ -760,8 +784,16 @@ let grobid = (function ($) {
                         return span.attributes[key]
                     }).join(", ");
 
-                let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes, shape=shapes);
-                let {row_id, element_id, mat_element_id, cla_element_id, shape_element_id, tc_element_id, pressure_element_id} = computeTableIds(encodedLinkId);
+                let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes, shape = shapes);
+                let {
+                    row_id,
+                    element_id,
+                    mat_element_id,
+                    cla_element_id,
+                    shape_element_id,
+                    tc_element_id,
+                    pressure_element_id
+                } = computeTableIds(encodedLinkId);
 
                 if (addedLinks.indexOf(encodedLinkId) >= 0) {
                     let typeRow = $('#' + row_id + " td:eq(7)");
@@ -949,7 +981,15 @@ let grobid = (function ($) {
                 viewInPDFIcon = "<img src='resources/icons/arrow-down.svg' alt='View in PDF' title='View in PDF'></a>";
             }
 
-            let {row_id, element_id, mat_element_id, cla_element_id, shape_element_id, tc_element_id, pressure_element_id} = computeTableIds(id);
+            let {
+                row_id,
+                element_id,
+                mat_element_id,
+                cla_element_id,
+                shape_element_id,
+                tc_element_id,
+                pressure_element_id
+            } = computeTableIds(id);
 
             let html_code = "<tr class='d-flex' id=" + row_id + " style='cursor:hand;cursor:pointer;' >" +
                 "<td><a href='#' id=" + element_id + ">" + viewInPDFIcon + "</td>" +
@@ -982,7 +1022,15 @@ let grobid = (function ($) {
             let random_number = '_' + Math.random().toString(36).substr(2, 9);
 
             let html_code = createRowHtml(random_number);
-            let {row_id, element_id, mat_element_id, cla_element_id, shape_element_id, tc_element_id, pressure_element_id} = computeTableIds(random_number);
+            let {
+                row_id,
+                element_id,
+                mat_element_id,
+                cla_element_id,
+                shape_element_id,
+                tc_element_id,
+                pressure_element_id
+            } = computeTableIds(random_number);
 
             $('#tableResultsBody').append(html_code);
 

@@ -13,6 +13,10 @@ import org.grobid.service.controller.AnnotationController;
 import org.grobid.service.controller.HealthCheck;
 import org.grobid.service.controller.LinkerController;
 import org.grobid.service.controller.MaterialController;
+import org.grobid.service.exceptions.mapper.GrobidExceptionMapper;
+import org.grobid.service.exceptions.mapper.GrobidExceptionsTranslationUtility;
+import org.grobid.service.exceptions.mapper.GrobidServiceExceptionMapper;
+import org.grobid.service.exceptions.mapper.WebApplicationExceptionMapper;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -41,6 +45,12 @@ public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSu
         binder.bind(AnnotationController.class);
         binder.bind(MaterialController.class);
         binder.bind(LinkerController.class);
+
+        //Exception Mappers
+        binder.bind(GrobidServiceExceptionMapper.class);
+        binder.bind(GrobidExceptionsTranslationUtility.class);
+        binder.bind(GrobidExceptionMapper.class);
+        binder.bind(WebApplicationExceptionMapper.class);
     }
 
     @Provides
