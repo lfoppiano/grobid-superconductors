@@ -40,7 +40,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
-        window = 50;
+        window = 20;
     }
 
     /**
