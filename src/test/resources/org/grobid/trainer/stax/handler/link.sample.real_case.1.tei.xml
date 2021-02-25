@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tei xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc xml:id="_0">
+      <titleStmt/>
+      <publicationStmt>
+        <publisher>National Institute for Materials Science (NIMS), Tsukuba, Japan</publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+            <p>The Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Licence applies to this document.</p>
+          </licence>
+        </availability>
+      </publicationStmt>
+    </fileDesc>
+    <encodingDesc>
+      <appInfo>
+        <application ident="grobid-superconductors" version="0.2.0-SNAPSHOT">
+          <ref target="https://github.com/lfoppiano/grobid-superconductors">A machine learning software for extracting materials and their properties from scientific literature.</ref>
+        </application>
+      </appInfo>
+    </encodingDesc>
+    <profileDesc>
+      <abstract/>
+    </profileDesc>
+  </teiHeader>
+  <text xml:lang="en">
+    <body>
+        <p>The electron-doped high-<rs type="tc">transition-temperature</rs> (<rs type="tc">Tc</rs>) <rs type="class">iron-based pnictide</rs> superconductor <rs type="material" xml:id="x6">LaFeAsO1−xHx</rs> has a unique phase diagram: Superconducting (SC) double domes are sandwiched by antiferromagnetic phases at ambient pressure and they turn into a single dome with a <rs type="tc">maximum Tc</rs> that <rs corresp="#x6" type="tcValue" xml:id="x8">exceeds 45K</rs> at a pressure of <rs corresp="#x8" type="pressure">3.0 GPa</rs>. We studied whether spin fluctuations are involved in increasing <rs type="tc">Tc</rs> under a pressure of <rs corresp="#x8" type="pressure">3.1 GPa</rs> by using the 75 As nuclear magnetic resonance (NMR) technique. The 75 As-NMR results for the powder samples show that <rs type="tc">Tc</rs> increases <rs type="tcValue">up to 48 K</rs> with- out the influence of spin fluctuations. This fact indicates that spin fluctuations are not involved in raising <rs type="tc">Tc</rs>, which implies that other factors, such as orbital degrees of freedom, may be important for achieving a high <rs type="tc">Tc</rs> of <rs type="tcValue">almost 50 K</rs>.</p>
+    </body>
+  </text>
+</tei>
