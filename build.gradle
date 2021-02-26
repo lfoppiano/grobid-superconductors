@@ -168,8 +168,12 @@ run {
 def trainerTasks = [
     //Training models
     "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer",
+    "train_superconductors_no_features": "org.grobid.trainer.SuperconductorsNoFeaturesTrainer",
     "train_material": "org.grobid.trainer.MaterialTrainer",
-    "train_entityLinker": "org.grobid.trainer.EntityLinkerMaterialTcTrainer"
+    "train_entityLinker_material_tc": "org.grobid.trainer.EntityLinkerMaterialTcTrainer",
+    "train_entityLinker_pressure_tc": "org.grobid.trainer.EntityLinkerTcPressureTrainer",
+    "train_entityLinker_meMethod_tc": "org.grobid.trainer.EntityLinkerTcMeMethodTrainer",
+    "train_nanostructure_no_features": "org.grobid.trainer.NanostructureNoFeaturesTrainer"
 ]
 
 trainerTasks.each { taskName, mainClassName ->
