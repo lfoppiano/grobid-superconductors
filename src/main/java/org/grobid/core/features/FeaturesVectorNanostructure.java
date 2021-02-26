@@ -18,7 +18,6 @@ public class FeaturesVectorNanostructure {
     public String string = null; // lexical feature
     public String label = null;     // label if known
 
-    public String capitalisation = null;// one of INITCAP, ALLCAPS, NOCAPS
     public String digit;                // one of ALLDIGIT, CONTAINDIGIT, NODIGIT
     public boolean singleChar = false;
 
@@ -54,9 +53,6 @@ public class FeaturesVectorNanostructure {
         // token string (1)
         res.append(string);
 
-        // lowercase string
-        res.append(" " + string.toLowerCase());
-
         // prefix (4)
         res.append(" ").append(TextUtilities.prefix(string, 1));
         res.append(" ").append(TextUtilities.prefix(string, 2));
@@ -69,11 +65,6 @@ public class FeaturesVectorNanostructure {
         res.append(" ").append(TextUtilities.suffix(string, 3));
         res.append(" ").append(TextUtilities.suffix(string, 4));
 
-        // capitalisation (1)
-        if (digit.equals("ALLDIGIT"))
-            res.append(" NOCAPS");
-        else
-            res.append(" " + capitalisation);
 
         // digit information (1)
         res.append(" " + digit);
@@ -98,12 +89,6 @@ public class FeaturesVectorNanostructure {
 
         // word shape trimmed
         res.append(" " + wordShapeTrimmed);
-
-        //Font status
-        res.append(" " + fontStatus);
-
-        //Font size
-        res.append(" " + fontSize);
 
         res.append(" " + bold);
 
@@ -142,13 +127,6 @@ public class FeaturesVectorNanostructure {
             featuresVector.singleChar = true;
         }
 
-        if (featureFactory.test_all_capital(string))
-            featuresVector.capitalisation = "ALLCAPS";
-        else if (featureFactory.test_first_capital(string))
-            featuresVector.capitalisation = "INITCAP";
-        else
-            featuresVector.capitalisation = "NOCAPS";
-
         if (featureFactory.test_number(string))
             featuresVector.digit = "ALLDIGIT";
         else if (FeatureFactory.test_digit(string))
@@ -160,24 +138,22 @@ public class FeaturesVectorNanostructure {
         if (m0.find()) {
             featuresVector.punctType = "PUNCT";
         }
-        if ((string.equals("(")) || (string.equals("["))) {
+
+        if (string.equals("(") || string.equals("[") || string.equals("「")) {
             featuresVector.punctType = "OPENBRACKET";
-        } else if ((string.equals(")")) || (string.equals("]"))) {
+        } else if (string.equals(")") || string.equals("]") || string.equals("」")) {
             featuresVector.punctType = "ENDBRACKET";
-        } else if (string.equals(".") || string.equals("⋅") || string.equals("•") || string.equals("·")) {
+        } else if (string.equals(".") || string.equals("⋅") || string.equals("•") || string.equals("·") || string.equals("．") || string.equals("。")) {
             featuresVector.punctType = "DOT";
-        } else if (string.equals(",")) {
+        } else if (string.equals(",") || string.equals("、")) {
             featuresVector.punctType = "COMMA";
-        } else if (string.equals("-") || string.equals("−") || string.equals("–")) {
+        } else if (string.equals("-") || string.equals("−") || string.equals("–") || string.equals("ー")) {
             featuresVector.punctType = "HYPHEN";
-        } else if (string.equals("\"") || string.equals("'") || string.equals("`")) {
+        } else if (string.equals("\"") || string.equals("'") || string.equals("`") || string.equals("”") || string.equals("’")) {
             featuresVector.punctType = "QUOTE";
         }
 
         //DEFAULTS
-        if (featuresVector.capitalisation == null)
-            featuresVector.capitalisation = "NOCAPS";
-
         if (featuresVector.digit == null)
             featuresVector.digit = "NODIGIT";
 
@@ -200,14 +176,89 @@ public class FeaturesVectorNanostructure {
 
         featuresVector.shadowNumber = TextUtilities.shadowNumbers(string);
 
-        featuresVector.wordShape = TextUtilities.wordShape(string);
+        featuresVector.wordShape = FeaturesVectorNanostructure.wordShapeJapanese(string);
 
-        featuresVector.wordShapeTrimmed = TextUtilities.wordShapeTrimmed(string);
+        featuresVector.wordShapeTrimmed = FeaturesVectorNanostructure.wordShapeTrimmedJapanese(string);
 
         // Chemical compound
         featuresVector.chemicalCompound = compoundType;
 
         return featuresVector;
+    }
+
+    /**
+     * @param character a japanese character full or half with
+     * @return k if it's kanji, y if it's katakana and h if it's hiragana
+     */
+    public static char getCharacterNature(char character) {
+        if ((int) character >= 0x30a0 && (int) character <= 0x30ff) {
+            return 'y';
+        } else if ((int) character >= 0x3040 && (int) character <= 0x309f) {
+            return 'h';
+        } else if ((int) character >= 0x4e00 && (int) character <= 0x9faf) {
+            return 'k';
+        } else if ((int) character >= 0xff00 && (int) character <= 0xffef) {
+            return 'r';
+        } else {
+            return character;
+        }
+    }
+
+    public static String wordShapeJapanese(String word) {
+        StringBuilder shape = new StringBuilder();
+        for (char c : word.toCharArray()) {
+            shape.append(getCharacterNature(c));
+        }
+
+        StringBuilder finalShape = new StringBuilder().append(shape.charAt(0));
+
+        String suffix = "";
+        if (word.length() > 2) {
+            suffix = shape.substring(shape.length() - 2);
+        } else if (word.length() > 1) {
+            suffix = shape.substring(shape.length() - 1);
+        }
+
+        StringBuilder middle = new StringBuilder();
+        if (shape.length() > 3) {
+            char ch = shape.charAt(1);
+            for (int i = 1; i < shape.length() - 2; i++) {
+                middle.append(ch);
+                while (ch == shape.charAt(i) && i < shape.length() - 2) {
+                    i++;
+                }
+                ch = shape.charAt(i);
+            }
+
+            if (ch != middle.charAt(middle.length() - 1)) {
+                middle.append(ch);
+            }
+        }
+        return finalShape.append(middle).append(suffix).toString();
+
+    }
+
+    public static String wordShapeTrimmedJapanese(String word) {
+        StringBuilder shape = new StringBuilder();
+        for (char c : word.toCharArray()) {
+            shape.append(getCharacterNature(c));
+        }
+
+        StringBuilder middle = new StringBuilder();
+
+        char ch = shape.charAt(0);
+        for (int i = 0; i < shape.length(); i++) {
+            middle.append(ch);
+            while (ch == shape.charAt(i) && i < shape.length() - 1) {
+                i++;
+            }
+            ch = shape.charAt(i);
+        }
+
+        if (ch != middle.charAt(middle.length() - 1)) {
+            middle.append(ch);
+        }
+        return middle.toString();
     }
 
 }
