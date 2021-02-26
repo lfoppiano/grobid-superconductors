@@ -1,12 +1,25 @@
 package org.grobid.core.features;
 
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.lexicon.Lexicon;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Lexicon.class)
 public class FeaturesVectorNanostructureTest {
+
+    @Before
+    public void setUp() throws Exception {
+        PowerMock.mockStatic(Lexicon.class);
+    }
 
     @Test
     public void testFeatures() throws Exception {
