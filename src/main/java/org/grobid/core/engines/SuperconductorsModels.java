@@ -8,6 +8,7 @@ import org.grobid.core.GrobidModels;
  */
 public class SuperconductorsModels {
     public static final GrobidModel SUPERCONDUCTORS = GrobidModels.modelFor("superconductors");
+    public static final GrobidModel NANOSTRUCTURE = GrobidModels.modelFor("nanostructure");
     public static final GrobidModel MATERIAL = GrobidModels.modelFor("material");
     public static final GrobidModel ENTITY_LINKER_MATERIAL_TC = GrobidModels.modelFor("entityLinker-material-tc");
     public static final GrobidModel ENTITY_LINKER_TC_PRESSURE = GrobidModels.modelFor("entityLinker-tc-pressure");
