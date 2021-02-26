@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.lang.Language;
 import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEV
 public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationValuesTEIStaxHandler.class);
+    private Language language = new Language("en", 1.0);
 
     private StringBuilder accumulator = new StringBuilder();
     private StringBuilder accumulatedText = new StringBuilder();
@@ -64,6 +66,11 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
             SuperconductorsStackTags.from("/tei/text/p")), annotationTypes);
     }
 
+    public AnnotationValuesTEIStaxHandler(List<String> annotationTypes, Language language) {
+        this(Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/p"),
+            SuperconductorsStackTags.from("/tei/text/p")), annotationTypes, language);
+    }
+
     /**
      * @param containerPaths  specifies the path where the data should be extracted, e.g. /tei/teiHeader/titleStmt/title
      * @param annotationTypes specifies the types of the <rs type="type"></rs> annotation to be extracted
@@ -71,6 +78,12 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
     public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes) {
         this.containerPaths = containerPaths;
         this.annotationTypes = annotationTypes;
+    }
+
+    public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes, Language language) {
+        this.containerPaths = containerPaths;
+        this.annotationTypes = annotationTypes;
+        this.language = language;
     }
 
     public AnnotationValuesTEIStaxHandler() {
@@ -198,7 +211,7 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
 
         List<String> tokens = null;
         try {
-            tokens = DeepAnalyzer.getInstance().tokenize(text);
+            tokens = DeepAnalyzer.getInstance().tokenize(text, this.language);
         } catch (Exception e) {
             throw new GrobidException("Fail to tokenize:, " + text, e);
         }
