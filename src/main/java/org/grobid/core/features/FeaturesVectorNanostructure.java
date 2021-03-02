@@ -198,6 +198,14 @@ public class FeaturesVectorNanostructure {
             return 'k';
         } else if ((int) character >= 0xff00 && (int) character <= 0xffef) {
             return 'r';
+        } else if (Character.isLetter(character)) {
+            if (Character.isUpperCase(character)) {
+                return 'X';
+            } else {
+                return 'x';
+            }
+        } else if (Character.isDigit(character)) {
+            return 'd';
         } else {
             return character;
         }
