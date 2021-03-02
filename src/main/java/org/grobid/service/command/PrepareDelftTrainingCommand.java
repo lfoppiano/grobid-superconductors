@@ -62,9 +62,9 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc", "superconductors-no-features"))
-            .required(false)
-            .setDefault("superconductors")
+            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc", "superconductors-no-features",
+                "nanostructure-no-features"))
+            .required(true)
             .help("Model data to use. ");
 
     }
@@ -112,6 +112,8 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             trainer = new EntityLinkerTcMeMethodTrainer();
         } else if ("superconductors-no-features".equals(modelName)) {
             trainer = new SuperconductorsNoFeaturesTrainer();
+        } else if ("nanostructure-no-features".equals(modelName)) {
+            trainer = new NanostructureNoFeaturesTrainer();
         }
 
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
