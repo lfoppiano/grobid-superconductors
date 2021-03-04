@@ -11,7 +11,7 @@ As the others GROBID models, the module relies on machine learning and can use l
 
 The linking is implemented as Python library, you can find the code in [here](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/linking). 
 
-The following screenshots show the end to end result, also called [Supercuration](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/supercuration) (Superconductors Curation) is an advanced interface including the linking module on top of the extrated entities (*the repository is still private*): 
+The following screenshots show the end to end result, also called [Supercuration](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/supercuration) (Superconductors Curation) is an advanced interface including the linking module on top of the extrated entities: 
 
 ![GROBID superconductors_screenshot](https://github.com/lfoppiano/grobid-superconductors-tools/blob/master/supercuration/docs/images/grobid-superconductors-web-home.png)
 
