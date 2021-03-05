@@ -1,6 +1,8 @@
 # Grobid superconductors module
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Docker Status](https://images.microbadger.com/badges/version/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Latest Docker HUB image")
+[![Docker Hub](https://img.shields.io/docker/pulls/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Docker Pulls")
 
 __Work in progress.__
 
