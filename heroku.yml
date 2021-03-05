@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: java -jar grobid-superconductors.jar
+  web: java -jar /opt/grobid/grobid-superconductors/grobid-superconductors-0.2.0-SNAPSHOT-onejar.jar server /opt/grobid/grobid-superconductors/config.yml
