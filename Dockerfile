@@ -30,24 +30,12 @@ RUN git clone https://github.com/kermitt2/grobid-quantities.git /opt/grobid-sour
 WORKDIR /opt/grobid-source/grobid-quantities
 RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
+WORKDIR /opt/grobid-source
 RUN mkdir -p grobid-superconductors
+RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
+
 WORKDIR /opt/grobid-source/grobid-superconductors
-
-# gradle
-COPY gradle/ ./gradle/
-COPY gradlew ./
-COPY gradle.properties ./
-COPY build.gradle ./
-COPY settings.gradle ./
-
-# source
-COPY localLibs/ ./localLibs
-RUN mkdir -p resources
-COPY resources/models ./resources/models
-COPY resources/config ./resources/config
-COPY resources/web ./resources/web
-COPY src/ ./src/
-COPY requirements.txt .
+RUN git clone https://github.com/lfoppiano/grobid-superconductors-tools.git ./resources/web
 
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
 RUN ./gradlew copyModels --no-daemon --info --stacktrace
@@ -80,6 +68,7 @@ WORKDIR /opt/grobid
 ENV VIRTUAL_ENV=/opt/grobid/venv
 RUN python3.7 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN pip --version
 
 RUN mkdir -p /opt/grobid/grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-home ./grobid-home/
@@ -99,7 +88,7 @@ RUN chmod 777 /opt/grobid/grobid-home/tmp
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
 RUN python3 -m pip install pip --upgrade
-
+RUN pip --version
 # install DeLFT via pypi
 ## RUN pip3 install requests delft==0.2.6
 # link the data directory to /data
@@ -118,6 +107,7 @@ RUN python3 -m pip install pip --upgrade
 # Install requirements
 WORKDIR /opt/grobid
 COPY --from=builder /opt/grobid-source/grobid-superconductors/requirements.txt /opt/grobid/
+RUN pip --version
 RUN pip install -r requirements.txt
 
 # install linking components

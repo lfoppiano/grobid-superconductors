@@ -1,38 +1,13 @@
 {
   "name": "grobid-superconductors",
   "description": "Open source machine-learning based for extracting superconductors related information and properties.",
-  "keywords": ["Python", "Machine Learning", "Annotation"],
+  "keywords": ["Text mining", "Machine Learning", "Materials informatics", "Superconductors"],
   "website": "https://grobid-superconductors.herokuapps.com/",
   "repository": "https://github.com/lfoppiano/grobid-superconductors",
   "success_url": "/",
   "env": {
-    "ADMIN_USER_NAME": {
-      "description": "The user name for the admin account."
-    },
     "ADMIN_CONTACT_EMAIL": {
       "description": "The contact email address for the admin account."
-    },
-    "ADMIN_PASSWORD": {
-      "description": "The password for the admin account."
-    },
-    "SECRET_KEY": {
-      "description": "The value to use as the Django secret key.",
-      "generator": "secret"
-    },
-    "GOOGLE_TRACKING_ID": {
-      "description": "Google Analytics tracking id.",
-      "required": false,
-      "value": ""
-    },
-    "DEBUG": {
-      "description": "Debug mode or not.",
-      "required": false,
-      "value": "False"
-    },
-    "ALLOW_SIGNUP": {
-      "description": "Allow users to signup themselves or not",
-      "required": false,
-      "value": "True"
     }
   },
   "stack": "container"
