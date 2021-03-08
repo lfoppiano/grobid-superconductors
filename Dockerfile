@@ -33,6 +33,8 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 WORKDIR /opt/grobid-source
 RUN mkdir -p grobid-superconductors
 RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
+# Adjust config
+RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/config/config.yaml
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN git clone https://github.com/lfoppiano/grobid-superconductors-tools.git ./resources/web
