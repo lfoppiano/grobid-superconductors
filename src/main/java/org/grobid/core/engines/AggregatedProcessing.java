@@ -12,10 +12,7 @@ import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.IOUtilities;
-import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.MeasurementUtils;
-import org.grobid.core.utilities.UnitUtilities;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,7 +237,17 @@ public class AggregatedProcessing {
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
             GrobidPDFEngine.processDocument(doc, (documentBlock) -> {
-                documentResponse.addParagraphs(process(documentBlock.getLayoutTokens(), disableLinking,
+                List<LayoutToken> cleanedLayoutTokens = documentBlock.getLayoutTokens().stream()
+                    .map(l -> {
+                        LayoutToken newOne = new LayoutToken(l);
+                        newOne.setText(UnicodeUtil.normaliseText(l.getText()).replaceAll("\\p{C}", " "));
+                    return newOne;
+                }).collect(Collectors.toList());
+
+                List<LayoutToken> cleanedLayoutTokensRetokenized = DeepAnalyzer.getInstance()
+                    .retokenizeLayoutTokens(cleanedLayoutTokens);
+
+                documentResponse.addParagraphs(process(cleanedLayoutTokensRetokenized, disableLinking,
                     documentBlock.getSection(), documentBlock.getSubSection()));
             });
 
