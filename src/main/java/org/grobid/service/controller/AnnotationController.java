@@ -1,9 +1,12 @@
 package org.grobid.service.controller;
 
+import com.sun.istack.NotNull;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.DocumentResponse;
+import org.grobid.core.data.SuperconEntry;
 import org.grobid.core.engines.AggregatedProcessing;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
@@ -11,9 +14,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 
 @Singleton
@@ -93,5 +98,21 @@ public class AnnotationController {
         }
 
         return Optional.of(csvOutput);
+    }
+
+    @Path("/process/json")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public Optional<List<SuperconEntry>> processJsonToCSV(@FormDataParam("input") DocumentResponse jsonResponse) {
+
+        List<SuperconEntry> superconEntries = AggregatedProcessing.computeTabularData(jsonResponse.getParagraphs());
+
+        if (CollectionUtils.isEmpty(superconEntries)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(superconEntries);
+
     }
 }
