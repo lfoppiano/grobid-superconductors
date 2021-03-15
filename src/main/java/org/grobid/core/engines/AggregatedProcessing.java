@@ -545,6 +545,7 @@ public class AggregatedProcessing {
 
             for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
                 Span tcValue = spansById.get(entry.getKey());
+                dbEntry.setCriticalTemperature(tcValue.getText());
                 List<Span> pressures = tcValue.getLinks().stream()
                     .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
                     .map(l -> spansById.get(l.getTargetId()))
