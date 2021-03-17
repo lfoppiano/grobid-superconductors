@@ -34,7 +34,7 @@ WORKDIR /opt/grobid-source
 RUN mkdir -p grobid-superconductors
 RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
 # Adjust config
-RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/config/config.yaml
+RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config.yml
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN git clone https://github.com/lfoppiano/grobid-superconductors-tools.git ./resources/web
@@ -90,27 +90,27 @@ RUN chmod 777 /opt/grobid/grobid-home/tmp
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
 RUN python3 -m pip install pip --upgrade
-RUN pip --version
+
 # install DeLFT via pypi
-## RUN pip3 install requests delft==0.2.6
+RUN pip3 install requests delft==0.2.6
 # link the data directory to /data
 # the current working directory will most likely be /opt/grobid
-##RUN mkdir -p /data \
-##    && ln -s /data /opt/grobid/data \
-##    && ln -s /data ./data
+RUN mkdir -p /data \
+    && ln -s /data /opt/grobid/data \
+    && ln -s /data ./data
 
 # install DeLFT by cloning the repo - only for dev time!
 #RUN git clone https://github.com/kermitt2/delft
 #WORKDIR /opt/delft
 #RUN pip3 install -r requirements.txt
 # cleaning useless delft data
-#RUN rm -rf data/sequenceLabelling data/textClassification data/test data/models/sequenceLabelling data/models/textClassification .git
+RUN rm -rf data/sequenceLabelling data/textClassification data/test data/models/sequenceLabelling data/models/textClassification .git
 
 # Install requirements
 WORKDIR /opt/grobid
 COPY --from=builder /opt/grobid-source/grobid-superconductors/requirements.txt /opt/grobid/
-RUN pip --version
 RUN pip install -r requirements.txt
+RUN python -m spacy download en_core_web_sm
 
 # install linking components
 RUN mkdir -p /opt/grobid/grobid-superconductors-tools
@@ -154,10 +154,10 @@ RUN rm /opt/grobid/grobid-home/lib/lin-64/libjep.so
 # preload embeddings, for GROBID all the RNN models use glove-840B (default for the script), ELMo is currently not loaded 
 # to be done: mechanism to download GROBID fine-tuned models based on SciBERT if selected
 
-##COPY --from=builder /opt/grobid-source/grobid-home/scripts/preload_embeddings.py .
-##COPY --from=builder /opt/grobid-source/grobid-home/config/embedding-registry.json .
-##RUN python3 preload_embeddings.py
-##RUN ln -s /opt/grobid /opt/delft
+COPY --from=builder /opt/grobid-source/grobid-home/scripts/preload_embeddings.py .
+COPY --from=builder /opt/grobid-source/grobid-home/config/embedding-registry.json .
+RUN python3 preload_embeddings.py
+RUN ln -s /opt/grobid /opt/delft
 
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
