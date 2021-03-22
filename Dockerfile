@@ -114,10 +114,9 @@ RUN pip install -e /opt/grobid/grobid-superconductors-tools/materialParser
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
 
-CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.0-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
-
 
 LABEL \
     authors="Luca Foppiano with the support of NIMS (National Institute for Materials Science, Tsukuba, Japan)" \
