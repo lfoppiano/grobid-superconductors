@@ -18,7 +18,6 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String grobidHome;
     private String chemspotUrl;
     private String chemDataExtractorUrl;
-    private String grobidQuantitiesUrl;
     private String pythonVirtualEnv;
 
     // Version
@@ -50,14 +49,6 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setChemspotUrl(String chemspotUrl) {
         this.chemspotUrl = chemspotUrl;
-    }
-
-    public String getGrobidQuantitiesUrl() {
-        return grobidQuantitiesUrl;
-    }
-
-    public void setGrobidQuantitiesUrl(String grobidQuantitiesUrl) {
-        this.grobidQuantitiesUrl = grobidQuantitiesUrl;
     }
 
     public String getChemDataExtractorUrl() {
