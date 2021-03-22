@@ -45,6 +45,8 @@ public class RuleBasedLinker {
             return;
         }
         try (Interpreter interp = new SharedInterpreter()) {
+            interp.exec("import sys");
+            interp.exec("sys.argv=[]");
             interp.exec("import numpy as np");
             interp.exec("import spacy");
             interp.exec("from linking_module import RuleBasedLinker");
