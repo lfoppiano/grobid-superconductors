@@ -8,6 +8,8 @@ chemspotUrl: http://chemspot/chemspot
 chemDataExtractorUrl: http://cde/cde
 #chemDataExtractorUrl: http://localhost:8076
 
+grobidQuantitiesUrl: http://falcon.nims.go.jp/quantities
+
 pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
 pythonRedirectOutput: true
 
