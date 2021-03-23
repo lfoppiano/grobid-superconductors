@@ -114,7 +114,14 @@ RUN pip install -e /opt/grobid/grobid-superconductors-tools/materialParser
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
 
-CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+# JProfiler
+RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
+  tar -xzf /tmp/jprofiler_linux_12_0_2.tar.gz -C /usr/local &&\
+  rm /tmp/jprofiler_linux_12_0_2.tar.gz
+
+EXPOSE 8849
+
+CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
 
