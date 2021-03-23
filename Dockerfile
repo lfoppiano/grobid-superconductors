@@ -34,10 +34,7 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source
 RUN mkdir -p grobid-superconductors
-RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors && \
-    cd ./grobid-superconductors && \
-    git fetch && \
-    git checkout origin/docker-debug
+RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
 # Adjust config
 RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config.yml
 
@@ -63,7 +60,7 @@ ENV LANG C.UTF-8
 
 
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install git
+    apt-get -y --no-install-recommends install git wget
 #    apt-get -y remove python3.6 && \
 #    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata && \
 #    apt-get -y --no-install-recommends install git python3.7 python3.7-venv python3.7-dev python3.7-distutil
@@ -80,15 +77,15 @@ COPY --from=builder /opt/grobid-source/grobid-home/models/values/* ./grobid-home
 
 # Grobid superconductors
 RUN mkdir -p ./grobid-home/models/superconductors
-COPY --from=builder /opt/grobid-source/grobid-home/models/superconductors/* ./grobid-home/models/superconductors
+COPY --from=builder /opt/grobid-source/grobid-home/models/superconductors/* ./grobid-home/models/superconductors/
 RUN mkdir -p ./grobid-home/models/material
-COPY --from=builder /opt/grobid-source/grobid-home/models/material/* ./grobid-home/models/material
+COPY --from=builder /opt/grobid-source/grobid-home/models/material/* ./grobid-home/models/material/
 RUN mkdir -p ./grobid-home/models/entityLinker-material-tc
-COPY --from=builder /opt/grobid-source/grobid-home/models/entityLinker-material-tc/* ./grobid-home/models/entityLinker-material-tc
+COPY --from=builder /opt/grobid-source/grobid-home/models/entityLinker-material-tc/* ./grobid-home/models/entityLinker-material-tc/
 
 RUN mkdir -p /opt/grobid/grobid-superconductors
-COPY --from=builder /opt/grobid-source/grobid-superconductors/build/libs/* ./grobid-superconductors
-COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/config.yml ./grobid-superconductors
+COPY --from=builder /opt/grobid-source/grobid-superconductors/build/libs/* ./grobid-superconductors/
+COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/config.yml ./grobid-superconductors/
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
@@ -121,7 +118,7 @@ RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_
 
 EXPOSE 8849
 
-CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "server", "grobid-superconductors/config.yml"]
+CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
 
