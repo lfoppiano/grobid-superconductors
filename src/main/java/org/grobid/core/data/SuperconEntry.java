@@ -13,7 +13,7 @@ public class SuperconEntry implements Cloneable {
 
     //"Raw material","Name","Formula","Doping","Shape","Class","Fabrication",
     // "Substrate","Critical temperature","Applied pressure","Link type",
-    // "Section","Subsection","Sentence","path","filename"
+    // "Section","Subsection","Sentence", "type", "path","filename"
 
     private String rawMaterial;
     private String name;
@@ -32,6 +32,7 @@ public class SuperconEntry implements Cloneable {
     private String path;
     private String filename;
     private String hash;
+    private String type;
     private Date timestamp;
 
     public String getRawMaterial() {
@@ -214,7 +215,16 @@ public class SuperconEntry implements Cloneable {
         outList.add(getSection());
         outList.add(getSubsection());
         outList.add(getSentence());
+        outList.add(getType());
 
         return outList;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
