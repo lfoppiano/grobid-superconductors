@@ -11,10 +11,12 @@
 | [removed_irrelevant_papers](210219-baseline+removed_irrelevant_documents) | removed documents having less than 3 entities per paragraph | 77.1   |     72.9 |        74.93| 
 | [extended context + remove irrelevant papers](210216-removed_irrelevant_papers+extended_context) | - | 75.84   |     71.79 |       73.75| 
 | [baseline+batch7](210323-baseline+batch7) | baseline + batch 7 (167 papers) | 77.83   |     73.95 |       75.83 |
-| [baseline+batch7+batch8](210323-baseline+batch7+batch8) | baseline + batch 7 + batch 8 (172 papers) | TBD | TBD | TBD |
+| [baseline+batch7+batch8](210323-baseline+batch7+batch8) | baseline + batch 7 + batch 8 (172 papers) | 77.86   |     73.83   |     75.78 |
 
 
 ## Feature / no-features comparison
+
+Uniqueness = nb of unique entities / total number of entities 
 
 |       | Precision |             | Recall   |              | F1       |              |          |
 |-------|-----------|-------------|----------|--------------|----------|--------------|----------|
@@ -26,5 +28,5 @@
 | 5     | 71.62 | 71.02 | 67.02 | 63.84 | 69.12 | 67.43 | 49.12 |
 | 6     | 79.17 | 78.71 | 75    | 70.65 | 76.97 | 74.41 | 43.98 |
 | 7     | 80.66 | 80.61 | 76.69 | 75.3  | 78.64 | 77.81 | 42.85 |
-| 8     | 0 | 0 | 0 |0 | 0 | 0 | 44.77 | 
+| 8     | 72.72 | 71.95 | 64.42 | 60.19 | 68.09 | 65.26 | 44.77 | 
 
