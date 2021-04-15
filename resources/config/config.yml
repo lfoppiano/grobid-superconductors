@@ -4,11 +4,10 @@ corsAllowedOrigins: "*"
 corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
 corsAllowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
 
-chemspotUrl: http://chemspot/chemspot
-chemDataExtractorUrl: http://cde/cde
-#chemDataExtractorUrl: http://localhost:8076
+chemspotUrl: ${CHEMSPOT_URL:- http://chemspot}
+chemDataExtractorUrl: ${CDE_URL:- http://cde}
 
-grobidQuantitiesUrl: http://falcon.nims.go.jp/quantities
+grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities}
 
 pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
 pythonRedirectOutput: true
