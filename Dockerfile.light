@@ -140,7 +140,7 @@ RUN rm /opt/grobid/grobid-home/lib/lin-64/libjep.so
 
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
-RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- cde}/g' grobid-superconductors/config.yml
+RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde}/g' grobid-superconductors/config.yml
 
 EXPOSE 8849 8072 8073
 

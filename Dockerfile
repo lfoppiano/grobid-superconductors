@@ -110,7 +110,7 @@ RUN pip install -e /opt/grobid/grobid-superconductors-tools/materialParser
 #RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
-RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http://cde}/g' grobid-superconductors/config.yml
+RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde}/g' grobid-superconductors/config.yml
 
 # JProfiler
 RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
