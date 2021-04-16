@@ -238,6 +238,11 @@ publishing {
 task copyModels(type: Copy) {
     from "${rootDir}/resources/models"
     include "**/*.wapiti"
+    include "**/config.json"
+    include "**/model_weights.hdf5"
+    include "**/preprocessor.json"
+    exclude "**/features-engineering/**"
+    exclude "**/result-logs/**"
     into "${rootDir}/../grobid-home/models/"
 }
 
