@@ -113,13 +113,15 @@ RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/co
 RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde}/g' grobid-superconductors/config.yml
 
 # JProfiler
-RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
-  tar -xzf /tmp/jprofiler_linux_12_0_2.tar.gz -C /usr/local &&\
-  rm /tmp/jprofiler_linux_12_0_2.tar.gz
+#RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
+#  tar -xzf /tmp/jprofiler_linux_12_0_2.tar.gz -C /usr/local &&\
+#  rm /tmp/jprofiler_linux_12_0_2.tar.gz
 
-EXPOSE 8849 8072 8073
+#EXPOSE 8849 8072 8073
+EXPOSE 8072 8073
 
-CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+#CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
 
