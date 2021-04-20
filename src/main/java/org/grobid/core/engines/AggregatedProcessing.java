@@ -257,7 +257,7 @@ public class AggregatedProcessing {
 
             documentResponse.setPages(pages);
         } catch (Exception e) {
-            throw new GrobidException("Cannot process pdf file: " + file.getPath(), e);
+            throw new GrobidException("Cannot process input file. ", e);
         } finally {
             IOUtilities.removeTempFile(file);
         }
@@ -475,6 +475,98 @@ public class AggregatedProcessing {
 
         List<Span> newSortedEntitiers = (List<Span>) CollectionUtils.removeAll(sortedEntities, toBeRemoved);
         return newSortedEntitiers;
+    }
+
+
+    public static List<SuperconEntry> extractEntities(List<TextPassage> paragraphs) {
+        Map<String, Span> spansById = new HashMap<>();
+        Map<String, String> sentenceById = new HashMap<>();
+        Map<String, Pair<String, String>> sectionsById = new HashMap<>();
+        for (TextPassage paragraph : paragraphs) {
+            for (Span span : paragraph.getSpans()) {
+                spansById.put(span.getId(), span);
+                sentenceById.put(span.getId(), paragraph.getText());
+                sectionsById.put(span.getId(), Pair.of(paragraph.getSection(), paragraph.getSubSection()));
+            }
+        }
+        // Materials
+        List<Span> materials = spansById.values().stream()
+            .filter(span -> span.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
+            .collect(Collectors.toList());
+
+        List<SuperconEntry> outputCSV = new ArrayList<>();
+
+        for (Span m : materials) {
+            SuperconEntry dbEntry = new SuperconEntry();
+            dbEntry.setRawMaterial(m.getText());
+            dbEntry.setSection(sectionsById.get(m.getId()).getLeft());
+            dbEntry.setSubsection(sectionsById.get(m.getId()).getRight());
+            dbEntry.setSentence(sentenceById.get(m.getId()));
+
+            for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
+                String[] splits = a.getKey().split("_");
+                String prefix = splits[0];
+                String propertyName = splits[1];
+                String value = a.getValue();
+
+                if (propertyName.equals("formula")) {
+                    dbEntry.setFormula(value);
+                } else if (propertyName.equals("name")) {
+                    dbEntry.setName(value);
+                } else if (propertyName.equals("clazz")) {
+                    dbEntry.setClassification(value);
+                } else if (propertyName.equals("shape")) {
+                    dbEntry.setShape(value);
+                } else if (propertyName.equals("doping")) {
+                    dbEntry.setDoping(value);
+                } else if (propertyName.equals("fabrication")) {
+                    dbEntry.setFabrication(value);
+                } else if (propertyName.equals("substrate")) {
+                    dbEntry.setSubstrate(value);
+                }
+            }
+
+            Map<String, String> linkedToMaterial = m.getLinks().stream()
+                .map(l -> Pair.of(l.getTargetId(), l.getType()))
+                .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
+
+            if (isNotEmpty(linkedToMaterial.entrySet())) {
+                for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
+                    Span tcValue = spansById.get(entry.getKey());
+                    dbEntry.setCriticalTemperature(tcValue.getText());
+                    List<Span> pressures = tcValue.getLinks().stream()
+                        .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
+                        .map(l -> spansById.get(l.getTargetId()))
+                        .collect(Collectors.toList());
+
+                    if (isNotEmpty(pressures)) {
+                        boolean first = true;
+                        for (Span pressure : pressures) {
+                            if (first) {
+                                dbEntry.setAppliedPressure(pressure.getText());
+                                outputCSV.add(dbEntry);
+                                first = false;
+                            } else {
+                                try {
+                                    SuperconEntry newEntry = dbEntry.clone();
+                                    newEntry.setAppliedPressure(pressure.getText());
+                                    newEntry.setLinkType(entry.getValue());
+                                } catch (CloneNotSupportedException e) {
+                                    LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        outputCSV.add(dbEntry);
+                    }
+
+                }
+            } else {
+                outputCSV.add(dbEntry);
+            }
+        }
+        return outputCSV;
     }
 
     public static List<SuperconEntry> computeTabularData(List<TextPassage> paragraphs) {

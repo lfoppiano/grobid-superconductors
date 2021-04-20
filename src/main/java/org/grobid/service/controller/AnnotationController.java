@@ -1,6 +1,5 @@
 package org.grobid.service.controller;
 
-import com.sun.istack.NotNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -14,10 +13,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,15 +83,21 @@ public class AnnotationController {
     @Produces("text/csv")
     @POST
     public Optional<String> processPdfSuperconductorsCSV(@FormDataParam("input") InputStream uploadedInputStream,
-                                               @FormDataParam("input") FormDataContentDisposition fileDetail,
-                                               @FormDataParam("disableLinking") boolean disableLinking) {
+                                                         @FormDataParam("input") FormDataContentDisposition fileDetail,
+                                                         @FormDataParam("disableLinking") boolean disableLinking,
+                                                         @FormDataParam("extractAllEntities") boolean extractAllEntities) {
         long start = System.currentTimeMillis();
         DocumentResponse documentResponse = processPdfSuperconductors(uploadedInputStream, fileDetail, disableLinking);
         long end = System.currentTimeMillis();
 
         documentResponse.setRuntime(end - start);
+        String csvOutput = "";
+        if (!extractAllEntities) {
+            csvOutput = documentResponse.toCsv();
+        } else {
+            csvOutput = documentResponse.toCsvAll();
+        }
 
-        String csvOutput = documentResponse.toCsv();
         if (StringUtils.isBlank(csvOutput) || csvOutput.split("\n").length == 1) {
             return Optional.empty();
         }
@@ -104,9 +109,14 @@ public class AnnotationController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Optional<List<SuperconEntry>> processJsonToCSV(@FormDataParam("input") DocumentResponse jsonResponse) {
-
-        List<SuperconEntry> superconEntries = AggregatedProcessing.computeTabularData(jsonResponse.getParagraphs());
+    public Optional<List<SuperconEntry>> processJsonToTabular(@FormDataParam("input") DocumentResponse jsonResponse,
+                                                                @FormDataParam("outputAll") Boolean outputEverything) {
+        List<SuperconEntry> superconEntries = new ArrayList<>();
+        if (!outputEverything) {
+            superconEntries = AggregatedProcessing.computeTabularData(jsonResponse.getParagraphs());
+        } else {
+            superconEntries = AggregatedProcessing.extractEntities(jsonResponse.getParagraphs());
+        }
 
         if (CollectionUtils.isEmpty(superconEntries)) {
             return Optional.empty();
