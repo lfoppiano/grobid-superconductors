@@ -238,7 +238,7 @@ public class AggregatedProcessing {
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
-            GrobidPDFEngine.processDocument(doc, (documentBlock) -> {
+            BiblioInfo biblioInfo = GrobidPDFEngine.processDocument(doc, (documentBlock) -> {
                 List<LayoutToken> cleanedLayoutTokens = documentBlock.getLayoutTokens().stream()
                     .map(l -> {
                         LayoutToken newOne = new LayoutToken(l);
@@ -256,6 +256,7 @@ public class AggregatedProcessing {
             List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
 
             documentResponse.setPages(pages);
+            documentResponse.setBiblio(biblioInfo);
         } catch (Exception e) {
             throw new GrobidException("Cannot process input file. ", e);
         } finally {

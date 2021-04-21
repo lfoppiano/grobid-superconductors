@@ -31,6 +31,8 @@ public class DocumentResponse {
 
     private long runtime;
 
+    private BiblioInfo biblio;
+
     private List<TextPassage> paragraphs;
 
     private List<Page> pages;
@@ -56,8 +58,6 @@ public class DocumentResponse {
     }
 
     public void addParagraph(TextPassage paragraph) {
-        //TODO: remove tokens will break supercuration....
-//        paragraph.setTokens(null);
         this.paragraphs.add(paragraph);
     }
 
@@ -131,5 +131,13 @@ public class DocumentResponse {
             LOGGER.error("Some serious error when deserialize the JSON object: \n" + inputLine, e);
         }
         return null;
+    }
+
+    public BiblioInfo getBiblio() {
+        return biblio;
+    }
+
+    public void setBiblio(BiblioInfo biblio) {
+        this.biblio = biblio;
     }
 }

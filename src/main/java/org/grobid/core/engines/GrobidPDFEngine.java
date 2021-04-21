@@ -5,11 +5,13 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
+import org.grobid.core.data.BiblioInfo;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Figure;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
+import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
@@ -28,6 +30,7 @@ import java.util.stream.IntStream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class GrobidPDFEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrobidPDFEngine.class);
@@ -49,60 +52,76 @@ public class GrobidPDFEngine {
      * segment of interest (e.g. header, body, annex) and possibly apply
      * the corresponding model to further filter by structure types
      */
-    public static void processDocument(Document doc, Consumer<DocumentBlock> closure) {
+    public static BiblioInfo processDocument(Document doc, Consumer<DocumentBlock> closure) {
         EngineParsers parsers = new EngineParsers();
 
         List<DocumentBlock> documentBlocks = new ArrayList<>();
+        BiblioInfo biblioInfo = new BiblioInfo();
 
         // from the header, we are interested in title, abstract and keywords
-        SortedSet<DocumentPiece> documentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
-        if (documentParts != null) {
-            Pair<String, List<LayoutToken>> headerStruct = parsers.getHeaderParser().getSectionHeaderFeatured(doc, documentParts);
-            List<LayoutToken> tokenizationHeader = headerStruct.getRight();
-            String header = headerStruct.getLeft();
-            String labeledResult = null;
-            if ((header != null) && (header.trim().length() > 0)) {
-                labeledResult = parsers.getHeaderParser().label(header);
+        SortedSet<DocumentPiece> headerDocumentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
+        if (headerDocumentParts != null) {
+            BiblioItem resHeader = new BiblioItem();
+            //TODO: check if to use consolidation or not
+            GrobidAnalysisConfig config = GrobidAnalysisConfig.builder().consolidateHeader(1).build();
+            parsers.getHeaderParser().processingHeaderSection(config, doc, resHeader, false);
 
-                BiblioItem resHeader = new BiblioItem();
-                //parsers.getHeaderParser().processingHeaderSection(false, doc, resHeader);
-                resHeader.generalResultMapping(doc, labeledResult, tokenizationHeader);
+            // title
+            List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
+            if (isNotEmpty(titleTokens)) {
+                documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
+                    DocumentBlock.SUB_SECTION_TITLE,
+                    normaliseAndCleanup(titleTokens)));
+                biblioInfo.setTitle(resHeader.getTitle());
+            }
 
-                // title
-                List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
-                if (isNotEmpty(titleTokens)) {
-                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
-                        DocumentBlock.SUB_SECTION_TITLE,
-                        normaliseAndCleanup(titleTokens)));
-                }
-
-                // abstract
-                List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
-                if (isNotEmpty(abstractTokens)) {
-                    abstractTokens = BiblioItem.cleanAbstractLayoutTokens(abstractTokens);
-                    Pair<String, List<LayoutToken>> abstractTokenPostProcessed = parsers.getFullTextParser().processShort(abstractTokens, doc);
-                    List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
+            // abstract
+            List<LayoutToken> abstractTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_ABSTRACT);
+            if (isNotEmpty(abstractTokens)) {
+                abstractTokens = BiblioItem.cleanAbstractLayoutTokens(abstractTokens);
+                Pair<String, List<LayoutToken>> abstractTokenPostProcessed = parsers.getFullTextParser().processShort(abstractTokens, doc);
+                List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
 //                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
 
-                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
-                        DocumentBlock.SUB_SECTION_ABSTRACT, normaliseAndCleanup(restructuredLayoutTokens)));
-                }
+                documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
+                    DocumentBlock.SUB_SECTION_ABSTRACT, normaliseAndCleanup(restructuredLayoutTokens)));
+            }
 
-                // keywords
-                List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
-                if (isNotEmpty(keywordTokens)) {
-                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
-                        DocumentBlock.SUB_SECTION_KEYWORDS, normaliseAndCleanup(keywordTokens)));
+            // keywords
+            List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
+            if (isNotEmpty(keywordTokens)) {
+                documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
+                    DocumentBlock.SUB_SECTION_KEYWORDS, normaliseAndCleanup(keywordTokens)));
 
+            }
+
+            // Other bibliographic data
+            if (isNotBlank(resHeader.getAuthors())) {
+                biblioInfo.setAuthors(resHeader.getAuthors());
+            }
+            if (isNotBlank(resHeader.getDOI())) {
+                biblioInfo.setDoi(resHeader.getDOI());
+            }
+            if (resHeader.getNormalizedPublicationDate() != null) {
+                if (resHeader.getNormalizedPublicationDate().getYear() > 0) {
+                    biblioInfo.setYear(String.valueOf(resHeader.getNormalizedPublicationDate().getYear()));
                 }
             }
+            if (isNotBlank(resHeader.getPublisher())) {
+                biblioInfo.setPublisher(resHeader.getPublisher());
+            }
+            if (isNotBlank(resHeader.getJournal())) {
+                biblioInfo.setJournal(resHeader.getJournal());
+            }
+
         }
+
 
         // we can process all the body, in the future figure and table could be the
         // object of more refined processing
-        documentParts = doc.getDocumentPart(SegmentationLabels.BODY);
-        if (documentParts != null) {
-            Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, documentParts);
+        headerDocumentParts = doc.getDocumentPart(SegmentationLabels.BODY);
+        if (headerDocumentParts != null) {
+            Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, headerDocumentParts);
 
             String fulltextTaggedRawResult = null;
             if (featSeg != null) {
@@ -220,10 +239,10 @@ public class GrobidPDFEngine {
             // acknowledgement?
 
             // we can process annexes
-            documentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
-            if (documentParts != null) {
+            headerDocumentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
+            if (headerDocumentParts != null) {
 
-                List<LayoutToken> tokens = Document.getTokenizationParts(documentParts, doc.getTokenizations());
+                List<LayoutToken> tokens = Document.getTokenizationParts(headerDocumentParts, doc.getTokenizations());
                 Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShort(tokens, doc);
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
@@ -237,6 +256,8 @@ public class GrobidPDFEngine {
             IntStream.range(0, documentBlocks.size())
                 .forEach(i -> closure.accept(documentBlocks.get(i)));
         }
+
+        return biblioInfo;
     }
 
     protected static String getPlainLabelName(String label) {
