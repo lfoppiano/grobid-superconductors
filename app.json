@@ -1,0 +1,14 @@
+{
+  "name": "grobid-superconductors",
+  "description": "Open source machine-learning based for extracting superconductors related information and properties.",
+  "keywords": ["Text mining", "Machine Learning", "Materials informatics", "Superconductors"],
+  "website": "https://grobid-superconductors.herokuapps.com/",
+  "repository": "https://github.com/lfoppiano/grobid-superconductors",
+  "success_url": "/",
+  "env": {
+    "ADMIN_CONTACT_EMAIL": {
+      "description": "The contact email address for the admin account."
+    }
+  },
+  "stack": "container"
+}

@@ -1,0 +1,12 @@
+version: "2"
+services:
+  cde:
+    image: lfoppiano/chemdataextractor-api:0.0.1
+    restart: always
+    ports:
+      - 80:8080
+  grobid:
+    image: lfoppiano/grobid-superconductors:0.2.1-SNAPSHOT
+    restart: always
+    ports:
+      - 8099:8072

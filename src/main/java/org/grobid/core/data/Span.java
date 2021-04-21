@@ -44,7 +44,6 @@ public class Span {
     /**
      * These are internal objects that should not be serialised to JSON
      **/
-    //@JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
     @JsonIgnore
