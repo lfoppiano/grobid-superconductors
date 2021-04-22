@@ -20,6 +20,7 @@ import org.grobid.core.layout.LayoutTokenization;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
+import org.grobid.core.utilities.LayoutTokensUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,12 +93,14 @@ public class GrobidPDFEngine {
             if (isNotEmpty(keywordTokens)) {
                 documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
                     DocumentBlock.SUB_SECTION_KEYWORDS, normaliseAndCleanup(keywordTokens)));
-
             }
 
             // Other bibliographic data
             if (isNotBlank(resHeader.getAuthors())) {
-                biblioInfo.setAuthors(resHeader.getAuthors());
+                String authors = resHeader.getFullAuthors().stream()
+                    .map(a -> StringUtils.strip(LayoutTokensUtil.toText(a.getLayoutTokens())))
+                    .collect(Collectors.joining(", "));
+                biblioInfo.setAuthors(authors);
             }
             if (isNotBlank(resHeader.getDOI())) {
                 biblioInfo.setDoi(resHeader.getDOI());
