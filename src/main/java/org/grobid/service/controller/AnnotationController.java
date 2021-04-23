@@ -110,7 +110,7 @@ public class AnnotationController {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public Optional<List<SuperconEntry>> processJsonToTabular(@FormDataParam("input") DocumentResponse jsonResponse,
-                                                                @FormDataParam("outputAll") Boolean outputEverything) {
+                                                                @FormDataParam("outputAll") boolean outputEverything) {
         List<SuperconEntry> superconEntries = new ArrayList<>();
         if (!outputEverything) {
             superconEntries = AggregatedProcessing.computeTabularData(jsonResponse.getParagraphs());
