@@ -89,6 +89,9 @@ public class RuleBasedLinker {
             interp.exec("ruleBasedLinker_material_tc = RuleBasedLinker()");
             interp.exec("marked_temperatures = ruleBasedLinker_material_tc.mark_temperatures_paragraph_json(paragraph)");
             String markedTemperatures_Json = interp.getValue("marked_temperatures", String.class);
+            interp.exec("del marked_temperature");
+            interp.exec("del ruleBasedLinker_material_tc");
+            interp.exec("del paragraph");
 
             try {
                 TypeReference<TextPassage> mapType = new TypeReference<TextPassage>() {

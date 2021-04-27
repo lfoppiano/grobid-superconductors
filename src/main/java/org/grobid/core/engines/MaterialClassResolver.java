@@ -87,6 +87,9 @@ public class MaterialClassResolver {
             interp.exec("classes =  MaterialParserWrapper().formula_to_classes(formula)");
             interp.exec("classes_as_string = ', '.join(list(classes.keys()))");
             String clazz = interp.getValue("classes_as_string", String.class);
+            interp.exec("del classes_as_string");
+            interp.exec("del classes");
+            interp.exec("del formula");
 
             if (StringUtils.isEmpty(clazz) && !sampling) {
                 String sample = createSample(material);
@@ -94,6 +97,9 @@ public class MaterialClassResolver {
                 interp.exec("classes =  MaterialParserWrapper().formula_to_classes(formula)");
                 interp.exec("classes_as_string = ', '.join(list(classes.keys()))");
                 clazz = interp.getValue("classes_as_string", String.class);
+                interp.exec("del classes_as_string");
+                interp.exec("del classes");
+                interp.exec("del formula");
             }
 
             material.setClazz(clazz);
