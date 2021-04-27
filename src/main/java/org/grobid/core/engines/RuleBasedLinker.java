@@ -3,9 +3,7 @@ package org.grobid.core.engines;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Singleton;
-import jep.Interpreter;
-import jep.JepException;
-import jep.SharedInterpreter;
+import jep.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.grobid.core.data.Link;
 import org.grobid.core.data.TextPassage;
@@ -83,7 +81,10 @@ public class RuleBasedLinker {
         }
         String jsonTarget = jsonWriter.toString();
 
-        try (Interpreter interp = new SharedInterpreter()) {
+        JepConfig config = new JepConfig();
+        config.setRedirectOutputStreams(configuration.isPythonRedirectOutput());
+
+        try (Interpreter interp = new SubInterpreter(config)) {
             interp.exec("from linking_module import RuleBasedLinker");
             interp.set("paragraph", jsonTarget);
             interp.exec("ruleBasedLinker_material_tc = RuleBasedLinker()");
@@ -153,16 +154,24 @@ public class RuleBasedLinker {
         }
         String jsonTarget = jsonWriter.toString();
 
-        try (Interpreter interp = new SharedInterpreter()) {
+        JepConfig config = new JepConfig();
+        config.setRedirectOutputStreams(configuration.isPythonRedirectOutput());
+        try (Interpreter interp = new SubInterpreter(config)) {
             interp.exec("from linking_module import RuleBasedLinker");
             interp.set("paragraph", jsonTarget);
             interp.exec("ruleBasedLinker_material_tc = RuleBasedLinker()");
             interp.exec("extracted_links_materialTc = ruleBasedLinker_material_tc.process_paragraph_json(paragraph)");
             String extracted_links_materialTc_Json = interp.getValue("extracted_links_materialTc", String.class);
+            interp.exec("del ruleBasedLinker_material_tc");
+            interp.exec("del extracted_links_materialTc");
 
             interp.exec("ruleBasedLinker_tc_pressure = RuleBasedLinker(source='<pressure>', destination='<tcValue>')");
             interp.exec("extracted_links_tcPressure = ruleBasedLinker_tc_pressure.process_paragraph_json(paragraph)");
             String extracted_links_tcPressure_Json = interp.getValue("extracted_links_tcPressure", String.class);
+            interp.exec("del ruleBasedLinker_tc_pressure");
+            interp.exec("del extracted_links_tcPressure");
+
+            interp.exec("del paragraph");
 
             try {
                 TypeReference<List<TextPassage>> mapType = new TypeReference<List<TextPassage>>() {
@@ -171,13 +180,11 @@ public class RuleBasedLinker {
 
                 // put the bounding boxes back where they were
                 processedMaterialTc.stream()
-                    .forEach(p -> {
-                        p.getSpans().stream()
-                            .forEach(s -> {
-                                s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-                                s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
-                            });
-                    });
+                    .forEach(p -> p.getSpans().stream()
+                        .forEach(s -> {
+                            s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                            s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                        }));
 
                 List<TextPassage> processedTcPressure = oMapper.readValue(extracted_links_tcPressure_Json, mapType);
 
@@ -185,14 +192,12 @@ public class RuleBasedLinker {
                 Map<String, Span> spans = new HashMap<>();
 
                 processedTcPressure.stream()
-                    .forEach(p -> {
-                        p.getSpans().stream()
-                            .forEach(s -> {
-                                s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-                                s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
-                                spans.put(s.getId(), s);
-                            });
-                    });
+                    .forEach(p -> p.getSpans().stream()
+                        .forEach(s -> {
+                            s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                            s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                            spans.put(s.getId(), s);
+                        }));
 
                 processedMaterialTc.stream().forEach(p -> {
                     p.setSection(paragraph.getSection());

@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import jep.Interpreter;
 import jep.JepException;
 import jep.SharedInterpreter;
+import jep.SubInterpreter;
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.data.Material;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -79,7 +80,7 @@ public class MaterialClassResolver {
             return material;
         }
 
-        try (Interpreter interp = new SharedInterpreter()) {
+        try (Interpreter interp = new SubInterpreter()) {
             interp.exec("from materialParserWrapper import MaterialParserWrapper");
 
             interp.set("formula", sampleFormula);
