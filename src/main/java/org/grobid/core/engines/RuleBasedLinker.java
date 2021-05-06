@@ -78,9 +78,10 @@ public class RuleBasedLinker {
         //Take out the bounding boxes
         Map<String, List<BoundingBox>> backupBoundingBoxes = new HashMap<>();
         paragraph.getSpans().forEach(s -> {
-            backupBoundingBoxes.put(String.valueOf(s.getId()), s.getBoundingBoxes());
-            s.setBoundingBoxes(new ArrayList<>());
-        });
+                backupBoundingBoxes.put(String.valueOf(s.getId()), s.getBoundingBoxes());
+                s.setBoundingBoxes(new ArrayList<>());
+            }
+        );
 
         //Take out the attributes
         Map<String, Map<String, String>> backupAttributes = new HashMap<>();
@@ -93,9 +94,11 @@ public class RuleBasedLinker {
         textPassages.stream()
             .forEach(p -> p.getSpans().stream()
                 .forEach(s -> {
-                    s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-                    s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
-                }));
+                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                        s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                    }
+                )
+            );
 
 
 //            Map<String, Span> spans = new HashMap<>();

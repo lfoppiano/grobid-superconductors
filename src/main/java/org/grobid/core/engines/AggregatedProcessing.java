@@ -312,7 +312,7 @@ public class AggregatedProcessing {
 
         textPassage.setSpans(pruneOverlappingAnnotations(sortedSpans));
 
-        if (disableLinking) {
+        if (disableLinking || CollectionUtils.size(textPassage.getSpans()) <= 1) {
             return Collections.singletonList(textPassage);
         }
 
