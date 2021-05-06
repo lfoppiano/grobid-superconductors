@@ -320,7 +320,7 @@ public class AggregatedProcessing {
 
         // Set the materials to be linkable
         for (Span s : textPassage.getSpans()) {
-            if (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL)) {
+            if (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL) || s.getType().equals(SUPERCONDUCTORS_PRESSURE_LABEL)) {
                 s.setLinkable(true);
             }
         }

@@ -20,6 +20,8 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String chemDataExtractorUrl;
     private String grobidQuantitiesUrl;
     private String pythonVirtualEnv;
+    private String linkingModuleUrl;
+    private String classResolverUrl;
 
     // Version
     private static String VERSION = null;
@@ -124,5 +126,21 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setCorsAllowedHeaders(String corsAllowedHeaders) {
         this.corsAllowedHeaders = corsAllowedHeaders;
+    }
+
+    public String getLinkingModuleUrl() {
+        return linkingModuleUrl;
+    }
+
+    public void setLinkingModuleUrl(String linkingModuleUrl) {
+        this.linkingModuleUrl = linkingModuleUrl;
+    }
+
+    public String getClassResolverUrl() {
+        return classResolverUrl;
+    }
+
+    public void setClassResolverUrl(String classResolverUrl) {
+        this.classResolverUrl = classResolverUrl;
     }
 }

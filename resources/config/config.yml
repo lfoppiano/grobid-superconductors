@@ -8,9 +8,17 @@ chemspotUrl: ${CHEMSPOT_URL:- http://chemspot}
 chemDataExtractorUrl: ${CDE_URL:- http://cde}
 
 grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities}
+linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module}
+#linkingModuleUrl: http://localhost:8080
+classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver}
+#classResolverUrl: http://localhost:8080
 
 pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
 pythonRedirectOutput: true
+
+#consolidation:
+#  service: "glutton"
+#  consolidationHost: http://falcon.nims.go.jp/glutton
 
 server:
   type: custom
@@ -18,13 +26,16 @@ server:
   applicationConnectors:
     - type: http
       port: 8072
+      acceptorThreads: 8
+      selectorThreads: 8
   adminConnectors:
     - type: http
       port: 8073
   registerDefaultExceptionMappers: false
-  maxThreads: 10
+  maxThreads: 128
+  minThreads: 1
   maxQueuedRequests: 512
-  acceptQueueSize: 2024
+  acceptQueueSize: 2048
 
 logging:
   level: DEBUG
