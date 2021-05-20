@@ -10,6 +10,7 @@ import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.eclipse.jetty.servlets.QoSFilter;
 import org.grobid.service.command.*;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
@@ -71,6 +72,12 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         // Add URL mapping
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
+        // Enable QoS filter
+        final FilterRegistration.Dynamic qos = environment.servlets().addFilter("QOS", QoSFilter.class);
+        qos.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+//        final FilterRegistration.Dynamic ddos =environment.servlets().addFilter("DDOS", DoSFilter.class);
+
+        qos.setInitParameter("maxRequests", configuration.getMaxRequests());
 
         environment.jersey().setUrlPattern(RESOURCES + "/*");
         environment.jersey().register(new EmptyOptionalNoContentExceptionMapper());

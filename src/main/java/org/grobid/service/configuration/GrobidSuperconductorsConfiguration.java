@@ -36,6 +36,9 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     @JsonProperty
     private String corsAllowedHeaders = "X-Requested-With,Content-Type,Accept,Origin";
 
+    // Max requests
+    private String maxRequests = "10";
+
     private boolean pythonRedirectOutput = false;
 
     public String getGrobidHome() {
@@ -142,5 +145,13 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setClassResolverUrl(String classResolverUrl) {
         this.classResolverUrl = classResolverUrl;
+    }
+
+    public String getMaxRequests() {
+        return maxRequests;
+    }
+
+    public void setMaxRequests(String maxRequests) {
+        this.maxRequests = maxRequests;
     }
 }

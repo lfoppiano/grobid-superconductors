@@ -16,6 +16,8 @@ classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver}
 pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
 pythonRedirectOutput: true
 
+maxRequests: 2
+
 #consolidation:
 #  service: "glutton"
 #  consolidationHost: http://falcon.nims.go.jp/glutton
@@ -26,16 +28,10 @@ server:
   applicationConnectors:
     - type: http
       port: 8072
-      acceptorThreads: 8
-      selectorThreads: 8
   adminConnectors:
     - type: http
       port: 8073
   registerDefaultExceptionMappers: false
-  maxThreads: 128
-  minThreads: 1
-  maxQueuedRequests: 512
-  acceptQueueSize: 2048
 
 logging:
   level: DEBUG
