@@ -37,7 +37,7 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String corsAllowedHeaders = "X-Requested-With,Content-Type,Accept,Origin";
 
     // Max requests
-    private String maxRequests = "10";
+    private int maxParallelRequests = 0;
 
     private boolean pythonRedirectOutput = false;
 
@@ -147,11 +147,14 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
         this.classResolverUrl = classResolverUrl;
     }
 
-    public String getMaxRequests() {
-        return maxRequests;
+    public int getMaxParallelRequests() {
+        if (this.maxParallelRequests == 0) {
+            this.maxParallelRequests = Runtime.getRuntime().availableProcessors();
+        }
+        return this.maxParallelRequests;
     }
 
-    public void setMaxRequests(String maxRequests) {
-        this.maxRequests = maxRequests;
+    public void setMaxParallelRequests(int maxParallelRequests) {
+        this.maxParallelRequests = maxParallelRequests;
     }
 }

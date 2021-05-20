@@ -16,7 +16,8 @@ classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver}
 pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
 pythonRedirectOutput: true
 
-maxRequests: 2
+# The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
+maxParallelRequests: 0
 
 #consolidation:
 #  service: "glutton"

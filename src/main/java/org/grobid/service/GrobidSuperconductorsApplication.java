@@ -77,7 +77,7 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         qos.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 //        final FilterRegistration.Dynamic ddos =environment.servlets().addFilter("DDOS", DoSFilter.class);
 
-        qos.setInitParameter("maxRequests", configuration.getMaxRequests());
+        qos.setInitParameter("maxRequests", String.valueOf(configuration.getMaxParallelRequests()));
 
         environment.jersey().setUrlPattern(RESOURCES + "/*");
         environment.jersey().register(new EmptyOptionalNoContentExceptionMapper());
