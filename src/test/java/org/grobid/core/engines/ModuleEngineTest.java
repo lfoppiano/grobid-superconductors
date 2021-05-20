@@ -150,7 +150,7 @@ public class ModuleEngineTest {
         assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
     }
 
-    @Test
+    // Probably not needed
     public void testComputeTabularData() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("example_extracted_document.json");
 
