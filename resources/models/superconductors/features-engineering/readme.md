@@ -15,7 +15,7 @@
 | [baseline+batch7+batch8](210323-baseline+batch7+batch8) | baseline + batch 7 + batch 8 (172 papers) | 77.86   |    73.83   |     75.78 |
 | [baseline+batch7+batch8 2](210409-baseline+batch7+batch8) | baseline + batch 7 + batch 8 (172 papers) | 78.14   |    74.13   |     76.07 |
 | [baseline+batch7+batch8 with corrections](210409-baseline+correction+batch7+batch8) | baseline + batch 7 + batch 8 (172 papers) | 78.91    |    74.95    |    76.87 |
-
+| [baseline+batch7+batch8 with corrections + removed CDE and fonts](210426-baseline+correction+batch7+batch8-cde_and_fonts_features) | baseline + batch 7 + batch 8 (172 papers) | 78.68    |    74.65   |     76.6 |
 
 ## Feature / no-features comparison
 
