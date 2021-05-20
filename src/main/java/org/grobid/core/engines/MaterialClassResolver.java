@@ -1,7 +1,6 @@
 package org.grobid.core.engines;
 
 import com.google.inject.Singleton;
-import edu.emory.mathcs.nlp.common.util.Joiner;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.data.Material;
@@ -66,7 +65,7 @@ public class MaterialClassResolver {
             classes = client.getClassesFromFormula(sample);
         }
 
-        String classesAsString = Joiner.join(classes, ", ");
+        String classesAsString = String.join(", ", classes);
         material.setClazz(classesAsString);
 
         return material;

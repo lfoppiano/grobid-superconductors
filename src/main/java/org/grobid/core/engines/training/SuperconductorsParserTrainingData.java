@@ -5,7 +5,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Measurement;
@@ -159,7 +158,7 @@ public class SuperconductorsParserTrainingData {
                 .collect(Collectors.toList());
             entityList.addAll(pressuresAsSpan);
 
-            List<Span> sortedEntities = AggregatedProcessing.pruneOverlappingAnnotations(entityList);
+            List<Span> sortedEntities = ModuleEngine.pruneOverlappingAnnotations(entityList);
 
             DocumentBlock newDocumentBlock = new DocumentBlock(documentBlock);
             newDocumentBlock.setLayoutTokens(normalisedLayoutTokens);

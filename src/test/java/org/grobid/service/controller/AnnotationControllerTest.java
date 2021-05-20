@@ -4,8 +4,6 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.grobid.core.engines.AggregatedProcessing;
-import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.ClassRule;
 import org.junit.Test;
 

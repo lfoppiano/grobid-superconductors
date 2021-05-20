@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
-import static org.grobid.core.engines.AggregatedProcessing.getFormattedString;
+import static org.grobid.core.engines.ModuleEngine.getFormattedString;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 @Singleton
