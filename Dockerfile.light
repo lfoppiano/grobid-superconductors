@@ -140,9 +140,9 @@ RUN rm /opt/grobid/grobid-home/lib/lin-64/libjep.so
 
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
-RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde}/g' grobid-superconductors/config.yml
-RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module}/g' grobid-superconductors/config.yml
-RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${CLASS_RESOLVER_URL:- http:\/\/class_resolver}/g' grobid-superconductors/config.yml
+RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde.local:8080}/g' grobid-superconductors/config.yml
+RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
+RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 
 EXPOSE 8849 8072 8073
 

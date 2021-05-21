@@ -4,14 +4,15 @@ corsAllowedOrigins: "*"
 corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
 corsAllowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
 
-chemspotUrl: ${CHEMSPOT_URL:- http://chemspot}
-chemDataExtractorUrl: ${CDE_URL:- http://cde}
+chemspotUrl: ${CHEMSPOT_URL:- http://chemspot.local}
+#chemDataExtractorUrl: http://falcon.nims.go.jp/cde
+chemDataExtractorUrl: ${CDE_URL:- http://cde.local:8080}
 
-grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities}
-linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module}
-#linkingModuleUrl: http://localhost:8080
-classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver}
-#classResolverUrl: http://localhost:8080
+grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities.local:8080}
+linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module.local:8080}
+#linkingModuleUrl: http://localhost:8090
+classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver.local:8080}
+#classResolverUrl: http://localhost:8090
 
 pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
 pythonRedirectOutput: true

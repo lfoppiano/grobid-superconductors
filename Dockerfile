@@ -34,7 +34,7 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source
 RUN mkdir -p grobid-superconductors
-RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
+RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors && cd  grobid-superconductors && git checkout feature/replace-jep-with-micro-service
 # Adjust config
 RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config.yml
 
@@ -110,7 +110,9 @@ RUN pip install -e /opt/grobid/grobid-superconductors-tools/materialParser
 #RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
-RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde}/g' grobid-superconductors/config.yml
+RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde.local:8080}/g' grobid-superconductors/config.yml
+RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
+RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 
 # JProfiler
 #RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
