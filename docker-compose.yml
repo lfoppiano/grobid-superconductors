@@ -4,9 +4,20 @@ services:
     image: lfoppiano/chemdataextractor-api:0.0.1
     restart: always
     ports:
-      - 80:8080
-  grobid:
+      - 8098:8080
+
+  superconductors:
     image: lfoppiano/grobid-superconductors:0.2.1-SNAPSHOT
     restart: always
     ports:
       - 8099:8072
+      - 8100:8073
+    links:
+      - "cde:cde.local"
+      - "linking_module:linking_module.local"
+
+  linking_module:
+    image: lfoppiano/linking-module:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - 8097:8080

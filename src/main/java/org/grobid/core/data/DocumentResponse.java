@@ -10,8 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
-import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
-import org.grobid.core.engines.AggregatedProcessing;
+import org.grobid.core.engines.ModuleEngine;
 import org.grobid.service.controller.AnnotationController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +77,7 @@ public class DocumentResponse {
     }
 
     public String toCsv() {
-        List<SuperconEntry> outputList = AggregatedProcessing.computeTabularData(getParagraphs());
+        List<SuperconEntry> outputList = ModuleEngine.computeTabularData(getParagraphs());
         List<List<String>> outputCSV = outputList.stream().map(SuperconEntry::toCsv).collect(Collectors.toList());
 
         StringBuilder out = new StringBuilder();
@@ -99,7 +98,7 @@ public class DocumentResponse {
 
     /** Converts all the entities to CSV **/
     public String toCsvAll() {
-        List<SuperconEntry> outputList = AggregatedProcessing.extractEntities(getParagraphs());
+        List<SuperconEntry> outputList = ModuleEngine.extractEntities(getParagraphs());
         List<List<String>> outputCSV = outputList.stream().map(SuperconEntry::toCsv).collect(Collectors.toList());
 
         StringBuilder out = new StringBuilder();
@@ -123,7 +122,7 @@ public class DocumentResponse {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<List<DocumentResponse>>() {
+            return mapper.readValue(inputLine, new TypeReference<DocumentResponse>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);

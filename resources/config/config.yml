@@ -4,13 +4,25 @@ corsAllowedOrigins: "*"
 corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
 corsAllowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
 
-chemspotUrl: ${CHEMSPOT_URL:- http://chemspot}
-chemDataExtractorUrl: ${CDE_URL:- http://cde}
+chemspotUrl: ${CHEMSPOT_URL:- http://chemspot.local}
+#chemDataExtractorUrl: http://falcon.nims.go.jp/cde
+chemDataExtractorUrl: ${CDE_URL:- http://cde.local:8080}
 
-grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities}
+grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities.local:8080}
+linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module.local:8080}
+#linkingModuleUrl: http://localhost:8090
+classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver.local:8080}
+#classResolverUrl: http://localhost:8090
 
 pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
 pythonRedirectOutput: true
+
+# The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
+maxParallelRequests: 0
+
+#consolidation:
+#  service: "glutton"
+#  consolidationHost: http://falcon.nims.go.jp/glutton
 
 server:
   type: custom
@@ -22,9 +34,6 @@ server:
     - type: http
       port: 8073
   registerDefaultExceptionMappers: false
-  maxThreads: 10
-  maxQueuedRequests: 512
-  acceptQueueSize: 2024
 
 logging:
   level: DEBUG
