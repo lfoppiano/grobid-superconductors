@@ -55,9 +55,7 @@ ENV LANG C.UTF-8
 
 # install JRE 8, python and other dependencies
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install apt-utils build-essential gcc libxml2 unzip curl \
-    git \
-    musl gfortran \
+    apt-get -y --no-install-recommends install apt-utils build-essential gcc libxml2 unzip wget git musl gfortran libfontconfig1\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -67,6 +65,7 @@ RUN mkdir -p /opt/grobid/grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-home ./grobid-home/
 COPY --from=builder /opt/grobid-source/grobid-superconductors/build/libs/* ./grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/config.yml ./grobid-superconductors
+COPY --from=builder /opt/grobid-source/grobid-superconductors/applicationinsights.json ./grobid-superconductors
 
 RUN mkdir -p /opt/grobid/grobid-home/tmp
 
@@ -97,10 +96,12 @@ RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:
 RUN sed -i 's/port: 8072/port: 8080/g' grobid-superconductors/config.yml
 RUN sed -i 's/port: 8073/port: 8081/g' grobid-superconductors/config.yml
 
+RUN wget https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.1.0/applicationinsights-agent-3.1.0.jar -P /opt/grobid/grobid-superconductors
+
 #EXPOSE 8072 8073
 EXPOSE 8080 8081
 
-CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+CMD ["java", "-javaagent:/opt/grobid/grobid-superconductors/applicationinsights-agent-3.1.0.jar", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
 
