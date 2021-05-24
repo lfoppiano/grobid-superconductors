@@ -9,6 +9,9 @@ services:
   superconductors:
     image: lfoppiano/grobid-superconductors:0.2.1-SNAPSHOT-light
     restart: always
+    volumes:
+#      - /Users/lfoppiano/development/projects/grobid/grobid-superconductors/resources/config/config.yml:/opt/grobid/grobid-superconductors/config.yml
+      - /Users/lfoppiano/development/projects/grobid/grobid-home/config/grobid.properties:/opt/grobid/grobid-home/config/grobid.properties
     ports:
       - 8072:8072
       - 8073:8073
