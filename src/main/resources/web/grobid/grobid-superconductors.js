@@ -699,6 +699,7 @@ let grobid = (function ($) {
             let url = getUrl(action.data);
             $('#gbdForm').attr('action', url);
             xhr.responseType = 'json';
+            xhr.setRequestHeader("Accept", "application/json")
             xhr.open('POST', url, true);
 
             xhr.onreadystatechange = function (e) {
