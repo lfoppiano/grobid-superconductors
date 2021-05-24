@@ -37,7 +37,6 @@ RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-s
 RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config.yml
 
 WORKDIR /opt/grobid-source/grobid-superconductors
-RUN git clone https://github.com/lfoppiano/grobid-superconductors-tools.git ./resources/web
 
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
 RUN ./gradlew copyModels --no-daemon --info --stacktrace
@@ -56,24 +55,17 @@ ENV LANG C.UTF-8
 
 # install JRE 8, python and other dependencies
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install apt-utils build-essential gcc libxml2 unzip curl \
-    git \
-    musl gfortran \
-    python3.7 python3.7-venv python3.7-dev python3.7-distutil \
+    apt-get -y --no-install-recommends install apt-utils build-essential gcc libxml2 unzip wget git musl gfortran libfontconfig1\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/grobid
 
-ENV VIRTUAL_ENV=/opt/grobid/venv
-RUN python3.7 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-RUN pip --version
-
 RUN mkdir -p /opt/grobid/grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-home ./grobid-home/
 COPY --from=builder /opt/grobid-source/grobid-superconductors/build/libs/* ./grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/config.yml ./grobid-superconductors
+COPY --from=builder /opt/grobid-source/grobid-superconductors/applicationinsights.json ./grobid-superconductors
 
 RUN mkdir -p /opt/grobid/grobid-home/tmp
 
@@ -87,27 +79,7 @@ RUN chmod 777 /opt/grobid/grobid-home/tmp
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
-RUN python3 -m pip install pip --upgrade
-
-
-# Install requirements
 WORKDIR /opt/grobid
-COPY --from=builder /opt/grobid-source/grobid-superconductors/requirements.txt /opt/grobid/
-RUN pip install -r requirements.txt
-RUN python -m spacy download en_core_web_sm
-
-# install linking components
-RUN mkdir -p /opt/grobid/grobid-superconductors-tools
-COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/web/commons /opt/grobid/grobid-superconductors-tools/commons
-RUN pip install -e /opt/grobid/grobid-superconductors-tools/commons
-COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/web/linking /opt/grobid/grobid-superconductors-tools/linking
-RUN pip install -e /opt/grobid/grobid-superconductors-tools/linking
-COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/web/materialParser /opt/grobid/grobid-superconductors-tools/materialParser
-RUN pip install git+https://github.com/lfoppiano/MaterialParser
-RUN pip install -e /opt/grobid/grobid-superconductors-tools/materialParser
-
-# disable python warnings (and fix logging)
-ENV PYTHONWARNINGS="ignore"
 
 ENV JAVA_OPTS=-Xmx4g
 
@@ -117,34 +89,10 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "-s", "--"]
 
-# install jep (and temporarily the matching JDK)
-ENV TEMP_JDK_HOME=/tmp/jdk-${JAVA_VERSION}
-ENV JDK_URL=https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-x64_linux_8u212b04.tar.gz
-RUN curl --fail --show-error --location -q ${JDK_URL} -o /tmp/openjdk.tar.gz \
-    && ls -lh /tmp/openjdk.tar.gz \
-    && mkdir - "${TEMP_JDK_HOME}" \
-    && tar --extract \
-        --file /tmp/openjdk.tar.gz \
-        --directory "${TEMP_JDK_HOME}" \
-        --strip-components 1 \
-        --no-same-owner \
-    && JAVA_HOME=${TEMP_JDK_HOME} pip3 install jep==3.9.1 \
-    && rm -f /tmp/openjdk.tar.gz \
-    && rm -rf "${TEMP_JDK_HOME}"
-ENV LD_LIBRARY_PATH=/opt/grobid/venv/lib/python3.7/dist-packages/jep:${LD_LIBRARY_PATH}
-# remove libjep.so because we are providng our own version in the virtual env
-RUN rm /opt/grobid/grobid-home/lib/lin-64/libjep.so
-
-# preload embeddings, for GROBID all the RNN models use glove-840B (default for the script), ELMo is currently not loaded
-# to be done: mechanism to download GROBID fine-tuned models based on SciBERT if selected
-
-RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
 RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde.local:8080}/g' grobid-superconductors/config.yml
 RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
-#RUN sed -i 's/port: 8072/port: 8080/g' grobid-superconductors/config.yml
-#RUN sed -i 's/port: 8073/port: 8081/g' grobid-superconductors/config.yml
 
 EXPOSE 8072 8073
 #EXPOSE 8080 8081
