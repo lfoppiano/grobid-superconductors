@@ -4,7 +4,7 @@ services:
     image: lfoppiano/chemdataextractor-api:0.0.1
     restart: always
     ports:
-      - 8098:8080
+      - 8076:8080
 
   superconductors:
     image: lfoppiano/grobid-superconductors:0.2.1-SNAPSHOT
@@ -20,4 +20,4 @@ services:
     image: lfoppiano/linking-module:0.0.1-SNAPSHOT
     restart: always
     ports:
-      - 8097:8080
+      - 8090:8080
