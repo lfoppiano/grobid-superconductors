@@ -18,6 +18,7 @@ services:
     links:
       - "cde:cde.local"
       - "linking_module:linking_module.local"
+      - "falcon.nims.go.jp:falcon.local"
 
   linking_module:
     image: lfoppiano/linking-module:0.0.1-SNAPSHOT
