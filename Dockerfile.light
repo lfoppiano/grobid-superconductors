@@ -23,10 +23,11 @@ USER root
 RUN apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git
 
-RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source
+RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source && cd /opt/grobid-source && git checkout 0.6.2
 WORKDIR /opt/grobid-source
+RUN ./gradlew clean install --no-daemon --info --stacktrace
 
-RUN git clone https://github.com/kermitt2/grobid-quantities.git /opt/grobid-source/grobid-quantities
+RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities
 WORKDIR /opt/grobid-source/grobid-quantities
 RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
@@ -38,6 +39,8 @@ RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-supe
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 
+#RUN rm localLibs/grobid-core*
+#RUN rm localLibs/grobid-trainer*
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
 RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
@@ -65,7 +68,6 @@ RUN mkdir -p /opt/grobid/grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-home ./grobid-home/
 COPY --from=builder /opt/grobid-source/grobid-superconductors/build/libs/* ./grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/config.yml ./grobid-superconductors
-COPY --from=builder /opt/grobid-source/grobid-superconductors/applicationinsights.json ./grobid-superconductors
 
 RUN mkdir -p /opt/grobid/grobid-home/tmp
 
@@ -95,8 +97,8 @@ RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:
 RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 
 EXPOSE 8072 8073
-#EXPOSE 8080 8081
 
+#CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
