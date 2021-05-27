@@ -18,7 +18,7 @@ services:
       - "falcon.nims.go.jp:falcon.local"
 
   linking_module:
-    image: lfoppiano/linking-module:0.0.1-SNAPSHOT
+    image: lfoppiano/linking-module:0.0.1
     restart: always
     ports:
       - 8090:8080
