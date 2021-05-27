@@ -4,10 +4,10 @@ services:
     image: lfoppiano/chemdataextractor-api:0.0.1
     restart: always
     ports:
-      - 8098:8080
+      - 8076:8080
 
   superconductors:
-    image: lfoppiano/grobid-superconductors:0.2.1-SNAPSHOT-light.azure
+    image: lfoppiano/grobid-superconductors:0.2.1.light.azure
     restart: always
     ports:
       - 8072:8080
@@ -15,9 +15,10 @@ services:
     links:
       - "cde:cde.local"
       - "linking_module:linking_module.local"
+      - "falcon.nims.go.jp:falcon.local"
 
   linking_module:
     image: lfoppiano/linking-module:0.0.1-SNAPSHOT
     restart: always
     ports:
-      - 8097:8080
+      - 8090:8080

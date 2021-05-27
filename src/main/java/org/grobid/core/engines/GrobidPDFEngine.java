@@ -37,7 +37,7 @@ public class GrobidPDFEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrobidPDFEngine.class);
 
     private static final List<TaggingLabel> EXCLUDED_TAGGING_LABELS = Arrays.asList(
-        TaggingLabels.TABLE_MARKER, TaggingLabels.CITATION_MARKER, TaggingLabels.FIGURE_MARKER,
+        TaggingLabels.TABLE_MARKER, TaggingLabels.TABLE, TaggingLabels.CITATION_MARKER, TaggingLabels.FIGURE_MARKER,
         TaggingLabels.EQUATION_MARKER, TaggingLabels.EQUATION, TaggingLabels.EQUATION_LABEL
     );
 
@@ -63,7 +63,7 @@ public class GrobidPDFEngine {
         SortedSet<DocumentPiece> headerDocumentParts = doc.getDocumentPart(SegmentationLabels.HEADER);
         if (headerDocumentParts != null) {
             BiblioItem resHeader = new BiblioItem();
-            //TODO: check if to use consolidation or not
+
             GrobidAnalysisConfig config = GrobidAnalysisConfig.builder().consolidateHeader(1).build();
             parsers.getHeaderParser().processingHeaderSection(config, doc, resHeader, false);
 
