@@ -10,7 +10,7 @@ public class BiblioInfo {
     private String title;
     private String authors;
     private String doi;
-    private String year;
+    private Integer year;
     private String publisher;
     private String journal;
 
@@ -38,11 +38,11 @@ public class BiblioInfo {
         this.doi = doi;
     }
 
-    public void setYear(String year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 
-    public String getYear() {
+    public Integer getYear() {
         return year;
     }
 

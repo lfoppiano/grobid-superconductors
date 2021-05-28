@@ -107,7 +107,7 @@ public class GrobidPDFEngine {
             }
             if (resHeader.getNormalizedPublicationDate() != null) {
                 if (resHeader.getNormalizedPublicationDate().getYear() > 0) {
-                    biblioInfo.setYear(String.valueOf(resHeader.getNormalizedPublicationDate().getYear()));
+                    biblioInfo.setYear(resHeader.getNormalizedPublicationDate().getYear());
                 }
             }
             if (isNotBlank(resHeader.getPublisher())) {
