@@ -24,7 +24,7 @@ srsly==1.0.2
 thinc==7.4.1
 threadpoolctl==2.1.0
 tqdm==4.47.0
-urllib3==1.25.9
+urllib3==1.26.5
 wasabi==0.7.0
 zipp==3.1.0
 pymatgen
