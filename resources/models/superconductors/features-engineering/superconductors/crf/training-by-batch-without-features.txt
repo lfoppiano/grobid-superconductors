@@ -1,0 +1,173 @@
+==> grobid-superconductors-batch1/logs/superconductors-10-fold-cross-validation-20210329.txt <==
+
+Average over 10 folds:
+
+label                accuracy     precision    recall       f1           support
+
+<class>              98           78.92        62.67        69.64        382
+<material>           91.95        80.49        72.83        76.41        1831
+<me_method>          97.65        77.39        72.45        74.37        485
+<pressure>           98.91        71.06        62.05        65.46        175
+<tc>                 95.93        80.93        76.39        78.56        985
+<tcValue>            98.5         75.13        60.64        66.53        256
+
+all                  96.82        79.3         71.5         75.16
+
+===== Instance-level results =====
+
+Total expected instances:   81.6
+Correct instances:          29.4
+Instance-level recall:      36.03
+
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@52d97ab6 model is realized in 17278315 ms
+
+==> grobid-superconductors-batch2/logs/superconductors-10-fold-cross-validation-20210329.txt <==
+
+
+Average over 10 folds:
+
+label                accuracy     precision    recall       f1           support
+
+<class>              97.19        73.63        55.91        62.15        117
+<material>           92.15        76.59        68.16        72.02        368
+<me_method>          95.68        71.18        64.04        66.83        159
+<pressure>           29.78        0            0            0            6
+<tc>                 94.67        79.1         70.85        74.22        280
+<tcValue>            99.12        80.35        68.99        72.77        64
+
+all                  95.89        76.8         66.6         71.24
+
+===== Instance-level results =====
+
+Total expected instances:   20.3
+Correct instances:          7.3
+Instance-level recall:      35.96
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@52d97ab6 model is realized in 3158656 ms
+
+==> grobid-superconductors-batch3/logs/superconductors-10-fold-cross-validation-20210329.txt <==
+
+
+Average over 10 folds:
+
+label                accuracy     precision    recall       f1           support
+
+<class>              99.15        94.61        77.53        83.6         149
+<material>           89.31        77.69        71.75        74.55        1099
+<me_method>          97.3         78.48        71.45        74.43        272
+<tc>                 95.93        76.61        64.55        69.71        393
+<tcValue>            98.53        80.91        44.31        54.97        114
+
+all                  96.05        78.81        69.23        73.67
+
+===== Instance-level results =====
+
+Total expected instances:   40.4
+Correct instances:          14
+Instance-level recall:      34.65
+
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@52d97ab6 model is realized in 8764391 ms
+
+==> grobid-superconductors-batch4/logs/superconductors-10-fold-cross-validation-20210329.txt <==
+
+
+Average over 10 folds:
+
+label                accuracy     precision    recall       f1           support
+
+<class>              98.34        77.61        62.57        68.81        282
+<material>           91.31        76.29        71.22        73.61        1597
+<me_method>          94.73        63.63        60.92        61.93        665
+<pressure>           79.75        10           2            3.33         22
+<tc>                 94.88        73.87        63.9         68.41        829
+<tcValue>            98.38        74.07        51.94        60.67        225
+
+all                  96.08        73.29        65.23        68.99
+
+===== Instance-level results =====
+
+Total expected instances:   66.7
+Correct instances:          18.6
+Instance-level recall:      27.89
+
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@52d97ab6 model is realized in 21571821 ms
+
+
+==> grobid-superconductors-batch5/logs/superconductors-10-fold-cross-validation-20210329.txt <==
+
+
+Average over 10 folds:
+
+label                accuracy     precision    recall       f1           support
+
+<class>              97.5         52.29        43.75        45.8         97
+<material>           86.87        74.63        67.69        70.71        936
+<me_method>          97.86        61.29        45.04        50.62        98
+<pressure>           29.86        0            0            0            5
+<tc>                 96.79        79.72        75.39        77.24        287
+<tcValue>            97.55        52.93        43.11        46.45        115
+
+all                  95.46        71.82        63.84        67.43
+
+===== Instance-level results =====
+
+Total expected instances:   35.4
+Correct instances:          12.7
+Instance-level recall:      35.88
+
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@52d97ab6 model is realized in 4653822 ms
+
+==> grobid-superconductors-batch6/logs/superconductors-10-fold-cross-validation-20210329.txt <==
+
+
+Average over 10 folds:
+
+label                accuracy     precision    recall       f1           support
+
+<class>              95.79        74.08        60.81        66.61        640
+<material>           92.13        78.11        71.21        74.46        1489
+<me_method>          98.57        70.35        60.91        64.76        205
+<pressure>           99.09        66.19        44.37        52.29        105
+<tc>                 96.75        85.54        81.53        83.37        940
+<tcValue>            97.9         76.66        68.87        71.82        380
+
+all                  96.71        78.71        70.65        74.41
+
+===== Instance-level results =====
+
+Total expected instances:   54.3
+Correct instances:          15.7
+Instance-level recall:      28.91
+
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@52d97ab6 model is realized in 8707311 ms
+
+
+==> grobid-superconductors-batch7/logs/superconductors-10-fold-cross-validation-20210329.txt <==
+
+
+Average over 10 folds:
+
+label                accuracy     precision    recall       f1           support
+
+<class>              99.5         98.27        87.36        92.04        159
+<material>           89.36        75.97        72.17        73.95        1079
+<me_method>          97.31        80.93        72.57        76.24        309
+<pressure>           59.83        20           12.5         14           12
+<tc>                 97.57        85.52        87.45        86.17        445
+<tcValue>            99           77.49        51.5         61.1         95
+
+all                  96.82        80.61        75.3         77.81
+
+===== Instance-level results =====
+
+Total expected instances:   40.6
+Correct instances:          15.3
+Instance-level recall:      37.68
+
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@52d97ab6 model is realized in 12660967 ms
