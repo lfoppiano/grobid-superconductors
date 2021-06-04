@@ -10,3 +10,7 @@
 | [fastext_cbow_100d_features](fastext_cbow_100d_features) | baseline_features + fastext + oscar_Supermat + cbow + 100d |  | | |
 | [fastext_skipgram_100d_no_features](fastext_skipgram_100d_no_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 100d | 74.22  |  75.99  |  75.08 | 
 | [fastext_skipgram_100d_features](fastext_skipgram_100d_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 100d |  | | |
+| [fastext_cbow_300d_no_features](fastext_cbow_300d_no_features) | baseline_no_features + fastext + oscar_Supermat + cbow + 300d |   73.49  |  73.89  |  73.68  |
+| [fastext_cbow_300d_features](fastext_cbow_300d_features) | baseline_features + fastext + oscar_Supermat + cbow + 300d |  | | |
+| [fastext_skipgram_300d_no_features](fastext_skipgram_300d_no_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 300d | 75.51  |  75.81 |   75.65  | 
+| [fastext_skipgram_300d_features](fastext_skipgram_300d_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 300d |  | | |
