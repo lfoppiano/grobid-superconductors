@@ -7,10 +7,19 @@
 | [baseline_no_features](baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |
 | [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |
 | [fastext_cbow_100d_no_features](fastext_cbow_100d_no_features) | baseline_no_features + fastext + oscar_Supermat + cbow + 100d |   72.15 |   73.39 |   72.75 |
-| [fastext_cbow_100d_features](fastext_cbow_100d_features) | baseline_features + fastext + oscar_Supermat + cbow + 100d |  | | |
+| [fastext_cbow_100d_features](fastext_cbow_100d_features) | baseline_features + fastext + oscar_Supermat + cbow + 100d |74.06  |  73.92  |  73.98|
 | [fastext_skipgram_100d_no_features](fastext_skipgram_100d_no_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 100d | 74.22  |  75.99  |  75.08 | 
-| [fastext_skipgram_100d_features](fastext_skipgram_100d_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 100d |  | | |
+| [fastext_skipgram_100d_features](fastext_skipgram_100d_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 100d | 75.72  |  75.89  |  75.78 |
 | [fastext_cbow_300d_no_features](fastext_cbow_300d_no_features) | baseline_no_features + fastext + oscar_Supermat + cbow + 300d |   73.49  |  73.89  |  73.68  |
-| [fastext_cbow_300d_features](fastext_cbow_300d_features) | baseline_features + fastext + oscar_Supermat + cbow + 300d |  | | |
+| [fastext_cbow_300d_features](fastext_cbow_300d_features) | baseline_features + fastext + oscar_Supermat + cbow + 300d | 74.43  |  74.38  |  74.40  |
 | [fastext_skipgram_300d_no_features](fastext_skipgram_300d_no_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 300d | 75.51  |  75.81 |   75.65  | 
-| [fastext_skipgram_300d_features](fastext_skipgram_300d_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 300d |  | | |
+| [fastext_skipgram_300d_features](fastext_skipgram_300d_features) | baseline_no_features + fastext + oscar_Supermat + skipgram + 300d |  76.19  |  76.76  |  76.46|
+
+
+# Embeddings 
+
+| Name | Description | Tokens | Url |   
+|------|---------|-----------|------|
+| oscar1-12+supermat | Oscar 1-12 + Supermat |  | 
+| glove.840B.300d | Common Crawl (840B tokens, 2.2M vocab, cased, 300d vectors, 2.03 GB download) | https://nlp.stanford.edu/projects/glove/ | 
+| https://fasttext.cc/docs/en/english-vectors.html | 2 million word vectors trained with subword information on Common Crawl (600B tokens) | https://fasttext.cc/docs/en/english-vectors.html | 
