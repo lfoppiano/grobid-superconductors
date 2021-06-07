@@ -18,8 +18,8 @@
 
 # Embeddings 
 
-| Name | Description | Tokens | Url |   
-|------|---------|-----------|------|
-| oscar1-12+supermat | Oscar 1-12 + Supermat |  | 
-| glove.840B.300d | Common Crawl (840B tokens, 2.2M vocab, cased, 300d vectors, 2.03 GB download) | https://nlp.stanford.edu/projects/glove/ | 
-| https://fasttext.cc/docs/en/english-vectors.html | 2 million word vectors trained with subword information on Common Crawl (600B tokens) | https://fasttext.cc/docs/en/english-vectors.html | 
+| Name | Source corpus | Tokens | Vector dimension | Url |   
+|------|---------------|--------|------------------|-----|
+| oscar_Supermat | Oscar 1-12 + Supermat | 4M(?) | 100, 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
+| glove.840B.300d | Common Crawl | 840B tokens, 2.2M vocab, cased | 300 |https://nlp.stanford.edu/projects/glove/ | 
+| crawl-300d-2M | Common Crawl [2M (trained with subword)] | 600B | 300 | https://fasttext.cc/docs/en/english-vectors.html | 
