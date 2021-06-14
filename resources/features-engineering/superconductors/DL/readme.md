@@ -20,7 +20,7 @@
 | [fastText_oS+Sc_vec_skipgram_300d_no_features](fastText_oS+Sc_vec_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS + SciCorpora + skipgram + 300d + vec |  | 
 | [fastText_oS+Sc_bin_skipgram_300d_no_features](fastText_oS+Sc_bin_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS + SciCorpora + skipgram + 300d  + bin |75.43  |  76.56 |   75.99| 
 | [fastText_oS+Sc_vec_skipgram_300d_features](fastText_oS+Sc_vec_skipgram_300d_features) | baseline_features + fastText + oscarS + SciCorpora + skipgram + 300d + vec | |
-| [fastText_oS+Sc_bin_skipgram_300d_features](fastText_oS+Sc_bin_skipgram_300d_features) | baseline_features + fastText + oscarS + SciCorpora + skipgram + 300d + bin | 76.36   | 77.61  |  76.97 |
+| [fastText_oS+Sc_bin_skipgram_300d_features](fastText_oS+Sc_bin_skipgram_300d_features) | baseline_features + fastText + oscarS + SciCorpora + skipgram + 300d + bin | 76.36   | 77.61  |  **76.97** |
 | Sc | SciCorpora | - | -  | - |
 | [fastText_Sc_vec_skipgram_300d_no_features](fastText_Sc_vec_skipgram_300d_no_features) | baseline_features + fastText + SciCorpora + skipgram + 300d + vec |   76.03  | 76.30  | 76.16 |
 | [fastText_Sc_bin_skipgram_300d_no_features](fastText_Sc_bin_skipgram_300d_no_features) | baseline_features + fastText + SciCorpora + skipgram + 300d + bin |  75.78   | 76.57  |  76.16 |
