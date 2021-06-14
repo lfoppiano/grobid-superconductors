@@ -12,15 +12,20 @@
 | [fastText_oS_vec_skipgram_300d_features](fastText_oS_vec_skipgram_300d_features) | baseline_features + fastText + oscarS + skipgram + 300d + vec |   76.32 |   75.76  |  76.01|
 | [fastText_oS_bin_skipgram_300d_features](fastText_oS_bin_skipgram_300d_features) | baseline_features + fastText + oscarS + skipgram + 300d + bin |  75.95  |  75.97  |  75.94 |
 | oS+Sm | Oscar Small + SuperMat | - | -  | - |
-| [fastText_oS+Sm_vec_skipgram_300d_no_features](fastText_oS+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS_Supermat + skipgram + 300d | 75.51  |  75.81 |   75.65  | 
-| [fastText_oS+Sm_vec_skipgram_300d_features](fastText_oS+Sm_vec_skipgram_300d_features) | baseline_features + fastText + oscarS + Supermat + skipgram + 300d |  76.19  |  76.76  |  76.46|
-| [fastText_oS+Sm_bin_skipgram_300d_no_features](fastText_oS+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS_Supermat + skipgram + 300d  + bin |   | 
-| [fastText_oS+Sm_bin_skipgram_300d_features](fastText_oS+Sm_bin_skipgram_300d_features) | baseline_features + fastText + oscarS + Supermat + skipgram + 300d + bin |  |
+| [fastText_oS+Sm_vec_skipgram_300d_no_features](fastText_oS+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS_Supermat + skipgram + 300d + vec | 75.51  |  75.81 |   75.65  | 
+| [fastText_oS+Sm_bin_skipgram_300d_no_features](fastText_oS+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS_Supermat + skipgram + 300d  + bin | 74.20  |  75.85  |  75.00  | 
+| [fastText_oS+Sm_vec_skipgram_300d_features](fastText_oS+Sm_vec_skipgram_300d_features) | baseline_features + fastText + oscarS + Supermat + skipgram + 300d + vec|  76.19  |  76.76  |  76.46|
+| [fastText_oS+Sm_bin_skipgram_300d_features](fastText_oS+Sm_bin_skipgram_300d_features) | baseline_features + fastText + oscarS + Supermat + skipgram + 300d + bin | 76.01  |  77.15  |  76.57 |
+| oS+Sc | Oscar Small + SciCorpora | - | -  | - |
+| [fastText_oS+Sc_vec_skipgram_300d_no_features](fastText_oS+Sc_vec_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS + SciCorpora + skipgram + 300d + vec |  | 
+| [fastText_oS+Sc_bin_skipgram_300d_no_features](fastText_oS+Sc_bin_skipgram_300d_no_features) | baseline_no_features + fastText + oscarS + SciCorpora + skipgram + 300d  + bin |75.43  |  76.56 |   75.99| 
+| [fastText_oS+Sc_vec_skipgram_300d_features](fastText_oS+Sc_vec_skipgram_300d_features) | baseline_features + fastText + oscarS + SciCorpora + skipgram + 300d + vec | |
+| [fastText_oS+Sc_bin_skipgram_300d_features](fastText_oS+Sc_bin_skipgram_300d_features) | baseline_features + fastText + oscarS + SciCorpora + skipgram + 300d + bin | 76.36   | 77.61  |  76.97 |
 | Sc | SciCorpora | - | -  | - |
 | [fastText_Sc_vec_skipgram_300d_no_features](fastText_Sc_vec_skipgram_300d_no_features) | baseline_features + fastText + SciCorpora + skipgram + 300d + vec |   76.03  | 76.30  | 76.16 |
 | [fastText_Sc_bin_skipgram_300d_no_features](fastText_Sc_bin_skipgram_300d_no_features) | baseline_features + fastText + SciCorpora + skipgram + 300d + bin |  75.78   | 76.57  |  76.16 |
 | [fastText_Sc_vec_skipgram_300d_features](fastText_Sc_vec_skipgram_300d_features) | baseline_features + fastText + SciCorpora + skipgram + 300d + vec |   75.92  | 76.61  |  76.25 |
-| [fastText_Sc_bin_skipgram_300d_features](fastText_Sc_bin_skipgram_300d_features) | baseline_features + fastText + SciCorpora + skipgram + 300d + bin |   -  |  -  |  -|
+| [fastText_Sc_bin_skipgram_300d_features](fastText_Sc_bin_skipgram_300d_features) | baseline_features + fastText + SciCorpora + skipgram + 300d + bin |  76.14  |  77.46  |  76.79|
 | Sc+Sm | SciCorpora + SuperMat | - | -  | - |
 | [fastText_Sc+Sm_vec_skipgram_300d_no_features](fastText_Sc+Sm_vec_skipgram_300d_no_features) | baseline_features + fastText + SciCorpora + Supermat + skipgram + 300d + vec |   75.78  |  75.79  |  75.76|
 | [fastText_Sc+Sm_bin_skipgram_300d_no_features](fastText_Sc+Sm_bin_skipgram_300d_no_features) | baseline_features + fastText + SciCorpora + Supermat + skipgram + 300d + bin |   75.93  |  76.71   | 76.31 |
@@ -63,9 +68,9 @@ Results in this tables are from settings that have been discarded for their poor
 
 | Name | Changes | Precision | Recall  | F1 |  
 |------|---------|-----------|---------|----|
-| [fastText_oS+Sm_vec_cbow_100d_no_features](fastText_oS+Sm_vec_cbow_100d_no_features) | baseline_no_features + fastText + oscarS_Supermat + cbow + 100d |   72.15 |   73.39 |   72.75 |
-| [fastText_oS+Sm_vec_cbow_100d_features](fastText_oS+Sm_vec_cbow_100d_features) | baseline_features + fastText + oscarS_Supermat + cbow + 100d |74.06  |  73.92  |  73.98|
-| [fastText_oS+Sm_vec_cbow_300d_no_features](fastText_oS+Sm_vec_cbow_300d_no_features) | baseline_no_features + fastText + oscarS_Supermat + cbow + 300d |   73.49  |  73.89  |  73.68  |
-| [fastText_oS+Sm_vec_cbow_300d_features](fastText_oS+Sm_vec_cbow_300d_features) | baseline_features + fastText + oscarS_Supermat + cbow + 300d | 74.43  |  74.38  |  74.40  |
-| [fastText_oS+Sm_vec_skipgram_100d_no_features](fastText_oS+Sm_vec_skipgram_100d_no_features) | baseline_no_features + fastText + oscarS_Supermat + skipgram + 100d | 74.22  |  75.99  |  75.08 | 
-| [fastText_oS+Sm_vec_skipgram_100d_features](fastText_oS+Sm_vec_skipgram_100d_features) | baseline_features + fastText + oscarS_Supermat + skipgram + 100d | 75.72  |  75.89  |  75.78 |
+| [fastText_oS+Sm_vec_cbow_100d_no_features](old/fastText_oS+Sm_vec_cbow_100d_no_features) | baseline_no_features + fastText + oscarS_Supermat + cbow + 100d |   72.15 |   73.39 |   72.75 |
+| [fastText_oS+Sm_vec_cbow_100d_features](old/fastText_oS+Sm_vec_cbow_100d_features) | baseline_features + fastText + oscarS_Supermat + cbow + 100d |74.06  |  73.92  |  73.98|
+| [fastText_oS+Sm_vec_cbow_300d_no_features](old/fastText_oS+Sm_vec_cbow_300d_no_features) | baseline_no_features + fastText + oscarS_Supermat + cbow + 300d |   73.49  |  73.89  |  73.68  |
+| [fastText_oS+Sm_vec_cbow_300d_features](old/fastText_oS+Sm_vec_cbow_300d_features) | baseline_features + fastText + oscarS_Supermat + cbow + 300d | 74.43  |  74.38  |  74.40  |
+| [fastText_oS+Sm_vec_skipgram_100d_no_features](old/fastText_oS+Sm_vec_skipgram_100d_no_features) | baseline_no_features + fastText + oscarS_Supermat + skipgram + 100d | 74.22  |  75.99  |  75.08 | 
+| [fastText_oS+Sm_vec_skipgram_100d_features](old/fastText_oS+Sm_vec_skipgram_100d_features) | baseline_features + fastText + oscarS_Supermat + skipgram + 100d | 75.72  |  75.89  |  75.78 |
