@@ -79,7 +79,9 @@ Results in this table are from settings that have been discarded for their poor 
 | [fastText_oS+Sm_vec_skipgram_100d_features](old/fastText_oS+Sm_vec_skipgram_100d_features) | baseline_features + fastText + oscarS_Supermat + skipgram + 100d | 75.72  |  75.89  |  75.78 |
 
 
-## Feature / no-features comparison
+# Comparisons
+
+## Batches comparison
 
 Uniqueness = nb of unique entities / total number of entities
 
@@ -107,3 +109,62 @@ Uniqueness = nb of unique entities / total number of entities
 | 6     | 70.94 | 69.83 | 70.38 | 43.98 | 3 |
 | 7     | 72.50  |78.80 | 75.51 | 42.85 | 2 |
 | 8     | 20.33 | 12.95 | 15.64 | 44.77 | 8 |
+
+## Sentence based vs Paragraph based
+
+Experiment definition: 
+ - training: 3 articles  
+ - evaluation: 1 article
+ - Batch size: 5
+ - Embeddings: glove / oS+Sc+Sm
+ - Architecture: BidLSTM_CRF_FEATURES
+
+### Experiment 1: glove
+
+#### Paragraph based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2500   | 0.0952 | 0.1379 | 21 |
+|      material    |  0.3636   | 0.1333 | 0.1951 | 60 |
+|     me_method    |  0.4500   | 0.2571 | 0.3273 | 35 |
+|            tc    |  0.7143   | 0.7500 | 0.7317 | 20 |
+|       tcValue    |  0.3158   | 0.5455 | 0.4000 | 11 |
+| all (micro avg.) |  0.4444   | 0.2721 | 0.3376 | 147 |
+
+#### Sentence based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2727   | 0.1875 | 0.1429 | 21 |
+|      material    |  0.4930   | 0.5344 | 0.5833 | 60 |
+|     me_method    |  0.5600   | 0.4667 | 0.4000 | 35 |
+|            tc    |  0.6429   | 0.7500 | 0.9000 | 20 |
+|       tcValue    |  0.2727   | 0.3636 | 0.5455 | 11 |
+| all (micro avg.) |  0.4841 | 0.5000 | 0.5170 | 147 |
+
+
+### Experiment 2: oS+Sc+Sm
+
+#### Paragraph based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.1538   |0.0952  | 0.1176 | 21  |
+|      material    |  0.2258   |0.1167  | 0.1538 | 60  |
+|     me_method    |  0.5000   |0.2571  | 0.3396 | 35  |
+|            tc    |  0.6154   |0.8000  | 0.6957 | 20  |
+|       tcValue    |  0.1852   |0.4545  | 0.2632 | 11  |
+| all (micro avg.) |  0.3391   |0.2653  | 0.2977 | 147 |
+
+#### Sentence based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2778   |0.2381  | 0.2564 | 21  |
+|      material    |  0.4800   |0.2000  | 0.2824 | 60  |
+|     me_method    |  0.5833   |0.4000  | 0.4746 | 35  |
+|            tc    |  0.6207   |0.9000  | 0.7347 | 20  |
+|       tcValue    |  0.1000   |0.1818  | 0.1290 | 11  |
+| all (micro avg.) |  0.4397   |0.3469  | 0.3878 | 147 |
+
