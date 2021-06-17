@@ -1,7 +1,7 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import edu.emory.mathcs.nlp.common.util.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -88,7 +88,7 @@ public class MaterialTrainer extends AbstractTrainer {
 
                 AnnotationValuesTEIStaxHandler target = new AnnotationValuesTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, Collections.singletonList("material"));
 
-                InputStream inputStream = IOUtils.getInputStream(inputFile.getAbsolutePath());
+                InputStream inputStream = new FileInputStream(inputFile.getAbsolutePath());
                 XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
 
                 StaxUtils.traverse(reader, target);
