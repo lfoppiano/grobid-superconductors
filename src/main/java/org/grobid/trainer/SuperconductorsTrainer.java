@@ -5,10 +5,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.core.engines.SentenceSegmenter;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
@@ -35,12 +38,14 @@ public class SuperconductorsTrainer extends AbstractTrainer {
     public static final String FOLD_TYPE_DOCUMENT = "document";
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
+    private SentenceSegmenter segmenter; 
 
     public SuperconductorsTrainer() {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
         window = 20;
+        this.segmenter = new SentenceSegmenter();
     }
 
     /**
@@ -202,6 +207,10 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                     paragraphXmlFile = xmlFileAligned.get(i);
                     int featureFileIndex = 0;
                     long entityLabels = 0;
+                    
+                    List<String> tmpLayoutTokens = paragraphXmlFile.stream().map(Pair::getLeft).collect(Collectors.toList());
+                    List<OffsetPosition> sentencesAsOffsets = this.segmenter.getSentencesAsOffsets(tmpLayoutTokens);
+
                     outer:
                     for (String line : paragraphFeatureFile) {
                         int secondFeatureTokenIndex = line.indexOf('\t');

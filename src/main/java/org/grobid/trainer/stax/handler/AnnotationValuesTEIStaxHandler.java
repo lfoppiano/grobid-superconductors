@@ -3,9 +3,14 @@ package org.grobid.trainer.stax.handler;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.data.Offset;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.engines.SentenceSegmenter;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.lang.SentenceDetector;
+import org.grobid.core.lang.impl.OpenNLPSentenceDetector;
+import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.slf4j.Logger;
@@ -33,6 +38,7 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEV
 public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationValuesTEIStaxHandler.class);
+    private final boolean splitInSentences;
 
     private StringBuilder accumulator = new StringBuilder();
     private StringBuilder accumulatedText = new StringBuilder();
@@ -68,9 +74,14 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
      * @param containerPaths  specifies the path where the data should be extracted, e.g. /tei/teiHeader/titleStmt/title
      * @param annotationTypes specifies the types of the <rs type="type"></rs> annotation to be extracted
      */
-    public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes) {
+    public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes, boolean splitInSentences) {
         this.containerPaths = containerPaths;
         this.annotationTypes = annotationTypes;
+        this.splitInSentences = splitInSentences;
+    }
+
+    public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes) {
+        this(containerPaths, annotationTypes, false);
     }
 
     public AnnotationValuesTEIStaxHandler() {
@@ -195,13 +206,35 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
     }
 
     private void writeStreamData(String text, String label) {
+        
+        if (this.splitInSentences()) {
+            SentenceDetector detector = new OpenNLPSentenceDetector();
+            List<OffsetPosition> detect = detector.detect(text);
+            
+            for (OffsetPosition sent : detect) {
+                String sentence = text.substring(sent.start, sent.end);
+                List<String> tokens = null;
+                try {
+                    tokens = DeepAnalyzer.getInstance().tokenize(text);
+                } catch (Exception e) {
+                    throw new GrobidException("Fail to tokenize:, " + text, e);
+                }
+                appendData(tokens, label);
+            }
+        } else {
+            
+            List<String> tokens = null;
+            try {
+                tokens = DeepAnalyzer.getInstance().tokenize(text);
+            } catch (Exception e) {
+                throw new GrobidException("Fail to tokenize:, " + text, e);
+            }
 
-        List<String> tokens = null;
-        try {
-            tokens = DeepAnalyzer.getInstance().tokenize(text);
-        } catch (Exception e) {
-            throw new GrobidException("Fail to tokenize:, " + text, e);
+            appendData(tokens, label);
         }
+    }
+
+    private void appendData(List<String> tokens, String label) {
         boolean begin = true;
         for (String token : tokens) {
             String content = trim(token);
@@ -237,5 +270,9 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
 
     public List<Pair<String, String>> getIdentifiers() {
         return identifiers;
+    }
+
+    public boolean splitInSentences() {
+        return splitInSentences;
     }
 }

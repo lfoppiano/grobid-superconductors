@@ -1,90 +1,115 @@
 package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
-import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
-import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
-import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
+import org.grobid.core.lang.SentenceDetector;
+import org.grobid.core.lang.impl.OpenNLPSentenceDetector;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.utilities.OffsetPosition;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.length;
 
 public class SentenceSegmenter {
 
-    private Tokenizer tokenizer;
+    private SentenceDetector tokenizer;
 
     public SentenceSegmenter() {
-        tokenizer = new EnglishTokenizer();
+        this.tokenizer = new OpenNLPSentenceDetector();
     }
 
+    public SentenceSegmenter(SentenceDetector sentenceDetector) {
+        this.tokenizer = sentenceDetector;
+    }
 
-    public List<List<Token>> getSentences(List<LayoutToken> tokens) {
-        List<Token> tokensNlp4j = tokens
-            .stream()
-            .map(token -> {
-                Token token1 = new Token(token.getText());
-                token1.setStartOffset(token.getOffset());
-                token1.setEndOffset(token.getOffset() + token.getText().length());
-                return token1;
-            })
+    public List<OffsetPosition> getSentencesAsOffsets(List<String> tokens) {
+        String paragraph = String.join("", tokens);
+
+        return tokenizer.detect(paragraph);
+    }
+
+/*    public List<OffsetPosition> getSentencesAsIndexes(List<String> tokens) {
+        List<OffsetPosition> sentencesAsOffsets = getSentencesAsOffsets(tokens);
+
+        if (sentencesAsOffsets.size() == 1) {
+            return Collections.singletonList(new OffsetPosition(0, tokens.size() - 1));
+        }
+        
+        StringBuilder sb = new StringBuilder();
+
+        for (String token :tokens) {
+            
+            sb.append(token);
+        }
+
+    }*/
+
+    /*protected List<Boolean> fromOffsetsToIndexes(offsets) {
+        List<Boolean> isChemicalEntity = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(mentions)) {
+            tokens.stream().forEach(t -> isChemicalEntity.add(Boolean.FALSE));
+
+            return isChemicalEntity;
+        }
+
+        mentions = mentions.stream()
+            .sorted(Comparator.comparingInt(ChemicalSpan::getStart))
             .collect(Collectors.toList());
 
-        List<List<Token>> sentences = tokenizer.segmentize(tokensNlp4j);
+        int globalOffset = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
 
-        List<List<Token>> fixedSentences = new ArrayList<>();
+        int mentionId = 0;
+        ChemicalSpan mention = mentions.get(mentionId);
 
-        // Fixing sentences
-        for (int i = 0; i < sentences.size(); i++) {
-            List<Token> sentence = new ArrayList<>(sentences.get(i));
-            if (CollectionUtils.isNotEmpty(sentence)) {
+        for (LayoutToken token : tokens) {
+            //normalise the offsets
+            int mentionStart = globalOffset + mention.getStart();
+            int mentionEnd = globalOffset + mention.getEnd();
 
-                if (StringUtils.isNotBlank(sentence.get(0).getWordForm())
-                    && !Character.isUpperCase(sentence.get(0).getWordForm().charAt(0))
-                    && fixedSentences.size() > 0) {
+            if (token.getOffset() < mentionStart) {
+                isChemicalEntity.add(Boolean.FALSE);
+                continue;
+            } else {
+                if (token.getOffset() >= mentionStart
+                    && token.getOffset() + length(token.getText()) <= mentionEnd) {
+                    isChemicalEntity.add(true);
+                    continue;
+                }
 
-                    // Check if this sentence might be wrongly split with the previous one.
-                    // If the first character is not blank, doesn't start with an uppercase character and
-                    // there are sentences already in the output
-
-                    fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
-                } else if (CollectionUtils.size(sentence) == 1 && StringUtils.isBlank(sentence.get(0).getWordForm())) {
-                    //Only one sentence and it starts with space -> remove the space
-
-                    fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
-                } else if (StringUtils.isBlank(sentence.get(0).getWordForm())) {
-                    //if first character is blank,
-                    //  - if the only character, append to the previous sentence
-                    //  - else if following character is not uppercase, append to the previous sentence
-                    //  - else append first character to previous sentence and the rest as new sentence
-                    if (sentence.size() == 1) {
-                        fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
-                    } else if (!Character.isUpperCase(sentence.get(1).getWordForm().charAt(0))) {
-                        fixedSentences.get(fixedSentences.size() - 1).addAll(sentence);
-                    } else {
-                        fixedSentences.get(fixedSentences.size() - 1).add(sentence.get(0));
-                        fixedSentences.add(sentence.subList(1, sentence.size()));
-                    }
+                if (mentionId == mentions.size() - 1) {
+                    isChemicalEntity.add(Boolean.FALSE);
+                    break;
                 } else {
-                    fixedSentences.add(sentence);
+                    isChemicalEntity.add(Boolean.FALSE);
+                    mentionId++;
+                    mention = mentions.get(mentionId);
                 }
             }
         }
+        if (tokens.size() > isChemicalEntity.size()) {
 
-        return fixedSentences;
-    }
+            for (int counter = isChemicalEntity.size(); counter < tokens.size(); counter++) {
+                isChemicalEntity.add(Boolean.FALSE);
+            }
+        }
 
-    public List<Pair<Integer, Integer>> getSentencesAsOffsetsPairs(List<LayoutToken> tokens) {
-        List<List<Token>> sentences = getSentences(tokens);
+        return isChemicalEntity;
+    }*/
 
-        return sentences.stream()
-            .map(s -> Pair.of(s.get(0).getStartOffset(), Iterables.getLast(s).getStartOffset()))
+    protected List<OffsetPosition> getSentencesFromLayoutTokensAsOffsets(List<LayoutToken> tokens) {
+        List<String> stringList = tokens
+            .stream()
+            .map(LayoutToken::getText)
             .collect(Collectors.toList());
 
+        return getSentencesAsOffsets(stringList);
     }
 
     /**
@@ -96,16 +121,16 @@ public class SentenceSegmenter {
             return new ArrayList<>();
         }
 
-        List<Pair<Integer, Integer>> offsetPairs = getSentencesAsOffsetsPairs(tokens);
+        List<OffsetPosition> sentencesAsOffsets = getSentencesFromLayoutTokensAsOffsets(tokens);
 
         int pairIndex = 0;
 
-        int sentenceOffsetStart = offsetPairs.get(pairIndex).getLeft();
-        int sentenceOffsetEnd = offsetPairs.get(pairIndex).getRight();
+        int sentenceOffsetStart = sentencesAsOffsets.get(pairIndex).start;
+        int sentenceOffsetEnd = sentencesAsOffsets.get(pairIndex).end;
 
         List<Pair<Integer, Integer>> results = new ArrayList<>();
 
-        if (offsetPairs.size() == 1) {
+        if (sentencesAsOffsets.size() == 1) {
             return Collections.singletonList(Pair.of(0, tokens.size()));
         }
 
@@ -131,10 +156,10 @@ public class SentenceSegmenter {
                 indexEnd = i + 1;
                 results.add(Pair.of(indexStart, indexEnd));
 
-                if (pairIndex < offsetPairs.size() - 1) {
+                if (pairIndex < sentencesAsOffsets.size() - 1) {
                     pairIndex++;
-                    sentenceOffsetStart = offsetPairs.get(pairIndex).getLeft();
-                    sentenceOffsetEnd = offsetPairs.get(pairIndex).getRight();
+                    sentenceOffsetStart = sentencesAsOffsets.get(pairIndex).start;
+                    sentenceOffsetEnd = sentencesAsOffsets.get(pairIndex).end;
                 }
             }
         }
@@ -144,20 +169,20 @@ public class SentenceSegmenter {
 
     public List<List<LayoutToken>> getSentencesAsLayoutToken(List<LayoutToken> tokens) {
 
-        List<Pair<Integer, Integer>> offsetPairs = getSentencesAsOffsetsPairs(tokens);
+        List<OffsetPosition> offsetPairs = getSentencesFromLayoutTokensAsOffsets(tokens);
 
         List<List<LayoutToken>> result = new ArrayList<>();
 
         int pairIndex = 0;
 
-        int sentenceOffsetStart = offsetPairs.get(pairIndex).getLeft();
-        int sentenceOffsetEnd = offsetPairs.get(pairIndex).getRight();
+        int sentenceOffsetStart = offsetPairs.get(pairIndex).start;
+        int sentenceOffsetEnd = offsetPairs.get(pairIndex).end;
 
-        List<LayoutToken> sentence = null;
+        List<LayoutToken> sentence = new ArrayList<>();
         for (LayoutToken layoutToken : tokens) {
 
             if (layoutToken.getOffset() == sentenceOffsetStart) {
-                if (StringUtils.equals(layoutToken.getText(), " ") && sentence != null) {
+                if (StringUtils.equals(layoutToken.getText(), " ") && isNotEmpty(sentence)) {
                     sentence.add(layoutToken);
                     sentence = new ArrayList<>();
                     continue;
@@ -171,8 +196,8 @@ public class SentenceSegmenter {
                 result.add(sentence);
                 if (pairIndex < offsetPairs.size() - 1) {
                     pairIndex++;
-                    sentenceOffsetStart = offsetPairs.get(pairIndex).getLeft();
-                    sentenceOffsetEnd = offsetPairs.get(pairIndex).getRight();
+                    sentenceOffsetStart = offsetPairs.get(pairIndex).start;
+                    sentenceOffsetEnd = offsetPairs.get(pairIndex).end;
                 }
             }
         }
