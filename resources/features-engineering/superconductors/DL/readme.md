@@ -38,6 +38,30 @@
 | [fastText_oS+Sc+Sm_bin_skipgram_300d_no_features](fastText_oS+Sc+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Small + Science + SuperMat + skipgram + 300d + bin  | 75.41 | 76.77 | 76.07 | 0.81 |
 | [fastText_oS+Sc+Sm_bin_skipgram_300d_features](fastText_oS+Sc+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Small + Science + SuperMat + skipgram + 300d + bin  | 75.31  | 77.24 |   76.26 | 1.14 |
 
+## Other experiments 
+
+### Removing batch 8
+Batch 8 resulted to score the least in the cross-validation with only single batches
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| [baseline-batch_1_7-no_features](baseline-batch_1_7-no_features) | baseline_no_features + gloVe + bin |  77.18  | 79.43   | 78.29  | 0.61 |
+| [baseline-batch_1_7-features](baseline-batch_1_7-features) | baseline_features + gloVe + bin | 77.81 | 79.09 | 78.43  | 0.66 |
+| [fastText_oS+Sc+Sm-batch_1_7-no_features](fastText_oS+Sc+Sm-batch_1_7-no_features) | baseline_no_features + oS+Sc+Sm + bin | 75.23  |  78.37  |  76.75  | 1.26 |
+| [fastText_oS+Sc+Sm-batch_1_7-features](fastText_oS+Sc+Sm-batch_1_7-features) |  baseline_features + oS+Sc+Sm + bin |  74.69  |  79.10   | 76.81   | 0.80 |
+
+### Removing batch 8 and 2
+Batch 8 and 2 resulted to score the least in the cross-validation with only single batches
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| [baseline-batches-28-no_features](baseline-batches-28-no_features) | baseline_no_features + gloVe + bin |   |
+| [baseline-batches-28-features](baseline-batches-28-features) | baseline_features + gloVe + bin |   |
+| [fastText_oS+Sc+Sm-batches-28-no_features](fastText_oS+Sc+Sm-batches-28-no_features) | baseline_no_features + oS+Sc+Sm + bin |  |
+| [fastText_oS+Sc+Sm-batches-28-features](fastText_oS+Sc+Sm-batches-28-features) |  baseline_features + oS+Sc+Sm + bin |  |
+
+
+
 # Embeddings 
 
 | Name | Source corpus | Size | Vector dimension | 
@@ -111,16 +135,6 @@ Tokens are calculated from the grobid-tokenizer which splits even numbers into d
 | 6     | 70.94 | 69.83 | 70.38 | 3 | 43.98 | 578 |82018 |  
 | 7     | 72.50  |78.80 | 75.51 | 2 | 42.85 | 442 |88981 |  
 | 8     | 20.33 | 12.95 | 15.64 | 8 | 44.77 | 236 |42570 |  
-
-
-
-
-
-
-
-
-
-
 
 
 ## Sentence based vs Paragraph based
