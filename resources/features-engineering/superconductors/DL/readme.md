@@ -55,10 +55,10 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
-| [baseline-batches-28-no_features](baseline-batches-28-no_features) | baseline_no_features + gloVe + bin |   |
-| [baseline-batches-28-features](baseline-batches-28-features) | baseline_features + gloVe + bin |   |
-| [fastText_oS+Sc+Sm-batches-28-no_features](fastText_oS+Sc+Sm-batches-28-no_features) | baseline_no_features + oS+Sc+Sm + bin |  |
-| [fastText_oS+Sc+Sm-batches-28-features](fastText_oS+Sc+Sm-batches-28-features) |  baseline_features + oS+Sc+Sm + bin |  |
+| [baseline-batches-28-no_features](baseline-batches-28-no_features) | baseline_no_features + gloVe + bin | 78.21  |  78.46  |  78.33 | 0.69 |
+| [baseline-batches-28-features](baseline-batches-28-features) | baseline_features + gloVe + bin | 77.66  |  78.48 |   78.06   | 0.95 |
+| [fastText_oS+Sc+Sm-batches-28-no_features](fastText_oS+Sc+Sm-batches-28-no_features) | baseline_no_features + oS+Sc+Sm + bin | 76.87  |  78.51  |  77.68  | 0.84 |
+| [fastText_oS+Sc+Sm-batches-28-features](fastText_oS+Sc+Sm-batches-28-features) |  baseline_features + oS+Sc+Sm + bin | 77.17  |  78.85  | 77.99 | 0.48 |
 
 
 
