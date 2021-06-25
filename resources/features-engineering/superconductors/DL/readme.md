@@ -32,6 +32,8 @@
 | [fastText_Sc+Sm_vec_skipgram_300d_features](fastText_Sc+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Science + Supermat + skipgram + 300d + vec |   76.42  |  76.34  |  76.37| 0.95 |
 | [fastText_Sc+Sm_bin_skipgram_300d_features](fastText_Sc+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Science + Supermat + skipgram + 300d + bin |   75.77   | 76.96  |  76.36| 0.81 |
 | oL | Oscar Large | - | -  | - |
+| [fastText_oL_bin_skipgram_300d_no_features](fastText_oL_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 76.96 | 75.03  |  75.97 | 1.15 |
+| [fastText_oL_bin_skipgram_300d_features](fastText_oL_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | - |
 | oL+Sm| Oscar Large + SuperMat | - | -  | - |
 | oL+Sc| Oscar Large + Science | - | -  | - |
 | oL+Sc+Sm | Oscar Large + Science + SuperMat | - | -  | - |
