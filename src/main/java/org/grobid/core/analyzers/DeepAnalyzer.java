@@ -5,6 +5,7 @@ import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -57,9 +58,7 @@ public class DeepAnalyzer implements Analyzer {
             String token = st.nextToken();
             // in addition we split "letter" characters and digits
             String[] subtokens = token.split(REGEX);
-            for (int i = 0; i < subtokens.length; i++) {
-                result.add(subtokens[i]);
-            }
+            result.addAll(Arrays.asList(subtokens));
         }
 
         return result;

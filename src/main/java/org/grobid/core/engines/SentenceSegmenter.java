@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.data.Offset;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.lang.SentenceDetector;
 import org.grobid.core.lang.impl.OpenNLPSentenceDetector;
@@ -13,6 +14,7 @@ import org.grobid.core.utilities.OffsetPosition;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.length;
 
@@ -50,58 +52,56 @@ public class SentenceSegmenter {
 
     }*/
 
-    /*protected List<Boolean> fromOffsetsToIndexes(offsets) {
-        List<Boolean> isChemicalEntity = new ArrayList<>();
-
-        if (CollectionUtils.isEmpty(mentions)) {
-            tokens.stream().forEach(t -> isChemicalEntity.add(Boolean.FALSE));
-
-            return isChemicalEntity;
+    public static List<Pair<Integer, Integer>> fromOffsetsToIndexes(List<OffsetPosition> offsets, List<String> tokensWithoutSpaces) {
+        if (isEmpty(offsets) || offsets.size() == 1) {
+            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size() - 1));
         }
 
-        mentions = mentions.stream()
-            .sorted(Comparator.comparingInt(ChemicalSpan::getStart))
-            .collect(Collectors.toList());
+//        List<ChemicalSpan> mentions = new ArrayList<>();
+//        mentions = mentions.stream()
+//            .sorted(Comparator.comparingInt(ChemicalSpan::getStart))
+//            .collect(Collectors.toList());
 
-        int globalOffset = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
+        int offsetId = 0;
+        OffsetPosition offset = offsets.get(offsetId);
 
-        int mentionId = 0;
-        ChemicalSpan mention = mentions.get(mentionId);
+        List<Pair<Integer, Integer>> resultIndexes = new ArrayList<>();
 
-        for (LayoutToken token : tokens) {
-            //normalise the offsets
-            int mentionStart = globalOffset + mention.getStart();
-            int mentionEnd = globalOffset + mention.getEnd();
+        StringBuilder sb = new StringBuilder();
+        int idxStart = 0;
+        int idxEnd = 0;
+        for (int idx = 0; idx < tokensWithoutSpaces.size(); idx++) {
+            String token = tokensWithoutSpaces.get(idx);
 
-            if (token.getOffset() < mentionStart) {
-                isChemicalEntity.add(Boolean.FALSE);
-                continue;
+            int offsetStart = offset.start;
+            int offsetEnd = offset.end;
+
+            int tokenCumulatedStart = sb.toString().length();
+            sb.append(token).append(" ");
+            int tokenCumulatedEnd = sb.toString().length() + 1;
+
+            if (tokenCumulatedEnd <= offsetEnd) {
+                idxEnd = idx;
             } else {
-                if (token.getOffset() >= mentionStart
-                    && token.getOffset() + length(token.getText()) <= mentionEnd) {
-                    isChemicalEntity.add(true);
-                    continue;
-                }
-
-                if (mentionId == mentions.size() - 1) {
-                    isChemicalEntity.add(Boolean.FALSE);
-                    break;
+                if (offsetId == offsets.size() - 1) {
+                    resultIndexes.add(Pair.of(idxStart, idx + 1));
                 } else {
-                    isChemicalEntity.add(Boolean.FALSE);
-                    mentionId++;
-                    mention = mentions.get(mentionId);
+                    resultIndexes.add(Pair.of(idxStart, idx + 1));
+                    offsetId++;
+                    idxStart = idx + 1;
+                    offset = offsets.get(offsetId);
                 }
             }
         }
-        if (tokens.size() > isChemicalEntity.size()) {
 
-            for (int counter = isChemicalEntity.size(); counter < tokens.size(); counter++) {
-                isChemicalEntity.add(Boolean.FALSE);
-            }
-        }
+//        if (tokensWithoutSpaces.size() > isChemicalEntity.size()) {
+//            for (int counter = isChemicalEntity.size(); counter < tokens.size(); counter++) {
+//                isChemicalEntity.add(Boolean.FALSE);
+//            }
+//        }
 
-        return isChemicalEntity;
-    }*/
+        return resultIndexes;
+    }
 
     protected List<OffsetPosition> getSentencesFromLayoutTokensAsOffsets(List<LayoutToken> tokens) {
         List<String> stringList = tokens

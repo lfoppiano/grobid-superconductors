@@ -61,6 +61,8 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
     private SuperconductorsStackTags currentContainerPath = null;
     private boolean insideEntity = false;
     private String currentAnnotationType;
+    
+    private SentenceDetector detector;
 
     /**
      * Process only from the body, trying to keep compatibility with the previous version
@@ -78,6 +80,7 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
         this.containerPaths = containerPaths;
         this.annotationTypes = annotationTypes;
         this.splitInSentences = splitInSentences;
+        this.detector = new OpenNLPSentenceDetector();
     }
 
     public AnnotationValuesTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, List<String> annotationTypes) {
@@ -208,14 +211,13 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
     private void writeStreamData(String text, String label) {
         
         if (this.splitInSentences()) {
-            SentenceDetector detector = new OpenNLPSentenceDetector();
-            List<OffsetPosition> detect = detector.detect(text);
+            List<OffsetPosition> detect = this.detector.detect(text);
             
             for (OffsetPosition sent : detect) {
                 String sentence = text.substring(sent.start, sent.end);
                 List<String> tokens = null;
                 try {
-                    tokens = DeepAnalyzer.getInstance().tokenize(text);
+                    tokens = DeepAnalyzer.getInstance().tokenize(sentence);
                 } catch (Exception e) {
                     throw new GrobidException("Fail to tokenize:, " + text, e);
                 }

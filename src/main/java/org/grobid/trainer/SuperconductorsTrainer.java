@@ -9,6 +9,7 @@ import org.grobid.core.engines.SentenceSegmenter;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.lang.impl.OpenNLPSentenceDetector;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.OffsetPosition;
@@ -38,7 +39,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
     public static final String FOLD_TYPE_DOCUMENT = "document";
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
-    private SentenceSegmenter segmenter; 
+    private SentenceSegmenter segmenter;
 
     public SuperconductorsTrainer() {
         super(SuperconductorsModels.SUPERCONDUCTORS);
@@ -131,7 +132,18 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                     while ((line_ = bis.readLine()) != null) {
                         if (StringUtils.isNotBlank(line_)) {
                             if (end) {
-                                featureFile.add(paragraphFeatureFile);
+                                // Concatenate the first token of each line and split in sentences
+                                List<String> tokenList = paragraphFeatureFile.stream().map(e -> e.split(" ")[0]).collect(Collectors.toList());
+                                String paragraphString = String.join(" ", tokenList);
+                                List<OffsetPosition> sentenceOffsets = new OpenNLPSentenceDetector().detect(paragraphString);
+                                List<Pair<Integer, Integer>> pairs = this.segmenter.fromOffsetsToIndexes(sentenceOffsets, tokenList);
+                                for (Pair<Integer, Integer> p : pairs) {
+                                    Integer startIdx = p.getLeft();
+                                    Integer endIdx = p.getRight();
+                                    List<String> sentenceTokens = paragraphFeatureFile.subList(startIdx, endIdx);
+                                    featureFile.add(sentenceTokens);
+                                }
+
                                 paragraphFeatureFile = new ArrayList<>();
                                 end = false;
                             }
@@ -207,7 +219,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                     paragraphXmlFile = xmlFileAligned.get(i);
                     int featureFileIndex = 0;
                     long entityLabels = 0;
-                    
+
                     List<String> tmpLayoutTokens = paragraphXmlFile.stream().map(Pair::getLeft).collect(Collectors.toList());
                     List<OffsetPosition> sentencesAsOffsets = this.segmenter.getSentencesAsOffsets(tmpLayoutTokens);
 
