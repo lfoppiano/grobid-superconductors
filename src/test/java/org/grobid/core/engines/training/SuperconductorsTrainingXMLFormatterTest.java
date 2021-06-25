@@ -15,7 +15,7 @@ import java.util.List;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SuperconductorsTrainingXMLFormatterTest {
 

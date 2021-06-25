@@ -20,7 +20,7 @@ import static org.grobid.core.utilities.MeasurementUtils.getLayoutTokenListEndOf
 import static org.grobid.core.utilities.MeasurementUtils.getLayoutTokenListStartOffset;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class MeasurementUtilsTest {
 
