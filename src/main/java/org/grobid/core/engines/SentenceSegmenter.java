@@ -54,7 +54,7 @@ public class SentenceSegmenter {
 
     public static List<Pair<Integer, Integer>> fromOffsetsToIndexes(List<OffsetPosition> offsets, List<String> tokensWithoutSpaces) {
         if (isEmpty(offsets) || offsets.size() == 1) {
-            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size() - 1));
+            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size()));
         }
 
 //        List<ChemicalSpan> mentions = new ArrayList<>();
