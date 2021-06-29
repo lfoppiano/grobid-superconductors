@@ -21,8 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -100,7 +102,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
             String name;
 
             Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
-            StringBuilder output = new StringBuilder();
+            List<List<String>> outputAsList = new ArrayList<>();
             for (int n = 0; n < refFiles.size(); n++) {
                 File theFile = refFiles.get(n);
                 name = theFile.getName();
@@ -132,6 +134,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                         if (StringUtils.isNotBlank(line_)) {
                             if (end) {
                                 // Concatenate the first token of each line and split in sentences
+                                /*
                                 List<String> tokenList = paragraphFeatureFile.stream().map(e -> e.split(" ")[0]).collect(Collectors.toList());
                                 String paragraphString = String.join(" ", tokenList);
                                 List<OffsetPosition> sentenceOffsets = new OpenNLPSentenceDetector().detect(paragraphString);
@@ -149,7 +152,9 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                                     }
                                     featureFile.add(sentenceTokens);
                                 }
+                                */
 
+                                featureFile.add(paragraphFeatureFile);
                                 paragraphFeatureFile = new ArrayList<>();
                                 end = false;
                             }
@@ -160,7 +165,9 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                     }
                 }
 
+
                 if (isNotEmpty(paragraphFeatureFile)) {
+         /*           
                     List<String> tokenList = paragraphFeatureFile.stream().map(e -> e.split(" ")[0]).collect(Collectors.toList());
                     String paragraphString = String.join(" ", tokenList);
                     List<OffsetPosition> sentenceOffsets = new OpenNLPSentenceDetector().detect(paragraphString);
@@ -178,43 +185,25 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                         }
                         featureFile.add(sentenceTokens);
                     }
-//                    featureFile.add(paragraphFeatureFile);
+                    */
+                    featureFile.add(paragraphFeatureFile);
                 }
 
                 List<List<Pair<String, String>>> xmlFile = new ArrayList<>();
                 List<Pair<String, String>> paragraphXmlFile = new ArrayList<>();
-                int paragraphIdx = 0;
                 for (int idx = 0; idx < labeled.size(); idx++) {
                     String tag = labeled.get(idx).getRight();
                     if (StringUtils.isEmpty(tag)) {
                         xmlFile.add(paragraphXmlFile);
-                        /*for (int sentenceIdx = 0; sentenceIdx < sentencesIndexes.get(paragraphIdx).size(); sentenceIdx ++) {
-                            Pair<Integer, Integer> p = sentencesIndexes.get(paragraphIdx).get(sentenceIdx);
-                            if (sentenceIdx == sentencesIndexes.get(paragraphIdx).size() -1) {
-                                xmlFile.add(paragraphXmlFile.subList(p.getLeft(), paragraphXmlFile.size()-1));
-                            } else {
-                                xmlFile.add(paragraphXmlFile.subList(p.getLeft(), p.getRight()));
-                            }
-//                            xmlFile.add(paragraphXmlFile.subList(p.getLeft(), p.getRight()));
-                        }*/
                         paragraphXmlFile = new ArrayList<>();
-                        paragraphIdx++;
                     } else {
                         paragraphXmlFile.add(labeled.get(idx));
                     }
                 }
                 if (isNotEmpty(paragraphXmlFile)) {
-//                    for (Pair<Integer, Integer> p : sentencesIndexes.get(paragraphIdx)) {
-//                        xmlFile.add(paragraphXmlFile.subList(p.getLeft(), p.getRight()));
-//                    }
                     xmlFile.add(paragraphXmlFile);
                 }
 
-
-                List<List<String>> featureFileAligned = featureFile;
-                List<List<Pair<String, String>>> xmlFileAligned = xmlFile;
-
-                /*
                 List<List<String>> featureFileAligned = new ArrayList<>();
                 List<List<Pair<String, String>>> xmlFileAligned = new ArrayList<>();
 
@@ -250,22 +239,18 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                 }
 
                 if (skipFile)
-                    continue;*/
+                    continue;
 
                 // At this point the paragraphs are aligned:
                 // 1. I need just one index counter
                 // 2. I need to find mismatches between tokens
-                int xmlFileParagraphIndex = 0;
-                for (int idxFeatureFile = 0; idxFeatureFile < featureFileAligned.size(); idxFeatureFile++) {
-                    paragraphFeatureFile = featureFileAligned.get(idxFeatureFile);
-                    paragraphXmlFile = xmlFileAligned.get(xmlFileParagraphIndex);
+                for (int i = 0; i < featureFileAligned.size(); i++) {
+                    paragraphFeatureFile = featureFileAligned.get(i);
+                    paragraphXmlFile = xmlFileAligned.get(i);
                     int featureFileIndex = 0;
                     long entityLabels = 0;
-                    int xmlFileParagraphLineIndex = 0;
-                    
                     outer:
-                    for (int idxFeatureLine = 0; idxFeatureLine < paragraphFeatureFile.size(); idxFeatureLine++) {
-                        String line = paragraphFeatureFile.get(idxFeatureLine);
+                    for (String line : paragraphFeatureFile) {
                         int secondFeatureTokenIndex = line.indexOf('\t');
                         if (secondFeatureTokenIndex == -1) {
                             secondFeatureTokenIndex = line.indexOf(' ');
@@ -277,9 +262,8 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             // has been generated by a recent version of grobid
                             token = UnicodeUtil.normaliseTextAndRemoveSpaces(token);
                         }
-                        
                         // we get the label in the labelled data file for the same token
-                        for (int labeledIndex = xmlFileParagraphLineIndex; labeledIndex < paragraphXmlFile.size(); labeledIndex++) {
+                        for (int labeledIndex = featureFileIndex; labeledIndex < paragraphXmlFile.size(); labeledIndex++) {
                             String localToken = paragraphXmlFile.get(labeledIndex).getLeft();
                             String tag = paragraphXmlFile.get(labeledIndex).getRight();
 
@@ -287,14 +271,14 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             // has been generated by a recent version of grobid
                             localToken = UnicodeUtil.normaliseTextAndRemoveSpaces(localToken);
                             if (localToken.equals(token)) {
-                                line = line.replace("\t", " ").replace("  ", " ");
-                                output.append(line).append(" ").append(tag).append("\n");
+                                List<String> lineAsList = new ArrayList<>(Arrays.asList(line.split(" ")));
+                                lineAsList.add(tag);
+                                outputAsList.add(lineAsList);
                                 if (!tag.equals(TaggingLabels.OTHER_LABEL)) {
                                     entityLabels++;
                                 }
                                 featureFileIndex = labeledIndex + 1;
                                 labeledIndex = featureFileIndex + 10;
-                                xmlFileParagraphIndex++;
                                 break;
                             }
 
@@ -309,21 +293,36 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                                 }
                                 break;
                             }
-                            
                         }
                     }
 
-                    if (isNotBlank(output.toString()) && entityLabels > 0) {
-                        output.append("\n");
-                        writer.write(output.toString() + "\n");
-                        writer.flush();
-                        writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                    if (isNotEmpty(outputAsList) && entityLabels > 0) {
+                        List<String> tokenList = outputAsList.stream().map(e -> e.get(0)).collect(Collectors.toList());
+                        String paragraphString = String.join(" ", tokenList);
+                        List<OffsetPosition> sentenceOffsets = this.segmenter.detect(paragraphString);
+                        List<Pair<Integer, Integer>> pairs = SentenceSegmenter.fromOffsetsToIndexes(sentenceOffsets, tokenList);
+                        sentencesIndexes.add(pairs);
+                        for (int pairsIdx = 0; pairsIdx < pairs.size(); pairsIdx++) {
+                            Pair<Integer, Integer> p = pairs.get(pairsIdx);
+                            Integer startIdx = p.getLeft();
+                            Integer endIdx = p.getRight();
+                            List<List<String>> sentenceTokens = null;
+                            if (pairsIdx == pairs.size() - 1) {
+                                sentenceTokens = outputAsList.subList(startIdx, outputAsList.size());
+                            } else {
+                                sentenceTokens = outputAsList.subList(startIdx, endIdx);
+                            }
+                            String joined = sentenceTokens.stream().map(s -> String.join(" ", s)).collect(Collectors.joining("\n"));
+                            writer.write(joined + "\n\n\n");
+                            writer.flush();
+                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                        }
                     }
-                    output = new StringBuilder();
+                    outputAsList = new ArrayList<>();
                 }
 
-                writer.write(output.toString() + "\n");
                 writer.write("\n");
+                writer.flush();
             }
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);

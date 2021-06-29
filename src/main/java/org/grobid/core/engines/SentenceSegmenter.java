@@ -4,8 +4,6 @@ import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.assertj.core.data.Offset;
-import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.lang.SentenceDetector;
 import org.grobid.core.lang.impl.OpenNLPSentenceDetector;
 import org.grobid.core.layout.LayoutToken;
@@ -16,7 +14,6 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.length;
 
 public class SentenceSegmenter {
 
@@ -34,6 +31,10 @@ public class SentenceSegmenter {
         String paragraph = String.join("", tokens);
 
         return tokenizer.detect(paragraph);
+    }
+    
+    public List<OffsetPosition> detect(String text) {
+        return tokenizer.detect(text);
     }
 
 /*    public List<OffsetPosition> getSentencesAsIndexes(List<String> tokens) {
