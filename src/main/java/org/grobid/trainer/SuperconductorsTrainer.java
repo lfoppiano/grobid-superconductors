@@ -312,10 +312,12 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             } else {
                                 sentenceTokens = outputAsList.subList(startIdx, endIdx);
                             }
-                            String joined = sentenceTokens.stream().map(s -> String.join(" ", s)).collect(Collectors.joining("\n"));
-                            writer.write(joined + "\n\n\n");
-                            writer.flush();
-                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                            if (sentenceTokens.stream().anyMatch(l -> !l.get(l.size() - 1).equals("<other>"))) {
+                                String joined = sentenceTokens.stream().map(s -> String.join(" ", s)).collect(Collectors.joining("\n"));
+                                writer.write(joined + "\n\n\n");
+                                writer.flush();
+                                writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                            }
                         }
                     }
                     outputAsList = new ArrayList<>();
