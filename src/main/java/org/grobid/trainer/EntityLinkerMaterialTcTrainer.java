@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
-public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
+public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
@@ -176,5 +176,10 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
         Trainer trainer = new EntityLinkerMaterialTcTrainer();
 
         AbstractTrainer.runTraining(trainer);
+    }
+
+    @Override
+    public int createCRFPPDataSingle(File inputFile, File outputDirectory) {
+        return 0;
     }
 }

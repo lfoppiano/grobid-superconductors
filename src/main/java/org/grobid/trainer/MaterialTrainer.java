@@ -34,7 +34,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
-public class MaterialTrainer extends AbstractTrainer {
+public class MaterialTrainer extends AbstractTrainerNew {
     public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("material");
     public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("formula", "variable",
         "value", "name", "shape", "doping", "fabrication", "substrate");
@@ -236,5 +236,10 @@ public class MaterialTrainer extends AbstractTrainer {
         Trainer trainer = new MaterialTrainer();
 
         AbstractTrainer.runTraining(trainer);
+    }
+
+    @Override
+    public int createCRFPPDataSingle(File inputFile, File outputDirectory) {
+        return 0;
     }
 }
