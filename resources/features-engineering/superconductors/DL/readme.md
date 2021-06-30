@@ -8,6 +8,8 @@ In this table are shown the best results in comparison with the baseline. For al
 |------|---------|-----------|---------|----|--------|
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
+| [baseline_by_sentences_with_features](baseline_sentences_features) | 172 papers, features + divided by sentences, only the paragraphs without entities are filtered out | 77.48  |  79.31 |  78.38  | 0.53  |
+| [baseline_by_sentences_pos_with_features](baseline_sentences_pos_features) | 172 papers, features + divided by sentences and filtering out all sentences without entities |   |
 | oL+Sm| Oscar Large + SuperMat | - | -  | - |
 | [fastText_oL+Sm_bin_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 76.20  |  77.19  |  76.68 | 1.11 |
 | [fastText_oL+Sm_vec_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.08  | 76.76  |  76.91 | 0.82 |
@@ -35,6 +37,10 @@ Batch 8 resulted to score the least in the cross-validation with only single bat
 | [baseline-batch_1_7-features](baseline/baseline-batch_1_7-features) | baseline_features + gloVe + bin | 77.81 | 79.09 | 78.43  | 0.66 |
 | [fastText_oS+Sc+Sm-batch_1_7-no_features](oS+Sc+Sm/fastText_oS+Sc+Sm-batch_1_7-no_features) | baseline_no_features + oS+Sc+Sm + bin | 75.23  |  78.37  |  76.75  | 1.26 |
 | [fastText_oS+Sc+Sm-batch_1_7-features](oS+Sc+Sm/fastText_oS+Sc+Sm-batch_1_7-features) |  baseline_features + oS+Sc+Sm + bin |  74.69  |  79.10   | 76.81   | 0.80 |
+| [fastText_oL+Sc+Sm-batch_1_7-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-batch_1_7-no_features) | baseline_no_features + oL+Sc+Sm + vec |  |
+| [fastText_oL+Sc+Sm-batch_1_7-features](oL+Sc+Sm/fastText_oL+Sc+Sm-batch_1_7-features) |  baseline_features + oL+Sc+Sm + vec |   |
+| [fastText_oL+Sm-batch_1_7-no_features](oL+Sm/fastText_oL+Sm-batch_1_7-no_features) | baseline_no_features + oL+Sm + vec | - |
+| [fastText_oL+Sm-batch_1_7-features](oS+Sc+Sm/fastText_oL+Sm-batch_1_7-features) |  baseline_features + oL+Sm + vec |  -  |
 
 ### Removing batch 8 and 2
 Batch 8 and 2 resulted to score the least in the cross-validation with only single batches
@@ -45,6 +51,10 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 | [baseline-batches-28-features](baseline/baseline-batches-28-features) | baseline_features + gloVe + bin | 77.66  |  78.48 |   78.06   | 0.95 |
 | [fastText_oS+Sc+Sm-batches-28-no_features](oS+Sc+Sm/fastText_oS+Sc+Sm-batches-28-no_features) | baseline_no_features + oS+Sc+Sm + bin | 76.87  |  78.51  |  77.68  | 0.84 |
 | [fastText_oS+Sc+Sm-batches-28-features](oS+Sc+Sm/fastText_oS+Sc+Sm-batches-28-features) |  baseline_features + oS+Sc+Sm + bin | 77.17  |  78.85  | 77.99 | 0.48 |
+| [fastText_oL+Sc+Sm-batches-28-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-no_features) | baseline_no_features + oL+Sc+Sm + vec |  |
+| [fastText_oL+Sc+Sm-batches-28-features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-features) |  baseline_features + oL+Sc+Sm + vec |  |
+| [fastText_oL+Sm-batches-28-no_features](oL+Sc+Sm/fastText_oL+Sm-batches-28-no_features) | baseline_no_features + oL+Sm + vec |  |
+| [fastText_oL+Sm-batches-28-features](oL+Sc+Sm/fastText_oL+Sm-batches-28-features) |  baseline_features + oL+Sm + vec |  |
 
 ### Replace <other> with POS tag
 We replaced the `<other>` label with the relative POS tag of the word
