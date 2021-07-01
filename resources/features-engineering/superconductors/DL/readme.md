@@ -8,8 +8,9 @@ In this table are shown the best results in comparison with the baseline. For al
 |------|---------|-----------|---------|----|--------|
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
-| [baseline_by_sentences_with_features](baseline_sentences_features) | 172 papers, features + divided by sentences, only the paragraphs without entities are filtered out | 77.48  |  79.31 |  78.38  | 0.53  |
-| [baseline_by_sentences_pos_with_features](baseline_sentences_pos_features) | 172 papers, features + divided by sentences and filtering out all sentences without entities |   |
+| [baseline_by_sentences_with_features](baseline_sentences_features) | 172 papers, features, segmented by sentences, filter out paragraphs without entities | 77.48  |  79.31 |  78.38  | 0.53  |
+| [baseline_by_sentences_positive_with_features](baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   **80.60**  | 0.57 | 
+| [baseline_by_sentences_positive_with_features-fastext](baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities || 
 | oL+Sm| Oscar Large + SuperMat | - | -  | - |
 | [fastText_oL+Sm_bin_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 76.20  |  77.19  |  76.68 | 1.11 |
 | [fastText_oL+Sm_vec_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.08  | 76.76  |  76.91 | 0.82 |
@@ -59,10 +60,58 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 ### Replace <other> with POS tag
 We replaced the `<other>` label with the relative POS tag of the word
 
-| Name | Changes | Precision | Recall  | F1 | St Dev |
+| Name | Changes/Label | Precision | Recall  | F1 | Support |
 |------|---------|-----------|---------|----|--------|
-| [baseline-POS-no_features](baseline/baseline-POS-no_features) | baseline_no_features + gloVe + bin | 87.46  |  86.78  |  87.12 | |
-| [baseline-POS-features](baseline/baseline-POS-features) | baseline_features + gloVe + bin | 87.53  |  87.10  |  87.32   | |
+| [baseline-POS-no_features](baseline/baseline-POS-no_features) | baseline_no_features + gloVe + bin | | |
+|  |           `<ADJ>`  | 0.9088  |  0.8901  |  0.8994  |    3928 |
+|  |           `<ADP>`  | 0.9575  |  0.9507  |  0.9540  |    6091 |
+|  |           `<ADV>`  | 0.9336  |  0.9263  |  0.9300  |    1429 |
+|  |           `<AUX>`  | 0.9482  |  0.9492  |  0.9487  |     260 |
+|  |         `<CCONJ>`  | 0.9618  |  0.9624  |  0.9621  |    1171 |
+|  |           `<DET>`  | 0.9649  |  0.9666  |  0.9658  |    5371 |
+|  |          `<INTJ>`  | 0.1967  |  0.0412  |  0.0669  |      17 |
+|  |          `<NOUN>`  | 0.8989  |  0.9003  |  0.8996  |   11055 |
+|  |           `<NUM>`  | 0.9243  |  0.9024  |  0.9132  |    2536 |
+|  |          `<PART>`  | 0.8265  |  0.9066  |  0.8644  |     697 |
+|  |          `<PRON>`  | 0.9523  |  0.9530  |  0.9527  |     568 |
+|  |         `<PROPN>`  | 0.8082  |  0.6691  |  0.7317  |     641 |
+|  |         `<PUNCT>`  | 0.9668  |  0.9552  |  0.9610  |    7214 |
+|  |         `<SCONJ>`  | 0.9198  |  0.9443  |  0.9319  |     589 |
+|  |           `<SYM>`  | 0.8684  |  0.9162  |  0.8916  |     247 |
+|  |          `<VERB>`  | 0.9374  |  0.9376  |  0.9375  |    4540 |
+|  |             `<X>`  | 0.7279  |  0.6642  |  0.6942  |     316 |
+|  |         `<class>`  | 0.7233  |  0.6339  |  0.6754  |     171 |
+|  |      `<material>`  | 0.7663  |  0.7767  |  0.7714  |     841 |
+|  |     `<me_method>`  | 0.6790  |  0.8195  |  0.7425  |     210 |
+|  |      `<pressure>`  | 0.6564  |  0.6163  |  0.6298  |      49 |
+|  |            `<tc>`  | 0.7765  |  0.7485  |  0.7622  |     402 |
+|  |       `<tcValue>`  | 0.6832  |  0.6537  |  0.6676  |     121 |
+|  | all (micro avg.)   | 0.9239  |  0.9183  |  0.9211  | |
+| [baseline-POS-features](baseline/baseline-POS-features) | baseline_features + gloVe + bin | | |
+|  |           `<ADJ>`  |   0.9072  |  0.8946  |  0.9008   |   3928 |
+|  |           `<ADP>`  |   0.9556  |  0.9531  |  0.9543   |   6091 |
+|  |           `<ADV>`  |   0.9361  |  0.9262  |  0.9311   |   1429 |
+|  |           `<AUX>`  |   0.9507  |  0.9492  |  0.9500   |    260 |
+|  |         `<CCONJ>`  |   0.9612  |  0.9629  |  0.9621   |   1171 |
+|  |           `<DET>`  |   0.9635  |  0.9664  |  0.9649   |   5371 |
+|  |          `<INTJ>`  |   0.6067  |  0.0824  |  0.1410   |     17 |
+|  |          `<NOUN>`  |   0.8989  |  0.9040  |  0.9014   |  11055 |
+|  |           `<NUM>`  |   0.9205  |  0.9125  |  0.9164   |   2536 |
+|  |          `<PART>`  |   0.8473  |  0.8898  |  0.8672   |    697 |
+|  |          `<PRON>`  |   0.9524  |  0.9514  |  0.9519   |    568 |
+|  |         `<PROPN>`  |   0.8027  |  0.6878  |  0.7405   |    641 |
+|  |         `<PUNCT>`  |   0.9650  |  0.9580  |  0.9615   |   7214 |
+|  |         `<SCONJ>`  |   0.9263  |  0.9448  |  0.9355   |    589 |
+|  |           `<SYM>`  |   0.8635  |  0.9158  |  0.8888   |    247 |
+|  |          `<VERB>`  |   0.9392  |  0.9369  |  0.9380   |   4540 |
+|  |             `<X>`  |   0.7354  |  0.6750  |  0.7034   |    316 |
+|  |         `<class>`  |   0.7155  |  0.6404  |  0.6757   |    171 |
+|  |      `<material>`  |   0.7797  |  0.7811  |  0.7803   |    841 |
+|  |     `<me_method>`  |   0.6884  |  0.8167  |  0.7469   |    210 |
+|  |      `<pressure>`  |   0.6713  |  0.5408  |  0.5923   |     49 |
+|  |            `<tc>`  |   0.7731  |  0.7520  |  0.7622   |    402 |
+|  |       `<tcValue>`  |   0.6738  |  0.6496  |  0.6609   |    121 |
+|  | all `(micro avg.)   |  0.9238  |  0.9208   | 0.9223 |          |
 | [fastText_oS+Sc+Sm-POS-no_features](fastText_oS+Sc+Sm-POS-no_features) | baseline_no_features + oS+Sc+Sm + bin |  | |
 | [fastText_oS+Sc+Sm-POS-features](fastText_oS+Sc+Sm-POS-features) |  baseline_features + oS+Sc+Sm + bin |  |  |
 
