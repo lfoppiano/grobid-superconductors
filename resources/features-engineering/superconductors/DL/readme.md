@@ -9,18 +9,13 @@ In this table are shown the best results in comparison with the baseline. For al
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
 | [baseline_by_sentences_with_features](baseline_sentences_features) | 172 papers, features, segmented by sentences, filter out paragraphs without entities | 77.48  |  79.31 |  78.38  | 0.53  |
-| [baseline_by_sentences_positive_with_features](baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   **80.60**  | 0.57 | 
-| [baseline_by_sentences_positive_with_features-fastext](baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities || 
+| [baseline_by_sentences_positive_with_features](baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
+| [baseline_by_sentences_positive_with_features-fastext](baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  **80.81** | 0.72 |  
 | oL+Sm| Oscar Large + SuperMat | - | -  | - |
 | [fastText_oL+Sm_bin_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 76.20  |  77.19  |  76.68 | 1.11 |
 | [fastText_oL+Sm_vec_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.08  | 76.76  |  76.91 | 0.82 |
 | [fastText_oL+Sm_bin_skipgram_300d_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 78.04  |  77.92  |  77.98 | **0.21** |
 | [fastText_oL+Sm_vec_skipgram_300d_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.60  |  78.42  |  **78.00** | 0.66|
-| oL+Sc| Oscar Large + Science | - | -  | - |
-| [fastText_oL+Sc_bin_skipgram_300d_no_features](oL+Sc/fastText_oL+Sc_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + skipgram + 300d + bin  | 76.74  |  76.77  |  76.75 | 0.87  |
-| [fastText_oL+Sc_vec_skipgram_300d_no_features](oL+Sc/fastText_oL+Sc_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + skipgram + 300d + vec  | 76.42  |  76.04  |  76.21  | 0.75 |
-| [fastText_oL+Sc_bin_skipgram_300d_features](oL+Sc/fastText_oL+Sc_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + skipgram + 300d + bin  | 77.13  |  77.22  |  77.16| 1.03 |
-| [fastText_oL+Sc_vec_skipgram_300d_features](oL+Sc/fastText_oL+Sc_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + skipgram + 300d + vec  | 77.60  |  77.39  |  77.49  | 0.59 |
 | oL+Sc+Sm | Oscar Large + Science + SuperMat | - | -  | - |
 | [fastText_oL+Sc+Sm_bin_skipgram_300d_no_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 76.66 | 76.78  |76.70  | 0.80 |
 | [fastText_oL+Sc+Sm_vec_skipgram_300d_no_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 76.72  |  77.21 | 76.96  | 0.90 |
@@ -52,10 +47,203 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 | [baseline-batches-28-no_features](baseline/baseline-batches-28-no_features) | baseline_no_features + gloVe + bin | 78.21  |  78.46  |  78.33 | 0.69 |
 | [fastText_oS+Sc+Sm-batches-28-features](oS+Sc+Sm/fastText_oS+Sc+Sm-batches-28-features) |  baseline_features + oS+Sc+Sm + bin | 77.17  |  78.85  | 77.99 | 0.48 |
 | [fastText_oS+Sc+Sm-batches-28-no_features](oS+Sc+Sm/fastText_oS+Sc+Sm-batches-28-no_features) | baseline_no_features + oS+Sc+Sm + bin | 76.87  |  78.51  |  77.68  | 0.84 |
-| [fastText_oL+Sc+Sm-batches-28-features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-features) |  baseline_features + oL+Sc+Sm + vec |  |
+| [fastText_oL+Sc+Sm-batches-28-features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-features) |  baseline_features + oL+Sc+Sm + vec | 78.17  |  79.09 | 78.63 | 0.57 |
 | [fastText_oL+Sc+Sm-batches-28-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-no_features) | baseline_no_features + oL+Sc+Sm + vec | 77.39  | 78.65  | 78.01 | 1.02 |
-| [fastText_oL+Sm-batches-28-features](oL+Sm/fastText_oL+Sm-batches-28-features) |  baseline_features + oL+Sm + vec |  |
+| [fastText_oL+Sm-batches-28-features](oL+Sm/fastText_oL+Sm-batches-28-features) |  baseline_features + oL+Sm + vec | 78.02  |  78.69  |  78.34 | 0.57 |
 | [fastText_oL+Sm-batches-28-no_features](oL+Sm/fastText_oL+Sm-batches-28-no_features) | baseline_no_features + oL+Sm + vec | 76.69  |  78.90  |  77.77 | 1.32 | 
+
+### Evaluation on each document (data stability)
+
+| Filename                                             | Precision | Recall | F1     | Support |
+| ---------------------------------------------------- | --------- | ------ | ------ | ------- |
+| PHC2640145-CC                                        | 0.5385    | 0.28   | 0.3684 | 25      |
+| PHC3130001-CC                                        | 0.5       | 0.4815 | 0.4906 | 27      |
+| PHC4320193-CC                                        | 0.6575    | 0.6467 | 0.6521 | 184     |
+| EPL0480073-CC                                        | 0.6471    | 0.6875 | 0.6667 | 16      |
+| SST01600L7-CC                                        | 0.6809    | 0.6531 | 0.6667 | 49      |
+| PHC1480411-CC                                        | 0.6863    | 0.6863 | 0.6863 | 51      |
+| PHC4020152-CC                                        | 0.6648    | 0.7169 | 0.6899 | 166     |
+| PR05514733-CC                                        | 0.6724    | 0.7091 | 0.6903 | 55      |
+| PHC3910237-CC                                        | 0.6614    | 0.7368 | 0.6971 | 114     |
+| Tc4k\_interfaceBi\_Ni-CC                             | 0.8409    | 0.5968 | 0.6981 | 124     |
+| P070184523-CC                                        | 0.7177    | 0.7063 | 0.712  | 126     |
+| P068100502-CC                                        | 0.7333    | 0.6962 | 0.7143 | 79      |
+| L092157004-CC                                        | 0.7042    | 0.7463 | 0.7246 | 67      |
+| P068180505-CC                                        | 0.7143    | 0.7432 | 0.7285 | 74      |
+| PHC4200023-CC                                        | 0.7611    | 0.7478 | 0.7544 | 115     |
+| PHC1580183-CC                                        | 0.7368    | 0.7778 | 0.7568 | 18      |
+| APL0774202-CC                                        | 0.75      | 0.7759 | 0.7627 | 58      |
+| PHC2240263-CC                                        | 0.6667    | 0.9    | 0.766  | 80      |
+| P067104503-CC                                        | 0.7549    | 0.7857 | 0.77   | 98      |
+| SSC1280097-CC                                        | 0.7333    | 0.8209 | 0.7746 | 67      |
+| JPS0730819-CC                                        | 0.7111    | 0.8533 | 0.7758 | 75      |
+| P066020503-CC                                        | 0.7407    | 0.8163 | 0.7767 | 49      |
+| P066214509-CC                                        | 0.8103    | 0.746  | 0.7769 | 63      |
+| P071184510-CC                                        | 0.7614    | 0.7979 | 0.7792 | 188     |
+| L088207003-CC                                        | 0.7358    | 0.8298 | 0.78   | 47      |
+| L091087001-CC                                        | 0.7727    | 0.7907 | 0.7816 | 86      |
+| mydeen2010temperature-CC                             | 0.7545    | 0.8182 | 0.785  | 154     |
+| L095117006-CC                                        | 0.8684    | 0.7174 | 0.7857 | 92      |
+| PR0446999-CC                                         | 0.7742    | 0.809  | 0.7912 | 89      |
+| P068132504-CC                                        | 0.7245    | 0.8765 | 0.7933 | 81      |
+| PHC1910237                                           | 0.7818    | 0.8113 | 0.7963 | 53      |
+| MCP0750110-CC                                        | 0.7846    | 0.8095 | 0.7969 | 126     |
+| JPS0731123-CC                                        | 0.8028    | 0.7917 | 0.7972 | 72      |
+| PHC1580178                                           | 0.8023    | 0.7931 | 0.7977 | 87      |
+| P072214523-CC                                        | 0.8111    | 0.7849 | 0.7978 | 93      |
+| P071134526-CC                                        | 0.9091    | 0.7143 | 0.8    | 98      |
+| P072180504-CC                                        | 0.8302    | 0.7719 | 0.8    | 114     |
+| NAT3500600                                           | 0.8654    | 0.75   | 0.8036 | 60      |
+| P072014504-CC                                        | 0.7988    | 0.8086 | 0.8037 | 162     |
+| PR06015055-CC                                        | 0.7959    | 0.8125 | 0.8041 | 48      |
+| JPS0731131-CC                                        | 0.8132    | 0.7957 | 0.8043 | 93      |
+| L090137001-CC                                        | 0.8444    | 0.7755 | 0.8085 | 49      |
+| P071104513-CC                                        | 0.8207    | 0.8032 | 0.8118 | 188     |
+| P070054519-CC                                        | 0.8652    | 0.7673 | 0.8133 | 159     |
+| PHC4170033-CC                                        | 0.8       | 0.8276 | 0.8136 | 145     |
+| JPS0731297-CC                                        | 0.8       | 0.832  | 0.8157 | 125     |
+| SCinTiO\_1612.02502-CC                               | 0.8162    | 0.8162 | 0.8162 | 234     |
+| PR05511832-CC                                        | 0.7843    | 0.8511 | 0.8163 | 47      |
+| Li\_2018\_Supercond.\_Sci.\_Technol.\_31\_085001     | 0.8298    | 0.8041 | 0.8168 | 194     |
+| SSC1270493-CC                                        | 0.807     | 0.8364 | 0.8214 | 110     |
+| MAT0305503-CC                                        | 0.8077    | 0.84   | 0.8235 | 75      |
+| P066024503-CC                                        | 0.8161    | 0.8353 | 0.8256 | 170     |
+| 1802.03907-CC                                        | 0.8309    | 0.823  | 0.8269 | 418     |
+| PCS2739-CC                                           | 0.8889    | 0.7742 | 0.8276 | 62      |
+| Suzuki\_etal\_2015-CC                                | 0.7826    | 0.878  | 0.8276 | 82      |
+| sun2012re-emerging-CC                                | 0.7669    | 0.8993 | 0.8278 | 139     |
+| P070020503-CC                                        | 0.9266    | 0.7481 | 0.8279 | 135     |
+| JPS0731655-CC                                        | 0.837     | 0.8191 | 0.828  | 94      |
+| PR05009672-CC                                        | 0.8025    | 0.8553 | 0.828  | 76      |
+| P072064520-CC                                        | 0.8545    | 0.8034 | 0.8282 | 117     |
+| PR06006991-CC                                        | 0.7965    | 0.8654 | 0.8295 | 104     |
+| P064172514-CC                                        | 0.7717    | 0.8987 | 0.8304 | 79      |
+| L088207005-CC                                        | 0.8261    | 0.8382 | 0.8321 | 68      |
+| P072174508-CC                                        | 0.8       | 0.8679 | 0.8326 | 106     |
+| P068064507-CC                                        | 0.8293    | 0.8361 | 0.8327 | 122     |
+| EPJ0290369-CC                                        | 0.7924    | 0.8779 | 0.833  | 213     |
+| PHC3411655-CC                                        | 0.75      | 0.9375 | 0.8333 | 48      |
+| Drozdov\_etal\_2015                                  | 0.8447    | 0.8229 | 0.8336 | 271     |
+| PR05903948-CC                                        | 0.7952    | 0.88   | 0.8354 | 75      |
+| JPS081113707-CC                                      | 0.8313    | 0.8415 | 0.8364 | 82      |
+| PHC1980027                                           | 0.8305    | 0.8448 | 0.8376 | 58      |
+| JP01103169-CC                                        | 0.8163    | 0.8602 | 0.8377 | 93      |
+| JPC0150L17-CC                                        | 0.8295    | 0.8488 | 0.8391 | 86      |
+| PHC3830337-CC                                        | 0.8235    | 0.866  | 0.8442 | 97      |
+| P066104528-CC                                        | 0.8352    | 0.8539 | 0.8444 | 89      |
+| JPS0710709-CC                                        | 0.8596    | 0.8305 | 0.8448 | 59      |
+| L094037007-CC                                        | 0.8421    | 0.8477 | 0.8449 | 151     |
+| Rb2Cr3As3\_quasi1D\_SC1412.2596-CC                   | 0.8144    | 0.8778 | 0.8449 | 90      |
+| 1903.04321-CC                                        | 0.8451    | 0.8451 | 0.8451 | 71      |
+| PR05914099-CC                                        | 0.7939    | 0.9034 | 0.8452 | 145     |
+| L095167004-CC                                        | 0.8649    | 0.8266 | 0.8453 | 271     |
+| P065104523-CC                                        | 0.7945    | 0.9062 | 0.8467 | 128     |
+| P070052502-CC                                        | 0.7945    | 0.9062 | 0.8467 | 64      |
+| JPS0732912-CC                                        | 0.8211    | 0.8764 | 0.8478 | 89      |
+| JPS0723041-CC                                        | 0.8375    | 0.859  | 0.8481 | 78      |
+| P066024502-CC                                        | 0.8701    | 0.8272 | 0.8481 | 81      |
+| P069174506-CC                                        | 0.8177    | 0.8862 | 0.8506 | 167     |
+| PHC4030200-CC                                        | 0.8       | 0.9091 | 0.8511 | 22      |
+| PHC4210001-CC                                        | 0.8382    | 0.8683 | 0.8529 | 167     |
+| P068132507-CC                                        | 0.8356    | 0.8714 | 0.8531 | 70      |
+| PR05514152-CC                                        | 0.8421    | 0.8649 | 0.8533 | 37      |
+| PHB1480442                                           | 0.8551    | 0.8551 | 0.8551 | 69      |
+| P071100502-CC                                        | 0.8452    | 0.8659 | 0.8554 | 82      |
+| PR06014617-CC                                        | 0.8696    | 0.8421 | 0.8556 | 95      |
+| CoA4\_HTSC\_theory1807.00934-CC                      | 0.8476    | 0.8641 | 0.8558 | 103     |
+| P070214505-CC                                        | 0.838     | 0.875  | 0.8561 | 136     |
+| P063224522-CC                                        | 0.8726    | 0.8409 | 0.8565 | 220     |
+| ying2011pressure-CC                                  | 0.8296    | 0.8852 | 0.8565 | 209     |
+| P072220505-CC                                        | 0.8421    | 0.8727 | 0.8571 | 55      |
+| chu2009high-CC                                       | 0.8447    | 0.8736 | 0.8589 | 554     |
+| SST0180041-CC                                        | 0.8396    | 0.8812 | 0.8599 | 101     |
+| PR06114350-CC                                        | 0.8875    | 0.8353 | 0.8606 | 85      |
+| Tanaka\_etal\_2017-CC                                | 0.8503    | 0.8712 | 0.8606 | 163     |
+| L094047006-CC                                        | 0.9011    | 0.8283 | 0.8632 | 99      |
+| EPL0410207-CC                                        | 0.84      | 0.8936 | 0.866  | 47      |
+| Liu\_2018\_Supercond.\_Sci.\_Technol.\_31\_125011-CC | 0.8182    | 0.9197 | 0.866  | 137     |
+| PR06012475-CC                                        | 0.8393    | 0.8952 | 0.8664 | 105     |
+| L088167005-CC                                        | 0.8553    | 0.8784 | 0.8667 | 74      |
+| P068214517-CC                                        | 0.9209    | 0.8205 | 0.8678 | 156     |
+| xing2014theAnomaly-CC                                | 0.8361    | 0.9027 | 0.8681 | 113     |
+| PR05814617-CC                                        | 0.86      | 0.8776 | 0.8687 | 98      |
+| hott2013review-CC                                    | 0.8725    | 0.8668 | 0.8697 | 766     |
+| PR06114956-CC                                        | 0.8671    | 0.8732 | 0.8702 | 142     |
+| PR05809504-CC                                        | 0.8649    | 0.8767 | 0.8707 | 73      |
+| P071104516-CC                                        | 0.8684    | 0.8742 | 0.8713 | 151     |
+| ivanovskii2008newHigh                                | 0.8589    | 0.8845 | 0.8715 | 970     |
+| PR05003221-CC                                        | 0.85      | 0.8947 | 0.8718 | 38      |
+| 1609.04957-CC                                        | 0.8677    | 0.877  | 0.8723 | 187     |
+| L089147002-CC                                        | 0.8913    | 0.8542 | 0.8723 | 48      |
+| P072064527-CC                                        | 0.9167    | 0.8333 | 0.873  | 66      |
+| JPS081033701-CC                                      | 0.8673    | 0.8854 | 0.8763 | 96      |
+| PR04909084-CC                                        | 0.86      | 0.8958 | 0.8776 | 96      |
+| PhysRevX.9.021044-CC                                 | 0.8286    | 0.9355 | 0.8788 | 31      |
+| L089157004-CC                                        | 0.8761    | 0.8839 | 0.88   | 112     |
+| wang2011effect                                       | 0.8696    | 0.8955 | 0.8824 | 134     |
+| PHC3660299-CC                                        | 0.8519    | 0.92   | 0.8846 | 75      |
+| kotegawa2009contrasting-CC                           | 0.8814    | 0.8927 | 0.887  | 233     |
+| MAT0106521-CC                                        | 0.8806    | 0.8939 | 0.8872 | 66      |
+| PR06100107-CC                                        | 0.8701    | 0.9054 | 0.8874 | 148     |
+| okada2008supercondctivity-CC                         | 0.8788    | 0.8992 | 0.8889 | 129     |
+| P066132510-CC                                        | 0.8898    | 0.8898 | 0.8898 | 127     |
+| L093157004-CC                                        | 0.8851    | 0.8953 | 0.8902 | 86      |
+| P069014507-CC                                        | 0.8984    | 0.8842 | 0.8912 | 190     |
+| P065172501-CC                                        | 0.8922    | 0.8922 | 0.8922 | 102     |
+| PR06103604-CC                                        | 0.8778    | 0.908  | 0.8927 | 87      |
+| P072104504-CC                                        | 0.878     | 0.9114 | 0.8944 | 79      |
+| PR04310568-CC                                        | 0.8966    | 0.8966 | 0.8966 | 29      |
+| JPS0722453-CC                                        | 0.8627    | 0.9362 | 0.898  | 47      |
+| L092227003-CC                                        | 0.8689    | 0.9298 | 0.8983 | 57      |
+| Carnicom                                             | 0.8671    | 0.932  | 0.8984 | 147     |
+| piva2015combined-CC                                  | 0.8923    | 0.9062 | 0.8992 | 128     |
+| P066020501-CC                                        | 0.8772    | 0.9259 | 0.9009 | 54      |
+| PHC3200009-CC                                        | 0.9044    | 0.8978 | 0.9011 | 137     |
+| P072224509-CC                                        | 0.9492    | 0.8615 | 0.9032 | 65      |
+| PR05907184-CC                                        | 0.904     | 0.904  | 0.904  | 125     |
+| PR05814581-CC                                        | 0.8605    | 0.961  | 0.908  | 77      |
+| P065224520-CC                                        | 0.873     | 0.9483 | 0.9091 | 58      |
+| P067172501-CC                                        | 0.8592    | 0.9839 | 0.9173 | 62      |
+| P069184513-CC                                        | 0.8908    | 0.9464 | 0.9177 | 112     |
+| MPL0150497-CC                                        | 0.8921    | 0.9466 | 0.9185 | 131     |
+| PHC4020027-CC                                        | 0.8734    | 0.9718 | 0.92   | 71      |
+| PHC3410729-CC                                        | 0.8889    | 0.96   | 0.9231 | 25      |
+| PR05713422-CC                                        | 0.91      | 0.9381 | 0.9239 | 97      |
+| SSC1230017-CC                                        | 0.9444    | 0.9067 | 0.9252 | 75      |
+| EPL0580589                                           | 0.9062    | 0.9457 | 0.9255 | 92      |
+| PR06013094-CC                                        | 0.8889    | 0.9655 | 0.9256 | 58      |
+| P072094504-CC                                        | 0.9444    | 0.9107 | 0.9273 | 56      |
+| HfV2O431805                                          | 0.9595    | 0.8987 | 0.9281 | 79      |
+| SSC1310125-CC                                        | 0.9077    | 0.9516 | 0.9291 | 62      |
+| L091217001-CC                                        | 0.9821    | 0.8871 | 0.9322 | 62      |
+| L094047001-CC                                        | 0.9151    | 0.951  | 0.9327 | 102     |
+| 1802.09882-CC                                        | 0.9333    | 0.9333 | 0.9333 | 60      |
+| L094127001-CC                                        | 0.9239    | 0.9551 | 0.9392 | 89      |
+| EPL0330153-CC                                        | 0.9118    | 0.9688 | 0.9394 | 32      |
+| L088227002-CC                                        | 0.9423    | 0.9423 | 0.9423 | 104     |
+| P065024523-CC                                        | 0.9265    | 0.9692 | 0.9474 | 65      |
+| EPL0490086-CC                                        | 0.9429    | 0.9565 | 0.9496 | 69      |
+| yamaguchi2014ac                                      | 0.9266    | 0.9806 | 0.9528 | 103     |
+| PR06103808-CC                                        | 0.9726    | 0.9595 | 0.966  | 74      |
+| L090137002-CC                                        | 1         | 1      | 1      | 14      |
+| PR06006991-CC                                        | 1         | 1      | 1      | 8       |
+
+
+### Removing the worst evaluated documents
+
+#### Removing the top-worst-10
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| [baseline-minus_worst_10-features](baseline/baseline-minus_worst_10-features) | baseline_features + gloVe + remove worst 10 documents  |  |
+| [baseline-minus_worst_10-no_features](baseline/baseline-minus_worst_10-no_features) | baseline_no_features + gloVe + remove worst 10 documents |  |
+
+#### Removing the top-worst-20
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| [baseline-minus_worst_20-features](baseline/baseline-minus_worst_20-features) | baseline_features + gloVe + remove worst 20 documents  | 79.48  |  79.77  |  79.62 | 0.87 |
+| [baseline-minus_worst_20-no_features](baseline/baseline-minus_worst_20-no_features) | baseline_no_features + gloVe + remove worst 20 documents | 78.06  |  78.73  |  78.39  | 0.56 |
 
 ### Replace <other> with POS tag
 We replaced the `<other>` label with the relative POS tag of the word
@@ -203,7 +391,11 @@ We replaced the `<other>` label with the relative POS tag of the word
 | [fastText_oL+Sc+Sm_vec_skipgram_300d_no_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 76.72  |  77.21 | 76.96  | 0.90 |
 | [fastText_oL+Sc+Sm_bin_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 77.19 |  78.00  |  77.58 | 1.01 |
 | [fastText_oL+Sc+Sm_vec_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 77.21 |  78.00  |  77.60 | 0.49 |
-
+| oL+Sc| Oscar Large + Science | - | -  | - |
+| [fastText_oL+Sc_bin_skipgram_300d_no_features](oL+Sc/fastText_oL+Sc_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + skipgram + 300d + bin  | 76.74  |  76.77  |  76.75 | 0.87  |
+| [fastText_oL+Sc_vec_skipgram_300d_no_features](oL+Sc/fastText_oL+Sc_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + skipgram + 300d + vec  | 76.42  |  76.04  |  76.21  | 0.75 |
+| [fastText_oL+Sc_bin_skipgram_300d_features](oL+Sc/fastText_oL+Sc_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + skipgram + 300d + bin  | 77.13  |  77.22  |  77.16| 1.03 |
+| [fastText_oL+Sc_vec_skipgram_300d_features](oL+Sc/fastText_oL+Sc_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + skipgram + 300d + vec  | 77.60  |  77.39  |  77.49  | 0.59 |
 
 # Comparisons
 
