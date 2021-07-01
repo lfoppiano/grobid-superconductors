@@ -34,28 +34,28 @@ Batch 8 resulted to score the least in the cross-validation with only single bat
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
-| [baseline-batch_1_7-no_features](baseline/baseline-batch_1_7-no_features) | baseline_no_features + gloVe + bin |  77.18  | 79.43   | 78.29  | 0.61 |
 | [baseline-batch_1_7-features](baseline/baseline-batch_1_7-features) | baseline_features + gloVe + bin | 77.81 | 79.09 | 78.43  | 0.66 |
-| [fastText_oS+Sc+Sm-batch_1_7-no_features](oS+Sc+Sm/fastText_oS+Sc+Sm-batch_1_7-no_features) | baseline_no_features + oS+Sc+Sm + bin | 75.23  |  78.37  |  76.75  | 1.26 |
+| [baseline-batch_1_7-no_features](baseline/baseline-batch_1_7-no_features) | baseline_no_features + gloVe + bin |  77.18  | 79.43   | 78.29  | 0.61 |
 | [fastText_oS+Sc+Sm-batch_1_7-features](oS+Sc+Sm/fastText_oS+Sc+Sm-batch_1_7-features) |  baseline_features + oS+Sc+Sm + bin |  74.69  |  79.10   | 76.81   | 0.80 |
-| [fastText_oL+Sc+Sm-batch_1_7-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-batch_1_7-no_features) | baseline_no_features + oL+Sc+Sm + vec |  |
-| [fastText_oL+Sc+Sm-batch_1_7-features](oL+Sc+Sm/fastText_oL+Sc+Sm-batch_1_7-features) |  baseline_features + oL+Sc+Sm + vec |   |
-| [fastText_oL+Sm-batch_1_7-no_features](oL+Sm/fastText_oL+Sm-batch_1_7-no_features) | baseline_no_features + oL+Sm + vec | - |
-| [fastText_oL+Sm-batch_1_7-features](oS+Sc+Sm/fastText_oL+Sm-batch_1_7-features) |  baseline_features + oL+Sm + vec |  -  |
+| [fastText_oS+Sc+Sm-batch_1_7-no_features](oS+Sc+Sm/fastText_oS+Sc+Sm-batch_1_7-no_features) | baseline_no_features + oS+Sc+Sm + bin | 75.23  |  78.37  |  76.75  | 1.26 |
+| [fastText_oL+Sc+Sm-batch_1_7-features](oL+Sc+Sm/fastText_oL+Sc+Sm-batch_1_7-features) |  baseline_features + oL+Sc+Sm + vec |  78.06  |  78.75  |  78.39 | 0.40 |
+| [fastText_oL+Sc+Sm-batch_1_7-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-batch_1_7-no_features) | baseline_no_features + oL+Sc+Sm + vec | 77.80  |  78.49 |   78.13 | 0.99 | 
+| [fastText_oL+Sm-batch_1_7-features](oS+Sm/fastText_oL+Sm-batch_1_7-features) |  baseline_features + oL+Sm + vec |  77.17  |  79.24  |  78.18  | 0.96 | 
+| [fastText_oL+Sm-batch_1_7-no_features](oL+Sm/fastText_oL+Sm-batch_1_7-no_features) | baseline_no_features + oL+Sm + vec | 76.95  |  78.84  |  77.87 | 1.04 |
 
 ### Removing batch 8 and 2
 Batch 8 and 2 resulted to score the least in the cross-validation with only single batches
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
-| [baseline-batches-28-no_features](baseline/baseline-batches-28-no_features) | baseline_no_features + gloVe + bin | 78.21  |  78.46  |  78.33 | 0.69 |
 | [baseline-batches-28-features](baseline/baseline-batches-28-features) | baseline_features + gloVe + bin | 77.66  |  78.48 |   78.06   | 0.95 |
-| [fastText_oS+Sc+Sm-batches-28-no_features](oS+Sc+Sm/fastText_oS+Sc+Sm-batches-28-no_features) | baseline_no_features + oS+Sc+Sm + bin | 76.87  |  78.51  |  77.68  | 0.84 |
+| [baseline-batches-28-no_features](baseline/baseline-batches-28-no_features) | baseline_no_features + gloVe + bin | 78.21  |  78.46  |  78.33 | 0.69 |
 | [fastText_oS+Sc+Sm-batches-28-features](oS+Sc+Sm/fastText_oS+Sc+Sm-batches-28-features) |  baseline_features + oS+Sc+Sm + bin | 77.17  |  78.85  | 77.99 | 0.48 |
-| [fastText_oL+Sc+Sm-batches-28-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-no_features) | baseline_no_features + oL+Sc+Sm + vec |  |
+| [fastText_oS+Sc+Sm-batches-28-no_features](oS+Sc+Sm/fastText_oS+Sc+Sm-batches-28-no_features) | baseline_no_features + oS+Sc+Sm + bin | 76.87  |  78.51  |  77.68  | 0.84 |
 | [fastText_oL+Sc+Sm-batches-28-features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-features) |  baseline_features + oL+Sc+Sm + vec |  |
-| [fastText_oL+Sm-batches-28-no_features](oL+Sc+Sm/fastText_oL+Sm-batches-28-no_features) | baseline_no_features + oL+Sm + vec |  |
-| [fastText_oL+Sm-batches-28-features](oL+Sc+Sm/fastText_oL+Sm-batches-28-features) |  baseline_features + oL+Sm + vec |  |
+| [fastText_oL+Sc+Sm-batches-28-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-batches-28-no_features) | baseline_no_features + oL+Sc+Sm + vec | 77.39  | 78.65  | 78.01 | 1.02 |
+| [fastText_oL+Sm-batches-28-features](oL+Sm/fastText_oL+Sm-batches-28-features) |  baseline_features + oL+Sm + vec |  |
+| [fastText_oL+Sm-batches-28-no_features](oL+Sm/fastText_oL+Sm-batches-28-no_features) | baseline_no_features + oL+Sm + vec | 76.69  |  78.90  |  77.77 | 1.32 | 
 
 ### Replace <other> with POS tag
 We replaced the `<other>` label with the relative POS tag of the word
@@ -143,8 +143,6 @@ We replaced the `<other>` label with the relative POS tag of the word
 
 
 # Summary results 
-
-Results in this table are from settings that have been discarded for their poor performances:
 
 | Name | Changes | Precision | Recall  | F1 |  
 |------|---------|-----------|---------|----|
