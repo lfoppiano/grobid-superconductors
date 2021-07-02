@@ -5,10 +5,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.core.engines.SentenceSegmenter;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
@@ -18,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -30,17 +33,19 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTAT
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 
-public class SuperconductorsTrainer extends AbstractTrainer {
+public class SuperconductorsAutoSentenceTrainer extends AbstractTrainer {
     public static final String FOLD_TYPE_PARAGRAPH = "paragraph";
     public static final String FOLD_TYPE_DOCUMENT = "document";
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
+    private SentenceSegmenter segmenter;
 
-    public SuperconductorsTrainer() {
+    public SuperconductorsAutoSentenceTrainer() {
         super(SuperconductorsModels.SUPERCONDUCTORS);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
         window = 20;
+        this.segmenter = new SentenceSegmenter();
     }
 
     /**
@@ -96,7 +101,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
             String name;
 
             Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
-            StringBuilder output = new StringBuilder();
+            List<List<String>> outputAsList = new ArrayList<>();
             for (int n = 0; n < refFiles.size(); n++) {
                 File theFile = refFiles.get(n);
                 name = theFile.getName();
@@ -119,6 +124,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
                 List<List<String>> featureFile = new ArrayList<>();
                 List<String> paragraphFeatureFile = new ArrayList<>();
+                List<List<Pair<Integer, Integer>>> sentencesIndexes = new ArrayList<>();
                 String line_ = null;
                 boolean end = false;
                 try (BufferedReader bis = new BufferedReader(
@@ -126,6 +132,27 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                     while ((line_ = bis.readLine()) != null) {
                         if (StringUtils.isNotBlank(line_)) {
                             if (end) {
+                                // Concatenate the first token of each line and split in sentences
+                                /*
+                                List<String> tokenList = paragraphFeatureFile.stream().map(e -> e.split(" ")[0]).collect(Collectors.toList());
+                                String paragraphString = String.join(" ", tokenList);
+                                List<OffsetPosition> sentenceOffsets = new OpenNLPSentenceDetector().detect(paragraphString);
+                                List<Pair<Integer, Integer>> pairs = SentenceSegmenter.fromOffsetsToIndexes(sentenceOffsets, tokenList);
+                                sentencesIndexes.add(pairs);
+                                for (int pairsIdx = 0; pairsIdx < pairs.size(); pairsIdx++) {
+                                    Pair<Integer, Integer> p = pairs.get(pairsIdx);
+                                    Integer startIdx = p.getLeft();
+                                    Integer endIdx = p.getRight();
+                                    List<String> sentenceTokens = null;
+                                    if (pairsIdx == pairs.size() -1) {
+                                        sentenceTokens = paragraphFeatureFile.subList(startIdx, paragraphFeatureFile.size());                                        
+                                    } else {
+                                        sentenceTokens = paragraphFeatureFile.subList(startIdx, endIdx);
+                                    }
+                                    featureFile.add(sentenceTokens);
+                                }
+                                */
+
                                 featureFile.add(paragraphFeatureFile);
                                 paragraphFeatureFile = new ArrayList<>();
                                 end = false;
@@ -139,6 +166,25 @@ public class SuperconductorsTrainer extends AbstractTrainer {
 
 
                 if (isNotEmpty(paragraphFeatureFile)) {
+         /*           
+                    List<String> tokenList = paragraphFeatureFile.stream().map(e -> e.split(" ")[0]).collect(Collectors.toList());
+                    String paragraphString = String.join(" ", tokenList);
+                    List<OffsetPosition> sentenceOffsets = new OpenNLPSentenceDetector().detect(paragraphString);
+                    List<Pair<Integer, Integer>> pairs = SentenceSegmenter.fromOffsetsToIndexes(sentenceOffsets, tokenList);
+                    sentencesIndexes.add(pairs);
+                    for (int pairsIdx = 0; pairsIdx < pairs.size(); pairsIdx++) {
+                        Pair<Integer, Integer> p = pairs.get(pairsIdx);
+                        Integer startIdx = p.getLeft();
+                        Integer endIdx = p.getRight();
+                        List<String> sentenceTokens = null;
+                        if (pairsIdx == pairs.size() -1) {
+                            sentenceTokens = paragraphFeatureFile.subList(startIdx, paragraphFeatureFile.size()-1);
+                        } else {
+                            sentenceTokens = paragraphFeatureFile.subList(startIdx, endIdx);
+                        }
+                        featureFile.add(sentenceTokens);
+                    }
+                    */
                     featureFile.add(paragraphFeatureFile);
                 }
 
@@ -224,8 +270,9 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                             // has been generated by a recent version of grobid
                             localToken = UnicodeUtil.normaliseTextAndRemoveSpaces(localToken);
                             if (localToken.equals(token)) {
-                                line = line.replace("\t", " ").replace("  ", " ");
-                                output.append(line).append(" ").append(tag).append("\n");
+                                List<String> lineAsList = new ArrayList<>(Arrays.asList(line.split(" ")));
+                                lineAsList.add(tag);
+                                outputAsList.add(lineAsList);
                                 if (!tag.equals(TaggingLabels.OTHER_LABEL)) {
                                     entityLabels++;
                                 }
@@ -248,17 +295,35 @@ public class SuperconductorsTrainer extends AbstractTrainer {
                         }
                     }
 
-                    if (isNotBlank(output.toString()) && entityLabels > 0) {
-                        output.append("\n");
-                        writer.write(output.toString() + "\n");
-                        writer.flush();
-                        writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                    if (isNotEmpty(outputAsList) && entityLabels > 0) {
+                        List<String> tokenList = outputAsList.stream().map(e -> e.get(0)).collect(Collectors.toList());
+                        String paragraphString = String.join(" ", tokenList);
+                        List<OffsetPosition> sentenceOffsets = this.segmenter.detect(paragraphString);
+                        List<Pair<Integer, Integer>> pairs = SentenceSegmenter.fromOffsetsToIndexes(sentenceOffsets, tokenList);
+                        sentencesIndexes.add(pairs);
+                        for (int pairsIdx = 0; pairsIdx < pairs.size(); pairsIdx++) {
+                            Pair<Integer, Integer> p = pairs.get(pairsIdx);
+                            Integer startIdx = p.getLeft();
+                            Integer endIdx = p.getRight();
+                            List<List<String>> sentenceTokens = null;
+                            if (pairsIdx == pairs.size() - 1) {
+                                sentenceTokens = outputAsList.subList(startIdx, outputAsList.size());
+                            } else {
+                                sentenceTokens = outputAsList.subList(startIdx, endIdx);
+                            }
+                            if (sentenceTokens.stream().anyMatch(l -> !l.get(l.size() - 1).equals("<other>"))) {
+                                String joined = sentenceTokens.stream().map(s -> String.join(" ", s)).collect(Collectors.joining("\n"));
+                                writer.write(joined + "\n\n\n");
+                                writer.flush();
+                                writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                            }
+                        }
                     }
-                    output = new StringBuilder();
+                    outputAsList = new ArrayList<>();
                 }
 
-                writer.write(output.toString() + "\n");
                 writer.write("\n");
+                writer.flush();
             }
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
@@ -277,7 +342,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
         return createCRFPPData(sourcePathLabel, outputPath, null, 1.0);
 
     }
-    
+
     /**
      * Command line execution. Assuming grobid-home is in ../grobid-home.
      *
@@ -286,7 +351,7 @@ public class SuperconductorsTrainer extends AbstractTrainer {
     public static void main(String[] args) {
         GrobidProperties.getInstance();
 
-        Trainer trainer = new SuperconductorsTrainer();
+        Trainer trainer = new SuperconductorsAutoSentenceTrainer();
 
         AbstractTrainer.runTraining(trainer);
     }
