@@ -235,8 +235,8 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
-| [baseline-minus_worst_10-features](baseline/baseline-minus_worst_10-features) | baseline_features + gloVe + remove worst 10 documents  |  |
-| [baseline-minus_worst_10-no_features](baseline/baseline-minus_worst_10-no_features) | baseline_no_features + gloVe + remove worst 10 documents |  |
+| [baseline-minus_worst_10-features](baseline/baseline-minus_worst_10-features) | baseline_features + gloVe + remove worst 10 documents  | 79.34   | 79.51  | 79.42 | 0.62 |
+| [baseline-minus_worst_10-no_features](baseline/baseline-minus_worst_10-no_features) | baseline_no_features + gloVe + remove worst 10 documents | 78.43   | 79.28  | 78.85 | 0.72 |
 
 #### Removing the top-worst-20
 
