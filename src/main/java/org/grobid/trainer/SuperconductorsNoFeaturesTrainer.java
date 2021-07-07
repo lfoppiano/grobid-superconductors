@@ -34,7 +34,7 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTAT
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 
-public class SuperconductorsNoFeaturesTrainer extends AbstractTrainer {
+public class SuperconductorsNoFeaturesTrainer extends AbstractTrainerNew {
     public static final String FOLD_TYPE_PARAGRAPH = "paragraph";
     public static final String FOLD_TYPE_DOCUMENT = "document";
 
@@ -185,5 +185,10 @@ public class SuperconductorsNoFeaturesTrainer extends AbstractTrainer {
         Trainer trainer = new SuperconductorsNoFeaturesTrainer();
 
         AbstractTrainer.runTraining(trainer);
+    }
+
+    @Override
+    public int createCRFPPDataSingle(File inputFile, File outputDirectory) {
+        return 0;
     }
 }

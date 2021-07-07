@@ -100,7 +100,7 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
 
         GrobidModel model = SuperconductorsModels.SUPERCONDUCTORS;
-        Trainer trainer = new SuperconductorsTrainer();
+        AbstractTrainerNew trainer = new SuperconductorsTrainer();
 
         if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
             model = SuperconductorsModels.MATERIAL;
@@ -117,8 +117,11 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         } else if ("superconductors-no-features".equals(modelName)) {
             trainer = new SuperconductorsNoFeaturesTrainer();
         }
-
+        
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
+        if (inputPath != null && !inputPath.isDirectory() ) {
+            filename = File.separator + modelName + "-" + inputPath.getName().replaceAll(".tei.xml", "") + ".train";
+        }
 
         Path destination = null;
         if (outputPath != null && Files.exists(Paths.get(outputPath.getAbsolutePath()))) {
@@ -135,7 +138,11 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             inputPath = GrobidProperties.getCorpusPath(new File("/"), model);
             System.out.println("Input directory was not provided, getting the training data from " + inputPath.getAbsolutePath());
         }
-        trainer.createCRFPPData(inputPath, destination.toFile());
+        if (inputPath.isDirectory()) {
+            trainer.createCRFPPData(inputPath, destination.toFile());
+        } else {
+            trainer.createCRFPPDataSingle(inputPath, destination.toFile());
+        }
 
         System.out.println("Writing training data for delft to " + destination);
     }
