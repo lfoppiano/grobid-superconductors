@@ -6,21 +6,15 @@ In this table are shown the best results in comparison with the baseline. For al
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
+| Baseline | Baseline | - | -  | - |
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
-| [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
-| [baseline_by_sentences_with_features](baseline_sentences_features) | 172 papers, features, segmented by sentences, filter out paragraphs without entities | 77.48  |  79.31 |  78.38  | 0.53  |
-| [baseline_by_sentences_positive_with_features](baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
-| [baseline_by_sentences_positive_with_features-fastext](baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  **80.81** | 0.72 |  
-| oL+Sm| Oscar Large + SuperMat | - | -  | - |
-| [fastText_oL+Sm_bin_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 76.20  |  77.19  |  76.68 | 1.11 |
-| [fastText_oL+Sm_vec_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.08  | 76.76  |  76.91 | 0.82 |
-| [fastText_oL+Sm_bin_skipgram_300d_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 78.04  |  77.92  |  77.98 | **0.21** |
+| [baseline_with_features](baseline/baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
+| Other results | Baseline changes | - | -  | - |
+| [baseline_by_sentences_positive_with_features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
+| [baseline_by_sentences_positive_with_features-fastext](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  **80.81** | 0.72 |  
+| [baseline_by_sentences-updated_corpus](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
+| [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
 | [fastText_oL+Sm_vec_skipgram_300d_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.60  |  78.42  |  **78.00** | 0.66|
-| oL+Sc+Sm | Oscar Large + Science + SuperMat | - | -  | - |
-| [fastText_oL+Sc+Sm_bin_skipgram_300d_no_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 76.66 | 76.78  |76.70  | 0.80 |
-| [fastText_oL+Sc+Sm_vec_skipgram_300d_no_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 76.72  |  77.21 | 76.96  | 0.90 |
-| [fastText_oL+Sc+Sm_bin_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 77.19 |  78.00  |  77.58 | 1.01 |
-| [fastText_oL+Sc+Sm_vec_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 77.21 |  78.00  |  77.60 | 0.49 |
 
 ## Other experiments 
 
@@ -336,6 +330,10 @@ We replaced the `<other>` label with the relative POS tag of the word
 |------|---------|-----------|---------|----|
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
+| [baseline_by_sentences_with_features](baseline/baseline_sentences_features) | 172 papers, features, segmented by sentences, filter out paragraphs without entities | 77.48  |  79.31 |  78.38  | 0.53  |
+| [baseline_by_sentences_positive_with_features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
+| [baseline_by_sentences_positive_with_features-fastext](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  **80.81** | 0.72 |  
+| [baseline_by_sentences-updated_corpus](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe , corpus segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
 | oS+Sm misc | Oscar Small + SuperMat with various settings | - | -  | - | - |
 | [fastText_oS+Sm_vec_cbow_100d_no_features](old/fastText_oS+Sm_vec_cbow_100d_no_features) | baseline_no_features + fastText + oscarS_Supermat + cbow + 100d |   72.15 |   73.39 |   72.75 |
 | [fastText_oS+Sm_vec_cbow_100d_features](old/fastText_oS+Sm_vec_cbow_100d_features) | baseline_features + fastText + oscarS_Supermat + cbow + 100d |74.06  |  73.92  |  73.98|
@@ -396,6 +394,17 @@ We replaced the `<other>` label with the relative POS tag of the word
 | [fastText_oL+Sc_vec_skipgram_300d_no_features](oL+Sc/fastText_oL+Sc_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + skipgram + 300d + vec  | 76.42  |  76.04  |  76.21  | 0.75 |
 | [fastText_oL+Sc_bin_skipgram_300d_features](oL+Sc/fastText_oL+Sc_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + skipgram + 300d + bin  | 77.13  |  77.22  |  77.16| 1.03 |
 | [fastText_oL+Sc_vec_skipgram_300d_features](oL+Sc/fastText_oL+Sc_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + skipgram + 300d + vec  | 77.60  |  77.39  |  77.49  | 0.59 |
+| oL+Sm| Oscar Large + SuperMat | - | -  | - |
+| [fastText_oL+Sm_bin_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 76.20  |  77.19  |  76.68 | 1.11 |
+| [fastText_oL+Sm_vec_skipgram_300d_no_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.08  | 76.76  |  76.91 | 0.82 |
+| [fastText_oL+Sm_bin_skipgram_300d_features](oL+Sm/fastText_oL+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + bin  | 78.04  |  77.92  |  77.98 | **0.21** |
+| [fastText_oL+Sm_vec_skipgram_300d_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.60  |  78.42  |  **78.00** | 0.66|
+| oL+Sc+Sm | Oscar Large + Science + SuperMat | - | -  | - |
+| [fastText_oL+Sc+Sm_bin_skipgram_300d_no_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 76.66 | 76.78  |76.70  | 0.80 |
+| [fastText_oL+Sc+Sm_vec_skipgram_300d_no_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_no_features) | baseline_no_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 76.72  |  77.21 | 76.96  | 0.90 |
+| [fastText_oL+Sc+Sm_bin_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 77.19 |  78.00  |  77.58 | 1.01 |
+| [fastText_oL+Sc+Sm_vec_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 77.21 |  78.00  |  77.60 | 0.49 |
+| [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
 
 # Comparisons
 
