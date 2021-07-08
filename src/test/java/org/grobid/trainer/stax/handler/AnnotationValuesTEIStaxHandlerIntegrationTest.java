@@ -33,7 +33,7 @@ public class AnnotationValuesTEIStaxHandlerIntegrationTest {
    
     @Test
     public void testHandler_defaultTags_extractStreamAsSentences() throws Exception {
-        target = new AnnotationValuesTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, ANNOTATION_DEFAULT_TAG_TYPES, true);
+        target = new AnnotationValuesTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, ANNOTATION_DEFAULT_TAG_TYPES);
 
         InputStream inputStream = this.getClass().getResourceAsStream("annotations.tei2.test.xml");
 
