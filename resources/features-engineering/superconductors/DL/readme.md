@@ -15,6 +15,11 @@ In this table are shown the best results in comparison with the baseline. For al
 | [baseline_by_sentences-updated_corpus](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
 | [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
 | [fastText_oL+Sm_vec_skipgram_300d_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.60  |  78.42  |  **78.00** | 0.66|
+| [fastText_oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
+| [fastText_oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
+| [fastText_glove-4labels-features](baseline/fastText_glove-4labels-features) | baseline_features + fastText + oL+Sc+Sm  | 79.89 | 80.46 | 80.17  | 1.14 |
+| [fastText_glove-4labels-no_features](baseline/fastText_glove-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.44 | 79.60 | 79.52 | 0.61|
+
 
 ## Other experiments 
 
@@ -403,7 +408,6 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 | EPL0490086-CC.train                                    | 0.9853    | 0.9710 | 0.9781  | 69      |
 | L090137002-CC.train                                    | 1.0000    | 1.0000 | 1.0000  | 14      |
 
-
 ### Removing the worst evaluated documents
 
 #### Removing the top-worst-10
@@ -477,6 +481,27 @@ We replaced the `<other>` label with the relative POS tag of the word
 |  | all `(micro avg.)   |  0.9238  |  0.9208   | 0.9223 |          |
 | [fastText_oS+Sc+Sm-POS-no_features](fastText_oS+Sc+Sm-POS-no_features) | baseline_no_features + oS+Sc+Sm + bin |  | |
 | [fastText_oS+Sc+Sm-POS-features](fastText_oS+Sc+Sm-POS-features) |  baseline_features + oS+Sc+Sm + bin |  |  |
+
+
+### Tokenization experiments
+We try to change the tokenization to match the tokenization that might have been used for the embeddings.
+The experiment requires different settings from other experiments above, and the absolute results cannot be compared. 
+We are happy for a local improvement.. 
+
+ 
+| Name | Changes/Label | Precision | Recall  | F1 | 
+|------|---------|-----------|---------|---------|
+| No layout features |
+|glove_baseline |glove + baseline + normal superconductors tokenization | 78.19  |  78.81  |  78.49|
+|glove_tokenization |glove + baseline + grobid standard tokenization | 78.56 | 78.84 | 78.69|
+|oL+Sc+Sm |oL+Sc+Sm + normal superconductors tokenization | 79.11  |  79.51  |  79.31|
+|oL+Sc+Sm_tokenization |oL+Sc+Sm + grobid standard tokenization | 78.81  |  79.55  |  79.18 |
+| With layout features |
+|glove_baseline_features |glove + baseline_features + normal superconductors tokenization |79.05 |  78.78  |  78.91 |
+|glove_tokenization_features |glove + baseline_features  + grobid standard tokenization | |
+|oL+Sc+Sm_features|oL+Sc+Sm + normal superconductors tokenization + features | 78.89 | 79.24  |  79.06 |
+|oL+Sc+Sm_tokenization_features|oL+Sc+Sm + grobid standard tokenization + features | 79.02  |  80.13  |  79.57  |
+
 
 # Embeddings 
 
