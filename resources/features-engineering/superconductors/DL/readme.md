@@ -13,7 +13,7 @@ In this table are shown the best results in comparison with the baseline. For al
 | [baseline_by_sentences_positive_with_features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
 | [baseline_by_sentences_positive_with_features-fastext](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  **80.81** | 0.72 |  
 | [baseline_by_sentences-updated_corpus](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
-| [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
+| [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
 | [fastText_oL+Sm_vec_skipgram_300d_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.60  |  78.42  |  **78.00** | 0.66|
 | [fastText_oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
 | [fastText_oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
@@ -492,15 +492,15 @@ We are happy for a local improvement..
 | Name | Changes/Label | Precision | Recall  | F1 | 
 |------|---------|-----------|---------|---------|
 | No layout features |
-|glove_baseline |glove + baseline + normal superconductors tokenization | 78.19  |  78.81  |  78.49|
-|glove_tokenization |glove + baseline + grobid standard tokenization | 78.56 | 78.84 | 78.69|
-|oL+Sc+Sm |oL+Sc+Sm + normal superconductors tokenization | 79.11  |  79.51  |  79.31|
-|oL+Sc+Sm_tokenization |oL+Sc+Sm + grobid standard tokenization | 78.81  |  79.55  |  79.18 |
+| [glove_baseline](tokenization_experiments/10fold-superconductors-bidLSTM+glove-noFeatures-baseline.o23305) |glove + baseline + normal superconductors tokenization | 78.19  |  78.81  |  78.49|
+| [glove_tokenization](tokenization_experiments/10fold-superconductors-bidLSTM+glove-noFeatures-grobid_tokenization.o23302) |glove + baseline + grobid standard tokenization | 78.56 | 78.84 | 78.69|
+| [oL+Sc+Sm](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-baseline.o23299) |oL+Sc+Sm + normal superconductors tokenization | 79.11  |  79.51  |  79.31|
+| [oL+Sc+Sm_tokenization](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-baseline--FEATURES.o23298) |oL+Sc+Sm + grobid standard tokenization | 78.81  |  79.55  |  79.18 |
 | With layout features |
-|glove_baseline_features |glove + baseline_features + normal superconductors tokenization |79.05 |  78.78  |  78.91 |
-|glove_tokenization_features |glove + baseline_features  + grobid standard tokenization | |
-|oL+Sc+Sm_features|oL+Sc+Sm + normal superconductors tokenization + features | 78.89 | 79.24  |  79.06 |
-|oL+Sc+Sm_tokenization_features|oL+Sc+Sm + grobid standard tokenization + features | 79.02  |  80.13  |  79.57  |
+| [glove_baseline_features](tokenization_experiments/10fold-superconductors-bidLSTM+glove-noFeatures-baseline--FEATURES.o23304) |glove + baseline_features + normal superconductors tokenization |79.05 |  78.78  |  78.91 |
+| [glove_tokenization_features](tokenization_experiments/10fold-superconductors-bidLSTM+glove-noFeatures-grobid_tokenization-FEATURES.o23308) |glove + baseline_features  + grobid standard tokenization |  79.77  | 79.23  | 79.49  | 
+| [oL+Sc+Sm_features](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-grobid_tokenization.o23301) |oL+Sc+Sm + normal superconductors tokenization + features | 78.89 | 79.24  |  79.06 |
+| [oL+Sc+Sm_tokenization_features](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-grobid_tokenization-FEATURES.o23300) |oL+Sc+Sm + grobid standard tokenization + features | 79.02  |  80.13  |  79.57  |
 
 
 # Embeddings 
