@@ -492,8 +492,10 @@ We are happy for a local improvement..
 | Name | Changes/Label | Precision | Recall  | F1 | 
 |------|---------|-----------|---------|---------|
 | No layout features |
+| [baseline_glove*](tokenization_experiments/10fold-superconductors-bidLSTM-glove-sentences-in-corpus.o23310) |glove + baseline + normal superconductors tokenization + original corpus | 78.87 |  80.35 |  79.60|
 | [glove_baseline](tokenization_experiments/10fold-superconductors-bidLSTM+glove-noFeatures-baseline.o23305) |glove + baseline + normal superconductors tokenization | 78.19  |  78.81  |  78.49|
 | [glove_tokenization](tokenization_experiments/10fold-superconductors-bidLSTM+glove-noFeatures-grobid_tokenization.o23302) |glove + baseline + grobid standard tokenization | 78.56 | 78.84 | 78.69|
+| [oL+Sc+Sm*](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-sentences-in-corpus.o23311) |glove + baseline_features + normal superconductors tokenization | 79.62  |  80.48  |  80.04 |
 | [oL+Sc+Sm](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-baseline.o23299) |oL+Sc+Sm + normal superconductors tokenization | 79.11  |  79.51  |  79.31|
 | [oL+Sc+Sm_tokenization](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-baseline--FEATURES.o23298) |oL+Sc+Sm + grobid standard tokenization | 78.81  |  79.55  |  79.18 |
 | With layout features |
@@ -502,6 +504,7 @@ We are happy for a local improvement..
 | [oL+Sc+Sm_features](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-grobid_tokenization.o23301) |oL+Sc+Sm + normal superconductors tokenization + features | 78.89 | 79.24  |  79.06 |
 | [oL+Sc+Sm_tokenization_features](tokenization_experiments/10fold-superconductors-bidLSTM+oL+Sc+Sm-noFeatures-grobid_tokenization-FEATURES.o23300) |oL+Sc+Sm + grobid standard tokenization + features | 79.02  |  80.13  |  79.57  |
 
+(*) Using the original corpus with the features files. The rest of the data has been generated using only the XML to be able to manipulate the tokenization
 
 # Embeddings 
 
