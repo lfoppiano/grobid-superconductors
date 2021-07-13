@@ -425,8 +425,33 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 | [baseline-minus_worst_20-no_features](baseline/baseline-minus_worst_20-no_features) | baseline_no_features + gloVe + remove worst 20 documents | 78.06  |  78.73  |  78.39  | 0.56 |
 
 ### Replace <other> with POS tag
-We replaced the `<other>` label with the relative POS tag of the word
+The amount of token labeled with <other> is usually 10 times higher than all other tokens (e.g. <material> <class> etc... ). 
+This could lead to a imbalance toward the <other> which reduce the recall of the model. 
+With this experiment we want to proof that by reducing the amount of lables tagged with <other>, and replace them with the result of the POS tagging, we could recover some recall for out labels (e.g. <material> <class> etc...)
 
+We replaced the `<other>` label with the relative POS tag of the word. 
+In the summary table the baseline (previous result) is within parenthesis. 
+
+#### Summary
+
+|   Label               | Precision (baseline)      | Recall (baseline)     | F1 (baseline)     | Support   |
+|---------              |----------                 |---------              |----               |--------   |
+| No features layout    |  |   |   |
+|         `<class>`     | 0.7233 (0.7371)           |  0.6339 (0.6784)      |  0.6754 (0.7062)  |     171   |
+|      `<material>`     | 0.7663 (0.8029)           |  0.7767 (0.7992)      |  0.7714 (0.8010)  |     841   |
+|     `<me_method>`     | 0.6790 (0.7116)           |  0.8195 (0.8319)      |  0.7425 (0.7668)  |     210   |
+|      `<pressure>`     | 0.6564 (0.6730)           |  0.6163 (0.6408)      |  0.6298 (0.6496)  |      49   |
+|            `<tc>`     | 0.7765 (0.7811)           |  0.7485 (0.7562)      |  0.7622 (0.7683)  |     402   |
+|       `<tcValue>`     | 0.6832 (0.7154)           |  0.6537 (0.7165)      |  0.6676 (0.7149)  |     121   |
+|   Features layout  |    |   |   |      
+|         `<class>`     |   0.7155 (0.7378)         |  0.6404 (0.6825)      |  0.6757 (0.7087)  |    171    |
+|      `<material>`     |   0.7797 (0.8111)         |  0.7811 (0.8033)      |  0.7803 (0.8071)  |    841    |
+|     `<me_method>`     |   0.6884 (0.7285)         |  0.8167 (0.8195)      |  0.7469 (0.7705)  |    210    |
+|      `<pressure>`     |   0.6713 (0.7403)         |  0.5408 (0.6286)      |  0.5923 (0.6749)  |     49    |
+|            `<tc>`     |   0.7731 (0.7766)         |  0.7520 (0.7557)      |  0.7622 (0.7659)  |    402    |
+|       `<tcValue>`     |   0.6738 (0.7474)         |  0.6496 (0.7207)      |  0.6609 (0.7331)  |    121    |
+
+#### Result
 | Name | Changes/Label | Precision | Recall  | F1 | Support |
 |------|---------|-----------|---------|----|--------|
 | [baseline-POS-no_features](baseline/baseline-POS-no_features) | baseline_no_features + gloVe + bin | | |
@@ -479,8 +504,6 @@ We replaced the `<other>` label with the relative POS tag of the word
 |  |            `<tc>`  |   0.7731  |  0.7520  |  0.7622   |    402 |
 |  |       `<tcValue>`  |   0.6738  |  0.6496  |  0.6609   |    121 |
 |  | all `(micro avg.)   |  0.9238  |  0.9208   | 0.9223 |          |
-| [fastText_oS+Sc+Sm-POS-no_features](fastText_oS+Sc+Sm-POS-no_features) | baseline_no_features + oS+Sc+Sm + bin |  | |
-| [fastText_oS+Sc+Sm-POS-features](fastText_oS+Sc+Sm-POS-features) |  baseline_features + oS+Sc+Sm + bin |  |  |
 
 
 ### Tokenization experiments
