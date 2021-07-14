@@ -78,14 +78,9 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
     @Override
     protected void run(Bootstrap bootstrap, Namespace namespace, GrobidSuperconductorsConfiguration configuration) throws Exception {
         try {
-            GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
-            String grobidHome = configuration.getGrobidHome();
-            if (grobidHome != null) {
-                GrobidProperties.setGrobidPropertiesPath(new File(grobidHome, "/config/grobid.properties").getAbsolutePath());
-            }
-
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
+            configuration.getModels().stream().forEach(GrobidProperties::addModel);
             Engine.getEngine(true);
             LibraryLoader.load();
         } catch (final Exception exp) {
