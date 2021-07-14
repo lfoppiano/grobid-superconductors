@@ -8,8 +8,11 @@ import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.main.LibraryLoader;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
 import org.hamcrest.Matcher;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -33,6 +36,15 @@ public class MaterialParserTest {
 
     private MaterialParser target;
 
+
+    @BeforeClass
+    public static void before() throws Exception {
+        GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
+        modelParameters.name = "bao";
+        GrobidProperties.addModel(modelParameters);
+    }
+    
+    
     @Before
     public void setUp() throws Exception {
         PowerMock.mockStatic(Lexicon.class);

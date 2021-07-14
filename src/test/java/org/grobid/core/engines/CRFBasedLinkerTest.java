@@ -7,7 +7,10 @@ import org.grobid.core.data.Span;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +34,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @PrepareForTest(Lexicon.class)
 public class CRFBasedLinkerTest {
     CRFBasedLinker target;
+
+    @BeforeClass
+    public static void before() throws Exception {
+        GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
+        modelParameters.name = "bao";
+        GrobidProperties.addModel(modelParameters);
+    }
 
     @Before
     public void setUp() throws Exception {

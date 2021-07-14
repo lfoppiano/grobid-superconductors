@@ -4,8 +4,10 @@ import com.google.common.collect.Iterables;
 import org.grobid.core.analyzers.GrobidAnalyzer;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.tokenization.TaggingTokenCluster;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -13,10 +15,24 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+<<<<<<< HEAD
+<<<<<<< HEAD
+import static org.hamcrest.MatcherAssert.assertThat;
+=======
+>>>>>>> master
+=======
+>>>>>>> master
 
 public class GrobidPDFEngineTest {
+
+    @BeforeClass
+    public static void before() throws Exception {
+        GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
+        modelParameters.name = "bao";
+        GrobidProperties.addModel(modelParameters);
+    }
 
     @Test
     public void testIsNewParagraph_afterSection_shouldReturnTrue() throws Exception {

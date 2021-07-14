@@ -1,6 +1,14 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+import org.apache.commons.io.IOUtils;
+>>>>>>> master
+=======
+import org.apache.commons.io.IOUtils;
+>>>>>>> master
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
