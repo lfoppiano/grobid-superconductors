@@ -64,7 +64,9 @@ public class GrobidPDFEngine {
         if (headerDocumentParts != null) {
             BiblioItem resHeader = new BiblioItem();
 
-            GrobidAnalysisConfig config = GrobidAnalysisConfig.builder().consolidateHeader(1).build();
+            GrobidAnalysisConfig config = GrobidAnalysisConfig.builder()
+                .consolidateHeader(1)
+                .withSentenceSegmentation(true).build();
             parsers.getHeaderParser().processingHeaderSection(config, doc, resHeader, false);
 
             // title
