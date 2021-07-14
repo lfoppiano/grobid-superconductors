@@ -76,14 +76,9 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
     @Override
     protected void run(Bootstrap<GrobidSuperconductorsConfiguration> bootstrap, Namespace namespace, GrobidSuperconductorsConfiguration configuration) throws Exception {
         try {
-            GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
-            String grobidHome = configuration.getGrobidHome();
-            if (grobidHome != null) {
-                GrobidProperties.setGrobidPropertiesPath(new File(grobidHome, "/config/grobid.properties").getAbsolutePath());
-            }
-
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
+            configuration.getModels().stream().forEach(GrobidProperties::addModel);
             LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
