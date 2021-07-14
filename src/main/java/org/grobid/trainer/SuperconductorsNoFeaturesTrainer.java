@@ -33,15 +33,6 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEV
 
 
 public class SuperconductorsNoFeaturesTrainer extends AbstractTrainerNew {
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public static final String FOLD_TYPE_PARAGRAPH = "paragraph";
-    public static final String FOLD_TYPE_DOCUMENT = "document";
-
-=======
->>>>>>> master
-=======
->>>>>>> master
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
     public SuperconductorsNoFeaturesTrainer() {
