@@ -2,7 +2,7 @@
 
 ## Summary best results
 
-In this table are shown the best results in comparison with the baseline. For all the results, see the [table below](#summary-results). 
+In this table we show the best results in comparison with the baseline. For all the results, see the [table below](#summary-results). 
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
@@ -10,16 +10,13 @@ In this table are shown the best results in comparison with the baseline. For al
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline/baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
 | Other results | Baseline changes | - | -  | - |
-| [baseline_by_sentences_positive_with_features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
-| [baseline_by_sentences_positive_with_features-fastext](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  **80.81** | 0.72 |  
-| [baseline_by_sentences-updated_corpus](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
-| [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
-| [fastText_oL+Sm_vec_skipgram_300d_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.60  |  78.42  |  **78.00** | 0.66|
-| [fastText_oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
-| [fastText_oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
-| [fastText_glove-4labels-features](baseline/fastText_glove-4labels-features) | baseline_features + fastText + oL+Sc+Sm  | 79.89 | 80.46 | 80.17  | 1.14 |
-| [fastText_glove-4labels-no_features](baseline/fastText_glove-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.44 | 79.60 | 79.52 | 0.61|
-
+| [baseline-by_sentences-updated_corpus-gloves-no_features](baseline/baseline_sentences-updated_corpus-glove-no_features) | 172 papers, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 
+| [baseline-by_sentences-updated_corpus-gloves-features](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
+| [fastText-by_sentences-updated_corpus-oL+Sc+Sc-features](oL+Sc+Sm/fastText-oL+Sc+Sm-sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
+| [fastText-by_sentences-updated_corpus-oL+Sc+Sc-no_features](oL+Sc+Sm/fastText-oL+Sc+Sm-sentences-updated-corpus-fasttext-no_features) | 172 papers, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities |  |
+| [baseline-by_sentences-automatic_split-positive-glove-features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
+| [baseline-by_sentences-automatic_split-positive-oL+Sc+Sm-features](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  80.81 | 0.72 |  
+| [baseline-by_sentences-minus_worst_10-features](baseline/baseline-by_sentences-minus_worst_10-features) | baseline_features + gloVe + by sentence + remove worst 10 documents  | 83.01  |  82.89  |  **82.95** | 0.58 |
 
 ## Other experiments 
 
@@ -414,15 +411,23 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
+| Paragraph-based | - | - | -  | - |
 | [baseline-minus_worst_10-features](baseline/baseline-minus_worst_10-features) | baseline_features + gloVe + remove worst 10 documents  | 79.34   | 79.51  | 79.42 | 0.62 |
 | [baseline-minus_worst_10-no_features](baseline/baseline-minus_worst_10-no_features) | baseline_no_features + gloVe + remove worst 10 documents | 78.43   | 79.28  | 78.85 | 0.72 |
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_10-features](baseline/baseline-by_sentences-minus_worst_10-features) | baseline_features + gloVe + by sentence + remove worst 10 documents  | 83.01  |  82.89  |  82.95 | 0.58 |
+| [baseline-by_sentences-minus_worst_10-no_features](baseline/baseline-by_sentences-minus_worst_10-no_features) | baseline_no_features + gloVe + by sentence + remove worst 10 documents | 82.60  |  82.09   |82.33 | 0.61|
 
 #### Removing the top-worst-20
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
+| Paragraph-based | - | - | -  | - |
 | [baseline-minus_worst_20-features](baseline/baseline-minus_worst_20-features) | baseline_features + gloVe + remove worst 20 documents  | 79.48  |  79.77  |  79.62 | 0.87 |
 | [baseline-minus_worst_20-no_features](baseline/baseline-minus_worst_20-no_features) | baseline_no_features + gloVe + remove worst 20 documents | 78.06  |  78.73  |  78.39  | 0.56 |
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_20-features](baseline/baseline-by_sentences-minus_worst_20-features) | baseline_features + gloVe + by sentence + remove worst 20 documents  | 82.14  | 81.03  | 81.57 | 0.54 |
+| [baseline-by_sentences-minus_worst_20-no_features](baseline/baseline-by_sentences-minus_worst_20-no_features) | baseline_no_features + by sentence + gloVe + remove worst 20 documents | 80.70  | 80.90  | 80.79 | 0.61 |
 
 ### Replace <other> with POS tag
 The amount of token labeled with <other> is usually 10 times higher than all other tokens (e.g. <material> <class> etc... ). 
@@ -558,8 +563,8 @@ We are happy for a local improvement..
 
 # Summary results 
 
-| Name | Changes | Precision | Recall  | F1 |  
-|------|---------|-----------|---------|----|
+| Name | Changes | Precision | Recall  | F1 | St Dev |  
+|------|---------|-----------|---------|----|--------|
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
 | [baseline_by_sentences_with_features](baseline/baseline_sentences_features) | 172 papers, features, segmented by sentences, filter out paragraphs without entities | 77.48  |  79.31 |  78.38  | 0.53  |
@@ -639,6 +644,18 @@ We are happy for a local improvement..
 | [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
 
 # Comparisons
+
+## 6 vs 4 labels
+
+| Name | Changes | Precision | Recall  | F1 |  
+|------|---------|-----------|---------|----|
+| [baseline](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
+| [4label-features](baseline/fastText_glove-4labels-features) | baseline_features + fastText + oL+Sc+Sm  | 79.89 | 80.46 | 80.17  | 1.14 |
+| [oL+Sc+Sc-baseline-features](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
+| [oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
+| [4labels-no_features](baseline/fastText_glove-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.44 | 79.60 | 79.52 | 0.61|
+| [oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
+
 
 ## Batches comparison
 
