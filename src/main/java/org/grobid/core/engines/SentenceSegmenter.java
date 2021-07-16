@@ -12,7 +12,6 @@ import org.grobid.core.utilities.OffsetPosition;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 public class SentenceSegmenter {
@@ -27,7 +26,7 @@ public class SentenceSegmenter {
         this.tokenizer = sentenceDetector;
     }
 
-    public List<OffsetPosition> getSentencesAsOffsets(List<String> tokens) {
+    public List<OffsetPosition> detectSentencesAsOffsets(List<String> tokens) {
         String paragraph = String.join("", tokens);
 
         return tokenizer.detect(paragraph);
@@ -37,92 +36,25 @@ public class SentenceSegmenter {
         return tokenizer.detect(text);
     }
 
-/*    public List<OffsetPosition> getSentencesAsIndexes(List<String> tokens) {
-        List<OffsetPosition> sentencesAsOffsets = getSentencesAsOffsets(tokens);
-
-        if (sentencesAsOffsets.size() == 1) {
-            return Collections.singletonList(new OffsetPosition(0, tokens.size() - 1));
-        }
-        
-        StringBuilder sb = new StringBuilder();
-
-        for (String token :tokens) {
-            
-            sb.append(token);
-        }
-
-    }*/
-
-    public static List<Pair<Integer, Integer>> fromOffsetsToIndexes(List<OffsetPosition> offsets, List<String> tokensWithoutSpaces) {
-        if (isEmpty(offsets) || offsets.size() == 1) {
-            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size()));
-        }
-
-//        List<ChemicalSpan> mentions = new ArrayList<>();
-//        mentions = mentions.stream()
-//            .sorted(Comparator.comparingInt(ChemicalSpan::getStart))
-//            .collect(Collectors.toList());
-
-        int offsetId = 0;
-        OffsetPosition offset = offsets.get(offsetId);
-
-        List<Pair<Integer, Integer>> resultIndexes = new ArrayList<>();
-
-        StringBuilder sb = new StringBuilder();
-        int idxStart = 0;
-        int idxEnd = 0;
-        for (int idx = 0; idx < tokensWithoutSpaces.size(); idx++) {
-            String token = tokensWithoutSpaces.get(idx);
-
-            int offsetStart = offset.start;
-            int offsetEnd = offset.end;
-
-            int tokenCumulatedStart = sb.toString().length();
-            sb.append(token).append(" ");
-            int tokenCumulatedEnd = sb.toString().length() + 1;
-
-            if (tokenCumulatedEnd <= offsetEnd) {
-                idxEnd = idx;
-            } else {
-                if (offsetId == offsets.size() - 1) {
-                    resultIndexes.add(Pair.of(idxStart, idx + 1));
-                } else {
-                    resultIndexes.add(Pair.of(idxStart, idx + 1));
-                    offsetId++;
-                    idxStart = idx + 1;
-                    offset = offsets.get(offsetId);
-                }
-            }
-        }
-
-//        if (tokensWithoutSpaces.size() > isChemicalEntity.size()) {
-//            for (int counter = isChemicalEntity.size(); counter < tokens.size(); counter++) {
-//                isChemicalEntity.add(Boolean.FALSE);
-//            }
-//        }
-
-        return resultIndexes;
-    }
-
-    protected List<OffsetPosition> getSentencesFromLayoutTokensAsOffsets(List<LayoutToken> tokens) {
+    protected List<OffsetPosition> detectSentencesFromLayoutTokensAsOffsets(List<LayoutToken> tokens) {
         List<String> stringList = tokens
             .stream()
             .map(LayoutToken::getText)
             .collect(Collectors.toList());
 
-        return getSentencesAsOffsets(stringList);
+        return detectSentencesAsOffsets(stringList);
     }
 
     /**
      * Returns the sentence boundaries as index based on the input layout token.
      * the Right() element will be exclusive, as any java stuff.
      */
-    public List<Pair<Integer, Integer>> getSentencesAsIndex(List<LayoutToken> tokens) {
+    public List<Pair<Integer, Integer>> detectSentencesAsIndex(List<LayoutToken> tokens) {
         if (CollectionUtils.isEmpty(tokens)) {
             return new ArrayList<>();
         }
 
-        List<OffsetPosition> sentencesAsOffsets = getSentencesFromLayoutTokensAsOffsets(tokens);
+        List<OffsetPosition> sentencesAsOffsets = detectSentencesFromLayoutTokensAsOffsets(tokens);
 
         int pairIndex = 0;
 
@@ -168,9 +100,9 @@ public class SentenceSegmenter {
         return results;
     }
 
-    public List<List<LayoutToken>> getSentencesAsLayoutToken(List<LayoutToken> tokens) {
+    public List<List<LayoutToken>> detectSentencesAsLayoutToken(List<LayoutToken> tokens) {
 
-        List<OffsetPosition> offsetPairs = getSentencesFromLayoutTokensAsOffsets(tokens);
+        List<OffsetPosition> offsetPairs = detectSentencesFromLayoutTokensAsOffsets(tokens);
 
         List<List<LayoutToken>> result = new ArrayList<>();
 

@@ -28,25 +28,24 @@ public class DocumentBlock {
 
     private String section;
     private String subSection;
+    private List<LayoutToken> layoutTokens;
+    private List<List<LayoutToken>> markers = new ArrayList<>();
     private List<Span> spans = new ArrayList<>();
-    private List<LayoutToken> layoutTokens = new ArrayList<>();
 
-    public DocumentBlock(String section, String subSection, List<LayoutToken> tokens) {
-
+    public DocumentBlock(List<LayoutToken> tokens, String section, String subSection) {
         this.section = section;
         this.subSection = subSection;
         this.layoutTokens = new ArrayList<>(tokens);
     }
 
     public DocumentBlock(DocumentBlock documentBlock) {
-        this(documentBlock.getSection(), documentBlock.getSubSection(), documentBlock.getLayoutTokens());
+        this(documentBlock.getLayoutTokens(), documentBlock.getSection(), documentBlock.getSubSection(), documentBlock.getSpans(), documentBlock.getMarkers());
     }
 
-    public DocumentBlock(List<LayoutToken> layoutTokens, List<Span> spanList, String section, String subSection) {
-        this.layoutTokens = new ArrayList<>(layoutTokens);
+    public DocumentBlock(List<LayoutToken> layoutTokens, String section, String subSection, List<Span> spanList, List<List<LayoutToken>> markers) {
+        this(layoutTokens, section, subSection);
         this.spans = new ArrayList<>(spanList);
-        this.section = section;
-        this.subSection = subSection;
+        this.markers = new ArrayList<>(markers);
     }
 
 
@@ -80,5 +79,13 @@ public class DocumentBlock {
 
     public List<Span> getSpans() {
         return spans;
+    }
+
+    public List<List<LayoutToken>> getMarkers() {
+        return markers;
+    }
+
+    public void setMarkers(List<List<LayoutToken>> markers) {
+        this.markers = markers;
     }
 }

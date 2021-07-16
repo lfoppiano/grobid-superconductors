@@ -60,7 +60,7 @@ public class ModuleEngine {
     @Deprecated
     private Pair<Integer, Integer> getContainedSentenceAsIndex(List<LayoutToken> entityLayoutTokens, List<LayoutToken> tokens) {
 
-        List<List<LayoutToken>> sentences = this.sentenceSegmenter.getSentencesAsLayoutToken(tokens);
+        List<List<LayoutToken>> sentences = this.sentenceSegmenter.detectSentencesAsLayoutToken(tokens);
 
         int entityOffsetStart = entityLayoutTokens.get(0).getOffset();
         int entityOffsetEnd = Iterables.getLast(entityLayoutTokens).getOffset();
@@ -92,7 +92,7 @@ public class ModuleEngine {
      **/
     private Pair<Integer, Integer> adjustExtremities(Pair<Integer, Integer> originalExtremities, List<LayoutToken> entityLayoutTokens, List<LayoutToken> tokens) {
 
-        List<List<LayoutToken>> sentences = this.sentenceSegmenter.getSentencesAsLayoutToken(tokens);
+        List<List<LayoutToken>> sentences = this.sentenceSegmenter.detectSentencesAsLayoutToken(tokens);
 
         int entityOffsetStart = entityLayoutTokens.get(0).getOffset();
         int entityOffsetEnd = entityLayoutTokens.get(entityLayoutTokens.size() - 1).getOffset();

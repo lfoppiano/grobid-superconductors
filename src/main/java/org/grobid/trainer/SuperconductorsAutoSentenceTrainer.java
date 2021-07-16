@@ -9,9 +9,7 @@ import org.grobid.core.engines.SentenceSegmenter;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.utilities.GrobidProperties;
-import org.grobid.core.utilities.OffsetPosition;
-import org.grobid.core.utilities.UnicodeUtil;
+import org.grobid.core.utilities.*;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 
@@ -299,7 +297,7 @@ public class SuperconductorsAutoSentenceTrainer extends AbstractTrainer {
                         List<String> tokenList = outputAsList.stream().map(e -> e.get(0)).collect(Collectors.toList());
                         String paragraphString = String.join(" ", tokenList);
                         List<OffsetPosition> sentenceOffsets = this.segmenter.detect(paragraphString);
-                        List<Pair<Integer, Integer>> pairs = SentenceSegmenter.fromOffsetsToIndexes(sentenceOffsets, tokenList);
+                        List<Pair<Integer, Integer>> pairs = AdditionalLayoutTokensUtil.fromOffsetsToIndexesOfTokensWithoutSpaces(sentenceOffsets, tokenList);
                         sentencesIndexes.add(pairs);
                         for (int pairsIdx = 0; pairsIdx < pairs.size(); pairsIdx++) {
                             Pair<Integer, Integer> p = pairs.get(pairsIdx);
