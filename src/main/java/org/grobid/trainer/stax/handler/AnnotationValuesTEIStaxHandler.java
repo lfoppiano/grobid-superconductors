@@ -96,8 +96,7 @@ public class AnnotationValuesTEIStaxHandler implements StaxParserContentHandler 
             }
         } else {
             String attributeValue = getAttributeValue(reader, "type");
-            if (("rs".equals(localName) && annotationTypes.contains(attributeValue))
-                || (annotationTypes.contains(localName))) {
+            if (("rs".equals(localName) && annotationTypes.contains(attributeValue))) {
                 String text = getAccumulatedText();
                 // I write the remaining data in the accumulated text as "other" label
                 writeStreamData(text, getTag("other"));

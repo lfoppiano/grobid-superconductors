@@ -1,12 +1,21 @@
 package org.grobid.core.engines;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import fr.limsi.wapiti.Wapiti;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.ChemDataExtractorClient;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.service.GrobidSuperconductorsApplication;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -27,9 +36,17 @@ public class CRFBasedLinkerIntegrationTest {
     private CRFBasedLinker target;
     private ModuleEngine entityParser;
 
+
     @Before
     public void setUp() throws Exception {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        
+        // https://stackoverflow.com/questions/14853324/can-not-find-deserialize-for-non-concrete-collection-type
+        mapper.registerModule(new GuavaModule());
+        GrobidSuperconductorsConfiguration configuration = mapper.readValue(this.getClass().getResourceAsStream("config-test.yml"), GrobidSuperconductorsConfiguration.class);
+        configuration.getModels().stream().forEach(GrobidProperties::addModel);
         LibraryLoader.load();
+        
         target = new CRFBasedLinker(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL));
         SuperconductorsParser superParser = new SuperconductorsParser(new ChemDataExtractorClient("http://falcon.nims.go.jp"), new MaterialParser(null));
         this.entityParser = new ModuleEngine(superParser, QuantityParser.getInstance(true), null, null);

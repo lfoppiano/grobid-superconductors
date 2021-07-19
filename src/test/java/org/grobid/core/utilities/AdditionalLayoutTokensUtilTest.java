@@ -102,7 +102,7 @@ public class AdditionalLayoutTokensUtilTest extends TestCase {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetExtremitiesIndex_offsetsOutside_shouldThrowException() {
+    public void testGetExtremitiesIndex_offsetsOutside_shouldThrowException() throws Exception {
         List<LayoutToken> tokens = QuantityAnalyzer.getInstance().tokenizeWithLayoutToken("This is a short sentence");
 
         AdditionalLayoutTokensUtil.getExtremitiesAsIndex(tokens, 10000, 19000);

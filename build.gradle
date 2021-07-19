@@ -102,6 +102,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.0'
     implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
     implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:1.9.10'
 
     implementation 'org.dkpro.statistics:dkpro-statistics:2.2.1'
     implementation 'org.dkpro.statistics:dkpro-statistics-agreement:2.2.1'
