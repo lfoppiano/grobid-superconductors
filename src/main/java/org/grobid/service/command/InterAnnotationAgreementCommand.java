@@ -52,7 +52,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
     public static final List<String> ANNOTATION_DEFAULT_TAG_TYPES = Arrays.asList("material", "tc",
         "tcValue", "pressure", "me_method", "class");
 
-    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("p");
+    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("s");
     public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc",
         "tcValue", "pressure", "me_method", "class");
     public static final List<String> ANNOTATION_EXTRA_TAGS = Arrays.asList("sample", "magnetisation", "shape");

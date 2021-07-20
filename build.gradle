@@ -162,19 +162,21 @@ run {
 
 /** Training configuration **/
 
-def trainerTasks = [
-    //Training models
-    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer",
-    "train_material": "org.grobid.trainer.MaterialTrainer",
-    "train_entityLinker": "org.grobid.trainer.EntityLinkerMaterialTcTrainer"
-]
-
-trainerTasks.each { taskName, mainClassName ->
-    tasks.create(name: taskName, type: JavaExec, group: 'training') {
-        main = mainClassName
-        classpath = sourceSets.main.runtimeClasspath
-    }
-}
+//def trainerTasks = [
+//    //Training models
+//    "train-superconductors": "org.grobid.trainer.SuperconductorsTrainer",
+//    "train-material": "org.grobid.trainer.MaterialTrainer",
+//    "train-entityLinker-material_tc": "org.grobid.trainer.EntityLinkerMaterialTcTrainer",
+//    "train-entityLinker-tc-pressure": "org.grobid.trainer.EntityLinkerTcPressureTrainer",
+//    "train-entityLinker-tc-meMethod": "org.grobid.trainer.EntityLinkerTcMeMethodTrainer"
+//]
+//
+//trainerTasks.each { taskName, mainClassName ->
+//    tasks.create(name: taskName, type: JavaExec, group: 'training') {
+//        main = mainClassName
+//        classpath = sourceSets.main.runtimeClasspath
+//    }
+//}
 
 processResources {
     filesMatching('version.txt') {
