@@ -4,11 +4,11 @@
         <encodingDesc/>
     </teiHeader>
     <text xml:lang="en">
-        <p><s>AF fluctuations seem to play a key role in raising <tc>T c</tc> for various <class>iron-based
-            pnictides</class>; however, the scenario does not work well for <material>LaFeAsO 1−x F x</material> ,
-            because for <material xml:id="x43">x = 0.14</material>, <tc>T c</tc> increases <tcValue xml:id="x45" corresp="#x42">up to
+        <p><s>AF fluctuations seem to play a key role in raising <rs type="tc">T c</rs> for various <rs type="class">iron-based
+            pnictides</rs>; however, the scenario does not work well for <rs type="material">LaFeAsO 1−x F x</rs> ,
+            because for <rs type="material" xml:id="x43">x = 0.14</rs>, <rs type="tc">T c</rs> increases <rs type="tcValue" xml:id="x45" corresp="#x42">up to
                 40 K
-            </tcValue> at <pressure corresp="#x45">3.0 GPa</pressure> with no predominant AF fluctuations.</s>
+            </rs> at <rs type="pressure" corresp="#x45">3.0 GPa</rs> with no predominant AF fluctuations.</s>
         </p>
     </text>
 </tei>
