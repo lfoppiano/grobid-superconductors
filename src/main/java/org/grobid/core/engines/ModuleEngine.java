@@ -5,12 +5,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.data.Offset;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
@@ -181,11 +183,19 @@ public class ModuleEngine {
      * The text is a paragraph
      */
     public DocumentResponse process(String text, boolean disableLinking) {
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+        List<OffsetPosition> sentenceOffsets = SentenceUtilities.getInstance()
+            .runSentenceDetection(text, new Language("en"));
+        
+        List<TextPassage> textPassages = new ArrayList<>();
+        for (OffsetPosition sentenceOffset : sentenceOffsets) {
+            String sentence = text.substring(sentenceOffset.start, sentenceOffset.end);
+            List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(sentence);
 
-        List<TextPassage> textPassage = process(tokens, disableLinking);
+            TextPassage textPassage = process(tokens, disableLinking);
+            textPassages.add(textPassage);
+        }
 
-        return new DocumentResponse(textPassage);
+        return new DocumentResponse(textPassages);
     }
 
     private List<Span> getQuantities(List<LayoutToken> tokens) {
@@ -248,7 +258,7 @@ public class ModuleEngine {
                 List<LayoutToken> cleanedLayoutTokensRetokenized = DeepAnalyzer.getInstance()
                     .retokenizeLayoutTokens(cleanedLayoutTokens);
 
-                documentResponse.addParagraphs(process(cleanedLayoutTokensRetokenized, disableLinking,
+                documentResponse.addParagraph(process(cleanedLayoutTokensRetokenized, disableLinking,
                     documentBlock.getSection(), documentBlock.getSubSection()));
             });
 
@@ -265,11 +275,11 @@ public class ModuleEngine {
         return documentResponse;
     }
 
-    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking) {
+    public TextPassage process(List<LayoutToken> tokens, boolean disableLinking) {
         return process(tokens, disableLinking, null, null);
     }
 
-    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking, String section, String subSection) {
+    public TextPassage process(List<LayoutToken> tokens, boolean disableLinking, String section, String subSection) {
         TextPassage textPassage = new TextPassage();
 
         textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
@@ -312,7 +322,7 @@ public class ModuleEngine {
         textPassage.setSpans(pruneOverlappingAnnotations(sortedSpans));
 
         if (disableLinking || CollectionUtils.size(textPassage.getSpans()) <= 1) {
-            return Collections.singletonList(textPassage);
+            return textPassage;
         }
 
         //CRF-based
@@ -325,14 +335,14 @@ public class ModuleEngine {
         }
 
         /** Modify the objects **/
-        TextPassage newTextPassage = ruleBasedLinker.markTemperatures(textPassage);
-        CRFBasedLinker.process(tokens, newTextPassage.getSpans());
+        TextPassage textPassageWithMarkedTemperature = ruleBasedLinker.markTemperatures(textPassage);
+        CRFBasedLinker.process(tokens, textPassageWithMarkedTemperature.getSpans());
 
         //Rule-based: Because we split into sentences, we may obtain more information
-        List<TextPassage> textPassages = ruleBasedLinker.process(textPassage);
+        TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassageWithMarkedTemperature);
 
         //TODO: Merge
-        return textPassages;
+        return textPassageWithLinks;
     }
 
 

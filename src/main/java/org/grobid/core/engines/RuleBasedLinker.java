@@ -70,9 +70,9 @@ public class RuleBasedLinker {
     }
 
 
-    public List<TextPassage> process(TextPassage paragraph) {
+    public TextPassage process(TextPassage paragraph) {
         if (CollectionUtils.isEmpty(paragraph.getSpans()) || disabled) {
-            return Collections.singletonList(paragraph);
+            return paragraph;
         }
 
         //Take out the bounding boxes
@@ -89,15 +89,16 @@ public class RuleBasedLinker {
 
         List<TextPassage> textPassages = client.extractLinks(paragraph);
 
+        //For the moment we use one request per sentence, but in future we will need to group them and process them 
+        // asynchronously 
+        TextPassage textPassage = textPassages.get(0);;
 
         // put the bounding boxes back where they were
-        textPassages.stream()
-            .forEach(p -> p.getSpans().stream()
-                .forEach(s -> {
-                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-                        s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
-                    }
-                )
+        textPassage.getSpans().stream()
+            .forEach(s -> {
+                    s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                    s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                }
             );
 
 
@@ -129,7 +130,7 @@ public class RuleBasedLinker {
 //                });
 //            });
 
-        return textPassages;
+        return textPassage;
 
     }
 }

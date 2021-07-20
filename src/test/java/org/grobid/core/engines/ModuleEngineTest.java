@@ -83,7 +83,7 @@ public class ModuleEngineTest {
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        List<TextPassage> response = target.process(tokens, true);
+        TextPassage response = target.process(tokens, true);
 
         EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 
