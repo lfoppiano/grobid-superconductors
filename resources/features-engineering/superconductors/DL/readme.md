@@ -14,11 +14,40 @@ In this table we show the best results in comparison with the baseline. For all 
 | [baseline-by_sentences-updated_corpus-gloves-features](baseline/baseline-by_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
 | [fastText-by_sentences-updated_corpus-oL+Sc+Sc-features](oL+Sc+Sm/fastText-oL+Sc+Sm-by_sentences-updated_corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
 | [fastText-by_sentences-updated_corpus-oL+Sc+Sc-no_features](oL+Sc+Sm/fastText-oL+Sc+Sm-by_sentences-updated_corpus-fasttext-no_features) | 172 papers, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.62  | 80.48 | 80.04 | 0.64 |
-| [baseline-by_sentences-automatic_split-positive-glove-features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
+| [baseline-by_sentences-automatic_split-positive-glove-features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 |
 | [baseline-by_sentences-automatic_split-positive-oL+Sc+Sm-features](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  80.81 | 0.72 |  
 | [baseline-by_sentences-minus_worst_10-features](baseline/baseline-by_sentences-minus_worst_10-features) | baseline_features + gloVe + by sentence + remove worst 10 documents  | 83.01  |  82.89  |  **82.95** | 0.58 |
+| [baseline-by_sentences-updated_corpus-gloves-keep_all_sentences-no_features](baseline/baseline-by_sentences-updated_corpus-glove-no_features) | 172 papers, gloVe, corpus manually segmented by sentences |  77.08    |80.41  | 78.70  | 0.81 |
+| [baseline-by_sentences-updated_corpus-oL+Sc+Sm-keep_all_sentences-no_features](oL+Sc+Sm/baseline-by_sentences-updated_corpus-oL+Sc+Sm-no_features) | 172 papers, gloVe, corpus manually segmented by sentences |  76.82  |80.05  |  78.38  | 1.08 |
 
-## Other experiments 
+## Embeddings
+
+| Name | Source corpus | Size | Vector dimension | 
+|------|---------------|--------|------------------|
+| oS | Oscar 1-12 | 4M vocab | 100, 300| | 
+| oL | Oscar | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
+| Sc | Science | - | 300| -  | - |  
+| oS+Sm | Oscar 1-12 + Supermat | 4M vocab | 100, 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
+| oS+Sc | Oscar 1-12 + Science | - | 300| - |
+| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
+| oL+Sm | Oscar + Supermat | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
+| oL+Sc | Oscar + Science | - | 300| - |
+| oL+Sc+Sm | Oscar + Science + SuperMat| - | 300| - |
+| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
+| glove.840B.300d | Common Crawl | 840B tokens, 2.2M vocab, cased | 300 |https://nlp.stanford.edu/projects/glove/ | 
+| crawl-300d-2M | Common Crawl | 600B [2M vocab? (trained with subword)] | 300 | https://fasttext.cc/docs/en/english-vectors.html | 
+
+## Corpora
+
+| Name | Description | Size | Url | 
+|------|---------------|--------|------------------|
+| oL | Oscar Large | - | [https://oscar-corpus.com/](Oscar) |
+| oS | Oscar Small (1-12) | - |
+| Sm | SuperMat | 172 articles on superconductors | [https://github.com/lfoppiano/SuperMat](SuperMat) |
+| Sc | Science | 794197 articles from acs, aip, aps, elsevier, iop, jjap, rsc, springer, wiley | N/A |
+
+
+## Experiments
 
 ### Removing batch 8
 Batch 8 resulted to score the least in the cross-validation with only single batches
@@ -534,34 +563,111 @@ We are happy for a local improvement..
 
 (*) Using the original corpus with the features files. The rest of the data has been generated using only the XML to be able to manipulate the tokenization
 
-# Embeddings 
+## 6 vs 4 labels
 
-| Name | Source corpus | Size | Vector dimension | 
-|------|---------------|--------|------------------|
-| oS | Oscar 1-12 | 4M vocab | 100, 300| | 
-| oL | Oscar | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
-| Sc | Science | - | 300| -  | - |  
-| oS+Sm | Oscar 1-12 + Supermat | 4M vocab | 100, 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
-| oS+Sc | Oscar 1-12 + Science | - | 300| - |
-| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
-| oL+Sm | Oscar + Supermat | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
-| oL+Sc | Oscar + Science | - | 300| - |
-| oL+Sc+Sm | Oscar + Science + SuperMat| - | 300| - |
-| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
-| glove.840B.300d | Common Crawl | 840B tokens, 2.2M vocab, cased | 300 |https://nlp.stanford.edu/projects/glove/ | 
-| crawl-300d-2M | Common Crawl | 600B [2M vocab? (trained with subword)] | 300 | https://fasttext.cc/docs/en/english-vectors.html | 
-
-# Corpora
-
-| Name | Description | Size | Url | 
-|------|---------------|--------|------------------|
-| oL | Oscar Large | - | [https://oscar-corpus.com/](Oscar) |
-| oS | Oscar Small (1-12) | - |
-| Sm | SuperMat | 172 articles on superconductors | [https://github.com/lfoppiano/SuperMat](SuperMat) |
-| Sc | Science | 794197 articles from acs, aip, aps, elsevier, iop, jjap, rsc, springer, wiley | N/A |
+| Name | Changes | Precision | Recall  | F1 |  
+|------|---------|-----------|---------|----|
+| [baseline](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
+| [4label-features](baseline/fastText_glove-4labels-features) | baseline_features + fastText + oL+Sc+Sm  | 79.89 | 80.46 | 80.17  | 1.14 |
+| [oL+Sc+Sc-baseline-features](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
+| [oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
+| [4labels-no_features](baseline/fastText_glove-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.44 | 79.60 | 79.52 | 0.61|
+| [oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
 
 
-# Summary results 
+## Batches comparison
+
+Uniqueness = nb of unique entities / total number of entities
+Paragraphs includes titles, abstracts and keywords (one list of keywords is one paragraph)
+Tokens are calculated from the grobid-tokenizer which splits even numbers into different tokens.
+
+|       | Features  |             |      |          |       |      |      |
+|-------|-----------|-------------|------|----------|-------|------|------|
+| Batch | Precision | Recall | F1 | Rank | Uniqueness| Paragraphs | Tokens| 
+| 1     | 78.42 | 81.39 | 79.88 | 1 | 40.55 | 933 | 158069|   
+| 2     | 59.08 | 52.80 | 54.65 | 7 | 47.28 | 217 | 35484 |   
+| 3     | 73.59 | 75.26 | 74.40 | 2 | 48.93 | 452 | 85780 |    
+| 4     | 67.37 | 67.87 | 67.61 | 5 | 45.21 | 752 | 153217|   
+| 5     | 61.43 | 64.41 | 62.87 | 6 | 49.12 | 440 | 57936 |   
+| 6     | 72.15 | 71.41 | 71.77 | 4 | 43.98 | 578 | 82018 |   
+| 7     | 72.02 | 76.80 | 74.29 | 3 | 42.85 | 442 | 88981 |   
+| 8     | 38.93 | 30.18 | 33.59 | 8 | 44.77 | 236 | 42570 |   
+
+
+|       | no Features |      |    |          |       |      |      |     
+|-------|-----------|--------|----|----------|-------|------|------|
+| Batch | Precision | Recall | F1 | Rank | Uniqueness|Paragraphs | Tokens |
+| 1     | 77.28 | 80.05 | 78.63 | 1 | 40.55 | 933 |158069|  
+| 2     | 57.67 | 46.92 | 50.47 | 7 | 47.28 | 217 |35484 |  
+| 3     | 68.71 | 69.57 | 69.10 | 4 | 48.93 | 452 |85780 |  
+| 4     | 65.92 | 67.59 | 66.74 | 5 | 45.21 | 752 |153217|  
+| 5     | 60.93 | 55.94 | 58.14 | 6 | 49.12 | 440 |57936 |  
+| 6     | 70.94 | 69.83 | 70.38 | 3 | 43.98 | 578 |82018 |  
+| 7     | 72.50  |78.80 | 75.51 | 2 | 42.85 | 442 |88981 |  
+| 8     | 20.33 | 12.95 | 15.64 | 8 | 44.77 | 236 |42570 |  
+
+
+## Sentence based vs Paragraph based
+
+Experiment definition:
+- training: 3 articles
+- evaluation: 1 article
+- Batch size: 5
+- Embeddings: glove / oS+Sc+Sm
+- Architecture: BidLSTM_CRF_FEATURES
+
+### Experiment 1: glove
+
+#### Paragraph based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2500   | 0.0952 | 0.1379 | 21 |
+|      material    |  0.3636   | 0.1333 | 0.1951 | 60 |
+|     me_method    |  0.4500   | 0.2571 | 0.3273 | 35 |
+|            tc    |  0.7143   | 0.7500 | 0.7317 | 20 |
+|       tcValue    |  0.3158   | 0.5455 | 0.4000 | 11 |
+| all (micro avg.) |  0.4444   | 0.2721 | 0.3376 | 147 |
+
+#### Sentence based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2727   | 0.1875 | 0.1429 | 21 |
+|      material    |  0.4930   | 0.5344 | 0.5833 | 60 |
+|     me_method    |  0.5600   | 0.4667 | 0.4000 | 35 |
+|            tc    |  0.6429   | 0.7500 | 0.9000 | 20 |
+|       tcValue    |  0.2727   | 0.3636 | 0.5455 | 11 |
+| all (micro avg.) |  0.4841 | 0.5000 | 0.5170 | 147 |
+
+
+### Experiment 2: oS+Sc+Sm
+
+#### Paragraph based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.1538   |0.0952  | 0.1176 | 21  |
+|      material    |  0.2258   |0.1167  | 0.1538 | 60  |
+|     me_method    |  0.5000   |0.2571  | 0.3396 | 35  |
+|            tc    |  0.6154   |0.8000  | 0.6957 | 20  |
+|       tcValue    |  0.1852   |0.4545  | 0.2632 | 11  |
+| all (micro avg.) |  0.3391   |0.2653  | 0.2977 | 147 |
+
+#### Sentence based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2778   |0.2381  | 0.2564 | 21  |
+|      material    |  0.4800   |0.2000  | 0.2824 | 60  |
+|     me_method    |  0.5833   |0.4000  | 0.4746 | 35  |
+|            tc    |  0.6207   |0.9000  | 0.7347 | 20  |
+|       tcValue    |  0.1000   |0.1818  | 0.1290 | 11  |
+| all (micro avg.) |  0.4397   |0.3469  | 0.3878 | 147 |
+
+
+
+# Complete list of results 
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |  
 |------|---------|-----------|---------|----|--------|
@@ -642,108 +748,3 @@ We are happy for a local improvement..
 | [fastText_oL+Sc+Sm_bin_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 77.19 |  78.00  |  77.58 | 1.01 |
 | [fastText_oL+Sc+Sm_vec_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 77.21 |  78.00  |  77.60 | 0.49 |
 | [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
-
-# Comparisons
-
-## 6 vs 4 labels
-
-| Name | Changes | Precision | Recall  | F1 |  
-|------|---------|-----------|---------|----|
-| [baseline](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
-| [4label-features](baseline/fastText_glove-4labels-features) | baseline_features + fastText + oL+Sc+Sm  | 79.89 | 80.46 | 80.17  | 1.14 |
-| [oL+Sc+Sc-baseline-features](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
-| [oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
-| [4labels-no_features](baseline/fastText_glove-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.44 | 79.60 | 79.52 | 0.61|
-| [oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
-
-
-## Batches comparison
-
-Uniqueness = nb of unique entities / total number of entities
-Paragraphs includes titles, abstracts and keywords (one list of keywords is one paragraph)
-Tokens are calculated from the grobid-tokenizer which splits even numbers into different tokens.
-
-|       | Features  |             |      |          |       |      |      |
-|-------|-----------|-------------|------|----------|-------|------|------|
-| Batch | Precision | Recall | F1 | Rank | Uniqueness| Paragraphs | Tokens| 
-| 1     | 78.42 | 81.39 | 79.88 | 1 | 40.55 | 933 | 158069|   
-| 2     | 59.08 | 52.80 | 54.65 | 7 | 47.28 | 217 | 35484 |   
-| 3     | 73.59 | 75.26 | 74.40 | 2 | 48.93 | 452 | 85780 |    
-| 4     | 67.37 | 67.87 | 67.61 | 5 | 45.21 | 752 | 153217|   
-| 5     | 61.43 | 64.41 | 62.87 | 6 | 49.12 | 440 | 57936 |   
-| 6     | 72.15 | 71.41 | 71.77 | 4 | 43.98 | 578 | 82018 |   
-| 7     | 72.02 | 76.80 | 74.29 | 3 | 42.85 | 442 | 88981 |   
-| 8     | 38.93 | 30.18 | 33.59 | 8 | 44.77 | 236 | 42570 |   
-
-
-|       | no Features |      |    |          |       |      |      |     
-|-------|-----------|--------|----|----------|-------|------|------|
-| Batch | Precision | Recall | F1 | Rank | Uniqueness|Paragraphs | Tokens |
-| 1     | 77.28 | 80.05 | 78.63 | 1 | 40.55 | 933 |158069|  
-| 2     | 57.67 | 46.92 | 50.47 | 7 | 47.28 | 217 |35484 |  
-| 3     | 68.71 | 69.57 | 69.10 | 4 | 48.93 | 452 |85780 |  
-| 4     | 65.92 | 67.59 | 66.74 | 5 | 45.21 | 752 |153217|  
-| 5     | 60.93 | 55.94 | 58.14 | 6 | 49.12 | 440 |57936 |  
-| 6     | 70.94 | 69.83 | 70.38 | 3 | 43.98 | 578 |82018 |  
-| 7     | 72.50  |78.80 | 75.51 | 2 | 42.85 | 442 |88981 |  
-| 8     | 20.33 | 12.95 | 15.64 | 8 | 44.77 | 236 |42570 |  
-
-
-## Sentence based vs Paragraph based
-
-Experiment definition: 
- - training: 3 articles  
- - evaluation: 1 article
- - Batch size: 5
- - Embeddings: glove / oS+Sc+Sm
- - Architecture: BidLSTM_CRF_FEATURES
-
-### Experiment 1: glove
-
-#### Paragraph based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.2500   | 0.0952 | 0.1379 | 21 |
-|      material    |  0.3636   | 0.1333 | 0.1951 | 60 |
-|     me_method    |  0.4500   | 0.2571 | 0.3273 | 35 |
-|            tc    |  0.7143   | 0.7500 | 0.7317 | 20 |
-|       tcValue    |  0.3158   | 0.5455 | 0.4000 | 11 |
-| all (micro avg.) |  0.4444   | 0.2721 | 0.3376 | 147 |
-
-#### Sentence based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.2727   | 0.1875 | 0.1429 | 21 |
-|      material    |  0.4930   | 0.5344 | 0.5833 | 60 |
-|     me_method    |  0.5600   | 0.4667 | 0.4000 | 35 |
-|            tc    |  0.6429   | 0.7500 | 0.9000 | 20 |
-|       tcValue    |  0.2727   | 0.3636 | 0.5455 | 11 |
-| all (micro avg.) |  0.4841 | 0.5000 | 0.5170 | 147 |
-
-
-### Experiment 2: oS+Sc+Sm
-
-#### Paragraph based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.1538   |0.0952  | 0.1176 | 21  |
-|      material    |  0.2258   |0.1167  | 0.1538 | 60  |
-|     me_method    |  0.5000   |0.2571  | 0.3396 | 35  |
-|            tc    |  0.6154   |0.8000  | 0.6957 | 20  |
-|       tcValue    |  0.1852   |0.4545  | 0.2632 | 11  |
-| all (micro avg.) |  0.3391   |0.2653  | 0.2977 | 147 |
-
-#### Sentence based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.2778   |0.2381  | 0.2564 | 21  |
-|      material    |  0.4800   |0.2000  | 0.2824 | 60  |
-|     me_method    |  0.5833   |0.4000  | 0.4746 | 35  |
-|            tc    |  0.6207   |0.9000  | 0.7347 | 20  |
-|       tcValue    |  0.1000   |0.1818  | 0.1290 | 11  |
-| all (micro avg.) |  0.4397   |0.3469  | 0.3878 | 147 |
-
