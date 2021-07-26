@@ -5,24 +5,24 @@
 
 __Work in progress.__
 
-The goal of this GROBID module is to identify and extract and link entities and properties within from superconductors-related scientific literature. 
+The goal of this GROBID module is to identify and extract and link entities and their properties as mentioned in superconductors-related scientific literature. 
 In particular, the goal is to extract superconductors material and their properties, such a Critical Temperature (Tc) and any expression or variation, Critical pressure, material name and class.
 
 As the others GROBID models, the module relies on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
 
 The linking is implemented as Python library, you can find the code in [here](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/linking). 
 
-The following screenshots show the end to end result, also called [Supercuration](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/supercuration) (Superconductors Curation) is an advanced interface including the linking module on top of the extrated entities: 
+The following screenshots show the end to end result: 
 
-![GROBID superconductors_screenshot](https://github.com/lfoppiano/grobid-superconductors-tools/blob/master/supercuration/docs/images/grobid-superconductors-web-home.png)
+![GROBID superconductors_screenshot](docs/grobid-superconductors-web-home.png)
 
 and provides on-pdf annotations: 
 
-![GROBID superconductors_screenshot](https://github.com/lfoppiano/grobid-superconductors-tools/blob/master/supercuration/docs/images/grobid-superconductors-web-home-2.png) 
+![GROBID superconductors_screenshot](docs/grobid-superconductors-web-home-2.png) 
 
 See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.    
 
-The [Grobid Superconductors Tool project](https://github.com/lfoppiano/grobid-superconductors-tools) project contains also other utilities. 
+The [Grobid Superconductors Tool project](https://github.com/lfoppiano/grobid-superconductors-tools) project contains also other utilities, more particularly all that is implemented in python. 
 
 ### Output databases
 
@@ -36,7 +36,7 @@ Example of database output, organised by dates, can be found [here](./resources/
 
 ## Getting started
 
-This module requires JDK 1.8 or greater.  
+This module requires JDK 8 or JDK 11.  
 
 First install and build the latest development version of GROBID as explained by the [documentation](http://grobid.readthedocs.org).
 
