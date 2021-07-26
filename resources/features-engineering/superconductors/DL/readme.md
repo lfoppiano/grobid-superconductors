@@ -18,7 +18,8 @@ In this table we show the best results in comparison with the baseline. For all 
 | [baseline-by_sentences-automatic_split-positive-oL+Sc+Sm-features](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  80.81 | 0.72 |  
 | [baseline-by_sentences-minus_worst_10-features](baseline/baseline-by_sentences-minus_worst_10-features) | baseline_features + gloVe + by sentence + remove worst 10 documents  | 83.01  |  82.89  |  **82.95** | 0.58 |
 | [baseline-by_sentences-updated_corpus-gloves-keep_all_sentences-no_features](baseline/baseline-by_sentences-updated_corpus-glove-no_features) | 172 papers, gloVe, corpus manually segmented by sentences |  77.08    |80.41  | 78.70  | 0.81 |
-| [baseline-by_sentences-updated_corpus-oL+Sc+Sm-keep_all_sentences-no_features](oL+Sc+Sm/baseline-by_sentences-updated_corpus-oL+Sc+Sm-no_features) | 172 papers, gloVe, corpus manually segmented by sentences |  76.82  |80.05  |  78.38  | 1.08 |
+| [baseline-by_sentences-updated_corpus-oL+Sc+Sm-keep_all_sentences-no_features](oL+Sc+Sm/baseline-by_sentences-updated_corpus-oL+Sc+Sm-no_features) | 172 papers, oL+Sc+Sm, corpus manually segmented by sentences |  76.82  |80.05  |  78.38  | 1.08 |
+| [scibert-by_sentences-updated_corpus](scibert/by_sentences-updated_corpus) | 172 papers, scibert, corpus manually segmented by sentences | 77.71  |  82.90  |  80.22 | |
 
 ## Embeddings
 
@@ -457,6 +458,23 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 | Sentences-based | - | - | -  | - |
 | [baseline-by_sentences-minus_worst_20-features](baseline/baseline-by_sentences-minus_worst_20-features) | baseline_features + gloVe + by sentence + remove worst 20 documents  | 82.14  | 81.03  | 81.57 | 0.54 |
 | [baseline-by_sentences-minus_worst_20-no_features](baseline/baseline-by_sentences-minus_worst_20-no_features) | baseline_no_features + by sentence + gloVe + remove worst 20 documents | 80.70  | 80.90  | 80.79 | 0.61 |
+
+#### Removing the top-worst-1
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_1-features](baseline/baseline-by_sentences-minus_worst_1-features) | baseline_features + gloVe + by sentence + remove worst 1 document  | 81.60  |  82.37  |  81.98   | |
+| [baseline-by_sentences-minus_worst_1-no_features](baseline/baseline-by_sentences-minus_worst_1-no_features) | baseline_no_features + by sentence + gloVe + remove worst 1 document |80.82  |  81.98  |  81.39 | |
+
+#### Removing the top-worst-5
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_5-features](baseline/baseline-by_sentences-minus_worst_5-features) | baseline_features + gloVe + by sentence + remove worst 5 documents  | 81.99  |  81.67  |  81.82 |
+| [baseline-by_sentences-minus_worst_5-no_features](baseline/baseline-by_sentences-minus_worst_5-no_features) | baseline_no_features + by sentence + gloVe + remove worst 5 documents | 81.21  |  81.09  |  81.15   |
+
 
 ### Replace <other> with POS tag
 The amount of token labeled with <other> is usually 10 times higher than all other tokens (e.g. <material> <class> etc... ). 
