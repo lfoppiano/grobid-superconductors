@@ -2,7 +2,7 @@
 
 ## Summary best results
 
-In this table are shown the best results in comparison with the baseline. For all the results, see the [table below](#summary-results). 
+In this table we show the best results in comparison with the baseline. For all the results, see the [table below](#summary-results). 
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
@@ -10,18 +10,45 @@ In this table are shown the best results in comparison with the baseline. For al
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline/baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
 | Other results | Baseline changes | - | -  | - |
-| [baseline_by_sentences_positive_with_features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 | 
-| [baseline_by_sentences_positive_with_features-fastext](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  **80.81** | 0.72 |  
-| [baseline_by_sentences-updated_corpus](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
-| [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
-| [fastText_oL+Sm_vec_skipgram_300d_features](oL+Sm/fastText_oL+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + SuperMat + skipgram + 300d + vec  | 77.60  |  78.42  |  **78.00** | 0.66|
-| [fastText_oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
-| [fastText_oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
-| [fastText_glove-4labels-features](baseline/fastText_glove-4labels-features) | baseline_features + fastText + oL+Sc+Sm  | 79.89 | 80.46 | 80.17  | 1.14 |
-| [fastText_glove-4labels-no_features](baseline/fastText_glove-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.44 | 79.60 | 79.52 | 0.61|
+| [baseline-by_sentences-updated_corpus-gloves-no_features](baseline/baseline-by_sentences-updated_corpus-glove-no_features) | 172 papers, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 78.87  |  80.35  |  79.60  | 0.82 |
+| [baseline-by_sentences-updated_corpus-gloves-features](baseline/baseline-by_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
+| [fastText-by_sentences-updated_corpus-oL+Sc+Sc-features](oL+Sc+Sm/fastText-oL+Sc+Sm-by_sentences-updated_corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
+| [fastText-by_sentences-updated_corpus-oL+Sc+Sc-no_features](oL+Sc+Sm/fastText-oL+Sc+Sm-by_sentences-updated_corpus-fasttext-no_features) | 172 papers, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.62  | 80.48 | 80.04 | 0.64 |
+| [baseline-by_sentences-automatic_split-positive-glove-features](baseline/baseline_sentences_positive_features) | 172 papers, features, segmented by sentences, filter out all sentences without entities | 80.44 |   80.77 |   80.60  | 0.57 |
+| [baseline-by_sentences-automatic_split-positive-oL+Sc+Sm-features](baseline/baseline_sentences_positive_features-fasttext) | 172 papers, features, oL+Sc+Sm , segmented by sentences, filter out all sentences without entities | 80.68  |  80.93  |  80.81 | 0.72 |  
+| [baseline-by_sentences-minus_worst_10-features](baseline/baseline-by_sentences-minus_worst_10-features) | baseline_features + gloVe + by sentence + remove worst 10 documents  | 83.01  |  82.89  |  **82.95** | 0.58 |
+| [baseline-by_sentences-updated_corpus-gloves-keep_all_sentences-no_features](baseline/baseline-by_sentences-updated_corpus-glove-no_features) | 172 papers, gloVe, corpus manually segmented by sentences |  77.08    |80.41  | 78.70  | 0.81 |
+| [baseline-by_sentences-updated_corpus-oL+Sc+Sm-keep_all_sentences-no_features](oL+Sc+Sm/baseline-by_sentences-updated_corpus-oL+Sc+Sm-no_features) | 172 papers, oL+Sc+Sm, corpus manually segmented by sentences |  76.82  |80.05  |  78.38  | 1.08 |
+| [scibert-by_sentences-updated_corpus](scibert/by_sentences-updated_corpus) | 172 papers, scibert, corpus manually segmented by sentences | 77.71  |  82.90  |  80.22 | |
+
+## Embeddings
+
+| Name | Source corpus | Size | Vector dimension | 
+|------|---------------|--------|------------------|
+| oS | Oscar 1-12 | 4M vocab | 100, 300| | 
+| oL | Oscar | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
+| Sc | Science | - | 300| -  | - |  
+| oS+Sm | Oscar 1-12 + Supermat | 4M vocab | 100, 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
+| oS+Sc | Oscar 1-12 + Science | - | 300| - |
+| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
+| oL+Sm | Oscar + Supermat | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
+| oL+Sc | Oscar + Science | - | 300| - |
+| oL+Sc+Sm | Oscar + Science + SuperMat| - | 300| - |
+| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
+| glove.840B.300d | Common Crawl | 840B tokens, 2.2M vocab, cased | 300 |https://nlp.stanford.edu/projects/glove/ | 
+| crawl-300d-2M | Common Crawl | 600B [2M vocab? (trained with subword)] | 300 | https://fasttext.cc/docs/en/english-vectors.html | 
+
+## Corpora
+
+| Name | Description | Size | Url | 
+|------|---------------|--------|------------------|
+| oL | Oscar Large | - | [https://oscar-corpus.com/](Oscar) |
+| oS | Oscar Small (1-12) | - |
+| Sm | SuperMat | 172 articles on superconductors | [https://github.com/lfoppiano/SuperMat](SuperMat) |
+| Sc | Science | 794197 articles from acs, aip, aps, elsevier, iop, jjap, rsc, springer, wiley | N/A |
 
 
-## Other experiments 
+## Experiments
 
 ### Removing batch 8
 Batch 8 resulted to score the least in the cross-validation with only single batches
@@ -233,180 +260,180 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 
 | Name                                                   | Precision | Recall | F-Score | Support |
 | ------------------------------------------------------ | --------- | ------ | ------- | ------- |
-| PHC3130001-CC.train                                    | 0.6800    | 0.6296 | 0.6538  | 27      |
-| P070184523-CC.train                                    | 0.7120    | 0.7063 | 0.7092  | 126     |
-| PR05514733-CC.train                                    | 0.7018    | 0.7273 | 0.7143  | 55      |
-| PHC4320193-CC.train                                    | 0.7403    | 0.7283 | 0.7342  | 184     |
-| PHC1480411-CC.train                                    | 0.7091    | 0.7647 | 0.7358  | 51      |
-| PHC1580183-CC.train                                    | 0.7000    | 0.7778 | 0.7368  | 18      |
-| L092157004-CC.train                                    | 0.7123    | 0.7761 | 0.7429  | 67      |
-| EPL0480073-CC.train                                    | 0.7500    | 0.7500 | 0.7500  | 16      |
-| MCP0750110-CC.train                                    | 0.7623    | 0.7381 | 0.7500  | 126     |
-| PHC3910237-CC.train                                    | 0.7436    | 0.7632 | 0.7532  | 114     |
-| Tc4k_interfaceBi_Ni-CC.train                           | 0.8142    | 0.7419 | 0.7764  | 124     |
-| PHC4020152-CC.train                                    | 0.7674    | 0.7904 | 0.7788  | 167     |
-| PR0446999-CC.train                                     | 0.7717    | 0.7978 | 0.7845  | 89      |
-| PHC4170033-CC.train                                    | 0.7785    | 0.8000 | 0.7891  | 145     |
-| P071184510-CC.train                                    | 0.7884    | 0.7926 | 0.7905  | 188     |
-| PHC3830337-CC.train                                    | 0.7619    | 0.8247 | 0.7921  | 97      |
-| P068180505-CC.train                                    | 0.7973    | 0.7973 | 0.7973  | 74      |
-| P066024502-CC.train                                    | 0.7927    | 0.8025 | 0.7975  | 81      |
-| P066214509-CC.train                                    | 0.8197    | 0.7937 | 0.8065  | 63      |
-| JPS0730819-CC.train                                    | 0.7558    | 0.8667 | 0.8075  | 75      |
-| P068100502-CC.train                                    | 0.8182    | 0.7975 | 0.8077  | 79      |
-| P067104503-CC.train                                    | 0.8000    | 0.8163 | 0.8081  | 98      |
-| SST01600L7-CC.train                                    | 0.8000    | 0.8163 | 0.8081  | 49      |
-| P071104513-CC.train                                    | 0.8315    | 0.7872 | 0.8087  | 188     |
-| P070054519-CC.train                                    | 0.8592    | 0.7673 | 0.8106  | 159     |
-| APL0774202-CC.train                                    | 0.8246    | 0.8103 | 0.8174  | 58      |
-| PHC1980027.train                                       | 0.8824    | 0.7759 | 0.8257  | 58      |
-| P072014504-CC.train                                    | 0.8313    | 0.8210 | 0.8261  | 162     |
-| PHC4200023-CC.train                                    | 0.8261    | 0.8261 | 0.8261  | 115     |
-| P072064520-CC.train                                    | 0.8545    | 0.8034 | 0.8282  | 117     |
-| PR06006991-CC.train                                    | 0.8148    | 0.8462 | 0.8302  | 104     |
-| PCS2739-CC.train                                       | 0.8814    | 0.7879 | 0.8320  | 66      |
-| P072180504-CC.train                                    | 0.8624    | 0.8103 | 0.8356  | 116     |
-| P070020503-CC.train                                    | 0.9358    | 0.7556 | 0.8361  | 135     |
-| L090137001-CC.train                                    | 0.8864    | 0.7959 | 0.8387  | 49      |
-| PR06015055-CC.train                                    | 0.8667    | 0.8125 | 0.8387  | 48      |
-| JPS0731123-CC.train                                    | 0.8451    | 0.8333 | 0.8392  | 72      |
-| 1903.04321-CC.train                                    | 0.8333    | 0.8451 | 0.8392  | 71      |
-| PR05903948-CC.train                                    | 0.8049    | 0.8800 | 0.8408  | 75      |
-| PHC1910237.train                                       | 0.8182    | 0.8654 | 0.8411  | 52      |
-| P072174508-CC.train                                    | 0.8087    | 0.8774 | 0.8416  | 106     |
-| PR06012475-CC.train                                    | 0.7966    | 0.8952 | 0.8430  | 105     |
-| mydeen2010temperature-CC.train                         | 0.8302    | 0.8571 | 0.8435  | 154     |
-| SCinTiO_1612.02502-CC.train                            | 0.8455    | 0.8419 | 0.8437  | 234     |
-| P071134526-CC.train                                    | 0.9268    | 0.7755 | 0.8444  | 98      |
-| L088207005-CC.train                                    | 0.8507    | 0.8382 | 0.8444  | 68      |
-| JPS0731655-CC.train                                    | 0.8495    | 0.8404 | 0.8449  | 94      |
-| PHC1580178.train                                       | 0.8333    | 0.8621 | 0.8475  | 87      |
-| P070214505-CC.train                                    | 0.8369    | 0.8676 | 0.8520  | 136     |
-| P064172514-CC.train                                    | 0.8000    | 0.9114 | 0.8521  | 79      |
-| PR05514152-CC.train                                    | 0.8421    | 0.8649 | 0.8533  | 37      |
-| PR06114350-CC.train                                    | 0.8861    | 0.8235 | 0.8537  | 85      |
-| JPS0710709-CC.train                                    | 0.8621    | 0.8475 | 0.8547  | 59      |
-| PR05914099-CC.train                                    | 0.8176    | 0.8966 | 0.8553  | 145     |
-| PHC2240263-CC.train                                    | 0.7957    | 0.9250 | 0.8555  | 80      |
-| Li_2018_Supercond._Sci._Technol._31_085001.train       | 0.8586    | 0.8543 | 0.8564  | 199     |
-| JPS0723041-CC.train                                    | 0.8684    | 0.8462 | 0.8571  | 78      |
-| Drozdov_etal_2015.train                                | 0.8509    | 0.8635 | 0.8571  | 271     |
-| P068132504-CC.train                                    | 0.8202    | 0.9012 | 0.8588  | 81      |
-| PR06114956-CC.train                                    | 0.8592    | 0.8592 | 0.8592  | 142     |
-| L088207003-CC.train                                    | 0.8696    | 0.8511 | 0.8602  | 47      |
-| PR05511832-CC.train                                    | 0.8511    | 0.8696 | 0.8602  | 46      |
-| kotegawa2008abrupt-CC.train                            | 0.8651    | 0.8583 | 0.8617  | 127     |
-| PHC2640145-CC.train                                    | 0.8462    | 0.8800 | 0.8627  | 25      |
-| P064144524-CC.train                                    | 0.8201    | 0.9120 | 0.8636  | 125     |
-| sun2012re-emerging-CC.train                            | 0.8194    | 0.9137 | 0.8639  | 139     |
-| P072064527-CC.train                                    | 0.9153    | 0.8182 | 0.8640  | 66      |
-| PHC4210001-CC.train                                    | 0.8497    | 0.8802 | 0.8647  | 167     |
-| P066104528-CC.train                                    | 0.8652    | 0.8652 | 0.8652  | 89      |
-| P068214517-CC.train                                    | 0.9085    | 0.8269 | 0.8658  | 156     |
-| L091087001-CC.train                                    | 0.8621    | 0.8721 | 0.8671  | 86      |
-| PHB1480442.train                                       | 0.8806    | 0.8551 | 0.8676  | 69      |
-| SST0180041-CC.train                                    | 0.8491    | 0.8911 | 0.8696  | 101     |
-| PHC4030200-CC.train                                    | 0.8333    | 0.9091 | 0.8696  | 22      |
-| P072214523-CC.train                                    | 0.8791    | 0.8602 | 0.8696  | 93      |
-| JPS0731131-CC.train                                    | 0.8791    | 0.8602 | 0.8696  | 93      |
-| kotegawa2009contrasting-CC.train                       | 0.8644    | 0.8755 | 0.8699  | 233     |
-| EPJ0290369-CC.train                                    | 0.8451    | 0.8967 | 0.8702  | 213     |
-| JPS0731297-CC.train                                    | 0.8538    | 0.8880 | 0.8706  | 125     |
-| L088167005-CC.train                                    | 0.8767    | 0.8649 | 0.8707  | 74      |
-| NAT3500600.train                                       | 0.8947    | 0.8500 | 0.8718  | 60      |
-| L095117006-CC.train                                    | 0.8876    | 0.8587 | 0.8729  | 92      |
-| ying2011pressure-CC.train                              | 0.8507    | 0.8995 | 0.8744  | 209     |
-| SSC1280097-CC.train                                    | 0.8571    | 0.8955 | 0.8759  | 67      |
-| JPS081113707-CC.train                                  | 0.8875    | 0.8659 | 0.8765  | 82      |
-| okada2008supercondctivity-CC.train                     | 0.8429    | 0.9147 | 0.8773  | 129     |
-| P068064507-CC.train                                    | 0.8710    | 0.8852 | 0.8780  | 122     |
-| xing2014theAnomaly-CC.train                            | 0.8571    | 0.9027 | 0.8793  | 113     |
-| L094037007-CC.train                                    | 0.8654    | 0.8940 | 0.8795  | 151     |
-| P066024503-CC.train                                    | 0.8824    | 0.8824 | 0.8824  | 170     |
-| 1609.04957-CC.train                                    | 0.8913    | 0.8770 | 0.8841  | 187     |
-| PR06100107-CC.train                                    | 0.8904    | 0.8784 | 0.8844  | 148     |
-| P071104516-CC.train                                    | 0.8571    | 0.9139 | 0.8846  | 151     |
-| chu2009high-CC.train                                   | 0.8722    | 0.8989 | 0.8853  | 554     |
-| P070052502-CC.train                                    | 0.8551    | 0.9219 | 0.8872  | 64      |
-| SSC1270493-CC.train                                    | 0.8761    | 0.9000 | 0.8879  | 110     |
-| P068132507-CC.train                                    | 0.8649    | 0.9143 | 0.8889  | 70      |
-| CoA4_HTSC_theory1807.00934-CC.train                    | 0.8846    | 0.8932 | 0.8889  | 103     |
-| L093156802-CC.train                                    | 0.8810    | 0.9024 | 0.8916  | 41      |
-| hott2013review-CC.train                                | 0.9013    | 0.8825 | 0.8918  | 766     |
-| P071100502-CC.train                                    | 0.8721    | 0.9146 | 0.8929  | 82      |
-| 1802.03907-CC.train                                    | 0.8884    | 0.8990 | 0.8937  | 416     |
-| JPC0150L17-CC.train                                    | 0.8953    | 0.8953 | 0.8953  | 86      |
-| P072220505-CC.train                                    | 0.8889    | 0.9032 | 0.8960  | 62      |
-| ivanovskii2008newHigh.train                            | 0.8878    | 0.9052 | 0.8964  | 970     |
-| PR05003221-CC.train                                    | 0.8750    | 0.9211 | 0.8974  | 38      |
-| Suzuki_etal_2015-CC.train                              | 0.8824    | 0.9146 | 0.8982  | 82      |
-| L095167004-CC.train                                    | 0.8857    | 0.9151 | 0.9002  | 271     |
-| MAT0305503-CC.train                                    | 0.8947    | 0.9067 | 0.9007  | 75      |
-| PR05009672-CC.train                                    | 0.8734    | 0.9324 | 0.9020  | 74      |
-| Liu_2018_Supercond._Sci._Technol._31_125011-CC.train   | 0.8824    | 0.9247 | 0.9030  | 146     |
-| wang2011effect.train                                   | 0.8971    | 0.9104 | 0.9037  | 134     |
-| P072224509-CC.train                                    | 0.9344    | 0.8769 | 0.9048  | 65      |
-| SSC1230017-CC.train                                    | 0.9178    | 0.8933 | 0.9054  | 75      |
-| Tanaka_etal_2017-CC.train                              | 0.8929    | 0.9202 | 0.9063  | 163     |
-| P066132510-CC.train                                    | 0.8992    | 0.9134 | 0.9063  | 127     |
-| L089157004-CC.train                                    | 0.9027    | 0.9107 | 0.9067  | 112     |
-| L089147002-CC.train                                    | 0.8980    | 0.9167 | 0.9072  | 48      |
-| PR05814581-CC.train                                    | 0.8605    | 0.9610 | 0.9080  | 77      |
-| JPS0732912-CC.train                                    | 0.8750    | 0.9438 | 0.9081  | 89      |
-| PR05814617-CC.train                                    | 0.9000    | 0.9184 | 0.9091  | 98      |
-| piva2015combined-CC.train                              | 0.9134    | 0.9062 | 0.9098  | 128     |
-| JP01103169-CC.train                                    | 0.8958    | 0.9247 | 0.9101  | 93      |
-| PHC3411655-CC.train                                    | 0.8679    | 0.9583 | 0.9109  | 48      |
-| PhysRevX.9.021044-CC.train                             | 0.8378    | 1.0000 | 0.9118  | 31      |
-| JPS081033701-CC.train                                  | 0.9072    | 0.9167 | 0.9119  | 96      |
-| L094047006-CC.train                                    | 0.9184    | 0.9091 | 0.9137  | 99      |
-| EPL0580589.train                                       | 0.9043    | 0.9239 | 0.9140  | 92      |
-| PhysRevX.8.041024-CC.train                             | 0.9149    | 0.9149 | 0.9149  | 47      |
-| PHC3200009-CC.train                                    | 0.9254    | 0.9051 | 0.9151  | 137     |
-| P063224522-CC.train                                    | 0.9217    | 0.9091 | 0.9153  | 220     |
-| SSC1310125-CC.train                                    | 0.8696    | 0.9677 | 0.9160  | 62      |
-| L094127001-CC.train                                    | 0.9111    | 0.9213 | 0.9162  | 89      |
-| HfV2O431805.08285-CC.train                             | 0.9231    | 0.9114 | 0.9172  | 79      |
-| PR06013094-CC.train                                    | 0.8750    | 0.9655 | 0.9180  | 58      |
-| P066020503-CC.train                                    | 0.9184    | 0.9184 | 0.9184  | 49      |
-| PR05809504-CC.train                                    | 0.9067    | 0.9315 | 0.9189  | 73      |
-| Rb2Cr3As3_quasi1D_SC1412.2596-CC.train                 | 0.8947    | 0.9444 | 0.9189  | 90      |
-| PHC4020027-CC.train                                    | 0.8831    | 0.9577 | 0.9189  | 71      |
-| P072104504-CC.train                                    | 0.9024    | 0.9367 | 0.9193  | 79      |
-| Carnicom_2018_Supercond._Sci._Technol._31_115005.train | 0.9073    | 0.9320 | 0.9195  | 147     |
-| PHC3660299-CC.train                                    | 0.9200    | 0.9200 | 0.9200  | 75      |
-| P067172501-CC.train                                    | 0.9062    | 0.9355 | 0.9206  | 62      |
-| P065104523-CC.train                                    | 0.8905    | 0.9531 | 0.9208  | 128     |
-| MAT0106521-CC.train                                    | 0.8767    | 0.9697 | 0.9209  | 66      |
-| PHC3410729-CC.train                                    | 0.8889    | 0.9600 | 0.9231  | 25      |
-| P065224520-CC.train                                    | 0.9016    | 0.9483 | 0.9244  | 58      |
-| L088227002-CC.train                                    | 0.9074    | 0.9423 | 0.9245  | 104     |
-| P069184513-CC.train                                    | 0.9130    | 0.9375 | 0.9251  | 112     |
-| L091217001-CC.train                                    | 0.9492    | 0.9032 | 0.9256  | 62      |
-| PR06103604-CC.train                                    | 0.9205    | 0.9310 | 0.9257  | 87      |
-| PR05713422-CC.train                                    | 0.9278    | 0.9278 | 0.9278  | 97      |
-| JPS0722453-CC.train                                    | 0.9000    | 0.9574 | 0.9278  | 47      |
-| PR05907184-CC.train                                    | 0.9206    | 0.9355 | 0.9280  | 124     |
-| P069014507-CC.train                                    | 0.9358    | 0.9211 | 0.9284  | 190     |
-| PR04909084-CC.train                                    | 0.9100    | 0.9479 | 0.9286  | 96      |
-| MPL0150497-CC.train                                    | 0.9118    | 0.9466 | 0.9288  | 131     |
-| L093157004-CC.train                                    | 0.9302    | 0.9302 | 0.9302  | 86      |
-| P069174506-CC.train                                    | 0.9286    | 0.9341 | 0.9313  | 167     |
-| P066020501-CC.train                                    | 0.9123    | 0.9630 | 0.9369  | 54      |
-| L092227003-CC.train                                    | 0.9310    | 0.9474 | 0.9391  | 57      |
-| EPL0330153-CC.train                                    | 0.9118    | 0.9688 | 0.9394  | 32      |
-| 1802.09882-CC.train                                    | 0.9206    | 0.9667 | 0.9431  | 60      |
-| P072094504-CC.train                                    | 0.9808    | 0.9107 | 0.9444  | 56      |
-| EPL0410207-CC.train                                    | 0.9565    | 0.9362 | 0.9462  | 47      |
-| yamaguchi2014ac.train                                  | 0.9340    | 0.9612 | 0.9474  | 103     |
-| PR04310568-CC.train                                    | 0.9333    | 0.9655 | 0.9492  | 29      |
-| P065172501-CC.train                                    | 0.9423    | 0.9608 | 0.9515  | 102     |
-| L094047001-CC.train                                    | 0.9423    | 0.9608 | 0.9515  | 102     |
-| PR06014617-CC.train                                    | 0.9479    | 0.9579 | 0.9529  | 95      |
-| P065024523-CC.train                                    | 0.9275    | 0.9846 | 0.9552  | 65      |
-| PR06103808-CC.train                                    | 0.9726    | 0.9595 | 0.9660  | 74      |
-| EPL0490086-CC.train                                    | 0.9853    | 0.9710 | 0.9781  | 69      |
-| L090137002-CC.train                                    | 1.0000    | 1.0000 | 1.0000  | 14      |
+| PHC3130001-CC                                    | 0.6800    | 0.6296 | 0.6538  | 27      |
+| P070184523-CC                                    | 0.7120    | 0.7063 | 0.7092  | 126     |
+| PR05514733-CC                                    | 0.7018    | 0.7273 | 0.7143  | 55      |
+| PHC4320193-CC                                    | 0.7403    | 0.7283 | 0.7342  | 184     |
+| PHC1480411-CC                                    | 0.7091    | 0.7647 | 0.7358  | 51      |
+| PHC1580183-CC                                    | 0.7000    | 0.7778 | 0.7368  | 18      |
+| L092157004-CC                                    | 0.7123    | 0.7761 | 0.7429  | 67      |
+| EPL0480073-CC                                    | 0.7500    | 0.7500 | 0.7500  | 16      |
+| MCP0750110-CC                                    | 0.7623    | 0.7381 | 0.7500  | 126     |
+| PHC3910237-CC                                    | 0.7436    | 0.7632 | 0.7532  | 114     |
+| Tc4k_interfaceBi_Ni-CC                           | 0.8142    | 0.7419 | 0.7764  | 124     |
+| PHC4020152-CC                                    | 0.7674    | 0.7904 | 0.7788  | 167     |
+| PR0446999-CC                                     | 0.7717    | 0.7978 | 0.7845  | 89      |
+| PHC4170033-CC                                    | 0.7785    | 0.8000 | 0.7891  | 145     |
+| P071184510-CC                                    | 0.7884    | 0.7926 | 0.7905  | 188     |
+| PHC3830337-CC                                    | 0.7619    | 0.8247 | 0.7921  | 97      |
+| P068180505-CC                                    | 0.7973    | 0.7973 | 0.7973  | 74      |
+| P066024502-CC                                    | 0.7927    | 0.8025 | 0.7975  | 81      |
+| P066214509-CC                                    | 0.8197    | 0.7937 | 0.8065  | 63      |
+| JPS0730819-CC                                    | 0.7558    | 0.8667 | 0.8075  | 75      |
+| P068100502-CC                                    | 0.8182    | 0.7975 | 0.8077  | 79      |
+| P067104503-CC                                    | 0.8000    | 0.8163 | 0.8081  | 98      |
+| SST01600L7-CC                                    | 0.8000    | 0.8163 | 0.8081  | 49      |
+| P071104513-CC                                    | 0.8315    | 0.7872 | 0.8087  | 188     |
+| P070054519-CC                                    | 0.8592    | 0.7673 | 0.8106  | 159     |
+| APL0774202-CC                                    | 0.8246    | 0.8103 | 0.8174  | 58      |
+| PHC1980027                                       | 0.8824    | 0.7759 | 0.8257  | 58      |
+| P072014504-CC                                    | 0.8313    | 0.8210 | 0.8261  | 162     |
+| PHC4200023-CC                                    | 0.8261    | 0.8261 | 0.8261  | 115     |
+| P072064520-CC                                    | 0.8545    | 0.8034 | 0.8282  | 117     |
+| PR06006991-CC                                    | 0.8148    | 0.8462 | 0.8302  | 104     |
+| PCS2739-CC                                       | 0.8814    | 0.7879 | 0.8320  | 66      |
+| P072180504-CC                                    | 0.8624    | 0.8103 | 0.8356  | 116     |
+| P070020503-CC                                    | 0.9358    | 0.7556 | 0.8361  | 135     |
+| L090137001-CC                                    | 0.8864    | 0.7959 | 0.8387  | 49      |
+| PR06015055-CC                                    | 0.8667    | 0.8125 | 0.8387  | 48      |
+| JPS0731123-CC                                    | 0.8451    | 0.8333 | 0.8392  | 72      |
+| 1903.04321-CC                                    | 0.8333    | 0.8451 | 0.8392  | 71      |
+| PR05903948-CC                                    | 0.8049    | 0.8800 | 0.8408  | 75      |
+| PHC1910237                                       | 0.8182    | 0.8654 | 0.8411  | 52      |
+| P072174508-CC                                    | 0.8087    | 0.8774 | 0.8416  | 106     |
+| PR06012475-CC                                    | 0.7966    | 0.8952 | 0.8430  | 105     |
+| mydeen2010temperature-CC                         | 0.8302    | 0.8571 | 0.8435  | 154     |
+| SCinTiO_1612.02502-CC                            | 0.8455    | 0.8419 | 0.8437  | 234     |
+| P071134526-CC                                    | 0.9268    | 0.7755 | 0.8444  | 98      |
+| L088207005-CC                                    | 0.8507    | 0.8382 | 0.8444  | 68      |
+| JPS0731655-CC                                    | 0.8495    | 0.8404 | 0.8449  | 94      |
+| PHC1580178                                       | 0.8333    | 0.8621 | 0.8475  | 87      |
+| P070214505-CC                                    | 0.8369    | 0.8676 | 0.8520  | 136     |
+| P064172514-CC                                    | 0.8000    | 0.9114 | 0.8521  | 79      |
+| PR05514152-CC                                    | 0.8421    | 0.8649 | 0.8533  | 37      |
+| PR06114350-CC                                    | 0.8861    | 0.8235 | 0.8537  | 85      |
+| JPS0710709-CC                                    | 0.8621    | 0.8475 | 0.8547  | 59      |
+| PR05914099-CC                                    | 0.8176    | 0.8966 | 0.8553  | 145     |
+| PHC2240263-CC                                    | 0.7957    | 0.9250 | 0.8555  | 80      |
+| Li_2018_Supercond._Sci._Technol._31_085001       | 0.8586    | 0.8543 | 0.8564  | 199     |
+| JPS0723041-CC                                    | 0.8684    | 0.8462 | 0.8571  | 78      |
+| Drozdov_etal_2015                                | 0.8509    | 0.8635 | 0.8571  | 271     |
+| P068132504-CC                                    | 0.8202    | 0.9012 | 0.8588  | 81      |
+| PR06114956-CC                                    | 0.8592    | 0.8592 | 0.8592  | 142     |
+| L088207003-CC                                    | 0.8696    | 0.8511 | 0.8602  | 47      |
+| PR05511832-CC                                    | 0.8511    | 0.8696 | 0.8602  | 46      |
+| kotegawa2008abrupt-CC                            | 0.8651    | 0.8583 | 0.8617  | 127     |
+| PHC2640145-CC                                    | 0.8462    | 0.8800 | 0.8627  | 25      |
+| P064144524-CC                                    | 0.8201    | 0.9120 | 0.8636  | 125     |
+| sun2012re-emerging-CC                            | 0.8194    | 0.9137 | 0.8639  | 139     |
+| P072064527-CC                                    | 0.9153    | 0.8182 | 0.8640  | 66      |
+| PHC4210001-CC                                    | 0.8497    | 0.8802 | 0.8647  | 167     |
+| P066104528-CC                                    | 0.8652    | 0.8652 | 0.8652  | 89      |
+| P068214517-CC                                    | 0.9085    | 0.8269 | 0.8658  | 156     |
+| L091087001-CC                                    | 0.8621    | 0.8721 | 0.8671  | 86      |
+| PHB1480442                                       | 0.8806    | 0.8551 | 0.8676  | 69      |
+| SST0180041-CC                                    | 0.8491    | 0.8911 | 0.8696  | 101     |
+| PHC4030200-CC                                    | 0.8333    | 0.9091 | 0.8696  | 22      |
+| P072214523-CC                                    | 0.8791    | 0.8602 | 0.8696  | 93      |
+| JPS0731131-CC                                    | 0.8791    | 0.8602 | 0.8696  | 93      |
+| kotegawa2009contrasting-CC                       | 0.8644    | 0.8755 | 0.8699  | 233     |
+| EPJ0290369-CC                                    | 0.8451    | 0.8967 | 0.8702  | 213     |
+| JPS0731297-CC                                    | 0.8538    | 0.8880 | 0.8706  | 125     |
+| L088167005-CC                                    | 0.8767    | 0.8649 | 0.8707  | 74      |
+| NAT3500600                                       | 0.8947    | 0.8500 | 0.8718  | 60      |
+| L095117006-CC                                    | 0.8876    | 0.8587 | 0.8729  | 92      |
+| ying2011pressure-CC                              | 0.8507    | 0.8995 | 0.8744  | 209     |
+| SSC1280097-CC                                    | 0.8571    | 0.8955 | 0.8759  | 67      |
+| JPS081113707-CC                                  | 0.8875    | 0.8659 | 0.8765  | 82      |
+| okada2008supercondctivity-CC                     | 0.8429    | 0.9147 | 0.8773  | 129     |
+| P068064507-CC                                    | 0.8710    | 0.8852 | 0.8780  | 122     |
+| xing2014theAnomaly-CC                            | 0.8571    | 0.9027 | 0.8793  | 113     |
+| L094037007-CC                                    | 0.8654    | 0.8940 | 0.8795  | 151     |
+| P066024503-CC                                    | 0.8824    | 0.8824 | 0.8824  | 170     |
+| 1609.04957-CC                                    | 0.8913    | 0.8770 | 0.8841  | 187     |
+| PR06100107-CC                                    | 0.8904    | 0.8784 | 0.8844  | 148     |
+| P071104516-CC                                    | 0.8571    | 0.9139 | 0.8846  | 151     |
+| chu2009high-CC                                   | 0.8722    | 0.8989 | 0.8853  | 554     |
+| P070052502-CC                                    | 0.8551    | 0.9219 | 0.8872  | 64      |
+| SSC1270493-CC                                    | 0.8761    | 0.9000 | 0.8879  | 110     |
+| P068132507-CC                                    | 0.8649    | 0.9143 | 0.8889  | 70      |
+| CoA4_HTSC_theory1807.00934-CC                    | 0.8846    | 0.8932 | 0.8889  | 103     |
+| L093156802-CC                                    | 0.8810    | 0.9024 | 0.8916  | 41      |
+| hott2013review-CC                                | 0.9013    | 0.8825 | 0.8918  | 766     |
+| P071100502-CC                                    | 0.8721    | 0.9146 | 0.8929  | 82      |
+| 1802.03907-CC                                    | 0.8884    | 0.8990 | 0.8937  | 416     |
+| JPC0150L17-CC                                    | 0.8953    | 0.8953 | 0.8953  | 86      |
+| P072220505-CC                                    | 0.8889    | 0.9032 | 0.8960  | 62      |
+| ivanovskii2008newHigh                            | 0.8878    | 0.9052 | 0.8964  | 970     |
+| PR05003221-CC                                    | 0.8750    | 0.9211 | 0.8974  | 38      |
+| Suzuki_etal_2015-CC                              | 0.8824    | 0.9146 | 0.8982  | 82      |
+| L095167004-CC                                    | 0.8857    | 0.9151 | 0.9002  | 271     |
+| MAT0305503-CC                                    | 0.8947    | 0.9067 | 0.9007  | 75      |
+| PR05009672-CC                                    | 0.8734    | 0.9324 | 0.9020  | 74      |
+| Liu_2018_Supercond._Sci._Technol._31_125011-CC   | 0.8824    | 0.9247 | 0.9030  | 146     |
+| wang2011effect                                   | 0.8971    | 0.9104 | 0.9037  | 134     |
+| P072224509-CC                                    | 0.9344    | 0.8769 | 0.9048  | 65      |
+| SSC1230017-CC                                    | 0.9178    | 0.8933 | 0.9054  | 75      |
+| Tanaka_etal_2017-CC                              | 0.8929    | 0.9202 | 0.9063  | 163     |
+| P066132510-CC                                    | 0.8992    | 0.9134 | 0.9063  | 127     |
+| L089157004-CC                                    | 0.9027    | 0.9107 | 0.9067  | 112     |
+| L089147002-CC                                    | 0.8980    | 0.9167 | 0.9072  | 48      |
+| PR05814581-CC                                    | 0.8605    | 0.9610 | 0.9080  | 77      |
+| JPS0732912-CC                                    | 0.8750    | 0.9438 | 0.9081  | 89      |
+| PR05814617-CC                                    | 0.9000    | 0.9184 | 0.9091  | 98      |
+| piva2015combined-CC                              | 0.9134    | 0.9062 | 0.9098  | 128     |
+| JP01103169-CC                                    | 0.8958    | 0.9247 | 0.9101  | 93      |
+| PHC3411655-CC                                    | 0.8679    | 0.9583 | 0.9109  | 48      |
+| PhysRevX.9.021044-CC                             | 0.8378    | 1.0000 | 0.9118  | 31      |
+| JPS081033701-CC                                  | 0.9072    | 0.9167 | 0.9119  | 96      |
+| L094047006-CC                                    | 0.9184    | 0.9091 | 0.9137  | 99      |
+| EPL0580589                                       | 0.9043    | 0.9239 | 0.9140  | 92      |
+| PhysRevX.8.041024-CC                             | 0.9149    | 0.9149 | 0.9149  | 47      |
+| PHC3200009-CC                                    | 0.9254    | 0.9051 | 0.9151  | 137     |
+| P063224522-CC                                    | 0.9217    | 0.9091 | 0.9153  | 220     |
+| SSC1310125-CC                                    | 0.8696    | 0.9677 | 0.9160  | 62      |
+| L094127001-CC                                    | 0.9111    | 0.9213 | 0.9162  | 89      |
+| HfV2O431805.08285-CC                             | 0.9231    | 0.9114 | 0.9172  | 79      |
+| PR06013094-CC                                    | 0.8750    | 0.9655 | 0.9180  | 58      |
+| P066020503-CC                                    | 0.9184    | 0.9184 | 0.9184  | 49      |
+| PR05809504-CC                                    | 0.9067    | 0.9315 | 0.9189  | 73      |
+| Rb2Cr3As3_quasi1D_SC1412.2596-CC                 | 0.8947    | 0.9444 | 0.9189  | 90      |
+| PHC4020027-CC                                    | 0.8831    | 0.9577 | 0.9189  | 71      |
+| P072104504-CC                                    | 0.9024    | 0.9367 | 0.9193  | 79      |
+| Carnicom_2018_Supercond._Sci._Technol._31_115005 | 0.9073    | 0.9320 | 0.9195  | 147     |
+| PHC3660299-CC                                    | 0.9200    | 0.9200 | 0.9200  | 75      |
+| P067172501-CC                                    | 0.9062    | 0.9355 | 0.9206  | 62      |
+| P065104523-CC                                    | 0.8905    | 0.9531 | 0.9208  | 128     |
+| MAT0106521-CC                                    | 0.8767    | 0.9697 | 0.9209  | 66      |
+| PHC3410729-CC                                    | 0.8889    | 0.9600 | 0.9231  | 25      |
+| P065224520-CC                                    | 0.9016    | 0.9483 | 0.9244  | 58      |
+| L088227002-CC                                    | 0.9074    | 0.9423 | 0.9245  | 104     |
+| P069184513-CC                                    | 0.9130    | 0.9375 | 0.9251  | 112     |
+| L091217001-CC                                    | 0.9492    | 0.9032 | 0.9256  | 62      |
+| PR06103604-CC                                    | 0.9205    | 0.9310 | 0.9257  | 87      |
+| PR05713422-CC                                    | 0.9278    | 0.9278 | 0.9278  | 97      |
+| JPS0722453-CC                                    | 0.9000    | 0.9574 | 0.9278  | 47      |
+| PR05907184-CC                                    | 0.9206    | 0.9355 | 0.9280  | 124     |
+| P069014507-CC                                    | 0.9358    | 0.9211 | 0.9284  | 190     |
+| PR04909084-CC                                    | 0.9100    | 0.9479 | 0.9286  | 96      |
+| MPL0150497-CC                                    | 0.9118    | 0.9466 | 0.9288  | 131     |
+| L093157004-CC                                    | 0.9302    | 0.9302 | 0.9302  | 86      |
+| P069174506-CC                                    | 0.9286    | 0.9341 | 0.9313  | 167     |
+| P066020501-CC                                    | 0.9123    | 0.9630 | 0.9369  | 54      |
+| L092227003-CC                                    | 0.9310    | 0.9474 | 0.9391  | 57      |
+| EPL0330153-CC                                    | 0.9118    | 0.9688 | 0.9394  | 32      |
+| 1802.09882-CC                                    | 0.9206    | 0.9667 | 0.9431  | 60      |
+| P072094504-CC                                    | 0.9808    | 0.9107 | 0.9444  | 56      |
+| EPL0410207-CC                                    | 0.9565    | 0.9362 | 0.9462  | 47      |
+| yamaguchi2014ac                                  | 0.9340    | 0.9612 | 0.9474  | 103     |
+| PR04310568-CC                                    | 0.9333    | 0.9655 | 0.9492  | 29      |
+| P065172501-CC                                    | 0.9423    | 0.9608 | 0.9515  | 102     |
+| L094047001-CC                                    | 0.9423    | 0.9608 | 0.9515  | 102     |
+| PR06014617-CC                                    | 0.9479    | 0.9579 | 0.9529  | 95      |
+| P065024523-CC                                    | 0.9275    | 0.9846 | 0.9552  | 65      |
+| PR06103808-CC                                    | 0.9726    | 0.9595 | 0.9660  | 74      |
+| EPL0490086-CC                                    | 0.9853    | 0.9710 | 0.9781  | 69      |
+| L090137002-CC                                    | 1.0000    | 1.0000 | 1.0000  | 14      |
 
 ### Removing the worst evaluated documents
 
@@ -414,15 +441,40 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
+| Paragraph-based | - | - | -  | - |
 | [baseline-minus_worst_10-features](baseline/baseline-minus_worst_10-features) | baseline_features + gloVe + remove worst 10 documents  | 79.34   | 79.51  | 79.42 | 0.62 |
 | [baseline-minus_worst_10-no_features](baseline/baseline-minus_worst_10-no_features) | baseline_no_features + gloVe + remove worst 10 documents | 78.43   | 79.28  | 78.85 | 0.72 |
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_10-features](baseline/baseline-by_sentences-minus_worst_10-features) | baseline_features + gloVe + by sentence + remove worst 10 documents  | 83.01  |  82.89  |  82.95 | 0.58 |
+| [baseline-by_sentences-minus_worst_10-no_features](baseline/baseline-by_sentences-minus_worst_10-no_features) | baseline_no_features + gloVe + by sentence + remove worst 10 documents | 82.60  |  82.09   |82.33 | 0.61|
 
 #### Removing the top-worst-20
 
 | Name | Changes | Precision | Recall  | F1 | St Dev |
 |------|---------|-----------|---------|----|--------|
+| Paragraph-based | - | - | -  | - |
 | [baseline-minus_worst_20-features](baseline/baseline-minus_worst_20-features) | baseline_features + gloVe + remove worst 20 documents  | 79.48  |  79.77  |  79.62 | 0.87 |
 | [baseline-minus_worst_20-no_features](baseline/baseline-minus_worst_20-no_features) | baseline_no_features + gloVe + remove worst 20 documents | 78.06  |  78.73  |  78.39  | 0.56 |
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_20-features](baseline/baseline-by_sentences-minus_worst_20-features) | baseline_features + gloVe + by sentence + remove worst 20 documents  | 82.14  | 81.03  | 81.57 | 0.54 |
+| [baseline-by_sentences-minus_worst_20-no_features](baseline/baseline-by_sentences-minus_worst_20-no_features) | baseline_no_features + by sentence + gloVe + remove worst 20 documents | 80.70  | 80.90  | 80.79 | 0.61 |
+
+#### Removing the top-worst-1
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_1-features](baseline/baseline-by_sentences-minus_worst_1-features) | baseline_features + gloVe + by sentence + remove worst 1 document  | 81.60  |  82.37  |  81.98   | |
+| [baseline-by_sentences-minus_worst_1-no_features](baseline/baseline-by_sentences-minus_worst_1-no_features) | baseline_no_features + by sentence + gloVe + remove worst 1 document |80.82  |  81.98  |  81.39 | |
+
+#### Removing the top-worst-5
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |
+|------|---------|-----------|---------|----|--------|
+| Sentences-based | - | - | -  | - |
+| [baseline-by_sentences-minus_worst_5-features](baseline/baseline-by_sentences-minus_worst_5-features) | baseline_features + gloVe + by sentence + remove worst 5 documents  | 81.99  |  81.67  |  81.82 |
+| [baseline-by_sentences-minus_worst_5-no_features](baseline/baseline-by_sentences-minus_worst_5-no_features) | baseline_no_features + by sentence + gloVe + remove worst 5 documents | 81.21  |  81.09  |  81.15   |
+
 
 ### Replace <other> with POS tag
 The amount of token labeled with <other> is usually 10 times higher than all other tokens (e.g. <material> <class> etc... ). 
@@ -529,37 +581,114 @@ We are happy for a local improvement..
 
 (*) Using the original corpus with the features files. The rest of the data has been generated using only the XML to be able to manipulate the tokenization
 
-# Embeddings 
-
-| Name | Source corpus | Size | Vector dimension | 
-|------|---------------|--------|------------------|
-| oS | Oscar 1-12 | 4M vocab | 100, 300| | 
-| oL | Oscar | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
-| Sc | Science | - | 300| -  | - |  
-| oS+Sm | Oscar 1-12 + Supermat | 4M vocab | 100, 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
-| oS+Sc | Oscar 1-12 + Science | - | 300| - |
-| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
-| oL+Sm | Oscar + Supermat | 4M vocab | 300| [https://oscar-corpus.com/](Oscar), [https://github.com/lfoppiano/SuperMat](SuperMat) | 
-| oL+Sc | Oscar + Science | - | 300| - |
-| oL+Sc+Sm | Oscar + Science + SuperMat| - | 300| - |
-| oS+Sc+Sm | Oscar 1-12 + Science + SuperMat| - | 300| - |
-| glove.840B.300d | Common Crawl | 840B tokens, 2.2M vocab, cased | 300 |https://nlp.stanford.edu/projects/glove/ | 
-| crawl-300d-2M | Common Crawl | 600B [2M vocab? (trained with subword)] | 300 | https://fasttext.cc/docs/en/english-vectors.html | 
-
-# Corpora
-
-| Name | Description | Size | Url | 
-|------|---------------|--------|------------------|
-| oL | Oscar Large | - | [https://oscar-corpus.com/](Oscar) |
-| oS | Oscar Small (1-12) | - |
-| Sm | SuperMat | 172 articles on superconductors | [https://github.com/lfoppiano/SuperMat](SuperMat) |
-| Sc | Science | 794197 articles from acs, aip, aps, elsevier, iop, jjap, rsc, springer, wiley | N/A |
-
-
-# Summary results 
+## 6 vs 4 labels
 
 | Name | Changes | Precision | Recall  | F1 |  
 |------|---------|-----------|---------|----|
+| [baseline](baseline/baseline_sentences-updated_corpus-glove) | 172 papers, features, gloVe, corpus manually segmented by sentences, filter out all sentences without entities | 80.47 | 80.66 | 80.56  | 0.59|
+| [4label-features](baseline/fastText_glove-4labels-features) | baseline_features + fastText + oL+Sc+Sm  | 79.89 | 80.46 | 80.17  | 1.14 |
+| [oL+Sc+Sc-baseline-features](oL+Sc+Sm/fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus manually segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
+| [oL+Sc+Sm-4labels-features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-features) | baseline_features + fastText + oL+Sc+Sm  |80.12  | 80.86  | 80.49 | 0.92 |
+| [4labels-no_features](baseline/fastText_glove-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.44 | 79.60 | 79.52 | 0.61|
+| [oL+Sc+Sm-4labels-no_features](oL+Sc+Sm/fastText_oL+Sc+Sm-4labels-no_features) | baseline_no_features + fastText + oL+Sc+Sm  | 79.42 | 79.98 | 79.69 | 0.75|
+
+
+## Batches comparison
+
+Uniqueness = nb of unique entities / total number of entities
+Paragraphs includes titles, abstracts and keywords (one list of keywords is one paragraph)
+Tokens are calculated from the grobid-tokenizer which splits even numbers into different tokens.
+
+|       | Features  |             |      |          |       |      |      |
+|-------|-----------|-------------|------|----------|-------|------|------|
+| Batch | Precision | Recall | F1 | Rank | Uniqueness| Paragraphs | Tokens| 
+| 1     | 78.42 | 81.39 | 79.88 | 1 | 40.55 | 933 | 158069|   
+| 2     | 59.08 | 52.80 | 54.65 | 7 | 47.28 | 217 | 35484 |   
+| 3     | 73.59 | 75.26 | 74.40 | 2 | 48.93 | 452 | 85780 |    
+| 4     | 67.37 | 67.87 | 67.61 | 5 | 45.21 | 752 | 153217|   
+| 5     | 61.43 | 64.41 | 62.87 | 6 | 49.12 | 440 | 57936 |   
+| 6     | 72.15 | 71.41 | 71.77 | 4 | 43.98 | 578 | 82018 |   
+| 7     | 72.02 | 76.80 | 74.29 | 3 | 42.85 | 442 | 88981 |   
+| 8     | 38.93 | 30.18 | 33.59 | 8 | 44.77 | 236 | 42570 |   
+
+
+|       | no Features |      |    |          |       |      |      |     
+|-------|-----------|--------|----|----------|-------|------|------|
+| Batch | Precision | Recall | F1 | Rank | Uniqueness|Paragraphs | Tokens |
+| 1     | 77.28 | 80.05 | 78.63 | 1 | 40.55 | 933 |158069|  
+| 2     | 57.67 | 46.92 | 50.47 | 7 | 47.28 | 217 |35484 |  
+| 3     | 68.71 | 69.57 | 69.10 | 4 | 48.93 | 452 |85780 |  
+| 4     | 65.92 | 67.59 | 66.74 | 5 | 45.21 | 752 |153217|  
+| 5     | 60.93 | 55.94 | 58.14 | 6 | 49.12 | 440 |57936 |  
+| 6     | 70.94 | 69.83 | 70.38 | 3 | 43.98 | 578 |82018 |  
+| 7     | 72.50  |78.80 | 75.51 | 2 | 42.85 | 442 |88981 |  
+| 8     | 20.33 | 12.95 | 15.64 | 8 | 44.77 | 236 |42570 |  
+
+
+## Sentence based vs Paragraph based
+
+Experiment definition:
+- training: 3 articles
+- evaluation: 1 article
+- Batch size: 5
+- Embeddings: glove / oS+Sc+Sm
+- Architecture: BidLSTM_CRF_FEATURES
+
+### Experiment 1: glove
+
+#### Paragraph based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2500   | 0.0952 | 0.1379 | 21 |
+|      material    |  0.3636   | 0.1333 | 0.1951 | 60 |
+|     me_method    |  0.4500   | 0.2571 | 0.3273 | 35 |
+|            tc    |  0.7143   | 0.7500 | 0.7317 | 20 |
+|       tcValue    |  0.3158   | 0.5455 | 0.4000 | 11 |
+| all (micro avg.) |  0.4444   | 0.2721 | 0.3376 | 147 |
+
+#### Sentence based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2727   | 0.1875 | 0.1429 | 21 |
+|      material    |  0.4930   | 0.5344 | 0.5833 | 60 |
+|     me_method    |  0.5600   | 0.4667 | 0.4000 | 35 |
+|            tc    |  0.6429   | 0.7500 | 0.9000 | 20 |
+|       tcValue    |  0.2727   | 0.3636 | 0.5455 | 11 |
+| all (micro avg.) |  0.4841 | 0.5000 | 0.5170 | 147 |
+
+
+### Experiment 2: oS+Sc+Sm
+
+#### Paragraph based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.1538   |0.0952  | 0.1176 | 21  |
+|      material    |  0.2258   |0.1167  | 0.1538 | 60  |
+|     me_method    |  0.5000   |0.2571  | 0.3396 | 35  |
+|            tc    |  0.6154   |0.8000  | 0.6957 | 20  |
+|       tcValue    |  0.1852   |0.4545  | 0.2632 | 11  |
+| all (micro avg.) |  0.3391   |0.2653  | 0.2977 | 147 |
+
+#### Sentence based
+
+|  label           | precision | recall | f1-score | support |
+|------------------|-----------|--------|--------|------|
+|         class    |  0.2778   |0.2381  | 0.2564 | 21  |
+|      material    |  0.4800   |0.2000  | 0.2824 | 60  |
+|     me_method    |  0.5833   |0.4000  | 0.4746 | 35  |
+|            tc    |  0.6207   |0.9000  | 0.7347 | 20  |
+|       tcValue    |  0.1000   |0.1818  | 0.1290 | 11  |
+| all (micro avg.) |  0.4397   |0.3469  | 0.3878 | 147 |
+
+
+
+# Complete list of results 
+
+| Name | Changes | Precision | Recall  | F1 | St Dev |  
+|------|---------|-----------|---------|----|--------|
 | [baseline_no_features](baseline/baseline_no_features) | 172 papers, no features | 77.00  |  77.20 |   77.09 |   0.61    |
 | [baseline_with_features](baseline_features) | 172 papers, features | 77.95  |  77.27  |  77.60  |    0.99     |
 | [baseline_by_sentences_with_features](baseline/baseline_sentences_features) | 172 papers, features, segmented by sentences, filter out paragraphs without entities | 77.48  |  79.31 |  78.38  | 0.53  |
@@ -637,96 +766,3 @@ We are happy for a local improvement..
 | [fastText_oL+Sc+Sm_bin_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_bin_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + bin  | 77.19 |  78.00  |  77.58 | 1.01 |
 | [fastText_oL+Sc+Sm_vec_skipgram_300d_features](oL+Sc+Sm/fastText_oL+Sc+Sm_vec_skipgram_300d_features) | baseline_features + fastText + Oscar Large + Science + SuperMat + skipgram + 300d + vec  | 77.21 |  78.00  |  77.60 | 0.49 |
 | [fastText_oL+Sc+Sc_by_sentences-updated_corpus-fastext](fastText_oL+Sc+Sc_sentences-updated-corpus-fasttext) | 172 papers, features, oL+Sc+Sm , corpus segmented by sentences, filter out all sentences without entities | 79.96  |  79.99  | 79.97 | 0.76 |
-
-# Comparisons
-
-## Batches comparison
-
-Uniqueness = nb of unique entities / total number of entities
-Paragraphs includes titles, abstracts and keywords (one list of keywords is one paragraph)
-Tokens are calculated from the grobid-tokenizer which splits even numbers into different tokens.
-
-|       | Features  |             |      |          |       |      |      |
-|-------|-----------|-------------|------|----------|-------|------|------|
-| Batch | Precision | Recall | F1 | Rank | Uniqueness| Paragraphs | Tokens| 
-| 1     | 78.42 | 81.39 | 79.88 | 1 | 40.55 | 933 | 158069|   
-| 2     | 59.08 | 52.80 | 54.65 | 7 | 47.28 | 217 | 35484 |   
-| 3     | 73.59 | 75.26 | 74.40 | 2 | 48.93 | 452 | 85780 |    
-| 4     | 67.37 | 67.87 | 67.61 | 5 | 45.21 | 752 | 153217|   
-| 5     | 61.43 | 64.41 | 62.87 | 6 | 49.12 | 440 | 57936 |   
-| 6     | 72.15 | 71.41 | 71.77 | 4 | 43.98 | 578 | 82018 |   
-| 7     | 72.02 | 76.80 | 74.29 | 3 | 42.85 | 442 | 88981 |   
-| 8     | 38.93 | 30.18 | 33.59 | 8 | 44.77 | 236 | 42570 |   
-
-
-|       | no Features |      |    |          |       |      |      |     
-|-------|-----------|--------|----|----------|-------|------|------|
-| Batch | Precision | Recall | F1 | Rank | Uniqueness|Paragraphs | Tokens |
-| 1     | 77.28 | 80.05 | 78.63 | 1 | 40.55 | 933 |158069|  
-| 2     | 57.67 | 46.92 | 50.47 | 7 | 47.28 | 217 |35484 |  
-| 3     | 68.71 | 69.57 | 69.10 | 4 | 48.93 | 452 |85780 |  
-| 4     | 65.92 | 67.59 | 66.74 | 5 | 45.21 | 752 |153217|  
-| 5     | 60.93 | 55.94 | 58.14 | 6 | 49.12 | 440 |57936 |  
-| 6     | 70.94 | 69.83 | 70.38 | 3 | 43.98 | 578 |82018 |  
-| 7     | 72.50  |78.80 | 75.51 | 2 | 42.85 | 442 |88981 |  
-| 8     | 20.33 | 12.95 | 15.64 | 8 | 44.77 | 236 |42570 |  
-
-
-## Sentence based vs Paragraph based
-
-Experiment definition: 
- - training: 3 articles  
- - evaluation: 1 article
- - Batch size: 5
- - Embeddings: glove / oS+Sc+Sm
- - Architecture: BidLSTM_CRF_FEATURES
-
-### Experiment 1: glove
-
-#### Paragraph based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.2500   | 0.0952 | 0.1379 | 21 |
-|      material    |  0.3636   | 0.1333 | 0.1951 | 60 |
-|     me_method    |  0.4500   | 0.2571 | 0.3273 | 35 |
-|            tc    |  0.7143   | 0.7500 | 0.7317 | 20 |
-|       tcValue    |  0.3158   | 0.5455 | 0.4000 | 11 |
-| all (micro avg.) |  0.4444   | 0.2721 | 0.3376 | 147 |
-
-#### Sentence based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.2727   | 0.1875 | 0.1429 | 21 |
-|      material    |  0.4930   | 0.5344 | 0.5833 | 60 |
-|     me_method    |  0.5600   | 0.4667 | 0.4000 | 35 |
-|            tc    |  0.6429   | 0.7500 | 0.9000 | 20 |
-|       tcValue    |  0.2727   | 0.3636 | 0.5455 | 11 |
-| all (micro avg.) |  0.4841 | 0.5000 | 0.5170 | 147 |
-
-
-### Experiment 2: oS+Sc+Sm
-
-#### Paragraph based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.1538   |0.0952  | 0.1176 | 21  |
-|      material    |  0.2258   |0.1167  | 0.1538 | 60  |
-|     me_method    |  0.5000   |0.2571  | 0.3396 | 35  |
-|            tc    |  0.6154   |0.8000  | 0.6957 | 20  |
-|       tcValue    |  0.1852   |0.4545  | 0.2632 | 11  |
-| all (micro avg.) |  0.3391   |0.2653  | 0.2977 | 147 |
-
-#### Sentence based
-
-|  label           | precision | recall | f1-score | support |
-|------------------|-----------|--------|--------|------|
-|         class    |  0.2778   |0.2381  | 0.2564 | 21  |
-|      material    |  0.4800   |0.2000  | 0.2824 | 60  |
-|     me_method    |  0.5833   |0.4000  | 0.4746 | 35  |
-|            tc    |  0.6207   |0.9000  | 0.7347 | 20  |
-|       tcValue    |  0.1000   |0.1818  | 0.1290 | 11  |
-| all (micro avg.) |  0.4397   |0.3469  | 0.3878 | 147 |
-
