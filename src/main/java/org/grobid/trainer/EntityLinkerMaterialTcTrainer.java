@@ -12,7 +12,8 @@ import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.EntityLinkerAnnotationStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationOffsetsTEIExtractionStaxHandler;
+import org.grobid.trainer.stax.handler.EntityLinkerAnnotationTEIStaxHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
 
@@ -95,7 +97,8 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                EntityLinkerAnnotationStaxHandler handler = new EntityLinkerAnnotationStaxHandler("p",
+                EntityLinkerAnnotationTEIStaxHandler handler = 
+                    new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
                     SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);

@@ -70,12 +70,14 @@ public class RuleBasedLinker {
     }
 
 
-    public List<TextPassage> process(TextPassage paragraph) {
+    public TextPassage process(TextPassage paragraph) {
         if (CollectionUtils.isEmpty(paragraph.getSpans()) || disabled) {
-            return Collections.singletonList(paragraph);
+            return paragraph;
         }
 
         //Take out the bounding boxes
+        
+        //TODO: create new object instead of messing around with the current ones 
         Map<String, List<BoundingBox>> backupBoundingBoxes = new HashMap<>();
         paragraph.getSpans().forEach(s -> {
                 backupBoundingBoxes.put(String.valueOf(s.getId()), s.getBoundingBoxes());
@@ -89,15 +91,20 @@ public class RuleBasedLinker {
 
         List<TextPassage> textPassages = client.extractLinks(paragraph);
 
+        //For the moment we use one request per sentence, but in future we will need to group them and process them 
+        // asynchronously 
+        TextPassage textPassage = textPassages.get(0);
+        
+        //Fetch only what is needed 
+        paragraph.setSpans(textPassage.getSpans());
+        paragraph.setRelationships(textPassage.getRelationships());
 
         // put the bounding boxes back where they were
-        textPassages.stream()
-            .forEach(p -> p.getSpans().stream()
-                .forEach(s -> {
-                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-                        s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
-                    }
-                )
+        paragraph.getSpans().stream()
+            .forEach(s -> {
+                    s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
+                    s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                }
             );
 
 
@@ -129,7 +136,7 @@ public class RuleBasedLinker {
 //                });
 //            });
 
-        return textPassages;
+        return paragraph;
 
     }
 }

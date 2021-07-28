@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -52,7 +53,7 @@ public class ModuleEngineTest {
         mockCRFBasedLinker = EasyMock.createMock(CRFBasedLinker.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new ModuleEngine(mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker);
+        target = new ModuleEngine(mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker, null);
     }
 
     @Test
@@ -83,7 +84,7 @@ public class ModuleEngineTest {
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        List<TextPassage> response = target.process(tokens, true);
+        TextPassage response = target.process(tokens, true);
 
         EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 
@@ -160,15 +161,22 @@ public class ModuleEngineTest {
 
         assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
     }
-
-    // Probably not needed
+    
+    @Test
     public void testComputeTabularData() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("example_extracted_document.json");
+        InputStream is = this.getClass().getResourceAsStream("14fcc539b1.json");
 
         DocumentResponse documentResponse = DocumentResponse.fromJson(is);
 
         List<SuperconEntry> superconEntries = ModuleEngine.computeTabularData(documentResponse.getParagraphs());
 
         assertThat(superconEntries, hasSize(20));
+        
+        assertThat(superconEntries.get(18).getRawMaterial(), is("HgBa 2 Ca 2 Cu 3 O 9"));
+        assertThat(superconEntries.get(18).getCriticalTemperature(), is("55 K"));
+        assertThat(superconEntries.get(18).getAppliedPressure(), is(nullValue()));
+        assertThat(superconEntries.get(18).getRawMaterial(), is("HgBa 2 Ca 2 Cu 3 O 9"));
+        assertThat(superconEntries.get(19).getCriticalTemperature(), is("up to 164 K"));
+        assertThat(superconEntries.get(19).getAppliedPressure(), is("30 GPa"));
     }
 }

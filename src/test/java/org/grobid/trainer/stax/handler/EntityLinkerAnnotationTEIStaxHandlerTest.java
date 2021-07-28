@@ -13,19 +13,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Iterators.getLast;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
-public class EntityLinkerAnnotationStaxHandlerTest {
-    private EntityLinkerAnnotationStaxHandler target;
+public class EntityLinkerAnnotationTEIStaxHandlerTest {
+    private EntityLinkerAnnotationTEIStaxHandler target;
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
     @Before
     public void setUp() {
-        target = new EntityLinkerAnnotationStaxHandler("p", "tcValue", "material");
+        target = new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
+            "tcValue", "material");
     }
 
     @Test
@@ -109,13 +111,10 @@ public class EntityLinkerAnnotationStaxHandlerTest {
 
         List<Triple<String, String, String>> labeled = target.getLabeled();
 
-//        labeled.stream().map(Pair::toString).forEach(System.out::println);
+//        labeled.stream().map(Triple::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(3576));
-
-//        assertThat(target.getLabeled().get(1).getKey(), is("car"));
-//        assertThat(target.getLabeled().get(1).getValue(), is("I-<quantifiedObject_right>"));
-
+        assertThat(target.getLabeled(), hasSize(3578));
+        
         Stream<String> entitiesLinkRight = labeled
             .stream()
             .map(Triple::getMiddle)
@@ -171,7 +170,7 @@ public class EntityLinkerAnnotationStaxHandlerTest {
 
     @Test
     public void testHandler_realCase_pressure_tcValue() throws Exception {
-        target = new EntityLinkerAnnotationStaxHandler("p", "pressure", "tcValue");
+        target = new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, "pressure", "tcValue");
 
         InputStream inputStream = this.getClass().getResourceAsStream("linked.annotations.test.xml");
 
@@ -181,9 +180,9 @@ public class EntityLinkerAnnotationStaxHandlerTest {
 
         List<Triple<String, String, String>> labeled = target.getLabeled();
 
-//        labeled.stream().map(Pair::toString).forEach(System.out::println);
+//        labeled.stream().map(Triple::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(3576));
+        assertThat(target.getLabeled(), hasSize(3578));
 
         List<Triple> rightAttachments = labeled
             .stream()
@@ -209,7 +208,6 @@ public class EntityLinkerAnnotationStaxHandlerTest {
         assertThat(getLast(rightAttachments.iterator()).getLeft(), is("48"));
         assertThat(getLast(leftAttachments.iterator()).getLeft(), is("3"));
     }
-
 
 
 //    @Test(expected = GrobidException.class)

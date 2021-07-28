@@ -1,29 +1,5 @@
 grobidHome: ../grobid-home
 
-corsAllowedOrigins: "*"
-corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
-corsAllowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
-
-chemspotUrl: ${CHEMSPOT_URL:- http://chemspot.local}
-#chemDataExtractorUrl: http://falcon.nims.go.jp/cde
-chemDataExtractorUrl: ${CDE_URL:- http://cde.local:8080}
-
-grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities.local:8080}
-linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module.local:8080}
-#linkingModuleUrl: http://localhost:8090
-classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver.local:8080}
-#classResolverUrl: http://localhost:8090
-
-pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
-pythonRedirectOutput: true
-
-# The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
-maxParallelRequests: 8
-
-#consolidation:
-#  service: "glutton"
-#  consolidationHost: http://falcon.nims.go.jp/glutton
-
 models:
   - name: "superconductors"
     engine: "wapiti"
@@ -115,40 +91,3 @@ models:
       useELMo: false
       embeddings_name: "glove-840B"
 
-server:
-  type: custom
-  idleTimeout: 120 seconds
-  applicationConnectors:
-    - type: http
-      port: 8072
-  adminConnectors:
-    - type: http
-      port: 8073
-  registerDefaultExceptionMappers: false
-
-logging:
-  level: DEBUG
-
-  # Logger-specific levels.
-  loggers:
-    org.grobid.core.data.normalization.QuantityNormalizer: "OFF"
-    org.grobid.core.engines.QuantityParser: "OFF"
-    org.grobid.core.engines.ValueParser: "OFF"
-    org.grobid.core.utilities.WordsToNumber: "OFF"
-
-  appenders:
-    - type: console
-      threshold: INFO
-# The following line is used to remove the logger in the docker image, please don't modify it
-#Docker-ignore-log-start
-    - type: file
-      threshold: DEBUG
-      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-      currentLogFilename: logs/grobid-superconductors.log
-      archivedLogFilenamePattern: logs/grobid-superconductors-%d{yyyy-MM-dd}-%i.log.gz
-      archivedFileCount: 7
-      timeZone: UTC
-      maxFileSize: 50MB
-#Docker-ignore-log-end
-
-timeZone: UTC

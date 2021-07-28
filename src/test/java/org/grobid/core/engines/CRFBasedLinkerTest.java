@@ -28,7 +28,7 @@ import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCO
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Lexicon.class)

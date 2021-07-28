@@ -1,5 +1,7 @@
 # Feature engineering experiments with CRF
 
+**Outdated information** 
+
 ## Summary 
 
 | Name | Changes | Precision | Recall  | F1 |  

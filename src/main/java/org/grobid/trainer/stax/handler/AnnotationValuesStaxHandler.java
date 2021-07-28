@@ -28,6 +28,7 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEV
  * The constructor accept the top level tags (e.g. paragraph tags), as optional, and the list of tags that are considered
  * important to identify each entity.
  */
+@Deprecated
 public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationValuesStaxHandler.class);

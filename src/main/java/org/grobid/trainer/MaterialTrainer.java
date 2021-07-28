@@ -12,7 +12,6 @@ import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 import org.grobid.trainer.stax.handler.MaterialAnnotationStaxHandler;
 import org.slf4j.Logger;

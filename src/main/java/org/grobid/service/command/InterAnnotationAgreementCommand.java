@@ -43,16 +43,16 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
 
     public static final List<SuperconductorsStackTags> TOP_LEVEL_ANNOTATION_DEFAULT_PATHS = Arrays.asList(
         SuperconductorsStackTags.from("/tei/teiHeader/fileDesc/titleStmt/title"),
-        SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/abstract/p"),
-        SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/ab"),
-        SuperconductorsStackTags.from("/tei/text/body/p"),
-        SuperconductorsStackTags.from("/tei/text/p"),
-        SuperconductorsStackTags.from("/tei/text/body/ab")
+        SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/abstract/p/s"),
+        SuperconductorsStackTags.from("/tei/teiHeader/profileDesc/ab/s"),
+        SuperconductorsStackTags.from("/tei/text/body/p/s"),
+        SuperconductorsStackTags.from("/tei/text/p/s"),
+        SuperconductorsStackTags.from("/tei/text/body/ab/s")
     );
     public static final List<String> ANNOTATION_DEFAULT_TAG_TYPES = Arrays.asList("material", "tc",
         "tcValue", "pressure", "me_method", "class");
 
-    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("p");
+    public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("s");
     public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("material", "tc",
         "tcValue", "pressure", "me_method", "class");
     public static final List<String> ANNOTATION_EXTRA_TAGS = Arrays.asList("sample", "magnetisation", "shape");

@@ -54,7 +54,7 @@ dependencies {
     testImplementation 'org.powermock:powermock-api-easymock:2.0.7'
 
     //GROBID
-    implementation 'com.github.kermitt2:grobid:0.7.0-test'
+    implementation 'com.github.kermitt2:grobid:0.7.0'
 //    implementation 'org.grobid:grobid-core:0.7.0'
 //    implementation 'org.grobid:grobid-trainer:0.7.0'
     implementation "xom:xom:1.3.2"
@@ -102,12 +102,10 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.0'
     implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
     implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:1.9.10'
 
     implementation 'org.dkpro.statistics:dkpro-statistics:2.2.1'
     implementation 'org.dkpro.statistics:dkpro-statistics-agreement:2.2.1'
-
-    implementation 'edu.emory.mathcs.nlp:nlp4j-api:1.1.3'
-    implementation 'edu.emory.mathcs.nlp:nlp4j-english:1.1.3'
 
     // XML
     implementation 'org.codehaus.woodstox:stax2-api:3.1.4'
@@ -164,19 +162,21 @@ run {
 
 /** Training configuration **/
 
-def trainerTasks = [
-    //Training models
-    "train_superconductors": "org.grobid.trainer.SuperconductorsTrainer",
-    "train_material": "org.grobid.trainer.MaterialTrainer",
-    "train_entityLinker": "org.grobid.trainer.EntityLinkerMaterialTcTrainer"
-]
-
-trainerTasks.each { taskName, mainClassName ->
-    tasks.create(name: taskName, type: JavaExec, group: 'training') {
-        main = mainClassName
-        classpath = sourceSets.main.runtimeClasspath
-    }
-}
+//def trainerTasks = [
+//    //Training models
+//    "train-superconductors": "org.grobid.trainer.SuperconductorsTrainer",
+//    "train-material": "org.grobid.trainer.MaterialTrainer",
+//    "train-entityLinker-material_tc": "org.grobid.trainer.EntityLinkerMaterialTcTrainer",
+//    "train-entityLinker-tc-pressure": "org.grobid.trainer.EntityLinkerTcPressureTrainer",
+//    "train-entityLinker-tc-meMethod": "org.grobid.trainer.EntityLinkerTcMeMethodTrainer"
+//]
+//
+//trainerTasks.each { taskName, mainClassName ->
+//    tasks.create(name: taskName, type: JavaExec, group: 'training') {
+//        main = mainClassName
+//        classpath = sourceSets.main.runtimeClasspath
+//    }
+//}
 
 processResources {
     filesMatching('version.txt') {
