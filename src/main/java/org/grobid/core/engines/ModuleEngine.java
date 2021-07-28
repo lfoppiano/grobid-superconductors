@@ -45,13 +45,17 @@ public class ModuleEngine {
     private RuleBasedLinker ruleBasedLinker;
     private CRFBasedLinker CRFBasedLinker;
 
-    public ModuleEngine(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
+    public ModuleEngine(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker, SentenceSegmenter sentenceSegmenter) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
-        this.sentenceSegmenter = new SentenceSegmenter();
         this.ruleBasedLinker = ruleBasedLinker;
         this.CRFBasedLinker = CRFBasedLinker;
+        this.sentenceSegmenter = sentenceSegmenter;
         parsers = new EngineParsers();
+    }
+
+    public ModuleEngine(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
+        this(superconductorsParser, quantityParser, ruleBasedLinker, CRFBasedLinker, new SentenceSegmenter());
     }
 
     @Inject
@@ -185,7 +189,7 @@ public class ModuleEngine {
     public DocumentResponse process(String text, boolean disableLinking) {
         List<OffsetPosition> sentenceOffsets = SentenceUtilities.getInstance()
             .runSentenceDetection(text, new Language("en"));
-        
+
         List<TextPassage> textPassages = new ArrayList<>();
         for (OffsetPosition sentenceOffset : sentenceOffsets) {
             String sentence = text.substring(sentenceOffset.start, sentenceOffset.end);
@@ -288,7 +292,7 @@ public class ModuleEngine {
             textPassage.setSection(section);
             textPassage.setSubSection(subSection);
         }
-        textPassage.setType("paragraph");
+        textPassage.setType("sentence");
 
         List<Span> spans = new ArrayList<>();
         List<Span> superconductorsList = superconductorsParser.process(tokens);
@@ -579,6 +583,7 @@ public class ModuleEngine {
         return outputCSV;
     }
 
+    //TODO: compute document information here and not in the workflow processor 
     public static List<SuperconEntry> computeTabularData(List<TextPassage> paragraphs) {
         Map<String, Span> spansById = new HashMap<>();
         Map<String, String> sentenceById = new HashMap<>();
@@ -589,6 +594,9 @@ public class ModuleEngine {
                 .collect(Collectors.toList());
 
             for (Span span : linkedSpans) {
+//                if (spansById.containsKey(span.getId())) {
+//                    System.out.println("duplicated key" + span.getId() + ", " + span.toString());
+//                }
                 spansById.put(span.getId(), span);
                 sentenceById.put(span.getId(), paragraph.getText());
                 sectionsById.put(span.getId(), Pair.of(paragraph.getSection(), paragraph.getSubSection()));
@@ -614,8 +622,8 @@ public class ModuleEngine {
         for (Span m : materials) {
             SuperconEntry dbEntry = new SuperconEntry();
             dbEntry.setRawMaterial(m.getText());
-            dbEntry.setSection(sectionsById.get(m.getId()).getLeft());
-            dbEntry.setSubsection(sectionsById.get(m.getId()).getRight());
+            dbEntry.setSection(GrobidPDFEngine.getPlainLabelName(sectionsById.get(m.getId()).getLeft()));
+            dbEntry.setSubsection(GrobidPDFEngine.getPlainLabelName(sectionsById.get(m.getId()).getRight()));
             dbEntry.setSentence(sentenceById.get(m.getId()));
 
             for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
@@ -645,9 +653,25 @@ public class ModuleEngine {
                 .map(l -> Pair.of(l.getTargetId(), l.getType()))
                 .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
 
+            boolean firstTemp = true;
             for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
                 Span tcValue = spansById.get(entry.getKey());
-                dbEntry.setCriticalTemperature(tcValue.getText());
+                if (firstTemp) {
+                    dbEntry.setCriticalTemperature(tcValue.getText());
+                    firstTemp = false;
+                } else {
+                    outputCSV.add(dbEntry);
+                    try {
+                        dbEntry = dbEntry.clone();
+                        dbEntry.setAppliedPressure("");
+                        dbEntry.setCriticalTemperature(tcValue.getText());
+                        dbEntry.setLinkType(entry.getValue());
+                    } catch (CloneNotSupportedException e) {
+                        LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
+                        break;
+                    }
+                }
+                
                 List<Span> pressures = tcValue.getLinks().stream()
                     .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
                     .map(l -> spansById.get(l.getTargetId()))
@@ -658,24 +682,22 @@ public class ModuleEngine {
                     for (Span pressure : pressures) {
                         if (first) {
                             dbEntry.setAppliedPressure(pressure.getText());
-                            outputCSV.add(dbEntry);
                             first = false;
                         } else {
+                            outputCSV.add(dbEntry);
                             try {
-                                SuperconEntry newEntry = dbEntry.clone();
-                                newEntry.setAppliedPressure(pressure.getText());
-                                newEntry.setLinkType(entry.getValue());
+                                dbEntry = dbEntry.clone();
+                                dbEntry.setAppliedPressure(pressure.getText());
+                                dbEntry.setLinkType(entry.getValue());
                             } catch (CloneNotSupportedException e) {
                                 LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
                                 break;
                             }
                         }
                     }
-                } else {
-                    outputCSV.add(dbEntry);
                 }
-
             }
+            outputCSV.add(dbEntry);
         }
         return outputCSV;
     }
