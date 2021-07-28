@@ -16,10 +16,7 @@ import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.BoundingBoxCalculator;
-import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.MeasurementUtils;
-import org.grobid.core.utilities.UnicodeUtil;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -226,7 +223,7 @@ public class CRFBasedLinker extends AbstractParser {
 
         // I need to fill up the annotations' layout tokens
         for (Span span : annotations) {
-            Pair<Integer, Integer> extremitiesAsIndex = getExtremitiesAsIndex(tokens, span.getOffsetStart(), span.getOffsetEnd());
+            Pair<Integer, Integer> extremitiesAsIndex = AdditionalLayoutTokensUtil.getExtremitiesAsIndex(tokens, span.getOffsetStart(), span.getOffsetEnd());
             // The +1 is simulating the fact that the layout token are coming from an upstream model,
             // which usually includes the final space of the output. A "feature" that comes from the Clusteror.
             int endExtremities = extremitiesAsIndex.getRight();
@@ -312,11 +309,11 @@ public class CRFBasedLinker extends AbstractParser {
 //                        link.add(tokens.get(x));
 //                    }
 
-                    int layoutTokenListStartOffset = getLayoutTokenListStartOffset(theTokens);
-                    int layoutTokenListEndOffset = getLayoutTokenListEndOffset(theTokens);
+                    int layoutTokenListStartOffset = AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(theTokens);
+                    int layoutTokenListEndOffset = AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(theTokens);
                     List<Span> collect = annotations.stream().filter(a -> {
-                        int supLayoutStart = getLayoutTokenListStartOffset(a.getLayoutTokens());
-                        int supLayoutEnd = getLayoutTokenListEndOffset(a.getLayoutTokens());
+                        int supLayoutStart = AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(a.getLayoutTokens());
+                        int supLayoutEnd = AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(a.getLayoutTokens());
 
                         return supLayoutStart == layoutTokenListStartOffset && supLayoutEnd == layoutTokenListEndOffset;
                     }).collect(Collectors.toList());
@@ -346,11 +343,11 @@ public class CRFBasedLinker extends AbstractParser {
             } else if (clusterLabel.equals(ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT)) {
                 LOGGER.info("Found link-right label with content " + clusterContent);
 
-                int layoutTokenListStartOffset = getLayoutTokenListStartOffset(theTokens);
-                int layoutTokenListEndOffset = getLayoutTokenListEndOffset(theTokens);
+                int layoutTokenListStartOffset = AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(theTokens);
+                int layoutTokenListEndOffset = AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(theTokens);
                 List<Span> spansCorrespondingToCurrentLink = annotations.stream().filter(a -> {
-                    int supLayoutStart = getLayoutTokenListStartOffset(a.getLayoutTokens());
-                    int supLayoutEnd = getLayoutTokenListEndOffset(a.getLayoutTokens());
+                    int supLayoutStart = AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(a.getLayoutTokens());
+                    int supLayoutEnd = AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(a.getLayoutTokens());
 
                     return supLayoutStart == layoutTokenListStartOffset && supLayoutEnd == layoutTokenListEndOffset;
                 }).collect(Collectors.toList());

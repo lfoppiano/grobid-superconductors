@@ -23,7 +23,6 @@ import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.grobid.core.engines.label.TaggingLabels.OTHER_LABEL;
@@ -34,6 +33,7 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityLinkerAnnotationTEIStaxHandler.class);
     private final String sourceLabel;
     private final String destinationLabel;
+
     private StringBuilder accumulator;
 
     /**
@@ -63,28 +63,15 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     private boolean insideEntity = false;
     private String currentAnnotationType;
 
+
     // Examples:
     // tcValue-material link -> (source: tcValue, destination: material)
     // pressure-tcValue link -> (source: pressure, destination tcValue)
-
-    public EntityLinkerAnnotationTEIStaxHandler(String sourceLabel, String destinationLabel) {
-        this(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, sourceLabel, destinationLabel);
-    }
-
-    /**
-     * @param containerPaths specifies the path where the data should be extracted, e.g. /tei/teiHeader/titleStmt/title
-     */
     public EntityLinkerAnnotationTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, String sourceLabel, String destinationLabel) {
         this.containerPaths = containerPaths;
-        if (sourceLabel.startsWith("<")) {
-            sourceLabel = sourceLabel.replace("<", "").replace(">", "");
-        }
         this.sourceLabel = sourceLabel;
-
-        if (destinationLabel.startsWith("<")) {
-            destinationLabel = destinationLabel.replace("<", "").replace(">", "");
-        }
         this.destinationLabel = destinationLabel;
+
         this.accumulator = new StringBuilder();
     }
 

@@ -22,17 +22,17 @@
         </encodingDesc>
         <profileDesc>
             <abstract>
-                <p>The magnetocaloric effect (MCE) in many rare earth (RE) based intermetallic compounds has been extensively investigated during last two decades</p>
+                <p><s>The magnetocaloric effect (MCE) in many rare earth (RE) based intermetallic compounds has been extensively investigated during last two decades</s></p>
             </abstract>
-            <ab type="keywords">Magnetocaloric effect; Rare earth based intermetallic compounds; Low boiling point metal(s); RENi 2 B 2 C superconductors; Magnetic phase transition</ab>
+            <ab type="keywords"><s>Magnetocaloric effect; Rare earth based intermetallic compounds; Low boiling point metal(s); RENi 2 B 2 C superconductors; Magnetic phase transition</s></ab>
         </profileDesc>
     </teiHeader>
     <text xml:lang="en">
         <body>
-            <p>The magnetocaloric effect (MCE) is a magneto-thermodynamic phenomenon which was first discovered in pure Fe by Emil Warburg in 1881,</p>
-            <ab type="figureCaption">The equiatomic binary compounds REZn (RE is a rare earth) with the cubic CsCl-type structure (space group Pm3m)</ab>
-            <ab type="figureCaption">Table</ab>
-            <p>The column with a mark "N" means that superconductivity was not observed above <rs type="tcValue">2 K</rs>.</p>
+            <p><s>The magnetocaloric effect (MCE) is a magneto-thermodynamic phenomenon which was first discovered in pure Fe by Emil Warburg in 1881,</s></p>
+            <ab type="figureCaption"><s>The equiatomic binary compounds REZn (RE is a rare earth) with the cubic CsCl-type structure (space group Pm3m)</s></ab>
+            <ab type="figureCaption"><s>Table</s></ab>
+            <p><s>The column with a mark "N" means that superconductivity was not observed above <rs type="tcValue">2 K</rs>.</s></p>
         </body>
     </text>
 </tei>

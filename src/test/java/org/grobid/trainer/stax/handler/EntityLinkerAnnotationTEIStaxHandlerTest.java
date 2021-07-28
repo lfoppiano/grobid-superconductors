@@ -328,7 +328,7 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
     @Test
     public void testHandler_realCase_tcValue_material_shouldReturnEntities() throws Exception {
-        InputStream inputStream = this.getClass().getResourceAsStream("Drozdov_etal_2015.superconductors.new.tei.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("Drozdov_etal_2015.superconductors.tei.xml");
 
         XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
 

@@ -1,7 +1,5 @@
 package org.grobid.core.engines;
 
-import jep.JepConfig;
-import jep.SharedInterpreter;
 import org.apache.commons.lang3.SystemUtils;
 import org.grobid.core.jni.PythonEnvironmentConfig;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -64,9 +62,6 @@ public class JepEngine {
                 }
             }
 
-            JepConfig config = new JepConfig();
-            config.setRedirectOutputStreams(configuration.isPythonRedirectOutput());
-            SharedInterpreter.setConfig(config);
             LOGGER.debug("Configuring JEP to redirect python output.");
 
         } catch (Exception e) {

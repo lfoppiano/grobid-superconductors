@@ -63,7 +63,7 @@ public class LinkerController {
         List<TextPassage> textPassages = new ArrayList<>();
 
         String textPreprocessed = text.replace("\r\n", "\n");
-        String artificialXml = "<text><p>" + textPreprocessed + "</p></text>";
+        String artificialXml = "<text><p><s>" + textPreprocessed + "</s></p></text>";
 
         InputStream stream = new ByteArrayInputStream(artificialXml.getBytes(StandardCharsets.UTF_8));
         AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler(Arrays.asList("material", "tcValue"));

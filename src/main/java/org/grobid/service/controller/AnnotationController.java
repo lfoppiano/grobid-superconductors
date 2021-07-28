@@ -6,7 +6,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.grobid.core.data.DocumentResponse;
 import org.grobid.core.data.SuperconEntry;
-import org.grobid.core.engines.AggregatedProcessing;
+import org.grobid.core.engines.ModuleEngine;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +25,11 @@ import java.util.Optional;
 public class AnnotationController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationController.class);
 
-    private AggregatedProcessing aggregatedProcessing;
+    private ModuleEngine moduleEngine;
 
     @Inject
-    public AnnotationController(GrobidSuperconductorsConfiguration configuration, AggregatedProcessing aggregatedProcessing) {
-        this.aggregatedProcessing = aggregatedProcessing;
+    public AnnotationController(GrobidSuperconductorsConfiguration configuration, ModuleEngine moduleEngine) {
+        this.moduleEngine = moduleEngine;
     }
 
     @Path("/annotations/feedback")
@@ -54,7 +54,7 @@ public class AnnotationController {
         String textPreprocessed = text.replace("\r\n", "\n");
 
         long start = System.currentTimeMillis();
-        DocumentResponse extractedEntities = aggregatedProcessing.process(textPreprocessed, disableLinking);
+        DocumentResponse extractedEntities = moduleEngine.process(textPreprocessed, disableLinking);
         long end = System.currentTimeMillis();
 
         extractedEntities.setRuntime(end - start);
@@ -70,7 +70,7 @@ public class AnnotationController {
                                                       @FormDataParam("input") FormDataContentDisposition fileDetail,
                                                       @FormDataParam("disableLinking") boolean disableLinking) {
         long start = System.currentTimeMillis();
-        DocumentResponse response = aggregatedProcessing.process(uploadedInputStream, disableLinking);
+        DocumentResponse response = moduleEngine.process(uploadedInputStream, disableLinking);
         long end = System.currentTimeMillis();
 
         response.setRuntime(end - start);
@@ -110,12 +110,12 @@ public class AnnotationController {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public Optional<List<SuperconEntry>> processJsonToTabular(@FormDataParam("input") DocumentResponse jsonResponse,
-                                                                @FormDataParam("outputAll") Boolean outputEverything) {
+                                                                @FormDataParam("outputAll") boolean outputEverything) {
         List<SuperconEntry> superconEntries = new ArrayList<>();
         if (!outputEverything) {
-            superconEntries = AggregatedProcessing.computeTabularData(jsonResponse.getParagraphs());
+            superconEntries = ModuleEngine.computeTabularData(jsonResponse.getParagraphs());
         } else {
-            superconEntries = AggregatedProcessing.extractEntities(jsonResponse.getParagraphs());
+            superconEntries = ModuleEngine.extractEntities(jsonResponse.getParagraphs());
         }
 
         if (CollectionUtils.isEmpty(superconEntries)) {

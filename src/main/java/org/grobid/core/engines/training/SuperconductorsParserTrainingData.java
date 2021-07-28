@@ -5,7 +5,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Measurement;
@@ -91,11 +90,12 @@ public class SuperconductorsParserTrainingData {
     }
 
     private void createTrainingPDF(File file, String outputDirectory, TrainingOutputFormat outputFormat, int id) {
+        GrobidAnalysisConfig config =
+            new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                .build();
+        
         Document document = null;
         try {
-            GrobidAnalysisConfig config =
-                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                    .build();
             document = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
         } catch (Exception e) {
             throw new GrobidException("Cannot create training data because GROBID Fulltext model failed on the PDF: " + file.getPath(), e);
@@ -108,7 +108,7 @@ public class SuperconductorsParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<DocumentBlock> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, documentBlock -> {
+        GrobidPDFEngine.processDocument(document, config, documentBlock -> {
 
             // Re-tokenise now
             final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance()
@@ -159,7 +159,7 @@ public class SuperconductorsParserTrainingData {
                 .collect(Collectors.toList());
             entityList.addAll(pressuresAsSpan);
 
-            List<Span> sortedEntities = AggregatedProcessing.pruneOverlappingAnnotations(entityList);
+            List<Span> sortedEntities = ModuleEngine.pruneOverlappingAnnotations(entityList);
 
             DocumentBlock newDocumentBlock = new DocumentBlock(documentBlock);
             newDocumentBlock.setLayoutTokens(normalisedLayoutTokens);

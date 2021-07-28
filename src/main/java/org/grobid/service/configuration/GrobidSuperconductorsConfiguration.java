@@ -3,6 +3,7 @@ package org.grobid.service.configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import org.apache.commons.io.IOUtils;
+import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GrobidSuperconductorsConfiguration extends Configuration {
 
@@ -20,6 +23,9 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String chemDataExtractorUrl;
     private String grobidQuantitiesUrl;
     private String pythonVirtualEnv;
+    private String linkingModuleUrl;
+    private String classResolverUrl;
+    private GrobidConfig.ConsolidationParameters consolidation;
 
     // Version
     private static String VERSION = null;
@@ -33,6 +39,11 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String corsAllowedMethods = "OPTIONS,GET,PUT,POST,DELETE,HEAD";
     @JsonProperty
     private String corsAllowedHeaders = "X-Requested-With,Content-Type,Accept,Origin";
+    
+    private List<GrobidConfig.ModelParameters> models = new ArrayList<>();
+    
+    // Max requests
+    private int maxParallelRequests = 0;
 
     private boolean pythonRedirectOutput = false;
 
@@ -124,5 +135,48 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setCorsAllowedHeaders(String corsAllowedHeaders) {
         this.corsAllowedHeaders = corsAllowedHeaders;
+    }
+
+    public String getLinkingModuleUrl() {
+        return linkingModuleUrl;
+    }
+
+    public void setLinkingModuleUrl(String linkingModuleUrl) {
+        this.linkingModuleUrl = linkingModuleUrl;
+    }
+
+    public String getClassResolverUrl() {
+        return classResolverUrl;
+    }
+
+    public void setClassResolverUrl(String classResolverUrl) {
+        this.classResolverUrl = classResolverUrl;
+    }
+
+    public int getMaxParallelRequests() {
+        if (this.maxParallelRequests == 0) {
+            this.maxParallelRequests = Runtime.getRuntime().availableProcessors();
+        }
+        return this.maxParallelRequests;
+    }
+
+    public void setMaxParallelRequests(int maxParallelRequests) {
+        this.maxParallelRequests = maxParallelRequests;
+    }
+
+    public List<GrobidConfig.ModelParameters> getModels() {
+        return models;
+    }
+
+    public void setModels(List<GrobidConfig.ModelParameters> models) {
+        this.models = models;
+    }
+
+    public GrobidConfig.ConsolidationParameters getConsolidation() {
+        return consolidation;
+    }
+
+    public void setConsolidation(GrobidConfig.ConsolidationParameters consolidation) {
+        this.consolidation = consolidation;
     }
 }

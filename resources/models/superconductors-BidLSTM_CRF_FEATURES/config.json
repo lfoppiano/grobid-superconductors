@@ -1,5 +1,5 @@
 {
-    "model_name": "superconductors-bidLSTM_layout_train-BidLSTM_CRF_FEATURES",
+    "model_name": "superconductors-BidLSTM_CRF_FEATURES",
     "model_type": "BidLSTM_CRF_FEATURES",
     "embeddings_name": "glove-840B",
     "char_vocab_size": 249,

@@ -1,0 +1,14 @@
+Evaluation:
+	f1 (micro): 82.77
+                  precision    recall  f1-score   support
+
+        <doping>     0.6032    0.5623    0.5820       265
+   <fabrication>     0.3333    0.1136    0.1695        44
+       <formula>     0.8235    0.8392    0.8313      2569
+          <name>     0.7606    0.7966    0.7782       949
+         <shape>     0.9083    0.9536    0.9304       841
+     <substrate>     0.5325    0.2770    0.3644       148
+         <value>     0.8631    0.8985    0.8804       463
+      <variable>     0.9499    0.9732    0.9614       448
+
+all (micro avg.)     0.8244    0.8313    0.8279      5727

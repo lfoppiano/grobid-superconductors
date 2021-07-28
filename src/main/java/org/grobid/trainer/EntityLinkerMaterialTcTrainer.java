@@ -13,6 +13,8 @@ import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.EntityLinkerAnnotationTEIStaxHandler;
+import org.grobid.trainer.stax.handler.AnnotationOffsetsTEIExtractionStaxHandler;
+import org.grobid.trainer.stax.handler.EntityLinkerAnnotationTEIStaxHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -23,8 +25,9 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
-public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
+public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
@@ -95,6 +98,8 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
                 name = theFile.getName();
                 LOGGER.info(name);
 
+                EntityLinkerAnnotationTEIStaxHandler handler = 
+                    new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
                 EntityLinkerAnnotationTEIStaxHandler handler = new EntityLinkerAnnotationTEIStaxHandler(
                     SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
@@ -176,5 +181,10 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
         Trainer trainer = new EntityLinkerMaterialTcTrainer();
 
         AbstractTrainer.runTraining(trainer);
+    }
+
+    @Override
+    public int createCRFPPDataSingle(File inputFile, File outputDirectory) {
+        return 0;
     }
 }

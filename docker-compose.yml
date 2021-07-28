@@ -4,9 +4,24 @@ services:
     image: lfoppiano/chemdataextractor-api:0.0.1
     restart: always
     ports:
-      - 80:8080
-  grobid:
-    image: lfoppiano/grobid-superconductors:0.2.1-SNAPSHOT
+      - 8076:8080
+
+  superconductors:
+    image: lfoppiano/grobid-superconductors:0.2.1-light
+    restart: always
+    volumes:
+#      - /Users/lfoppiano/development/projects/grobid/grobid-superconductors/resources/config/config.yml:/opt/grobid/grobid-superconductors/config.yml
+      - /Users/lfoppiano/development/projects/grobid/grobid-home/config/grobid.properties:/opt/grobid/grobid-home/config/grobid.properties
+    ports:
+      - 8072:8072
+      - 8073:8073
+    links:
+      - "cde:cde.local"
+      - "linking_module:linking_module.local"
+      - "falcon.nims.go.jp:falcon.local"
+
+  linking_module:
+    image: lfoppiano/linking-module:0.0.1
     restart: always
     ports:
-      - 8099:8072
+      - 8090:8080

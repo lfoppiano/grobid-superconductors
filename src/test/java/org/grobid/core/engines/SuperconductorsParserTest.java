@@ -10,7 +10,10 @@ import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.ChemDataExtractorClient;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -26,9 +29,9 @@ import java.util.stream.IntStream;
 import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
 import static org.grobid.core.utilities.GrobidTestUtils.getWapitiResult;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Lexicon.class)
@@ -39,6 +42,15 @@ public class SuperconductorsParserTest {
     private ChemDataExtractorClient mockChemspotClient;
     private MaterialParser mockMaterialParser;
 
+
+    @BeforeClass
+    public static void before() throws Exception {
+        GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
+        modelParameters.name = "bao";
+        GrobidProperties.addModel(modelParameters);
+    }
+    
+    
     @Before
     public void setUp() throws Exception {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);

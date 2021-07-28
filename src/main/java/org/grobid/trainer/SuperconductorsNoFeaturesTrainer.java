@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.label.TaggingLabel;
-import org.grobid.core.engines.label.TaggingLabelImpl;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
@@ -24,7 +23,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -34,10 +32,7 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTAT
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 
-public class SuperconductorsNoFeaturesTrainer extends AbstractTrainer {
-    public static final String FOLD_TYPE_PARAGRAPH = "paragraph";
-    public static final String FOLD_TYPE_DOCUMENT = "document";
-
+public class SuperconductorsNoFeaturesTrainer extends AbstractTrainerNew {
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
     public SuperconductorsNoFeaturesTrainer() {
@@ -185,5 +180,10 @@ public class SuperconductorsNoFeaturesTrainer extends AbstractTrainer {
         Trainer trainer = new SuperconductorsNoFeaturesTrainer();
 
         AbstractTrainer.runTraining(trainer);
+    }
+
+    @Override
+    public int createCRFPPDataSingle(File inputFile, File outputDirectory) {
+        return 0;
     }
 }
