@@ -1,17 +1,14 @@
 package org.grobid.trainer.stax.handler;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.data.LinkToken;
+import org.grobid.service.command.InterAnnotationAgreementCommand;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,7 +27,8 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
     @Before
     public void setUp() {
-        target = new EntityLinkerAnnotationTEIStaxHandler("tcValue", "material");
+        target = new EntityLinkerAnnotationTEIStaxHandler(InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
+            "tcValue", "material");
     }
 
     @Test
@@ -43,9 +41,9 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
         List<LinkToken> labeled = target.getLabeled();
 
-//        labeled.stream().map(Triple::toString).forEach(System.out::println);
+//        labeled.stream().map(LinkToken::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(29));
+        assertThat(target.getLabeled(), hasSize(30));
 
 //        assertThat(target.getLabeled().get(1).getKey(), is("car"));
 //        assertThat(target.getLabeled().get(1).getValue(), is("I-<quantifiedObject_right>"));
@@ -94,7 +92,7 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
 //        labeled.stream().map(Triple::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(29));
+        assertThat(target.getLabeled(), hasSize(30));
 
 //        assertThat(target.getLabeled().get(1).getKey(), is("car"));
 //        assertThat(target.getLabeled().get(1).getValue(), is("I-<quantifiedObject_right>"));
@@ -144,7 +142,7 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
 //        labeled.stream().map(Triple::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(29));
+        assertThat(target.getLabeled(), hasSize(30));
 
 //        assertThat(target.getLabeled().get(1).getKey(), is("car"));
 //        assertThat(target.getLabeled().get(1).getValue(), is("I-<quantifiedObject_right>"));
@@ -194,7 +192,7 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
 //        labeled.stream().map(Triple::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(29));
+        assertThat(target.getLabeled(), hasSize(30));
 
 //        assertThat(target.getLabeled().get(1).getKey(), is("car"));
 //        assertThat(target.getLabeled().get(1).getValue(), is("I-<quantifiedObject_right>"));
@@ -243,9 +241,9 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
         List<LinkToken> labeled = target.getLabeled();
 
-//        labeled.stream().map(Triple::toString).forEach(System.out::println);
+//        labeled.stream().map(LinkToken::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(163));
+        assertThat(target.getLabeled(), hasSize(166));
 
 //        assertThat(target.getLabeled().get(1).getKey(), is("car"));
 //        assertThat(target.getLabeled().get(1).getValue(), is("I-<quantifiedObject_right>"));
@@ -279,24 +277,26 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
         List<LinkToken> labeled = target.getLabeled();
         assertThat(target.getLabeled(), hasSize(62));
 
-        Stream<String> linkRight = labeled
+        List<String> linkRight = labeled
             .stream()
             .map(LinkToken::getLinkLabel)
-            .filter(v -> v.contains("link_right"));
+            .filter(v -> v.contains("link_right"))
+            .collect(Collectors.toList());
 
-        Stream<String> linkLeft = labeled
+        List<String> linkLeft = labeled
             .stream()
             .map(LinkToken::getLinkLabel)
-            .filter(v -> v.contains("link_left"));
+            .filter(v -> v.contains("link_left"))
+            .collect(Collectors.toList());
 
         //number of tokens
-        assertThat(linkRight.count(), is(0L));
-        assertThat(linkLeft.count(), is(0L));
+        assertThat(linkRight, hasSize(0));
+        assertThat(linkLeft, hasSize(0));
     }
 
     @Test
     public void testHandler_realCase_tcValue_material() throws Exception {
-        InputStream inputStream = this.getClass().getResourceAsStream("1609.04957-CC.superconductors.tei.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("linked.annotations.test.xml");
 
         XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
 
@@ -306,23 +306,25 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
 //        labeled.stream().map(Pair::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(3676));
+        assertThat(target.getLabeled(), hasSize(3576));
 
 //        assertThat(target.getLabeled().get(1).getKey(), is("car"));
 //        assertThat(target.getLabeled().get(1).getValue(), is("I-<quantifiedObject_right>"));
 
-        Stream<String> entitiesLinkRight = labeled
+        List<String> entitiesLinkRight = labeled
             .stream()
             .map(LinkToken::getLinkLabel)
-            .filter(v -> v.startsWith("I-<link_right>"));
+            .filter(v -> v.startsWith("I-<link_right>"))
+            .collect(Collectors.toList());
 
-        Stream<String> entitiesLinkLeft = labeled
+        List<String> entitiesLinkLeft = labeled
             .stream()
             .map(LinkToken::getLinkLabel)
-            .filter(v -> v.startsWith("I-<link_left>"));
+            .filter(v -> v.startsWith("I-<link_left>"))
+                .collect(Collectors.toList());
 
-        assertThat(entitiesLinkRight.count(), is(4L));
-        assertThat(entitiesLinkLeft.count(), is(4L));
+        assertThat(entitiesLinkRight, hasSize(4));
+        assertThat(entitiesLinkLeft, hasSize(4));
     }
 
 
@@ -448,9 +450,10 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
     @Test
     public void testHandler_realCase_pressure_tcValue() throws Exception {
 //        Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/p"), SuperconductorsStackTags.from("/tei/text/p"))
-        target = new EntityLinkerAnnotationTEIStaxHandler("pressure", "tcValue");
+        target = new EntityLinkerAnnotationTEIStaxHandler(InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, 
+            "pressure", "tcValue");
 
-        InputStream inputStream = this.getClass().getResourceAsStream("1609.04957-CC.superconductors.tei.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("linked.annotations.test.xml");
 
         XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
 
@@ -460,7 +463,7 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
 //        labeled.stream().map(Pair::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(3676));
+        assertThat(target.getLabeled(), hasSize(3576));
 
         List<LinkToken> rightAttachments = labeled
             .stream()
@@ -490,7 +493,8 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
     @Test
     public void testHandler_simpleCase_pressure_tcValue() throws Exception {
 //        Arrays.asList(SuperconductorsStackTags.from("/tei/text/body/p"), SuperconductorsStackTags.from("/tei/text/p"))
-        target = new EntityLinkerAnnotationTEIStaxHandler("pressure", "tcValue");
+        target = new EntityLinkerAnnotationTEIStaxHandler(InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, 
+            "pressure", "tcValue");
 
         InputStream inputStream = this.getClass().getResourceAsStream("1609.04957-CC.superconductors.simple.tei.xml");
 

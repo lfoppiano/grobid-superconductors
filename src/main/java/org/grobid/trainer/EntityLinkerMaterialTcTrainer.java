@@ -100,7 +100,6 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
 
                 EntityLinkerAnnotationTEIStaxHandler handler = 
                     new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
-                EntityLinkerAnnotationTEIStaxHandler handler = new EntityLinkerAnnotationTEIStaxHandler(
                     SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);

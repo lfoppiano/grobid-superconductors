@@ -3,11 +3,9 @@ package org.grobid.trainer.stax.handler;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.QuantityAnalyzer;
-import org.grobid.core.data.Link;
 import org.grobid.core.data.LinkToken;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.stax.StaxParserContentHandler;
@@ -20,13 +18,13 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.grobid.core.engines.label.TaggingLabels.OTHER_LABEL;
-import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHandler {
 
@@ -46,22 +44,18 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     private static final String LINK_DESTINATION = "destination";
     private String insideLink = null;
     private List<String> link_id = null;
-    private String currentEntityType = null;
-
     private String currentId = null;
 
-    private List<String> annotationTypes = new ArrayList<>();
-    private List<String> nonRelevantLinkIds = new ArrayList<>();
-    private List<SuperconductorsStackTags> containerPaths = new ArrayList<>();
-
+    private Set<String> nonRelevantLinkIds = new HashSet<>();
     private List<LinkToken> labeled = new ArrayList<>();
+    private List<SuperconductorsStackTags> containerPaths = new ArrayList<>();
 
     private SuperconductorsStackTags currentPosition = new SuperconductorsStackTags();
 
     //When I find a relevant path, I store it here
     private SuperconductorsStackTags currentContainerPath = null;
     private boolean insideEntity = false;
-    private String currentAnnotationType;
+    private String currentAnnotationType = null;
 
 
     // Examples:
@@ -69,9 +63,15 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     // pressure-tcValue link -> (source: pressure, destination tcValue)
     public EntityLinkerAnnotationTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, String sourceLabel, String destinationLabel) {
         this.containerPaths = containerPaths;
+        if (sourceLabel.startsWith("<")) {
+            sourceLabel = sourceLabel.replace("<", "").replace(">", "");
+        }
         this.sourceLabel = sourceLabel;
-        this.destinationLabel = destinationLabel;
 
+        if (destinationLabel.startsWith("<")) {
+            destinationLabel = destinationLabel.replace("<", "").replace(">", "");
+        }
+        this.destinationLabel = destinationLabel;
         this.accumulator = new StringBuilder();
     }
 
@@ -82,6 +82,19 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     @Override
     public void onEndDocument(XMLStreamReader2 reader) {
         writeData();
+
+        Map<String, Long> summaryEntitiesAndIds = labeled.stream()
+            .filter(l -> l.getEntityLabel().startsWith("I-") && isNotBlank(l.getId()))
+            .flatMap(e -> Stream.of(e.getId().split(",")))
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        List<String> collectedIdsToIgnore = summaryEntitiesAndIds.entrySet().stream()
+            .filter(e -> e.getValue() == 1)
+            .map(Map.Entry::getKey)
+//            .flatMap(e -> Stream.of(e.getKey().split(",")))
+            .collect(Collectors.toList());
+
+        nonRelevantLinkIds.addAll(collectedIdsToIgnore);
 
         // link_id  -> null -> no link
         // link_id -> not_nll --> link with id
@@ -160,7 +173,7 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
             if (containerPaths.contains(currentPosition)) {
                 currentContainerPath = SuperconductorsStackTags.from(currentPosition);
 
-                //At every paragraph I start from scratch
+                //At every sentence I start from scratch
                 insideLink = null;
                 accumulator.setLength(0);
             }
@@ -168,12 +181,12 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
             String attributeValue = getAttributeValue(reader, "type");
             if ("rs".equals(localName)) {
                 if (sourceLabel.equals(attributeValue)) {
+                    this.currentAnnotationType = attributeValue;
                     //source (e.g. tcValue)
 
                     // I write the remaining data in the accumulated text as "other" label
-                    insideEntity = true;
                     writeData();
-                    currentEntityType = attributeValue;
+                    insideEntity = true;
 
                     String pointer = getAttributeValue(reader, "corresp");
                     if (isBlank(pointer)) {
@@ -189,10 +202,12 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
                             currentId = String.join(",", destinationIds);
                         }
                     }
+
                 } else if (destinationLabel.equals(attributeValue)) {
+                    this.currentAnnotationType = attributeValue;
                     //destination (e.g. material)
                     writeData();
-                    currentEntityType = attributeValue;
+                    
                     insideEntity = true;
                     currentId = getAttributeValue(reader, "id");
                 } else {
@@ -233,19 +248,19 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
             writeData();
             labeled.add(LinkToken.of("", "", "\n", ""));
         } else if (currentContainerPath != null && insideEntity
-            && ("rs".equals(localName) && this.sourceLabel.equals(currentEntityType))) {
+            && ("rs".equals(localName) && this.sourceLabel.equals(currentAnnotationType))) {
 
-            // the material is coming before - link to the left
-            writeData(currentId, null, this.currentEntityType);
+            // the destination (e.g. material) is coming before - link to the left
+            writeData(currentId, null, this.currentAnnotationType);
             insideLink = null;
             //As this link has been closed, I add them in the exclusion list
 //                nonRelevantLinkIds.add(currentId);
         } else if (currentContainerPath != null && insideEntity
-            && ("rs".equals(localName) && this.destinationLabel.equals(this.currentEntityType))) {
+            && ("rs".equals(localName) && this.destinationLabel.equals(this.currentAnnotationType))) {
             // destination: e.g. material
 
             // the tcValue is coming before - link to the left
-            writeData(currentId, null, this.currentEntityType);
+            writeData(currentId, null, this.currentAnnotationType);
             link_id = null;
             insideLink = null;
 
@@ -257,7 +272,7 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
 //        }
 
         this.currentPosition.peek();
-        this.currentEntityType = null;
+        this.currentAnnotationType = null;
         this.currentId = "";
     }
 

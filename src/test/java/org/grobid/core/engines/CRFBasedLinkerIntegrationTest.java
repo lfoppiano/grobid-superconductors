@@ -174,7 +174,7 @@ public class CRFBasedLinkerIntegrationTest {
     }
 
     @Test
-    public void testRealCase_shouldExtract1Links_3() throws Exception {
+    public void testRealCase_shouldExtract0Links_3() throws Exception {
         String input = "The experimental realisation of the superconductivity in H 3 S and PH 3 inspired us to search for other hydride superconductors.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
         TextPassage paragraph = entityParser.process(layoutTokens, true);
@@ -190,7 +190,7 @@ public class CRFBasedLinkerIntegrationTest {
         List<Span> linkedEntities = annotations.stream()
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .collect(Collectors.toList());
-        assertThat(linkedEntities, hasSize(1));
+        assertThat(linkedEntities, hasSize(0));
     }
 
 }

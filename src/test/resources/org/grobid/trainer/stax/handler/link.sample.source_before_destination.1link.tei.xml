@@ -23,7 +23,10 @@
     </teiHeader>
     <text xml:lang="en">
         <body>
-            <p>This paragraph contains a link that is pointing from <rs corresp="#x1" type="tcValue">the source entity</rs> to the <rs xml:id="x1" type="material">destination entity, whatever long it is</rs>. The rest is all fiction.</p>
+            <p>
+                <s>This paragraph contains a link that is pointing from <rs corresp="#x1" type="tcValue">the source entity</rs> to the <rs xml:id="x1" type="material">destination entity, whatever long it is</rs>.</s> 
+                <s>The rest is all fiction.</s>
+            </p>
         </body>
     </text>
 </tei>

@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.core.data.LinkToken;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
@@ -101,7 +102,7 @@ public class EntityLinkerTcPressureTrainer extends AbstractTrainerNew {
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
-                List<Triple<String, String, String>> labeled = handler.getLabeled();
+                List<LinkToken> labeled = handler.getLabeled();
 
                 int q = 0;
 
@@ -111,10 +112,10 @@ public class EntityLinkerTcPressureTrainer extends AbstractTrainerNew {
                 int tcValues = 0;
 
                 // we get the label in the labelled data file for the same token
-                for (Triple<String, String, String> labeledToken : labeled) {
-                    String token = labeledToken.getLeft();
-                    String label = labeledToken.getMiddle();
-                    String entity_type = labeledToken.getRight();
+                for (LinkToken labeledToken : labeled) {
+                    String token = labeledToken.getText();
+                    String label = labeledToken.getLinkLabel();
+                    String entity_type = labeledToken.getEntityLabel();
                     if (entity_type.equals("<" + DESTINATION + ">")) {
                         materials++;
                     }

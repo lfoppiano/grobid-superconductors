@@ -4,15 +4,19 @@ import java.util.StringJoiner;
 
 import static org.grobid.core.engines.label.TaggingLabels.OTHER_LABEL;
 
+/**
+ * Object models the chain of linkable entities
+ */
 public class LinkToken {
 
+    //The id of the entity (from the corresp or xml:id attribute)
     private final String id;
-
+    //The generated id that is used to identify tokens from the same entity
     private final String entityId;
-
     private final String text;
     private final String linkLabel;
     private final String entityLabel;
+    
     public LinkToken(String id, String entityId, String text, String linkLabel, String entityLabel) {
         this.text = text;
         this.id = id;
