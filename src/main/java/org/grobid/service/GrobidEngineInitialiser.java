@@ -1,6 +1,7 @@
 package org.grobid.service;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
@@ -21,6 +22,10 @@ public class GrobidEngineInitialiser {
         GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(ImmutableList.of(configuration.getGrobidHome()));
         GrobidProperties.getInstance(grobidHomeFinder);
         configuration.getModels().stream().forEach(GrobidProperties::addModel);
+        if (StringUtils.isNotEmpty(configuration.getConsolidation().service)) {
+            GrobidProperties.setGluttonUrl(configuration.getConsolidation().glutton.url);
+            GrobidProperties.setConsolidationService(configuration.getConsolidation().service);
+        }
         LibraryLoader.load();
     }
 }

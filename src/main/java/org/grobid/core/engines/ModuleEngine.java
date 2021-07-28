@@ -15,6 +15,7 @@ import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.*;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,32 +42,29 @@ public class ModuleEngine {
 
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
-    private SentenceSegmenter sentenceSegmenter;
     private RuleBasedLinker ruleBasedLinker;
     private CRFBasedLinker CRFBasedLinker;
+    private GrobidSuperconductorsConfiguration configuration;
 
-    public ModuleEngine(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker, SentenceSegmenter sentenceSegmenter) {
+    ModuleEngine(GrobidSuperconductorsConfiguration configuration, SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
         this.ruleBasedLinker = ruleBasedLinker;
         this.CRFBasedLinker = CRFBasedLinker;
-        this.sentenceSegmenter = sentenceSegmenter;
-        parsers = new EngineParsers();
-    }
-
-    public ModuleEngine(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
-        this(superconductorsParser, quantityParser, ruleBasedLinker, CRFBasedLinker, new SentenceSegmenter());
+        this.configuration = configuration;
     }
 
     @Inject
-    public ModuleEngine(SuperconductorsParser superconductorsParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
-        this(superconductorsParser, QuantityParser.getInstance(true), ruleBasedLinker, CRFBasedLinker);
+    public ModuleEngine(GrobidSuperconductorsConfiguration configuration, SuperconductorsParser superconductorsParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
+        this(configuration, superconductorsParser, QuantityParser.getInstance(true), ruleBasedLinker, CRFBasedLinker);
+
+        parsers = new EngineParsers();
     }
 
     @Deprecated
     private Pair<Integer, Integer> getContainedSentenceAsIndex(List<LayoutToken> entityLayoutTokens, List<LayoutToken> tokens) {
 
-        List<List<LayoutToken>> sentences = this.sentenceSegmenter.detectSentencesAsLayoutToken(tokens);
+        List<List<LayoutToken>> sentences = new SentenceSegmenter().detectSentencesAsLayoutToken(tokens);
 
         int entityOffsetStart = entityLayoutTokens.get(0).getOffset();
         int entityOffsetEnd = Iterables.getLast(entityLayoutTokens).getOffset();
@@ -98,7 +96,7 @@ public class ModuleEngine {
      **/
     private Pair<Integer, Integer> adjustExtremities(Pair<Integer, Integer> originalExtremities, List<LayoutToken> entityLayoutTokens, List<LayoutToken> tokens) {
 
-        List<List<LayoutToken>> sentences = this.sentenceSegmenter.detectSentencesAsLayoutToken(tokens);
+        List<List<LayoutToken>> sentences = new SentenceSegmenter().detectSentencesAsLayoutToken(tokens);
 
         int entityOffsetStart = entityLayoutTokens.get(0).getOffset();
         int entityOffsetEnd = entityLayoutTokens.get(entityLayoutTokens.size() - 1).getOffset();
@@ -240,18 +238,22 @@ public class ModuleEngine {
 
         Document doc = null;
         File file = null;
+        int consolidateHeader = StringUtils.isNotEmpty(this.configuration.getConsolidation().service) ? 1 : 0;
+
+        GrobidAnalysisConfig config =
+            new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                .analyzer(DeepAnalyzer.getInstance())
+                .consolidateHeader(consolidateHeader)
+                .withSentenceSegmentation(true)
+                .build();
 
         try {
             file = IOUtilities.writeInputFile(uploadedInputStream);
-            GrobidAnalysisConfig config =
-                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                    .analyzer(DeepAnalyzer.getInstance())
-                    .build();
             DocumentSource documentSource =
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
-            BiblioInfo biblioInfo = GrobidPDFEngine.processDocument(doc, (documentBlock) -> {
+            BiblioInfo biblioInfo = GrobidPDFEngine.processDocument(doc, config, (documentBlock) -> {
                 List<LayoutToken> cleanedLayoutTokens = documentBlock.getLayoutTokens().stream()
                     .map(l -> {
                         LayoutToken newOne = new LayoutToken(l);
@@ -671,7 +673,7 @@ public class ModuleEngine {
                         break;
                     }
                 }
-                
+
                 List<Span> pressures = tcValue.getLinks().stream()
                     .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
                     .map(l -> spansById.get(l.getTargetId()))

@@ -25,6 +25,7 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String pythonVirtualEnv;
     private String linkingModuleUrl;
     private String classResolverUrl;
+    private GrobidConfig.ConsolidationParameters consolidation;
 
     // Version
     private static String VERSION = null;
@@ -169,5 +170,13 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setModels(List<GrobidConfig.ModelParameters> models) {
         this.models = models;
+    }
+
+    public GrobidConfig.ConsolidationParameters getConsolidation() {
+        return consolidation;
+    }
+
+    public void setConsolidation(GrobidConfig.ConsolidationParameters consolidation) {
+        this.consolidation = consolidation;
     }
 }

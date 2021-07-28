@@ -10,6 +10,7 @@ import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnitUtilities;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class ModuleEngineTest {
         mockCRFBasedLinker = EasyMock.createMock(CRFBasedLinker.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new ModuleEngine(mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker, null);
+        target = new ModuleEngine(new GrobidSuperconductorsConfiguration(), mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker);
     }
 
     @Test

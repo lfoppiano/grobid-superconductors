@@ -113,11 +113,11 @@ public class MaterialParserTrainingData {
     }
 
     private void createTrainingFromPDF(File file, String outputDirectory, TrainingOutputFormat outputFormat, int id) {
+        GrobidAnalysisConfig config =
+            new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                .build();
         Document document = null;
         try {
-            GrobidAnalysisConfig config =
-                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                    .build();
             document = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
         } catch (Exception e) {
             throw new GrobidException("Cannot create training data because GROBID Fulltext model failed on the PDF: " + file.getPath(), e);
@@ -130,7 +130,7 @@ public class MaterialParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, (documentBlock) -> {
+        GrobidPDFEngine.processDocument(document, config, (documentBlock) -> {
 
             // Re-tokenise now
             final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance()

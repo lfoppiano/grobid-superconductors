@@ -20,9 +20,14 @@ pythonRedirectOutput: true
 # The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
 maxParallelRequests: 8
 
-#consolidation:
-#  service: "glutton"
-#  consolidationHost: http://falcon.nims.go.jp/glutton
+consolidation:
+  # define the bibliographical data consolidation service to be used: 
+    # - "crossref" for CrossRef REST API or 
+    # - "glutton" for https://github.com/kermitt2/biblio-glutton, removing the value
+    # empty value will disable the data consolidation
+  service: "glutton"
+  glutton:
+    url: "http://falcon.nims.go.jp/glutton"
 
 models:
   - name: "superconductors"

@@ -52,12 +52,24 @@ public class GrobidPDFEngine {
         TaggingLabels.EQUATION_MARKER);
 
     /**
+     * @use processDocument(Document doc, GrobidAnalysisConfig config, Consumer<DocumentBlock> closure) {
+     */
+    @Deprecated
+    public static BiblioInfo processDocument(Document doc, Consumer<DocumentBlock>closure) {
+        GrobidAnalysisConfig config = GrobidAnalysisConfig.builder()
+            .consolidateHeader(1)
+            .withSentenceSegmentation(true)
+            .build();
+        return processDocument(doc, config, closure);
+    }
+    
+    /**
      * In the following, we process the relevant textual content of the document
      * for refining the process based on structures, we need to filter
      * segment of interest (e.g. header, body, annex) and possibly apply
      * the corresponding model to further filter by structure types
      */
-    public static BiblioInfo processDocument(Document doc, Consumer<DocumentBlock> closure) {
+    public static BiblioInfo processDocument(Document doc, GrobidAnalysisConfig config, Consumer<DocumentBlock> closure) {
         EngineParsers parsers = new EngineParsers();
 
         List<DocumentBlock> documentBlocks = new ArrayList<>();
@@ -68,9 +80,7 @@ public class GrobidPDFEngine {
         if (headerDocumentParts != null) {
             BiblioItem resHeader = new BiblioItem();
 
-            GrobidAnalysisConfig config = GrobidAnalysisConfig.builder()
-                .consolidateHeader(1)
-                .withSentenceSegmentation(true).build();
+            
             parsers.getHeaderParser().processingHeaderSection(config, doc, resHeader, false);
 
             // title
