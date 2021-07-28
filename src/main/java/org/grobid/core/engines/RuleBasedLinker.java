@@ -76,6 +76,8 @@ public class RuleBasedLinker {
         }
 
         //Take out the bounding boxes
+        
+        //TODO: create new object instead of messing around with the current ones 
         Map<String, List<BoundingBox>> backupBoundingBoxes = new HashMap<>();
         paragraph.getSpans().forEach(s -> {
                 backupBoundingBoxes.put(String.valueOf(s.getId()), s.getBoundingBoxes());
@@ -91,10 +93,14 @@ public class RuleBasedLinker {
 
         //For the moment we use one request per sentence, but in future we will need to group them and process them 
         // asynchronously 
-        TextPassage textPassage = textPassages.get(0);;
+        TextPassage textPassage = textPassages.get(0);
+        
+        //Fetch only what is needed 
+        paragraph.setSpans(textPassage.getSpans());
+        paragraph.setRelationships(textPassage.getRelationships());
 
         // put the bounding boxes back where they were
-        textPassage.getSpans().stream()
+        paragraph.getSpans().stream()
             .forEach(s -> {
                     s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
                     s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
@@ -130,7 +136,7 @@ public class RuleBasedLinker {
 //                });
 //            });
 
-        return textPassage;
+        return paragraph;
 
     }
 }

@@ -283,7 +283,10 @@ public class GrobidPDFEngine {
 
                 List<Pair<Integer, Integer>> markersExtremitiesAsIndex = new ArrayList<>();
                 List<OffsetPosition> markersPositionsAsOffsetsInText = new ArrayList<>();
-                
+
+                String section = documentBlock.getSection();
+                String subSection = documentBlock.getSubSection();
+
                 if (isNotEmpty(documentBlock.getMarkers())) {
                     markersExtremitiesAsIndex = documentBlock
                         .getMarkers()
@@ -295,7 +298,7 @@ public class GrobidPDFEngine {
 
                     markersPositionsAsOffsetsInText = getMarkersAsOffsets(documentBlock, markersExtremitiesAsIndex);
                 }
-                
+
                 List<Pair<Integer, Integer>> indexesPairs = getSentencesOffsetsAsIndexes(documentBlock, markersPositionsAsOffsetsInText);
 
                 int cumulatedIndexes = 0;
@@ -309,7 +312,7 @@ public class GrobidPDFEngine {
                         .collect(Collectors.toList());
 
                     cumulatedIndexes += sentenceTokens.size();
-                    
+
                     //We remove the markers from the layout token list 
                     final List<LayoutToken> newSentenceTokens = new ArrayList<>();
                     IntStream.range(0, sentenceTokens.size())
@@ -319,6 +322,8 @@ public class GrobidPDFEngine {
                             }
                         });
                     newDocumentBlock.setLayoutTokens(newSentenceTokens);
+                    newDocumentBlock.setSection(section);
+                    newDocumentBlock.setSubSection(subSection);
                     documentBlocksBySentences.add(newDocumentBlock);
                 }
             });
@@ -334,7 +339,7 @@ public class GrobidPDFEngine {
 
     private static List<Pair<Integer, Integer>> getSentencesOffsetsAsIndexes(DocumentBlock documentBlock, List<OffsetPosition> markersPositionsAsOffsetsInText) {
         List<String> tokensAsStringList = documentBlock.getLayoutTokens().stream().map(LayoutToken::getText).collect(Collectors.toList());
-        String text = String.join("",tokensAsStringList);
+        String text = String.join("", tokensAsStringList);
         List<OffsetPosition> sentencesPositions = SentenceUtilities.getInstance()
             .runSentenceDetection(text, markersPositionsAsOffsetsInText, documentBlock.getLayoutTokens(), new Language("en"));
 
@@ -367,6 +372,9 @@ public class GrobidPDFEngine {
     }
 
     protected static String getPlainLabelName(String label) {
+        if (label == null) {
+            return label;
+        }
         return label.replaceAll("<|>", "");
     }
 
