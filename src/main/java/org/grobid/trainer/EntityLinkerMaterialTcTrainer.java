@@ -106,8 +106,6 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
 
                 List<LinkToken> labeled = handler.getLabeled();
 
-                int q = 0;
-
                 Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                 StringBuilder output = new StringBuilder();
                 int materials = 0;
@@ -118,11 +116,11 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
                     String token = labeledToken.getText();
                     String label = labeledToken.getLinkLabel();
                     String entity_type = GenericTaggerUtils.getPlainLabel(labeledToken.getEntityLabel());
-                    if (entity_type.equals("<" + DESTINATION + ">")) {
+                    if (StringUtils.equalsIgnoreCase(entity_type, "<" + DESTINATION + ">")) {
                         materials++;
                     }
 
-                    if (entity_type.equals("<" + SOURCE + ">")) {
+                    if (StringUtils.equalsIgnoreCase(entity_type, "<" + SOURCE + ">")) {
                         tcValues++;
                     }
 

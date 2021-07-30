@@ -101,7 +101,6 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
             configuration.getModels().stream().forEach(GrobidProperties::addModel);
-            Engine.getEngine(true);
             LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
