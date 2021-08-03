@@ -84,6 +84,9 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 
 #### Paragraph based 
 
+<details>
+  <summary>See table</summary>
+
 | Filename                                             | Precision | Recall | F1     | Support |
 | ---------------------------------------------------- | --------- | ------ | ------ | ------- |
 | PHC2640145-CC                                        | 0.5385    | 0.28   | 0.3684 | 25      |
@@ -257,9 +260,12 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 | PR06103808-CC                                        | 0.9726    | 0.9595 | 0.966  | 74      |
 | L090137002-CC                                        | 1         | 1      | 1      | 14      |
 | PR06006991-CC                                        | 1         | 1      | 1      | 8       |
+</details>
 
 #### Sentence based
 
+<details>
+  <summary>See table</summary>
 | Name                                                   | Precision | Recall | F-Score | Support |
 | ------------------------------------------------------ | --------- | ------ | ------- | ------- |
 | PHC3130001-CC                                    | 0.6800    | 0.6296 | 0.6538  | 27      |
@@ -436,6 +442,7 @@ Batch 8 and 2 resulted to score the least in the cross-validation with only sing
 | PR06103808-CC                                    | 0.9726    | 0.9595 | 0.9660  | 74      |
 | EPL0490086-CC                                    | 0.9853    | 0.9710 | 0.9781  | 69      |
 | L090137002-CC                                    | 1.0000    | 1.0000 | 1.0000  | 14      |
+</details>
 
 ### Removing the worst evaluated documents
 
@@ -506,6 +513,10 @@ In the summary table the baseline (previous result) is within parenthesis.
 |       `<tcValue>`     |   0.6738 (0.7474)         |  0.6496 (0.7207)      |  0.6609 (0.7331)  |    121    |
 
 #### Result
+
+<details>
+  <summary>See table</summary>
+
 | Name | Changes/Label | Precision | Recall  | F1 | Support |
 |------|---------|-----------|---------|----|--------|
 | [baseline-POS-no_features](baseline/baseline-POS-no_features) | baseline_no_features + gloVe + bin | | |
@@ -558,7 +569,7 @@ In the summary table the baseline (previous result) is within parenthesis.
 |  |            `<tc>`  |   0.7731  |  0.7520  |  0.7622   |    402 |
 |  |       `<tcValue>`  |   0.6738  |  0.6496  |  0.6609   |    121 |
 |  | all `(micro avg.)   |  0.9238  |  0.9208   | 0.9223 |          |
-
+</details>
 
 ### Tokenization experiments
 We try to change the tokenization to match the tokenization that might have been used for the embeddings.
