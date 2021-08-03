@@ -20,6 +20,8 @@ In this table we show the best results in comparison with the baseline. For all 
 | [baseline-by_sentences-updated_corpus-gloves-keep_all_sentences-no_features](baseline/baseline-by_sentences-updated_corpus-glove-no_features) | 172 papers, gloVe, corpus manually segmented by sentences |  77.08    |80.41  | 78.70  | 0.81 |
 | [baseline-by_sentences-updated_corpus-oL+Sc+Sm-keep_all_sentences-no_features](oL+Sc+Sm/baseline-by_sentences-updated_corpus-oL+Sc+Sm-no_features) | 172 papers, oL+Sc+Sm, corpus manually segmented by sentences |  76.82  |80.05  |  78.38  | 1.08 |
 | [scibert-by_sentences-updated_corpus](scibert/by_sentences-updated_corpus) | 172 papers, scibert, corpus manually segmented by sentences | 77.71  |  82.90  |  80.22 | |
+| [scibert-by_sentences-updated_corpus-removed_10_worst](scibert/by_sentences-minus_worst_10) | 172 papers, scibert, corpus manually segmented by sentences, removed 10 worst papers | 81.92 | 85.06 | 83.46 | |
+
 
 ## Embeddings
 
