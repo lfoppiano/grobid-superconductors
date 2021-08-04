@@ -798,6 +798,8 @@ Uniqueness = nb of unique entities / total number of entities
 Paragraphs includes titles, abstracts and keywords (one list of keywords is one paragraph)
 Tokens are calculated from the grobid-tokenizer which splits even numbers into different tokens.
 
+### Paragraph based
+
 |       | Features  |             |      |          |       |      |      |
 |-------|-----------|-------------|------|----------|-------|------|------|
 | Batch | Precision | Recall | F1 | Rank | Uniqueness| Paragraphs | Tokens| 
@@ -807,7 +809,7 @@ Tokens are calculated from the grobid-tokenizer which splits even numbers into d
 | 4     | 67.37 | 67.87 | 67.61 | 5 | 45.21 | 752 | 153217|   
 | 5     | 61.43 | 64.41 | 62.87 | 6 | 49.12 | 440 | 57936 |   
 | 6     | 72.15 | 71.41 | 71.77 | 4 | 43.98 | 578 | 82018 |   
-| 7     | 72.02 | 76.80 | 74.29 | 3 | 42.85 | 442 | 88981 |   
+| 7*     | 72.02 | 76.80 | 74.29 | 3 | 42.85 | 442 | 88981 |   
 | 8     | 38.93 | 30.18 | 33.59 | 8 | 44.77 | 236 | 42570 |   
 
 
@@ -820,8 +822,38 @@ Tokens are calculated from the grobid-tokenizer which splits even numbers into d
 | 4     | 65.92 | 67.59 | 66.74 | 5 | 45.21 | 752 |153217|  
 | 5     | 60.93 | 55.94 | 58.14 | 6 | 49.12 | 440 |57936 |  
 | 6     | 70.94 | 69.83 | 70.38 | 3 | 43.98 | 578 |82018 |  
-| 7     | 72.50  |78.80 | 75.51 | 2 | 42.85 | 442 |88981 |  
+| 7*     | 72.50  |78.80 | 75.51 | 2 | 42.85 | 442 |88981 |  
 | 8     | 20.33 | 12.95 | 15.64 | 8 | 44.77 | 236 |42570 |  
+
+(*) Features performing worst than no-features
+
+### Sentence based
+
+|       | Features  |       |      |      |
+|-------|-----------|--------|-----|------| 
+| Batch | Precision | Recall | F1 | Rank |  
+| 1     | 80.01     | 79.25  | 79.63 | 3  |
+| 2*    | 72.50     | 71.76  | 72.11 | 7  |
+| 3     | 71.01     | 81.44  | 75.84 | 5  |
+| 4     | 76.80     | 78.17  | 77.46 | 4  |
+| 5     | 66.26     | 69.77  | 67.96 | 8  |
+| 6     | 81.39     | 81.29  | 81.34 | 2  |
+| 7     | 81.98     | 86.37  | 84.11 | 1  |
+| 8*    | 71.96     | 74.00  | 72.94 | 6  |
+
+
+|       | no Features |      |    |          |   
+|-------|-----------|--------|----|----------|
+| Batch | Precision | Recall | F1 | Rank     | 
+| 1    | 77.73   | 78.63   | 78.16 | 4      |
+| 2*   | 73.74   | 72.59   | 73.14 | 7      |
+| 3    | 71.00   | 80.98   | 75.64 | 5      |
+| 4    | 76.34   | 78.17   | 77.23 | 4      |
+| 5    | 65.06   | 67.97   | 66.47 | 8      |
+| 6    | 81.05   | 81.61   | 81.32 | 2      |
+| 7    | 82.12   | 85.49   | 83.77 | 1      |
+| 8*   | 74.42   | 73.73   | 74.06 | 6      |
+
 
 
 ## Sentence based vs Paragraph based
