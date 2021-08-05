@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
@@ -24,7 +25,7 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEV
 
 /**
  * This class extracts from XML a) the labelled stream b) the list of labelled entities
- *
+ * <p>
  * The constructor accept the top level tags (e.g. paragraph tags), as optional, and the list of tags that are considered
  * important to identify each entity.
  */
@@ -59,7 +60,9 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
 
     public AnnotationValuesStaxHandler(List<String> topLevelTags, List<String> annotationsTags) {
         this.topLevelTags = topLevelTags;
-        this.annotationsTags = annotationsTags;
+        this.annotationsTags = annotationsTags.stream()
+            .map(at -> at.replaceAll("[<>]", ""))
+            .collect(Collectors.toList());
     }
 
     public AnnotationValuesStaxHandler() {
@@ -111,7 +114,7 @@ public class AnnotationValuesStaxHandler implements StaxParserContentHandler {
             accumulator.setLength(0);
             insideParagraph = false;
             labeledStream.add(ImmutablePair.of("\n", null));
-        } else if (topLevelTags == null){
+        } else if (topLevelTags == null) {
             String text = getAccumulatedText();
             writeStreamData(text, getTag("other"));
             accumulator.setLength(0);

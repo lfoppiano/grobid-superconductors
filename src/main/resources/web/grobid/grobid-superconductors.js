@@ -429,6 +429,7 @@ let grobid = (function ($) {
             $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
             let formData = new FormData();
             formData.append("text", $('#inputLinkerArea').val());
+            formData.append("type", $("input[name='linkType']:checked").val());
 
             $.ajax({
                 type: 'POST',

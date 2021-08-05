@@ -5,12 +5,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.assertj.core.data.Offset;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
+import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
@@ -342,7 +342,7 @@ public class ModuleEngine {
 
         /** Modify the objects **/
         TextPassage textPassageWithMarkedTemperature = ruleBasedLinker.markTemperatures(textPassage);
-        CRFBasedLinker.process(tokens, textPassageWithMarkedTemperature.getSpans());
+        CRFBasedLinker.process(tokens, textPassageWithMarkedTemperature.getSpans(), CRFBasedLinker.MATERIAL_TCVALUE_ID);
 
         //Rule-based: Because we split into sentences, we may obtain more information
         TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassageWithMarkedTemperature);

@@ -60,7 +60,7 @@ models:
       useELMo: false
       embeddings_name: "glove-840B"
 
-  - name: "entityLinker-material-tc"
+  - name: "entityLinker-material-tcValue"
     engine: "wapiti"
     #engine: "delft"
     wapiti:
@@ -75,7 +75,7 @@ models:
       useELMo: false
       embeddings_name: "glove-840B"
 
-  - name: "entityLinker-tc-pressure"
+  - name: "entityLinker-tcValue-pressure"
     engine: "wapiti"
     #engine: "delft"
     wapiti:
@@ -90,7 +90,7 @@ models:
       useELMo: false
       embeddings_name: "glove-840B"
       
-  - name: "entityLinker-tc-me_method"
+  - name: "entityLinker-tcValue-me_method"
     engine: "wapiti"
     #engine: "delft"
     wapiti:

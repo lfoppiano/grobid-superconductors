@@ -3,33 +3,25 @@ package org.grobid.core.engines;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import fr.limsi.wapiti.Wapiti;
-import org.checkerframework.common.value.qual.IntRange;
 import org.easymock.EasyMock;
-import org.easymock.Mock;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
-import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
+import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.ChemDataExtractorClient;
-import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
-import org.grobid.service.GrobidSuperconductorsApplication;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL;
@@ -55,7 +47,7 @@ public class CRFBasedLinkerIntegrationTest {
         configuration.getModels().stream().forEach(GrobidProperties::addModel);
         LibraryLoader.load();
         
-        target = new CRFBasedLinker(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL));
+        target = new CRFBasedLinker();
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
         SuperconductorsParser superParser = new SuperconductorsParser(mockChemspotClient, new MaterialParser(null));
         this.entityParser = new ModuleEngine(new GrobidSuperconductorsConfiguration(), superParser, QuantityParser.getInstance(true), null, null);
@@ -79,7 +71,7 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(l -> l.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) || l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .forEach(l -> l.setLinkable(true));
         
-        target.process(layoutTokens, annotations);
+        target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
         
         List<Span> linkedEntities = annotations.stream().filter(l -> isNotEmpty(l.getLinks())).collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(2));
@@ -109,7 +101,7 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(l -> l.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) || l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .forEach(l -> l.setLinkable(true));
         
-        target.process(layoutTokens, annotations);
+        target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
         List<Span> linkedEntities = annotations.stream().filter(l -> isNotEmpty(l.getLinks())).collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(1));
 
@@ -127,7 +119,7 @@ public class CRFBasedLinkerIntegrationTest {
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
         TextPassage paragraph = entityParser.process(layoutTokens, true);
         List<Span> annotations = paragraph.getSpans();
-        target.process(layoutTokens, annotations);
+        target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
 
         List<Span> linkedEntities = annotations.stream().filter(l -> isNotEmpty(l.getLinks())).collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(0));
@@ -145,7 +137,7 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(s -> Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL).contains(s.getType()))
             .forEach(s -> s.setLinkable(true));
 
-        target.process(layoutTokens, annotations);
+        target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
 
         List<Span> linkedEntities = annotations.stream()
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
@@ -165,7 +157,7 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(s -> Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL).contains(s.getType()))
             .forEach(s -> s.setLinkable(true));
 
-        target.process(layoutTokens, annotations);
+        target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
 
         List<Span> linkedEntities = annotations.stream()
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
@@ -185,7 +177,7 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(s -> Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL).contains(s.getType()))
             .forEach(s -> s.setLinkable(true));
 
-        target.process(layoutTokens, annotations);
+        target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
 
         List<Span> linkedEntities = annotations.stream()
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))

@@ -13,13 +13,14 @@ import java.util.*;
  * This is a generic implementation of a class representing a span, namely an entity
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Span {
+public class Span implements Cloneable{
     //We use the hashcode to generate an unique id
 
     private String id = null;
+    
     private String text;
-
     private String formattedText;
+    
     private String type;
 
     //offset in the text
@@ -50,6 +51,27 @@ public class Span {
     private List<LayoutToken> layoutTokens = new ArrayList<>();
 
     public Span() {
+    }
+    
+    public Span(Span other) {
+        this.id = other.getId();
+        this.text = other.getText();
+        this.formattedText = other.getFormattedText();
+        this.type = other.getType();
+        this.offsetStart = other.getOffsetStart();
+        this.offsetEnd = other.getOffsetEnd();
+        
+        this.tokenStart = other.getTokenStart();
+        this.tokenEnd = other.getTokenEnd();
+        this.linkable  = other.isLinkable();
+        this.layoutTokens = other.getLayoutTokens();
+        this.source = other.getSource();
+        this.links = other.getLinks();
+        
+        this.attributes = other.getAttributes();
+        this.boundingBoxes = other.getBoundingBoxes();
+        this.layoutTokens = other.getLayoutTokens();
+        
     }
 
     public Span(String id, String text, String type) {

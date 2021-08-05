@@ -1,4 +1,4 @@
-package org.grobid.core.engines;
+package org.grobid.core.engines.linking;
 
 import com.google.common.collect.Iterables;
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,12 +11,14 @@ import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
+import org.grobid.core.utilities.BoundingBoxCalculator;
+import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.UnicodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,16 +31,19 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
-import static org.grobid.core.utilities.MeasurementUtils.*;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.OTHER_LABEL;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_OTHER;
 
 @Singleton
-public class CRFBasedLinker extends AbstractParser {
+public class CRFBasedLinker {
     private static final Logger LOGGER = LoggerFactory.getLogger(CRFBasedLinker.class);
 
     private static volatile CRFBasedLinker instance;
+    public static final String MATERIAL_TCVALUE_ID = "material-tcValue";
+    public static final String TCVALUE_PRESSURE_ID = "tcValue-pressure";
+    public static final String TCVALUE_ME_METHOD_ID = "tcValue-me_method";
 
-    private List<String> annotationLinks = new ArrayList<>();
+    private Map<String, EntityLinker> annotationLinks = new HashMap<>();
 
     public static CRFBasedLinker getInstance() {
         if (instance == null) {
@@ -53,93 +58,29 @@ public class CRFBasedLinker extends AbstractParser {
 
     @Inject
     public CRFBasedLinker() {
-        super(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC);
-        instance = this;
-        annotationLinks = Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL);
+        annotationLinks.put(MATERIAL_TCVALUE_ID, EntityLinker_MaterialTcValue.getInstance());
+        annotationLinks.put(TCVALUE_PRESSURE_ID, EntityLinker_TcValuePressure.getInstance());
+        annotationLinks.put(TCVALUE_ME_METHOD_ID, EntityLinker_TcValueMe_Method.getInstance());
     }
 
-    public CRFBasedLinker(GrobidModel model, List<String> validLinkAnnotations) {
-        super(model);
-        instance = this;
-        annotationLinks = validLinkAnnotations;
+    public CRFBasedLinker(Map<String, EntityLinker> annotationsLinks) {
+        this.annotationLinks = annotationsLinks;
     }
-
-//    public Pair<String, List<Superconductor>> generateTrainingData(List<LayoutToken> layoutTokens) {
-//
-//        if (isEmpty(layoutTokens))
-//            return Pair.of("", new ArrayList<>());
-//
-//        List<Superconductor> measurements = new ArrayList<>();
-//        String ress = null;
-//
-//        List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
-//
-//        //Normalisation
-//        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
-//                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
-//
-//                return layoutToken;
-//            }
-//        ).collect(Collectors.toList());
-//
-//
-//        List<Span> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
-//        List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
-//
-////        mentions.stream().forEach(m -> System.out.println(">>>>>> " + m.getText() + " --> " + m.getType().name()));
-//
-//        try {
-//            // string representation of the feature matrix for CRF lib
-//            ress = addFeatures(layoutTokensNormalised, listAnnotations);
-//
-//            String res = null;
-//            try {
-//                res = label(ress);
-//            } catch (Exception e) {
-//                throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
-//            }
-//            measurements.addAll(extractResults(tokens, res));
-//        } catch (Exception e) {
-//            throw new GrobidException("An exception occured while running Grobid.", e);
-//        }
-//
-//        return Pair.of(ress, measurements);
-//    }
-
-//    public Pair<String, List<Superconductor>> generateTrainingData(String text) {
-//        text = text.replace("\r\t", " ");
-//        text = text.replace("\n", " ");
-//        text = text.replace("\t", " ");
-//
-//        List<LayoutToken> layoutTokens = null;
-//        try {
-//            layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-//        } catch (Exception e) {
-//            LOGGER.error("fail to tokenize:, " + text, e);
-//        }
-//
-//        return generateTrainingData(layoutTokens);
-//
-//    }
-
-    // TODO: This cannot work because ProcessedParagraph does not hold a copy of the LayoutTokens
-
-//    public ProcessedParagraph process(ProcessedParagraph paragraph) {
-//        if(isEmpty(paragraph.getSpans())) {
-//            return paragraph;
-//        }
-//
-//        process(Token paragraph.getTokens(), paragraph.getSpans());
-//
-//    }
 
     /**
      * THis modify the annotations list
      **/
-    public void process(List<LayoutToken> layoutTokens, List<Span> rawAnnotations) {
+    public void process(List<LayoutToken> layoutTokens, List<Span> rawAnnotations, String linkerType) {
 
+        if (!this.annotationLinks.containsKey(linkerType)) {
+            throw new RuntimeException("the linker type " + linkerType + "does not exists. ");
+        }
+        
+        EntityLinker linkingImplementation = this.annotationLinks.get(linkerType);
+        List<Span> taggedAnnotations = linkingImplementation.markLinkableEntities(rawAnnotations);
+        
         // for CRF we take only what's come from the superconductors model
-        List<Span> annotations = rawAnnotations.stream()
+        List<Span> annotations = taggedAnnotations.stream()
 //            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) && )
             .filter(Span::isLinkable)
 //            .filter(s -> s.getSource().equals("superconductors"))
@@ -167,12 +108,18 @@ public class CRFBasedLinker extends AbstractParser {
             return;
 
         try {
-            List<Span> filteredAnnotations = annotations.stream().filter(a -> annotationLinks.contains(a.getType())).collect(Collectors.toList());
-            List<ChemicalSpan> mentions = filteredAnnotations.stream().map(a -> new ChemicalSpan(a.getOffsetStart(), a.getOffsetEnd(), a.getType())).collect(Collectors.toList());
+            List<Span> filteredAnnotations = annotations.stream()
+                .filter(a -> linkingImplementation.getAnnotationsToBeLinked().contains(a.getType()))
+                .collect(Collectors.toList());
+            
+            List<ChemicalSpan> mentions = filteredAnnotations.stream()
+                .map(a -> new ChemicalSpan(a.getOffsetStart(), a.getOffsetEnd(), a.getType()))
+                .collect(Collectors.toList());
+            
             List<String> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
             // string representation of the feature matrix for CRF lib
-            String ress = addFeatures(layoutTokensNormalised, listAnnotations);
+            String ress = linkingImplementation.addFeatures(layoutTokensNormalised, listAnnotations);
 
             if (StringUtils.isEmpty(ress))
                 return;
@@ -180,12 +127,12 @@ public class CRFBasedLinker extends AbstractParser {
             // labeled result from CRF lib
             String res = null;
             try {
-                res = label(ress);
+                res = linkingImplementation.label(ress);
             } catch (Exception e) {
                 throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
             }
 
-            List<Span> localLinkedEntities = extractResults(layoutTokensNormalised, res, filteredAnnotations);
+            List<Span> localLinkedEntities = linkingImplementation.extractResults(layoutTokensNormalised, res, filteredAnnotations);
 
             for (Span annotation : annotations) {
                 for (Span localEntity : localLinkedEntities) {
@@ -198,14 +145,14 @@ public class CRFBasedLinker extends AbstractParser {
             }
 
         } catch (Exception e) {
-            throw new GrobidException("An exception occured while running Grobid.", e);
+            throw new GrobidException("An exception occurred while running Grobid.", e);
         }
     }
 
     /**
      * Extract all occurrences of measurement/quantities from a simple piece of text.
      */
-    public void process(String text, List<Span> annotations) {
+    public void process(String text, List<Span> annotations, String linkerType) {
         if (isBlank(text)) {
             return;
         }
@@ -218,7 +165,7 @@ public class CRFBasedLinker extends AbstractParser {
         try {
             tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         } catch (Exception e) {
-            LOGGER.error("fail to tokenize:, " + text, e);
+            LOGGER.error("Tokenization failed: " + text, e);
         }
 
         // I need to fill up the annotations' layout tokens
@@ -238,46 +185,27 @@ public class CRFBasedLinker extends AbstractParser {
         if (isEmpty(tokens)) {
             return;
         }
-        process(tokens, annotations);
+        process(tokens, annotations, linkerType);
     }
 
-
-    @SuppressWarnings({"UnusedParameters"})
-    private String addFeatures(List<LayoutToken> tokens, List<String> annotations) {
-        StringBuilder result = new StringBuilder();
-        try {
-            ListIterator<LayoutToken> it = tokens.listIterator();
-            while (it.hasNext()) {
-                int index = it.nextIndex();
-                LayoutToken token = it.next();
-
-                String text = token.getText();
-                if (text.equals(" ") || text.equals("\n")) {
-                    continue;
-                }
-
-                FeaturesVectorEntityLinker featuresVector =
-                    FeaturesVectorEntityLinker.addFeatures(token.getText(), null, annotations.get(index));
-                result.append(featuresVector.printVector());
-                result.append("\n");
-            }
-        } catch (Exception e) {
-            throw new GrobidException("An exception occured while running Grobid.", e);
-        }
-        return result.toString();
-    }
 
     /**
      * Extract identified quantities from a labeled text.
      */
-    public List<Span> extractResults(List<LayoutToken> tokens, String result, List<Span> annotations) {
-        TaggingTokenClusteror clusteror = new TaggingTokenClusteror(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, result, tokens);
+    public static List<Span> extractResults(List<LayoutToken> tokens, String result, List<Span> annotations, 
+                                            GrobidModel model, TaggingLabel leftTaggingLabel, 
+                                            TaggingLabel rightTaggingLabel, TaggingLabel otherTaggingLabel) {
+        
+        TaggingTokenClusteror clusteror = new TaggingTokenClusteror(model, result, tokens);
         List<TaggingTokenCluster> clusters = clusteror.cluster();
 
         int pos = 0; // position in term of characters for creating the offsets
 
         boolean insideLink = false;
-        List<TaggingTokenCluster> detectedClusters = clusters.stream().filter(a -> !a.getTaggingLabel().getLabel().equals(OTHER_LABEL)).collect(Collectors.toList());
+        List<TaggingTokenCluster> detectedClusters = clusters.stream()
+            .filter(a -> !a.getTaggingLabel().getLabel().equals(OTHER_LABEL))
+            .collect(Collectors.toList());
+        
         if (detectedClusters.size() != annotations.size()) {
             LOGGER.info("Some annotation will not be linked. Input entities: " + annotations.size() + ", output links: " + detectedClusters.size());
         }
@@ -299,7 +227,7 @@ public class CRFBasedLinker extends AbstractParser {
             int startPos = theTokens.get(0).getOffset();
             int endPos = startPos + clusterContent.length();
 
-            if (clusterLabel.equals(ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT)) {
+            if (clusterLabel.equals(leftTaggingLabel)) {
                 if (insideLink) {
                     LOGGER.info("Found link-left label with content " + clusterContent);
 
@@ -340,7 +268,7 @@ public class CRFBasedLinker extends AbstractParser {
                     LOGGER.warn("Something is wrong, there is link to the left but not to the right. Ignoring it. ");
                 }
 
-            } else if (clusterLabel.equals(ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT)) {
+            } else if (clusterLabel.equals(rightTaggingLabel)) {
                 LOGGER.info("Found link-right label with content " + clusterContent);
 
                 int layoutTokenListStartOffset = AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(theTokens);
@@ -379,7 +307,7 @@ public class CRFBasedLinker extends AbstractParser {
 
                 }
 
-            } else if (clusterLabel.equals(ENTITY_LINKER_MATERIAL_TC_OTHER)) {
+            } else if (clusterLabel.equals(otherTaggingLabel)) {
 
             } else {
                 LOGGER.error("Warning: unexpected label in entity-linker parser: " + clusterLabel.getLabel() + " for " + clusterContent);
@@ -389,7 +317,7 @@ public class CRFBasedLinker extends AbstractParser {
         return annotations;
     }
 
-    protected List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
+    public static List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
         List<String> output = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(mentions)) {
@@ -440,5 +368,10 @@ public class CRFBasedLinker extends AbstractParser {
         }
 
         return output;
+    }
+
+
+    public Map<String, EntityLinker> getLinkingEngines() {
+        return annotationLinks;
     }
 }

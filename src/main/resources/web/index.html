@@ -64,7 +64,8 @@
                            aria-controls="about" aria-selected="true">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" id="process-text-tab" data-toggle="tab" href="#process-text" role="tab"
+                        <a class="nav-link active" id="process-text-tab" data-toggle="tab" href="#process-text"
+                           role="tab"
                            aria-controls="process-text" aria-selected="false">Text</a>
                     </li>
                     <li class="nav-item">
@@ -398,7 +399,37 @@
                                 <p><a id="exampleLinker1" href="#">example 2</a></p>
                                 <p><a id="exampleLinker2" href="#">example 3</a></p>
                                 <p><a id="exampleLinker3" href="#">example 4</a></p>
-                                <p>This linker works only for the relation material-tcValue.</p>
+
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="linkType" id="exampleRadios1" value="material-tcValue" checked>
+                                    <label class="form-check-label" for="exampleRadios1">
+                                        Material-TcValue
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="linkType" id="exampleRadios2" value="tcValue-pressure">
+                                    <label class="form-check-label" for="exampleRadios2">
+                                        TcValue-Pressure
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="linkType" id="exampleRadios3" value="tcValue-me_method">
+                                    <label class="form-check-label" for="exampleRadios3">
+                                        TcValue-Measurement Method
+                                    </label>
+                                </div>
+<!--                                <div class="dropdown">-->
+<!--                                    <button class="btn btn-secondary dropdown-toggle" type="button" -->
+<!--                                            id="linkType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                                        Link type-->
+<!--                                    </button>-->
+<!--                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
+<!--                                        <a class="dropdown-item" href="#">Material-TcValue</a>-->
+<!--                                        <a class="dropdown-item" href="#">TcValue-Pressure</a>-->
+<!--                                        <a class="dropdown-item" href="#">TcValue-Measurement Method</a>-->
+<!--                                    </div>-->
+<!--                                </div>-->
                             </div>
                         </div>
                         <div class="row m-1 ml-5">
