@@ -105,10 +105,10 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             trainer = new EntityLinkerMaterialTcTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE;
-            trainer = new EntityLinkerTcPressureTrainer();
+            trainer = new EntityLinkerTcValuePressureTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD;
-            trainer = new EntityLinkerTcMeMethodTrainer();
+            trainer = new EntityLinkerTcValueMeMethodTrainer();
         } else if ("superconductors-no-features".equals(modelName)) {
             trainer = new SuperconductorsNoFeaturesTrainer();
         }

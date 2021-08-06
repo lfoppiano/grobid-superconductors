@@ -3,7 +3,6 @@ package org.grobid.trainer;
 import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.data.LinkToken;
 import org.grobid.core.engines.SuperconductorsModels;
@@ -25,15 +24,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
-public class EntityLinkerTcMeMethodTrainer extends AbstractTrainerNew {
+public class EntityLinkerTcValuePressureTrainer extends AbstractTrainerNew {
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
-    public static String SOURCE = "tcValue";
-    public static String DESTINATION = "me_method";
+    public static String SOURCE = "pressure";
+    public static String DESTINATION = "tcValue";
 
-    public EntityLinkerTcMeMethodTrainer() {
-        super(SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD);
+    public EntityLinkerTcValuePressureTrainer() {
+        super(SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE);
         // adjusting CRF training parameters for this model
         epsilon = 0.000001;
         window = 40;
@@ -52,7 +51,8 @@ public class EntityLinkerTcMeMethodTrainer extends AbstractTrainerNew {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entityLinker-tc-me_method", "superconductors") + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath()
+                .replaceFirst(SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE.getModelName(), "superconductors") + File.separator + "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -96,8 +96,8 @@ public class EntityLinkerTcMeMethodTrainer extends AbstractTrainerNew {
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                EntityLinkerAnnotationTEIStaxHandler handler =
-                    new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
+                EntityLinkerAnnotationTEIStaxHandler handler = 
+                    new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, 
                     SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
@@ -108,33 +108,33 @@ public class EntityLinkerTcMeMethodTrainer extends AbstractTrainerNew {
 
                 Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                 StringBuilder output = new StringBuilder();
-                int sourceEntities = 0;
-                int destinationEntities = 0;
+                int materials = 0;
+                int tcValues = 0;
 
                 // we get the label in the labelled data file for the same token
                 for (LinkToken labeledToken : labeled) {
                     String token = labeledToken.getText();
                     String label = labeledToken.getLinkLabel();
                     String entity_type = labeledToken.getEntityLabel();
-                    if (entity_type.equals("<" + SOURCE + ">")) {
-                        sourceEntities++;
+                    if (entity_type.equals("<" + DESTINATION + ">")) {
+                        materials++;
                     }
 
-                    if (entity_type.equals("<" + DESTINATION + ">")) {
-                        destinationEntities++;
+                    if (entity_type.equals("<" + SOURCE + ">")) {
+                        tcValues++;
                     }
 
                     if (token.equals("\n")) {
                         output.append("\n");
                         output.append("\n");
-                        if (sourceEntities > 0 && destinationEntities > 0) {
+                        if (materials > 0 && tcValues > 0) {
                             writer.write(output.toString());
                             writer.flush();
                             writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
-                            sourceEntities = 0;
-                            destinationEntities = 0;
                         }
                         output = new StringBuilder();
+                        materials = 0;
+                        tcValues = 0;
                         continue;
                     }
 
@@ -175,7 +175,7 @@ public class EntityLinkerTcMeMethodTrainer extends AbstractTrainerNew {
     public static void main(String[] args) {
         GrobidProperties.getInstance();
 
-        Trainer trainer = new EntityLinkerTcMeMethodTrainer();
+        Trainer trainer = new EntityLinkerTcValuePressureTrainer();
 
         AbstractTrainer.runTraining(trainer);
     }

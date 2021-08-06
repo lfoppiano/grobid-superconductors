@@ -54,7 +54,8 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entityLinker-material-tc", "superconductors") + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath()
+                .replaceFirst(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC.getModelName(), "superconductors") + File.separator + "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -131,10 +132,10 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
                             writer.write(output.toString());
                             writer.flush();
                             writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
-                            materials = 0;
-                            tcValues = 0;
                         }
                         output = new StringBuilder();
+                        materials = 0;
+                        tcValues = 0;
                         continue;
                     }
 
