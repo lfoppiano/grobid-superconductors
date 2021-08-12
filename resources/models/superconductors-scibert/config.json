@@ -1,5 +1,5 @@
 {
-    "model_name": "10fold-superconductors-train-scibert",
+    "model_name": "superconductors-scibert",
     "model_type": "scibert",
     "embeddings_name": "glove-840B",
     "char_vocab_size": 227,
