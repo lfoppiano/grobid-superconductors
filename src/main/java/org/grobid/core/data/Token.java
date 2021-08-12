@@ -1,7 +1,9 @@
 package org.grobid.core.data;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.grobid.core.layout.LayoutToken;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -14,7 +16,8 @@ public class Token {
     private final boolean isItalic;
     private final double fontSize;
 
-    public Token(String text, String font, double fontSize, String style, int offset, boolean isItalic, boolean isBold) {
+    @JsonCreator
+    public Token(@JsonProperty("text")  String text, @JsonProperty("font") String font, @JsonProperty("fontSize") double fontSize, @JsonProperty("style") String style, @JsonProperty("offset") int offset, @JsonProperty("italic") boolean isItalic, @JsonProperty("bold") boolean isBold) {
         this.text = text;
         this.font = font;
         this.fontSize = fontSize;

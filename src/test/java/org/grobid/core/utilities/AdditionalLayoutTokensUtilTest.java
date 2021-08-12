@@ -1,6 +1,5 @@
 package org.grobid.core.utilities;
 
-import junit.framework.TestCase;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
@@ -18,7 +17,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
-public class AdditionalLayoutTokensUtilTest extends TestCase {
+public class AdditionalLayoutTokensUtilTest{
+    
     @Test
     public void testGetLayoutTokenListStartEndOffset() throws Exception {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken("This is a short sentence, but I need more information. ");
