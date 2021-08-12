@@ -54,7 +54,7 @@ public class ClassResolverModuleClient {
 
         List<String> outputClasses = new ArrayList<>();
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/formula");
+            final HttpPost request = new HttpPost(serverUrl + "/classify/formula");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
