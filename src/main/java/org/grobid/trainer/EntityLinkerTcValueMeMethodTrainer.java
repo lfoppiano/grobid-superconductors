@@ -53,6 +53,7 @@ public class EntityLinkerTcValueMeMethodTrainer extends AbstractTrainerNew {
 
             Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath()
                 .replaceFirst(SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName(), "superconductors") + File.separator + "final");
+            
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -125,9 +126,9 @@ public class EntityLinkerTcValueMeMethodTrainer extends AbstractTrainerNew {
                     }
 
                     if (token.equals("\n")) {
-                        output.append("\n");
-                        output.append("\n");
                         if (sourceEntities > 0 && destinationEntities > 0) {
+                            output.append("\n");
+                            output.append("\n");
                             writer.write(output.toString());
                             writer.flush();
                             writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);

@@ -126,9 +126,9 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
                     }
 
                     if (token.equals("\n")) {
-                        output.append("\n");
-                        output.append("\n");
                         if (materials > 0 && tcValues > 0) {
+                            output.append("\n");
+                            output.append("\n");
                             writer.write(output.toString());
                             writer.flush();
                             writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
