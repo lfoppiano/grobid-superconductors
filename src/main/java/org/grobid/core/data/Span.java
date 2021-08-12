@@ -2,6 +2,7 @@ package org.grobid.core.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.grobid.core.layout.BoundingBox;
@@ -25,11 +26,17 @@ public class Span implements Cloneable{
 
     //offset in the text
 
+    @JsonProperty("offset_start")
     private int offsetStart;
+
+    @JsonProperty("offset_end")
     private int offsetEnd;
     //tokens index referred to the layout token list
 
+    @JsonProperty("token_start")
     private int tokenStart;
+
+    @JsonProperty("token_end")
     private int tokenEnd;
     private boolean linkable;
 
