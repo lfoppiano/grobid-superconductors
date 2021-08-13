@@ -185,6 +185,26 @@ public class AdditionalLayoutTokensUtilTest{
         assertThat(pairs.get(2).getRight(), Is.is(14));
     }
 
+    @Test 
+    public void testFromOffsetsToIndexes_withSpaces_realCase() throws Exception {
+        String originalText = "We have fabricated thin films of FeTe 1Àx Se x using a scotch-tape method. The superconductivities of the thin films are different from each other although these films were fabricated from the same bulk sample. The result clearly presents the inhomogeneous superconductivity in FeTe 1Àx Se x . The difference might arise from inhomogeneity due to the excess Fe concentration. The resistivity of a thin film with low excess Fe shows good superconductivity with the sharp superconducting-transition width and more isotropic superconductivity. ";
+
+        List<String> tokens = new ArrayList<>(DeepAnalyzer.getInstance()
+            .tokenize(originalText));
+        
+        List<OffsetPosition> sentencePositions = new ArrayList<>();
+        sentencePositions.add(new OffsetPosition(0, 74));
+        sentencePositions.add(new OffsetPosition(75, 210));
+        sentencePositions.add(new OffsetPosition(211, 293));
+        sentencePositions.add(new OffsetPosition(294, 375));
+        sentencePositions.add(new OffsetPosition(376, 540));
+
+        List<Pair<Integer, Integer>> pairs = AdditionalLayoutTokensUtil.fromOffsetsToIndexesOfTokensWithSpaces(sentencePositions, tokens);
+        
+        assertThat(pairs, hasSize(5));
+    }
+    
+    
     @Test
     public void testFromOffsetsToIndexes_WithSpaces() throws Exception {
         String originalText = "This is one sentence. This is another sentence. And third sentence. ";

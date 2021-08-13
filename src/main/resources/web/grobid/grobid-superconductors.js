@@ -314,13 +314,14 @@ let grobid = (function ($) {
                     message = split[split.length - 1]
                 } else if (message) {
                     let type = message.type
-                    let split = message.description.split(type);
-                    message = split[split.length - 1]
+                    if (message.description) {
+                        let split = message.description.split(type);
+                        message = split[split.length - 1]
+                    }
                 } else {
                     message = "The Text or the PDF document cannot be processed. Please check the server logs. "
                 }
-
-            }   
+            }
 
             $('#infoResultMessage').html("<p class='text-danger'>Error encountered while requesting the server.<br/>" + message + "</p>");
             return true;
