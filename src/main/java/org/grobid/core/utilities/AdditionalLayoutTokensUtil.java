@@ -186,8 +186,8 @@ public class AdditionalLayoutTokensUtil {
         }
 
         if (offsetId == offsets.size() - 1) {
-            if (resultIndexes.get(resultIndexes.size()-1).getLeft() != idxStart 
-                || resultIndexes.get(resultIndexes.size()-1).getRight() != idxEnd) {
+            Pair<Integer, Integer> lastSentence = resultIndexes.get(resultIndexes.size() - 1);
+            if (!(lastSentence.getLeft() == idxStart || lastSentence.getRight() > idxStart)) {
                 resultIndexes.add(Pair.of(idxStart, idxEnd));
             }
         }

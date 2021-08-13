@@ -23,6 +23,7 @@ In this table we show the best results in comparison with the baseline. For all 
 | [scibert-by_sentences-updated_corpus-removed_10_worst](scibert/by_sentences-minus_worst_10) | 172 papers, scibert, corpus manually segmented by sentences, removed 10 worst papers | 81.92 | 85.06 | 83.46 | |
 | [scibert-by_sentences-updated_corpus-removed_10_worst-keep_all_sentences](scibert/by_sentences-minus_worst_10-keep_all_sentences) | 172 papers, scibert, corpus manually segmented by sentences, removed 10 worst papers, keep all sentences| 7756 |   82.34 |   79.88| |
 
+
 ## Embeddings
 
 | Name | Source corpus | Size | Vector dimension | 

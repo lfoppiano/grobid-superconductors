@@ -314,13 +314,14 @@ let grobid = (function ($) {
                     message = split[split.length - 1]
                 } else if (message) {
                     let type = message.type
-                    let split = message.description.split(type);
-                    message = split[split.length - 1]
+                    if (message.description) {
+                        let split = message.description.split(type);
+                        message = split[split.length - 1]
+                    }
                 } else {
                     message = "The Text or the PDF document cannot be processed. Please check the server logs. "
                 }
-
-            }   
+            }
 
             $('#infoResultMessage').html("<p class='text-danger'>Error encountered while requesting the server.<br/>" + message + "</p>");
             return true;
@@ -429,6 +430,7 @@ let grobid = (function ($) {
             $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
             let formData = new FormData();
             formData.append("text", $('#inputLinkerArea').val());
+            formData.append("type", $("input[name='linkType']:checked").val());
 
             $.ajax({
                 type: 'POST',
@@ -1094,15 +1096,15 @@ let grobid = (function ($) {
             let pos = 0;
 
             annotationList.sort(function (a, b) {
-                let startA = parseInt(a.offsetStart, 10);
-                let startB = parseInt(b.offsetStart, 10);
+                let startA = parseInt(a.offset_start, 10);
+                let startB = parseInt(b.offset_start, 10);
 
                 return startA - startB;
             });
 
             annotationList.forEach(function (annotation, annotationIdx) {
-                let start = parseInt(annotation.offsetStart, 10);
-                let end = parseInt(annotation.offsetEnd, 10);
+                let start = parseInt(annotation.offset_start, 10);
+                let end = parseInt(annotation.offset_end, 10);
 
                 let type = getPlainType(annotation.type);
                 let links = annotation.links

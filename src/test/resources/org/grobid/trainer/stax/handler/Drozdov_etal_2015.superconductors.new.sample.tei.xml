@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tei xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc xml:id="_0">
+      <titleStmt/>
+      <publicationStmt>
+        <publisher>National Institute for Materials Science (NIMS), Tsukuba, Japan</publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+            <p>The Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Licence applies to this document.</p>
+          </licence>
+        </availability>
+      </publicationStmt>
+    </fileDesc>
+    <encodingDesc>
+      <appInfo>
+        <application ident="grobid-superconductors" version="0.2.0-SNAPSHOT">
+          <ref target="https://github.com/lfoppiano/grobid-superconductors">A machine learning software for extracting materials and their properties from scientific literature.</ref>
+        </application>
+      </appInfo>
+    </encodingDesc>
+    <profileDesc>
+      <abstract/>
+    </profileDesc>
+  </teiHeader>
+  <text xml:lang="en">
+    <body>
+        <ab type="figureCaption"><s><rs type="me_method">Magnetization measurements</rs>. a, Temperature dependence of the <rs type="me_method" xml:id="x13-10">magnetization</rs> of <rs type="material" xml:id="x124">sulfur hydride</rs> at a pressure of <rs corresp="#x128" type="pressure">155 GPa</rs> in zero-field cooled (ZFC) and 20 Oe field cooled (FC) modes (black circles). The <rs type="tc">onset temperature</rs> is <rs type="tc">T onset</rs> 5 <rs corresp="#x13-10,#x124" type="tcValue" xml:id="x128">204(1) K</rs>. For comparison, the superconducting step obtained for <rs type="material">sulfur hydride</rs> from <rs type="me_method">electrical measurements</rs> at <rs corresp="#x132" type="pressure">145 GPa</rs> is shown by red circles. <rs type="me_method" xml:id="x13-77">Resistivity</rs> data (T onset 5 <rs corresp="#x13-77" type="tcValue" xml:id="x132">195 K</rs>) were scaled and moved vertically to compare with the <rs type="me_method">magnetization</rs> data. Inset, optical micrograph of a <rs type="material" xml:id="x133">sulfur hydride</rs> sample at <rs corresp="#x136" type="pressure">155 GPa</rs> in a CaSO 4 gasket (scale bar 100 mm). The high <rs type="tc">T onset</rs> 5 <rs corresp="#x133,#x13-132" type="tcValue" xml:id="x136">205 K</rs> measured from the <rs type="me_method" xml:id="x13-132">susceptibility</rs> can be explained by a significant input to the signal from the periphery of the sample which expanded beyond the culet where pressure is smaller than in the culet centre (<rs type="tc">T c increases</rs> with decreasing pressure ). b, Non-magnetic diamond anvil cell (DAC) of diameter 8.8 mm. c, <rs type="me_method">Magnetization measurements</rs> M(H) of <rs type="material" xml:id="x139">sulfur hydride</rs> at a pressure of 155 GPa at different temperatures (given as curve labels). The <rs type="me_method">magnetization</rs> curves show hysteresis, indicating a type II superconductor. The <rs type="me_method">magnetization</rs> curves are however distorted by obvious paramagnetic input (which is also observed in other superconductors ). In our case, the paramagnetic signal is probably from the DAC, but further study of the origin of this input is required. The paramagnetic background increases when temperature is decreased. The minima of the <rs type="me_method">magnetization</rs> curves (,35 mT) are the result of the diamagnetic input from superconductivity and the paramagnetic background. The first critical field H c1 &lt; 30 mT can be roughly estimated as the point where <rs type="me_method">magnetization</rs> deviates from linear behaviour. At higher fields, <rs type="me_method">magnetization</rs> increases due to the penetration of magnetic vortexes. As the sign of the field change reverses, the magnetic flux in the Shubnikov phase remains trapped and therefore the back run (that is, with decreasing field) is irreversible-the returning branch of the magnetic cycle (shown by filled points) runs above the direct one. Hysteretic behaviour of the <rs type="me_method">magnetization</rs> becomes more clearly visible as the temperature decreases. d, At high temperatures T . 200 K, the <rs type="me_method">magnetization</rs> decreases sharply. e, Extrapolation of the pronounced minima at the <rs type="me_method" xml:id="x13-436">magnetization</rs> curves to higher temperatures gives the <rs type="tc">onset of superconductivity</rs> at T 5 <rs corresp="#x139,#x13-436" type="tcValue">203.5 K</rs>.</s></ab>
+    </body>
+  </text>
+</tei>

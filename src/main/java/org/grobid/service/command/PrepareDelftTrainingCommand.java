@@ -66,7 +66,12 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc", "superconductors-no-features"))
+            .choices(Arrays.asList("superconductors", 
+                "material", 
+                "entityLinker-material-tcValue",
+                "entityLinker-tcValue-pressure",
+                "entityLinker-tcValue-me_method",
+                "superconductors-no-features"))
             .required(false)
             .setDefault("superconductors")
             .help("Model data to use. ");
@@ -105,10 +110,10 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             trainer = new EntityLinkerMaterialTcTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE;
-            trainer = new EntityLinkerTcPressureTrainer();
+            trainer = new EntityLinkerTcValuePressureTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
             model = SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD;
-            trainer = new EntityLinkerTcMeMethodTrainer();
+            trainer = new EntityLinkerTcValueMeMethodTrainer();
         } else if ("superconductors-no-features".equals(modelName)) {
             trainer = new SuperconductorsNoFeaturesTrainer();
         }

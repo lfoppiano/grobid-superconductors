@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tei xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc xml:id="_0">
+      <titleStmt/>
+      <publicationStmt>
+        <publisher>National Institute for Materials Science (NIMS), Tsukuba, Japan</publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+            <p>The Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Licence applies to this document.</p>
+          </licence>
+        </availability>
+      </publicationStmt>
+    </fileDesc>
+    <encodingDesc>
+      <appInfo>
+        <application ident="grobid-superconductors" version="0.2.0-SNAPSHOT">
+          <ref target="https://github.com/lfoppiano/grobid-superconductors">A machine learning software for extracting materials and their properties from scientific literature.</ref>
+        </application>
+      </appInfo>
+    </encodingDesc>
+    <profileDesc>
+      <abstract/>
+    </profileDesc>
+  </teiHeader>
+  <text xml:lang="en">
+    <body>
+        <p><s>low-temperature runs possibly relates to <rs type="material" xml:id="x142">H 2 S</rs>, as it is generally consistent with <rs type="me_method" xml:id="x14-18">calculations</rs> 10 for <rs type="material" xml:id="x143">H 2 S</rs>: both the value of <rs type="tc">T c</rs> <rs corresp="#x142,#x14-18,#x143" type="tcValue">&lt; 80 K</rs> and its pressure behaviour. However superconductivity with <rs type="tc">T c</rs> <rs corresp="#x159" type="tcValue">&lt;200 K</rs> does not follow from these <rs type="me_method">calculations</rs>. We suppose that it relates to the <rs type="material">decomposition of H 2 S</rs>, as high temperatures are required to reach the high <rs type="tc">T c</rs> . Precipitation of <rs type="material">elemental sulfur</rs> on decomposition could be expected (which is well known at low pres- sures of P , 100 GPa; ref. 14); however the <rs type="tc">superconducting transition</rs> in <rs type="material">elemental sulfur</rs> occurs at significantly lower temperatures . Another expected product of decomposition of <rs type="material">H 2 S</rs> is hydrogen. However, the strong characteristic vibrational stretching mode from the H 2 molecule was never observed in our Raman spectra (nor was it observed in ref. 14). Therefore we suppose that the dissociation of <rs type="material">H 2 S</rs> is different and involves the creation of higher <rs type="class">hydrides</rs>, such as <rs type="material">3H 2 S R H 6 S 1 2S</rs> or <rs type="material">2H 2 S R H 4 S 1 S</rs>. It is natural to expect these reactions, as sulfur can be not only divalent, but also exhibits higher valencies. In fact, calculations indirectly support this hypothesis, as the dissoci- ation <rs type="material">H 2 S R H 2 1 S</rs> was shown to be energetically very unfavourable. We found further theoretical support in ref. . In that work, the van der Waals compound 21 <rs type="material">(H 2 S) 2 H 2</rs> was considered, and it was shown that at pressures above 180 GPa it forms an Im-3m structure with <rs type="material" xml:id="x159">H 3 S</rs> stoichiometry. The <rs type="me_method" xml:id="x14-308">predicted</rs> <rs type="tc">T c</rs> <rs corresp="#x159,#x14-308" type="tcValue">&lt; 190 K</rs> and its pressure dependences are close to our experimental values ). Our hypothesis of the transformation of <rs type="material">H 2 S</rs> to higher hydrides (in the <rs type="material" xml:id="x163">H 3 S</rs> stoichiometry each S atom is surrounded by 6 hydrogen atoms) is strongly supported by further calculations . All the numerous works based on the Im-3m structure are consistent in their <rs type="me_method" xml:id="x14-377">prediction</rs> of <rs type="tc">T c</rs> .,<rs corresp="#x163,#x14-377" type="tcValue">200 K</rs>, which decreases with pressure. The hydrogen sublattice gives the main contribution to superconductivity . Inclusion of zero point vibra- tions and anharmonicity in the calculations corrected the <rs type="me_method" xml:id="x14-413">calculated</rs> <rs type="tc">T c</rs> to ,<rs corresp="#x163,#x14-413" type="tcValue">190 K</rs>, and the isotope coefficient from a 5 0.5 to a 5 0.35- both in agreement with the present work.</s></p>
+    </body>
+  </text>
+</tei>

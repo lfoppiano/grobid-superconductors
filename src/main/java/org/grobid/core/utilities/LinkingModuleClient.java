@@ -31,10 +31,14 @@ import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.grobid.core.engines.linking.CRFBasedLinker.MATERIAL_TCVALUE_ID;
+import static org.grobid.core.engines.linking.CRFBasedLinker.TCVALUE_PRESSURE_ID;
 
 @Singleton
 public class LinkingModuleClient {
@@ -60,39 +64,7 @@ public class LinkingModuleClient {
 
         TextPassage outPassage = textPassage;
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/tc");
-            request.setHeader("Accept", APPLICATION_JSON);
-
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setCharset(StandardCharsets.UTF_8);
-            builder.addTextBody("input", toJson(textPassage), ContentType.APPLICATION_JSON);
-
-            HttpEntity multipart = builder.build();
-            request.setEntity(multipart);
-
-            try (CloseableHttpResponse response = httpClient.execute(request)) {
-                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
-                } else {
-                    outPassage = fromJson(response.getEntity().getContent()).get(0);
-                }
-            }
-
-        } catch (UnknownHostException e) {
-            LOGGER.warn("The service is unreachable. Ignoring it. ");
-        } catch (IOException e) {
-            LOGGER.error("Something generally bad happened. ", e);
-        }
-
-        return outPassage;
-    }
-
-    public List<TextPassage> extractLinks(TextPassage textPassage) {
-
-        List<TextPassage> outPassage = new ArrayList<>();
-        outPassage.add(textPassage);
-        try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/links");
+            final HttpPost request = new HttpPost(serverUrl + "/classify/tc");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -119,6 +91,37 @@ public class LinkingModuleClient {
         return outPassage;
     }
 
+    public TextPassage extractLinks(TextPassage textPassage, List<String> linkTypes, boolean skipClassification) {
+        try {
+            final HttpPost request = new HttpPost(serverUrl + "/process/link/single");
+            request.setHeader("Accept", APPLICATION_JSON);
+
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setCharset(StandardCharsets.UTF_8);
+            builder.addTextBody("input", toJson(textPassage), ContentType.APPLICATION_JSON);
+            builder.addTextBody("types", toJson(linkTypes), ContentType.APPLICATION_JSON);
+            builder.addTextBody("skip_classification", String.valueOf(skipClassification));
+
+            HttpEntity multipart = builder.build();
+            request.setEntity(multipart);
+
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
+                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
+                } else {
+                    return fromJson(response.getEntity().getContent());
+                }
+            }
+
+        } catch (UnknownHostException e) {
+            LOGGER.warn("The service is unreachable. Ignoring it. ");
+        } catch (IOException e) {
+            LOGGER.error("Something generally bad happened. ", e);
+        }
+        
+        return textPassage;
+    }
+
 
     public String toJson(TextPassage passage) {
         try {
@@ -134,12 +137,26 @@ public class LinkingModuleClient {
         return null;
     }
 
-    public List<TextPassage> fromJson(InputStream inputLine) {
+    public String toJson(List<String> linkTypes) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<List<TextPassage>>() {
+            return mapper.writeValueAsString(linkTypes);
+        } catch (JsonGenerationException | JsonMappingException e) {
+            LOGGER.error("The input line cannot be processed\n " + linkTypes + "\n ", e);
+        } catch (IOException e) {
+            LOGGER.error("Some serious error when deserialize the JSON object: \n" + linkTypes, e);
+        }
+        return null;
+    }
+
+    public TextPassage fromJson(InputStream inputLine) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+            mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+            return mapper.readValue(inputLine, new TypeReference<TextPassage>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);

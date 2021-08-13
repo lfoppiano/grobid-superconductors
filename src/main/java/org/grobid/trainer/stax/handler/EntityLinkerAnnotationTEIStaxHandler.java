@@ -1,12 +1,12 @@
 package org.grobid.trainer.stax.handler;
 
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.analyzers.QuantityAnalyzer;
+import org.grobid.core.data.LinkToken;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.grobid.trainer.stax.SuperconductorsStackTags;
@@ -18,10 +18,13 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.*;
+import static org.grobid.core.engines.label.TaggingLabels.OTHER_LABEL;
 
 public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHandler {
 
@@ -40,16 +43,19 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     private static final String LINK_SOURCE = "source";
     private static final String LINK_DESTINATION = "destination";
     private String insideLink = null;
-    private String link_id = null;
+    private List<String> link_id = null;
+    private String currentId = null;
 
-    private List<Triple<String, String, String>> labeled = new ArrayList<>();
+    private Set<String> nonRelevantLinkIds = new HashSet<>();
+    private List<LinkToken> labeled = new ArrayList<>();
     private List<SuperconductorsStackTags> containerPaths = new ArrayList<>();
 
     private SuperconductorsStackTags currentPosition = new SuperconductorsStackTags();
 
     //When I find a relevant path, I store it here
     private SuperconductorsStackTags currentContainerPath = null;
-    private String currentAnnotationType;
+    private boolean insideEntity = false;
+    private String currentAnnotationType = null;
 
 
     // Examples:
@@ -57,9 +63,15 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     // pressure-tcValue link -> (source: pressure, destination tcValue)
     public EntityLinkerAnnotationTEIStaxHandler(List<SuperconductorsStackTags> containerPaths, String sourceLabel, String destinationLabel) {
         this.containerPaths = containerPaths;
+        if (sourceLabel.startsWith("<")) {
+            sourceLabel = sourceLabel.replace("<", "").replace(">", "");
+        }
         this.sourceLabel = sourceLabel;
-        this.destinationLabel = destinationLabel;
 
+        if (destinationLabel.startsWith("<")) {
+            destinationLabel = destinationLabel.replace("<", "").replace(">", "");
+        }
+        this.destinationLabel = destinationLabel;
         this.accumulator = new StringBuilder();
     }
 
@@ -70,6 +82,86 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     @Override
     public void onEndDocument(XMLStreamReader2 reader) {
         writeData();
+
+        Map<String, Long> summaryEntitiesAndIds = labeled.stream()
+            .filter(l -> l.getEntityLabel().startsWith("I-") && isNotBlank(l.getId()))
+            .flatMap(e -> Stream.of(e.getId().split(",")))
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        List<String> collectedIdsToIgnore = summaryEntitiesAndIds.entrySet().stream()
+            .filter(e -> e.getValue() == 1)
+            .map(Map.Entry::getKey)
+//            .flatMap(e -> Stream.of(e.getKey().split(",")))
+            .collect(Collectors.toList());
+
+        nonRelevantLinkIds.addAll(collectedIdsToIgnore);
+
+        // link_id  -> null -> no link
+        // link_id -> not_nll --> link with id
+        String linkId = null;
+        String previousLinkId = null;
+        String currentEntityId = null;
+        String currentEntityLinkLabel = null;
+        int idx = -1;
+        for (LinkToken linkToken : labeled) {
+            idx += 1;
+            String id = linkToken.getId();
+
+            if (id != null && id.contains(",")) {
+                List<String> ids = Arrays.asList(id.split(","));
+                ids = (List<String>) CollectionUtils.removeAll(ids, CollectionUtils.intersection(ids, nonRelevantLinkIds));
+
+                if (ids.size() == 1) {
+                    id = ids.get(0);
+                } else {
+                    continue;
+                }
+
+            }
+
+            String entityLabel = linkToken.getEntityLabel().startsWith("I-") ? linkToken.getEntityLabel().substring(3).replaceAll("[<>]","") : linkToken.getEntityLabel().replaceAll("[<>]","");
+            if (nonRelevantLinkIds.contains(id) || isBlank(id) || (!entityLabel.equals(sourceLabel) && !entityLabel.equals(destinationLabel))) {
+                if (currentEntityLinkLabel != null) {
+                    currentEntityLinkLabel = null;
+                }
+                continue;
+
+            } else {
+                if (linkToken.getEntityId().equals(currentEntityId)) {
+                    // same entity - repeat what decided before
+                    if (currentEntityLinkLabel != null) {
+                        labeled.set(idx, LinkToken.of(id, currentEntityId, linkToken.getText(), currentEntityLinkLabel, linkToken.getEntityLabel()));
+                    }
+                } else {
+                    if (isNotBlank(previousLinkId)) {
+                        nonRelevantLinkIds.add(previousLinkId);
+                        if (id.equals(previousLinkId)) {
+                            previousLinkId = null;
+                            continue;
+                        }
+                        previousLinkId = null;
+                    }
+                    currentEntityId = linkToken.getEntityId();
+                    // new entity - make new decision
+
+                    if (id.equals(linkId)) {
+                        currentEntityLinkLabel = "<link_left>";
+                        previousLinkId = linkId;
+                        linkId = null;
+                    } else {
+                        if (linkId == null) {
+                            currentEntityLinkLabel = "<link_right>";
+                            linkId = id;
+                        } else {
+                            nonRelevantLinkIds.add(id);
+                            continue;
+                        }
+                    }
+                    String linkLabelLocal = linkToken.getEntityLabel().startsWith("I-") ? "I-" + currentEntityLinkLabel : currentEntityLinkLabel;
+                    labeled.set(idx, LinkToken.of(id, currentEntityId, linkToken.getText(), linkLabelLocal, linkToken.getEntityLabel()));
+                }
+            }
+        }
     }
 
     @Override
@@ -80,75 +172,62 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
         if (currentContainerPath == null) {
             if (containerPaths.contains(currentPosition)) {
                 currentContainerPath = SuperconductorsStackTags.from(currentPosition);
-                link_id = null;
+
+                //At every sentence I start from scratch
                 insideLink = null;
+                accumulator.setLength(0);
             }
         } else {
             String attributeValue = getAttributeValue(reader, "type");
             if ("rs".equals(localName)) {
-                this.currentAnnotationType = attributeValue;
                 if (sourceLabel.equals(attributeValue)) {
-                    //e.g. tcValue
+                    this.currentAnnotationType = attributeValue;
+                    //source (e.g. tcValue)
 
+                    // I write the remaining data in the accumulated text as "other" label
                     writeData();
+                    insideEntity = true;
 
                     String pointer = getAttributeValue(reader, "corresp");
                     if (isBlank(pointer)) {
                         return;
                     } else {
-                        String destinationId = pointer.substring(1);
+                        List<String> destinationIds = Arrays.asList(pointer.substring(1));
                         if (pointer.contains(",")) {
-                            destinationId = pointer.split(",")[0].substring(1);
+                            destinationIds = Arrays.stream(pointer.split(",")).map(d -> d.substring(1)).collect(Collectors.toList());
                         }
-                        if (link_id == null) {
-                            link_id = destinationId;
-//                    insideLink = true;
-                        } else {
-                            // if I have a link_id not null and different from the current id, it means that this
-                            // entity should be ignored
-                            if (!link_id.equals(destinationId)) {
-                                revertPreviousLabelPointingRight();
-                                link_id = destinationId;
-                                insideLink = null;
-                            }
+                        destinationIds = (List<String>) CollectionUtils.removeAll(destinationIds, nonRelevantLinkIds);
+
+                        if (CollectionUtils.isNotEmpty(destinationIds)) {
+                            currentId = String.join(",", destinationIds);
                         }
                     }
 
                 } else if (destinationLabel.equals(attributeValue)) {
-                    //e.g. material
+                    this.currentAnnotationType = attributeValue;
+                    //destination (e.g. material)
                     writeData();
+                    
+                    insideEntity = true;
+                    currentId = getAttributeValue(reader, "id");
+                } else {
+                    // if the entity is not relevant but their id or pointer are matching the link_id I cancel the link
 
                     String id = getAttributeValue(reader, "id");
-                    if (isNotEmpty(id)) {
-                        if (link_id == null) {
-                            link_id = id;
-                        } else {
-                            if (!id.equals(link_id)) {
-//                        link_id = id;
-                                LOGGER.warn("Ignoring id = " + id);
-//                        throw new GrobidException("Something wrong, link_id is indicating a different id, this means that " +
-//                            "a) there is a different id in the destination, " +
-//                            "b) there is a mistake" +
-//                            "" +
-//                            "In either cases I we both go down. ");
-                            }
+                    if (isNotBlank(id)) {
+                        nonRelevantLinkIds.add(id);
+                    }
+
+                    String pointer = getAttributeValue(reader, "corresp");
+                    if (isNotBlank(pointer)) {
+                        List<String> pointers = Arrays.asList(pointer.substring(1));
+                        if (pointer.contains(",")) {
+                            pointers = Arrays.stream(pointer.split(",")).map(d -> d.substring(1)).collect(Collectors.toList());
+                        }
+                        if (CollectionUtils.isNotEmpty(pointers)) {
+                            nonRelevantLinkIds.addAll(pointers);
                         }
                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * This method modifies the labeled list
-     */
-    private void revertPreviousLabelPointingRight() {
-        for (int i = labeled.size() - 1; i >= 0; i--) {
-            Triple<String, String, String> labels = labeled.get(i);
-            if (labels.getMiddle().endsWith("<link_right>")) {
-                labeled.set(i, Triple.of(labels.getLeft(), "<other>", labels.getRight()));
-                if (labels.getMiddle().startsWith("I-")) {
-                    break;
                 }
             }
         }
@@ -162,69 +241,39 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
             currentContainerPath = null;
             if (insideLink != null || link_id != null) {
                 // Cleanup the mess
-                revertPreviousLabelPointingRight();
                 link_id = null;
                 insideLink = null;
             }
 
             writeData();
-            labeled.add(new ImmutableTriple<>("\n", "", ""));
+            labeled.add(LinkToken.of("", "", "\n", ""));
+        } else if (currentContainerPath != null && insideEntity
+            && ("rs".equals(localName) && this.sourceLabel.equals(currentAnnotationType))) {
 
-        } else if ("rs".equals(localName)) {
-            if (this.sourceLabel.equals(currentAnnotationType)) {
+            // the destination (e.g. material) is coming before - link to the left
+            writeData(currentId, null, this.currentAnnotationType);
+            insideLink = null;
+            //As this link has been closed, I add them in the exclusion list
+//                nonRelevantLinkIds.add(currentId);
+        } else if (currentContainerPath != null && insideEntity
+            && ("rs".equals(localName) && this.destinationLabel.equals(this.currentAnnotationType))) {
+            // destination: e.g. material
 
-                if (link_id == null) {
-                    //there is not pointer, so I should exclude this
-                } else {
-                    if (isNotEmpty(insideLink)) {
-                        if (LINK_DESTINATION.equals(insideLink)) {
-                            // the material is coming before - link to the left
-                            writeData("link_left", currentAnnotationType);
-                            insideLink = null;
-                            link_id = null;
-                        } else {
-                            // the tcValue is coming before, I can't link them, I cancel the previous link and link to the right
-                            revertPreviousLabelPointingRight();
-                            writeData("link_right", currentAnnotationType);
-                            insideLink = LINK_SOURCE;
-                        }
-                    } else {
-                        // this is a promise that I will obtain the other end of the link - if Not I will wipe it out
-                        writeData("link_right", currentAnnotationType);
-                        insideLink = LINK_SOURCE;
-                    }
+            // the tcValue is coming before - link to the left
+            writeData(currentId, null, this.currentAnnotationType);
+            link_id = null;
+            insideLink = null;
 
-                }
-            } else if (this.destinationLabel.equals(currentAnnotationType)) {
-
-                // material
-
-                if (link_id == null) {
-                    //ignore
-                } else {
-                    if (insideLink != null) {
-                        if (LINK_SOURCE.equals(insideLink)) {
-                            // the tcValue is coming before - link to the left
-                            writeData("link_left", currentAnnotationType);
-                            link_id = null;
-                            insideLink = null;
-                        } else {
-                            //the material is coming before - I can't connect, so I remove the previous annotation,
-                            // and link right
-                            revertPreviousLabelPointingRight();
-                            writeData("link_right", currentAnnotationType);
-                            insideLink = LINK_DESTINATION;
-                        }
-                    } else {
-                        // this is a promise that I will obtain the other end of the link - if Not I will wipe it out
-                        writeData("link_right", currentAnnotationType);
-                        insideLink = LINK_DESTINATION;
-                    }
-                }
-            }
         }
+//        } else if (containerPaths == null) {
+//            String text = getAccumulatedText();
+//            writeStreamData(text, getTag("other"));
+//            accumulator.setLength(0);
+//        }
 
         this.currentPosition.peek();
+        this.currentAnnotationType = null;
+        this.currentId = "";
     }
 
     @Override
@@ -262,26 +311,23 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
     }
 
     private void writeData(String currentTag) {
-        writeData(currentTag, null);
+        writeData("", currentTag, null);
     }
 
-    private void writeData(String currentTag, String secondLayerTag) {
-        if (currentTag == null)
-            currentTag = "<other>";
-        else if (!currentTag.startsWith("<")) {
-            currentTag = "<" + currentTag + ">";
+    private void writeData(String id, String linkLabel, String entityLabel) {
+        if (linkLabel == null) {
+            linkLabel = "<other>";
         }
 
-        if (secondLayerTag == null) {
-            secondLayerTag = "<other>";
-        } else if (!secondLayerTag.startsWith("<")) {
-            secondLayerTag = "<" + secondLayerTag + ">";
+        if (entityLabel == null) {
+            entityLabel = "<other>";
         }
 
+        String entityId = RandomStringUtils.random(10, true, true);
         String text = accumulator.toString();
         List<String> tokens = null;
         try {
-            tokens = DeepAnalyzer.getInstance().tokenize(text);
+            tokens = QuantityAnalyzer.getInstance().tokenize(text);
         } catch (Exception e) {
             throw new GrobidException("fail to tokenize: " + text, e);
         }
@@ -291,10 +337,14 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
             if (token.length() == 0)
                 continue;
 
-            if (begin && (!currentTag.equals("<other>"))) {
-                labeled.add(new ImmutableTriple<>(token, "I-" + currentTag, "I-" + secondLayerTag));
+            if (begin) {
+                String linkLabelLocal = !linkLabel.equals("<other>") ? "I-<" + linkLabel + ">" : linkLabel;
+                String entityLabelLocal = !entityLabel.equals("<other>") ? "I-<" + entityLabel + ">" : entityLabel;
+                labeled.add(LinkToken.of(id, entityId, token, linkLabelLocal, entityLabelLocal));
             } else {
-                labeled.add(new ImmutableTriple<>(token, currentTag, secondLayerTag));
+                String linkLabelLocal = !linkLabel.equals("<other>") ? "<" + linkLabel + ">" : linkLabel;
+                String entityLabelLocal = !entityLabel.equals("<other>") ? "<" + entityLabel + ">" : entityLabel;
+                labeled.add(LinkToken.of(id, entityId, token, linkLabelLocal, entityLabelLocal));
             }
 
             begin = false;
@@ -303,7 +353,24 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
 
     }
 
-    public List<Triple<String, String, String>> getLabeled() {
+    public List<LinkToken> getLabeled() {
         return labeled;
+    }
+
+
+    /**
+     * This method modifies the labeled list
+     */
+    private void revertPreviousLabelPointingRight() {
+        for (int i = labeled.size() - 1; i >= 0; i--) {
+            LinkToken labels = labeled.get(i);
+            String linkLabel = labels.getLinkLabel();
+            if (linkLabel.endsWith("<link_right>")) {
+                labeled.set(i, LinkToken.of(labels.getId(), labels.getEntityId(), labels.getText(), OTHER_LABEL, labels.getEntityLabel()));
+                if (linkLabel.startsWith("I-")) {
+                    break;
+                }
+            }
+        }
     }
 }

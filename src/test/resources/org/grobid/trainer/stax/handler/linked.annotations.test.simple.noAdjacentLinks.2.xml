@@ -1,0 +1,11 @@
+<tei xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:id="_1"/>
+        <encodingDesc/>
+    </teiHeader>
+    <text xml:lang="en">
+        <p>
+            <s>AF fluctuations seem to play a key role in raising <rs type="tc">T c</rs> for various <rs type="class">iron-based pnictides</rs>; however, the scenario does not work well for <rs type="material">LaFeAsO 1−x F x</rs> , because for <rs type="material" xml:id="x43">x = 0.14</rs>, <rs type="tc">T c</rs> increases <rs type="tcValue" xml:id="x45" corresp="#x43">up to 40 K</rs> (<rs type="me_method" corresp="#x45">resistivity</rs>) at <rs type="pressure" corresp="#x45">3.0 GPa</rs> with no predominant AF fluctuations.</s>
+        </p>
+    </text>
+</tei>

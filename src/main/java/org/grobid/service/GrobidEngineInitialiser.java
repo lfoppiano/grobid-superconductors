@@ -26,6 +26,9 @@ public class GrobidEngineInitialiser {
             GrobidProperties.setGluttonUrl(configuration.getConsolidation().glutton.url);
             GrobidProperties.setConsolidationService(configuration.getConsolidation().service);
         }
+        
+        //Set the maximum number of Wapiti threads to the maximum concurrent requests 
+        GrobidProperties.setWapitiNbThreads(configuration.getMaxParallelRequests());
         LibraryLoader.load();
     }
 }

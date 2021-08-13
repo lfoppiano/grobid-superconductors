@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tei xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:id="_0">
+            <titleStmt/>
+            <publicationStmt>
+                <publisher>National Institute for Materials Science (NIMS), Tsukuba, Japan</publisher>
+                <availability>
+                    <licence target="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <p>The Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Licence applies to this document.</p>
+                    </licence>
+                </availability>
+            </publicationStmt>
+        </fileDesc>
+        <encodingDesc>
+            <appInfo>
+                <application ident="grobid-superconductors" version="0.2.0-SNAPSHOT">
+                    <ref target="https://github.com/lfoppiano/grobid-superconductors">A machine learning software for extracting materials and their properties from scientific literature.</ref>
+                </application>
+            </appInfo>
+        </encodingDesc>
+        <profileDesc/>
+    </teiHeader>
+    <text xml:lang="en">
+        <body>
+            <p>
+                <s>This paragraph contains a link that is pointing from <rs xml:id="x1" type="material">the destination entity</rs> to <rs corresp="#x2" type="tcValue">the</rs> <rs corresp="#x1" type="tcValue">source entity, whatever long it is</rs>.</s> 
+                <s>The rest is all fiction.</s>
+            </p>
+        </body>
+    </text>
+</tei>
