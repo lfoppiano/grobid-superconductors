@@ -10,6 +10,8 @@ import org.grobid.core.layout.LayoutToken;
 
 import java.util.*;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+
 /**
  * This is a generic implementation of a class representing a span, namely an entity
  */
@@ -71,13 +73,13 @@ public class Span implements Cloneable{
         this.tokenStart = other.getTokenStart();
         this.tokenEnd = other.getTokenEnd();
         this.linkable  = other.isLinkable();
-        this.layoutTokens = other.getLayoutTokens();
+        this.layoutTokens = new ArrayList<>(other.getLayoutTokens());
         this.source = other.getSource();
-        this.links = other.getLinks();
+        this.links = new ArrayList<>(other.getLinks());
         
-        this.attributes = other.getAttributes();
-        this.boundingBoxes = other.getBoundingBoxes();
-        this.layoutTokens = other.getLayoutTokens();
+        this.attributes = new HashMap<>(other.getAttributes());
+        this.boundingBoxes = new ArrayList<>(other.getBoundingBoxes());
+        this.layoutTokens = new ArrayList<>(other.getLayoutTokens());
         
     }
 

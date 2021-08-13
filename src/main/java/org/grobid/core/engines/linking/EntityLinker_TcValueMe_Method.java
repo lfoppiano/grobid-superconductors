@@ -96,7 +96,9 @@ public class EntityLinker_TcValueMe_Method extends AbstractParser implements Ent
         List<Span> markedAnnotations = rawAnnotations.stream()
             .map(s -> {
                 Span n = new Span(s);
-                n.setLinkable(true);
+                if (n.getType().equals(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL)) {
+                    n.setLinkable(true);
+                }
                 return n;
             })
             .collect(Collectors.toList());

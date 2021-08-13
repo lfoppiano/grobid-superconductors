@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -31,28 +32,29 @@ public class RuleBasedLinker {
     }
 
     public TextPassage markTemperatures(TextPassage passage) {
-        List<Span> originalSpans = passage.getSpans();
-        if (CollectionUtils.isEmpty(originalSpans) || disabled) {
+        if (CollectionUtils.isEmpty(passage.getSpans()) || disabled) {
             return passage;
         }
 
         TextPassage requestPassage = createNewCleanObject(passage);
-        TextPassage textPassageWithMarkedTemperatures = this.client.markCriticalTemperature(requestPassage);
-        List<Span> processedSpans = textPassageWithMarkedTemperatures.getSpans();
+        TextPassage responsePassage = this.client.markCriticalTemperature(requestPassage);
+
+        TextPassage outputPassage = TextPassage.of(passage);
         
         //Copy linkability
-        if (originalSpans.size() != processedSpans.size()) {
+        if (responsePassage.getSpans().size() != outputPassage.getSpans().size()) {
             LOGGER.warn("The size of the processed spans is different than the original spans. Skipping linking");
         } else {
-            for (int i = 0; i < originalSpans.size(); i++) {
-                Span processedSpan = processedSpans.get(i);
-                Span originalSpan = originalSpans.get(i);
+            for (int i = 0; i < outputPassage.getSpans().size(); i++) {
+                Span processedSpan = responsePassage.getSpans().get(i);
+                Span originalSpan = outputPassage.getSpans().get(i);
                 if (processedSpan.getId().equals(originalSpan.getId())) {
                     originalSpan.setLinkable(processedSpan.isLinkable());
                 }
             }
         }
-        return passage;
+        
+        return outputPassage;
     }
 
 
@@ -80,23 +82,23 @@ public class RuleBasedLinker {
         TextPassage requestPassage = createNewCleanObject(passage);
 
         //TODO: process in bulk asynchronously 
-        TextPassage responseTextPassage = client.extractLinks(requestPassage, linkTypes, skipClassification);
+        TextPassage responsePassage = client.extractLinks(requestPassage, linkTypes, skipClassification);
+        
+        TextPassage outputPassage = TextPassage.of(passage);
         
         //Fetch only what is needed
-        if (responseTextPassage.getSpans().size() != passage.getSpans().size()) {
-            LOGGER.warn("The size of the processed spans is different than the original spans. Skipping linking");
-        } else {
-            for (int i = 0; i < passage.getSpans().size(); i++) {
-                Span responseSpan = responseTextPassage.getSpans().get(i);
-                Span originalSpan = passage.getSpans().get(i);
-                if (responseSpan.getId().equals(originalSpan.getId())) {
-                    originalSpan.getLinks().addAll(responseSpan.getLinks());
-                }
+        Map<String, Span> spansMap = responsePassage.getSpans().stream().collect(Collectors.toMap(Span::getId, Function.identity()));
+        
+        outputPassage.getSpans().stream().forEach(s -> {
+            if(spansMap.containsKey(s.getId())) {
+                Span span = spansMap.get(s.getId());
+                s.getLinks().addAll(span.getLinks());
+                s.setLinkable(span.isLinkable());
             }
-        }
-        passage.setRelationships(responseTextPassage.getRelationships());
+        });
+        outputPassage.setRelationships(responsePassage.getRelationships());
 
-        return passage;
+        return outputPassage;
     }
 
     private TextPassage createNewCleanObject(TextPassage passage) {
@@ -109,6 +111,7 @@ public class RuleBasedLinker {
             })
             .collect(Collectors.toList());
 
+        requestPassage.setText(passage.getText());
         requestPassage.setSpans(newSpans);
         requestPassage.setTokens(new ArrayList<>(passage.getTokens()));
         return requestPassage;

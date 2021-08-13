@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represent a text passage, such as a sentence or a paragraph
@@ -25,7 +26,20 @@ public class TextPassage {
 
     private List<Token> tokens = new ArrayList<>();
 
-    private List<Relationship> relationships = new ArrayList();
+    private List<Relationship> relationships = new ArrayList<>();
+    
+    public static TextPassage of(TextPassage other) {
+        TextPassage textPassage = new TextPassage();
+        textPassage.setText(other.getText());
+        textPassage.setType(other.getType());
+        textPassage.setSection(other.getSection());
+        textPassage.setSubSection(other.getSubSection());
+        textPassage.setSpans(other.getSpans().stream().map(Span::new).collect(Collectors.toList()));
+        textPassage.setTokens(new ArrayList<>(other.getTokens()));
+        textPassage.setRelationships(new ArrayList<>(other.getRelationships()));
+        
+        return textPassage;
+    }
 
     public String getText() {
         return text;

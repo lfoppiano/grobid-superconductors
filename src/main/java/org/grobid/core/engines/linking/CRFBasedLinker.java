@@ -66,25 +66,18 @@ public class CRFBasedLinker {
     public CRFBasedLinker(Map<String, EntityLinker> annotationsLinks) {
         this.annotationLinks = annotationsLinks;
     }
-
-    /**
-     * THis modify the annotations list
-     **/
-    public void process(List<LayoutToken> layoutTokens, List<Span> rawAnnotations, String linkerType) {
+    
+    public List<Span> process(List<LayoutToken> layoutTokens, List<Span> annotations, String linkerType) {
 
         if (!this.annotationLinks.containsKey(linkerType)) {
             throw new RuntimeException("the linker type " + linkerType + "does not exists. ");
         }
         
         EntityLinker linkingImplementation = this.annotationLinks.get(linkerType);
-        List<Span> taggedAnnotations = linkingImplementation.markLinkableEntities(rawAnnotations);
+        List<Span> taggedAnnotations = linkingImplementation.markLinkableEntities(annotations);
         
-        // for CRF we take only what's come from the superconductors model
-        List<Span> annotations = taggedAnnotations.stream()
-//            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) && )
+        List<Span> linkableAnnotations = taggedAnnotations.stream()
             .filter(Span::isLinkable)
-//            .filter(s -> s.getSource().equals("superconductors"))
-//            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) && StringUtils.endsWithIgnoreCase(StringUtils.strip(s.getText()), "K"))
             .collect(Collectors.toList());
 
         //Normalisation
@@ -97,18 +90,14 @@ public class CRFBasedLinker {
                 }
             ).collect(Collectors.toList());
 
-        // List<LayoutToken> for the selected segment
         List<LayoutToken> layoutTokensNormalised = DeepAnalyzer.getInstance()
             .retokenizeLayoutTokens(layoutTokensPreNormalised);
 
-        // list of textual tokens of the selected segment
-        //List<String> texts = getTexts(tokenizationParts);
-
         if (isEmpty(layoutTokensNormalised))
-            return;
+            return new ArrayList<>();
 
         try {
-            List<Span> filteredAnnotations = annotations.stream()
+            List<Span> filteredAnnotations = linkableAnnotations.stream()
                 .filter(a -> linkingImplementation.getAnnotationsToBeLinked().contains(a.getType()))
                 .collect(Collectors.toList());
             
@@ -122,7 +111,7 @@ public class CRFBasedLinker {
             String ress = linkingImplementation.addFeatures(layoutTokensNormalised, listAnnotations);
 
             if (StringUtils.isEmpty(ress))
-                return;
+                return new ArrayList<>();
 
             // labeled result from CRF lib
             String res = null;
@@ -134,11 +123,12 @@ public class CRFBasedLinker {
 
             List<Span> localLinkedEntities = linkingImplementation.extractResults(layoutTokensNormalised, res, filteredAnnotations);
 
-            for (Span annotation : annotations) {
+            //I modify the taggedAnnotations which are anyway a copy of the spans 
+            for (Span annot : taggedAnnotations) {
                 for (Span localEntity : localLinkedEntities) {
-                    if (localEntity.equals(annotation) && isNotEmpty(localEntity.getLinks())) {
-                        annotation.setLinks(localEntity.getLinks());
-                        annotation.setLinkable(true);
+                    if (localEntity.equals(annot) && isNotEmpty(localEntity.getLinks())) {
+                        annot.setLinks(localEntity.getLinks());
+                        annot.setLinkable(localEntity.isLinkable());
                         break;
                     }
                 }
@@ -147,14 +137,13 @@ public class CRFBasedLinker {
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         }
+        
+        return taggedAnnotations;
     }
-
-    /**
-     * Extract all occurrences of measurement/quantities from a simple piece of text.
-     */
-    public void process(String text, List<Span> annotations, String linkerType) {
+    
+    public List<Span> process(String text, List<Span> annotations, String linkerType) {
         if (isBlank(text)) {
-            return;
+            return new ArrayList<>();
         }
 
         text = text.replace("\r", " ");
@@ -183,9 +172,10 @@ public class CRFBasedLinker {
         }
 
         if (isEmpty(tokens)) {
-            return;
+            return new ArrayList<>();
         }
-        process(tokens, annotations, linkerType);
+        
+        return process(tokens, annotations, linkerType);
     }
 
 

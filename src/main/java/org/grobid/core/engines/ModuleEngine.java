@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +34,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.grobid.core.data.Token.getStyle;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
+import static org.grobid.core.engines.linking.CRFBasedLinker.*;
 
 @Singleton
 public class ModuleEngine {
@@ -43,14 +45,14 @@ public class ModuleEngine {
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
     private RuleBasedLinker ruleBasedLinker;
-    private CRFBasedLinker CRFBasedLinker;
+    private CRFBasedLinker crfBasedLinker;
     private GrobidSuperconductorsConfiguration configuration;
 
     ModuleEngine(GrobidSuperconductorsConfiguration configuration, SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
         this.ruleBasedLinker = ruleBasedLinker;
-        this.CRFBasedLinker = CRFBasedLinker;
+        this.crfBasedLinker = CRFBasedLinker;
         this.configuration = configuration;
     }
 
@@ -330,22 +332,59 @@ public class ModuleEngine {
         if (disableLinking || CollectionUtils.size(textPassage.getSpans()) <= 1) {
             return textPassage;
         }
-
-        //CRF-based
-
-        // Set the materials to be linkable
-        for (Span s : textPassage.getSpans()) {
-            if (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL) || s.getType().equals(SUPERCONDUCTORS_PRESSURE_LABEL)) {
-                s.setLinkable(true);
-            }
-        }
-
-        /** Modify the objects **/
+        
         TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassage);
 
-        //        CRFBasedLinker.process(tokens, textPassageWithMarkedTemperature.getSpans(), CRFBasedLinker.MATERIAL_TCVALUE_ID);
+        List<Span> spansCopy = textPassage.getSpans().stream()
+            .map(Span::new)
+            .collect(Collectors.toList());
 
-        //TODO: Merge CRF / Rule-based
+        Map<String, Span> mapById = textPassageWithLinks.getSpans().stream()
+            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+            .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+        spansCopy.stream()
+            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+                .forEach(s -> {
+                    if (mapById.containsKey(s.getId())) {
+                        s.setLinkable(mapById.get(s.getId()).isLinkable());
+                    }
+                });
+
+        Map<String, Span> resultMaterialTcValueLinkerCrf = crfBasedLinker.process(tokens, spansCopy, MATERIAL_TCVALUE_ID)
+            .parallelStream()
+            .filter(s -> crfBasedLinker.getLinkingEngines().get(MATERIAL_TCVALUE_ID).getAnnotationsToBeLinked().contains(s.getType()))
+            .filter(s -> isNotEmpty(s.getLinks()))
+            .collect(Collectors.toMap(Span::getId, Function.identity()));
+        
+        Map<String, Span> resultTcValuePressureLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_PRESSURE_ID)
+            .parallelStream()
+            .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_PRESSURE_ID).getAnnotationsToBeLinked().contains(s.getType()))
+            .filter(s -> isNotEmpty(s.getLinks()))
+            .collect(Collectors.toMap(Span::getId, Function.identity()));
+        
+        Map<String, Span> resultTcValueMeMethodLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_ME_METHOD_ID)
+            .parallelStream()
+            .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_ME_METHOD_ID).getAnnotationsToBeLinked().contains(s.getType()))
+            .filter(s -> isNotEmpty(s.getLinks()))
+            .collect(Collectors.toMap(Span::getId, Function.identity()));
+        
+        // Merge
+        textPassageWithLinks.getSpans().stream()
+            .forEach(s -> { 
+                if(resultMaterialTcValueLinkerCrf.containsKey(s.getId())) {
+                    s.getLinks().addAll(resultMaterialTcValueLinkerCrf.get(s.getId()).getLinks());
+                }
+
+                if(resultTcValuePressureLinkerCrf.containsKey(s.getId())) {
+                    s.getLinks().addAll(resultTcValuePressureLinkerCrf.get(s.getId()).getLinks());
+                }
+
+                if(resultTcValueMeMethodLinkerCrf.containsKey(s.getId())) {
+                    s.getLinks().addAll(resultTcValueMeMethodLinkerCrf.get(s.getId()).getLinks());
+                }
+            });
+        
         return textPassageWithLinks;
     }
 
@@ -360,28 +399,28 @@ public class ModuleEngine {
                 sb.append(lt.getText());
             } else {
                 if (currentStyle.equals("baseline")) {
-                    sb.append("</" + previousStyle.substring(0, 3) + ">");
+                    sb.append("</").append(previousStyle.substring(0, 3)).append(">");
                     opened = null;
                     sb.append(lt.getText());
                 } else if (currentStyle.equals("superscript")) {
                     if (previousStyle.equals("baseline")) {
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     } else {
-                        sb.append("</" + previousStyle.substring(0, 3) + ">");
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("</").append(previousStyle.substring(0, 3)).append(">");
+                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     }
                 } else if (currentStyle.equals("subscript")) {
                     if (previousStyle.equals("baseline")) {
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     } else {
-                        sb.append("</" + previousStyle.substring(0, 3) + ">");
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("</").append(previousStyle.substring(0, 3)).append(">");
+                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     }
@@ -390,7 +429,7 @@ public class ModuleEngine {
             previousStyle = currentStyle;
         }
         if (opened != null) {
-            sb.append("</" + opened + ">");
+            sb.append("</").append(opened).append(">");
             opened = null;
         }
         return sb.toString();
