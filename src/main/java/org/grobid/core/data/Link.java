@@ -11,9 +11,9 @@ public class Link {
     private String targetType;
     private String type;
 
-    public static final String MATERIAL_TC_TYPE = "<material-tc>";
-    public static final String TC_PRESSURE_TYPE = "<tc-pressure>";
-    public static final String TC_ME_METHOD_TYPE = "<tc-me_method>";
+    public static final String MATERIAL_TCVALUE_TYPE = "material-tcValue";
+    public static final String TCVALUE_PRESSURE_TYPE = "tcValue-pressure";
+    public static final String TCVALUE_ME_METHOD_TYPE = "tcValue-me_method";
 
     public Link() {
     }
@@ -28,22 +28,22 @@ public class Link {
     public static String getLinkType(String type1, String type2) {
         if (StringUtils.equals(type1, SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL)
             && StringUtils.equals(type2, SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL)) {
-            return MATERIAL_TC_TYPE;
+            return MATERIAL_TCVALUE_TYPE;
         } else if (StringUtils.equals(type1, SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL)
             && StringUtils.equals(type2, SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL)) {
-            return MATERIAL_TC_TYPE;
+            return MATERIAL_TCVALUE_TYPE;
         } else if (StringUtils.equals(type1, SuperconductorsTaggingLabels.SUPERCONDUCTORS_PRESSURE_LABEL)
             && StringUtils.equals(type2, SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL)) {
-            return TC_PRESSURE_TYPE;
+            return TCVALUE_PRESSURE_TYPE;
         } else if (StringUtils.equals(type1, SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL)
             && StringUtils.equals(type2, SuperconductorsTaggingLabels.SUPERCONDUCTORS_PRESSURE_LABEL)) {
-            return TC_PRESSURE_TYPE;
+            return TCVALUE_PRESSURE_TYPE;
         } else if (StringUtils.equals(type1, SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL)
             && StringUtils.equals(type2, SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL)) {
-            return TC_ME_METHOD_TYPE;
+            return TCVALUE_ME_METHOD_TYPE;
         } else if (StringUtils.equals(type1, SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL)
             && StringUtils.equals(type2, SuperconductorsTaggingLabels.SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL)) {
-            return TC_ME_METHOD_TYPE;
+            return TCVALUE_ME_METHOD_TYPE;
         } else {
             throw new RuntimeException("Wrongly labelled entity. Something is wrong somewhere up the chain. ");
         }

@@ -341,13 +341,11 @@ public class ModuleEngine {
         }
 
         /** Modify the objects **/
-        TextPassage textPassageWithMarkedTemperature = ruleBasedLinker.markTemperatures(textPassage);
-        CRFBasedLinker.process(tokens, textPassageWithMarkedTemperature.getSpans(), CRFBasedLinker.MATERIAL_TCVALUE_ID);
+        TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassage);
 
-        //Rule-based: Because we split into sentences, we may obtain more information
-        TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassageWithMarkedTemperature);
+        //        CRFBasedLinker.process(tokens, textPassageWithMarkedTemperature.getSpans(), CRFBasedLinker.MATERIAL_TCVALUE_ID);
 
-        //TODO: Merge
+        //TODO: Merge CRF / Rule-based
         return textPassageWithLinks;
     }
 

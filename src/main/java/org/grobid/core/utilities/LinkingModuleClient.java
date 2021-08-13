@@ -91,10 +91,7 @@ public class LinkingModuleClient {
         return outPassage;
     }
 
-    public List<TextPassage> extractLinks(TextPassage textPassage) {
-
-        List<TextPassage> outPassage = new ArrayList<>();
-        outPassage.add(textPassage);
+    public TextPassage extractLinks(TextPassage textPassage, List<String> linkTypes, boolean skipClassification) {
         try {
             final HttpPost request = new HttpPost(serverUrl + "/process/link/single");
             request.setHeader("Accept", APPLICATION_JSON);
@@ -102,8 +99,8 @@ public class LinkingModuleClient {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setCharset(StandardCharsets.UTF_8);
             builder.addTextBody("input", toJson(textPassage), ContentType.APPLICATION_JSON);
-            builder.addTextBody("types", toJson(Arrays.asList(MATERIAL_TCVALUE_ID, TCVALUE_PRESSURE_ID)), ContentType.APPLICATION_JSON);
-            builder.addTextBody("skip_classification", "True");
+            builder.addTextBody("types", toJson(linkTypes), ContentType.APPLICATION_JSON);
+            builder.addTextBody("skip_classification", String.valueOf(skipClassification));
 
             HttpEntity multipart = builder.build();
             request.setEntity(multipart);
@@ -112,7 +109,7 @@ public class LinkingModuleClient {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    outPassage = Collections.singletonList(fromJson(response.getEntity().getContent()));
+                    return fromJson(response.getEntity().getContent());
                 }
             }
 
@@ -121,8 +118,8 @@ public class LinkingModuleClient {
         } catch (IOException e) {
             LOGGER.error("Something generally bad happened. ", e);
         }
-
-        return outPassage;
+        
+        return textPassage;
     }
 
 
