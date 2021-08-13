@@ -186,4 +186,5 @@ logging:
       maxFileSize: 50MB
 #Docker-ignore-log-end
 
+version: 2
 timeZone: UTC

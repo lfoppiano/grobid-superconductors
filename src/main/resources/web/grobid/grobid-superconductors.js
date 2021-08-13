@@ -1095,15 +1095,15 @@ let grobid = (function ($) {
             let pos = 0;
 
             annotationList.sort(function (a, b) {
-                let startA = parseInt(a.offsetStart, 10);
-                let startB = parseInt(b.offsetStart, 10);
+                let startA = parseInt(a.offset_start, 10);
+                let startB = parseInt(b.offset_start, 10);
 
                 return startA - startB;
             });
 
             annotationList.forEach(function (annotation, annotationIdx) {
-                let start = parseInt(annotation.offsetStart, 10);
-                let end = parseInt(annotation.offsetEnd, 10);
+                let start = parseInt(annotation.offset_start, 10);
+                let end = parseInt(annotation.offset_end, 10);
 
                 let type = getPlainType(annotation.type);
                 let links = annotation.links
