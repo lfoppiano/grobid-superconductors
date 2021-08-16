@@ -1,4 +1,4 @@
-version: "2"
+version: "3.9"
 services:
   cde:
     image: lfoppiano/chemdataextractor-api:0.0.1
@@ -11,6 +11,12 @@ services:
     restart: always
     ports:
       - 8090:8080
+#  
+#  glutton:
+#    image: ...
+#    restart: always
+#    ports:
+    
       
   superconductors:
     image: lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
@@ -24,4 +30,5 @@ services:
     links:
       - "cde:cde.local"
       - "linking_module:linking_module.local"
-      - "falcon.nims.go.jp:falcon.local"
+#      - "glutton:glutton.local"
+    
