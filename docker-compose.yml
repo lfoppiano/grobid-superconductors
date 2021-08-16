@@ -6,6 +6,12 @@ services:
     ports:
       - 8076:8080
 
+  linking_module:
+    image: lfoppiano/linking-module:0.2.0
+    restart: always
+    ports:
+      - 8090:8080
+      
   superconductors:
     image: lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
     restart: always
@@ -19,9 +25,3 @@ services:
       - "cde:cde.local"
       - "linking_module:linking_module.local"
       - "falcon.nims.go.jp:falcon.local"
-
-  linking_module:
-    image: lfoppiano/linking-module:0.2.0
-    restart: always
-    ports:
-      - 8090:8080
