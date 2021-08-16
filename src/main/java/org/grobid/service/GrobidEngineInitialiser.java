@@ -30,5 +30,9 @@ public class GrobidEngineInitialiser {
         //Set the maximum number of Wapiti threads to the maximum concurrent requests 
         GrobidProperties.setWapitiNbThreads(configuration.getMaxParallelRequests());
         LibraryLoader.load();
+
+        LOGGER.info("Finishing intialising grobid. ");
+        LOGGER.info("Configuration: ");
+        LOGGER.info("Grobid Home: " + GrobidProperties.getGrobidHome() +", " + configuration.getGrobidHome());
     }
 }
