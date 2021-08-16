@@ -6,12 +6,12 @@ corsAllowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
 
 chemspotUrl: ${CHEMSPOT_URL:- http://chemspot.local}
 #chemDataExtractorUrl: http://falcon.nims.go.jp/cde
-chemDataExtractorUrl: ${CDE_URL:- http://cde.local:8080}
+chemDataExtractorUrl: ${CDE_URL:- http://cde:8080}
 
-grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities.local:8080}
-linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module.local:8080}
+grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities:8080}
+linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module:8080}
 #linkingModuleUrl: http://localhost:8090
-classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver.local:8080}
+classResolverUrl: ${CLASS_RESOLVER_URL:- http://linking_module:8080}
 #classResolverUrl: http://localhost:8090
 
 pythonVirtualEnv: 
@@ -174,17 +174,6 @@ logging:
   appenders:
     - type: console
       threshold: INFO
-# The following line is used to remove the logger in the docker image, please don't modify it
-#Docker-ignore-log-start
-    - type: file
-      threshold: DEBUG
-      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-      currentLogFilename: logs/grobid-superconductors.log
-      archivedLogFilenamePattern: logs/grobid-superconductors-%d{yyyy-MM-dd}-%i.log.gz
-      archivedFileCount: 7
-      timeZone: UTC
-      maxFileSize: 50MB
-#Docker-ignore-log-end
 
 version: 2
 timeZone: UTC
