@@ -18,7 +18,7 @@ public class GrobidEngineInitialiser {
 
     @Inject
     public GrobidEngineInitialiser(GrobidSuperconductorsConfiguration configuration) {
-        LOGGER.info("Initialising Grobid");
+        LOGGER.info("Initialising Grobid (GrobidHome=" + configuration.getGrobidHome() + ")");
         GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(ImmutableList.of(configuration.getGrobidHome()));
         GrobidProperties.getInstance(grobidHomeFinder);
         configuration.getModels().stream().forEach(GrobidProperties::addModel);
@@ -26,13 +26,13 @@ public class GrobidEngineInitialiser {
             GrobidProperties.setGluttonUrl(configuration.getConsolidation().glutton.url);
             GrobidProperties.setConsolidationService(configuration.getConsolidation().service);
         }
-        
+
         //Set the maximum number of Wapiti threads to the maximum concurrent requests 
         GrobidProperties.setWapitiNbThreads(configuration.getMaxParallelRequests());
         LibraryLoader.load();
 
         LOGGER.info("Finishing intialising grobid. ");
         LOGGER.info("Configuration: ");
-        LOGGER.info("Grobid Home: " + GrobidProperties.getGrobidHome() +", " + configuration.getGrobidHome());
+        LOGGER.info("Grobid Home: " + GrobidProperties.getGrobidHome() + " (GrobidHome=" + configuration.getGrobidHome() + ")");
     }
 }
