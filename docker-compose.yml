@@ -37,7 +37,11 @@ services:
       - 8073:8073
     networks:
       - net1
-        
-    
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - capabilities: [ gpu ]
+
 networks:
   net1:

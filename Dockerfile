@@ -10,7 +10,7 @@
 ## docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v /Users/lfoppiano/development/projects/grobid/grobid-superconductors/resources/config/grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
 ## allocate all available GPUs (only Linux with proper nvidia driver installed on host machine):
-## docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v /Users/lfoppiano/development/projects/grobid/grobid-superconductors/resources/config/grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
+## docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
 # -------------------
 # build builder image
