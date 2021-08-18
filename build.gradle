@@ -40,12 +40,6 @@ description = """Grobid module for extraction of superconductor information from
 
 /** Dependencies **/
 
-//configurations.all {
-//    resolutionStrategy {
-//        force 'javax.measure:unit-api:2.0-SNAPSHOT'
-//    }
-//}
-
 dependencies {
     //Tests
     testImplementation 'junit:junit:4.13.2'
@@ -94,14 +88,6 @@ dependencies {
     // XML
     implementation 'org.codehaus.woodstox:stax2-api:3.1.4'
     implementation 'com.fasterxml.woodstox:woodstox-core:5.1.0'
-
-    // Jep
-    implementation 'black.ninia:jep:3.9.1'
-
-    //Grobid-quantities
-    implementation('org.grobid:grobid-quantities:0.6.1-SNAPSHOT') {
-        transitive = false
-    }
 }
 
 
