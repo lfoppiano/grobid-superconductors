@@ -1,4 +1,4 @@
-grobidHome: /opt/grobid/grobid-home
+grobidHome: ${GROBID_HOME:- /opt/grobid/grobid-home}
 
 corsAllowedOrigins: "*"
 corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
