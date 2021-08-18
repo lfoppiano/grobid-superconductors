@@ -42,4 +42,5 @@ jobs:
       - run: gradle test
       
       - store_test_results:
-          - path: build/reports/tests/test
+          path: build/reports/tests/test
+          
