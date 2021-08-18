@@ -39,7 +39,17 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: ./gradlew test
-      
+      - run: ./gradlew test jacocoTestReport coveralls --no-daemon
+
+      - store_test_results:
+          path: build/reports/jacoco/test/jacocoTestReport.xml
       - store_test_results:
           path: build/reports/tests/test
+      - store_artifacts:
+          path: build/reports/jacoco/test/jacocoTestReport.xml
+      - store_artifacts:
+          path: build/reports/tests/test
+      - store_artifacts:
+          path: build/reports/jacoco/test/html/index.html
+      - store_artifacts:
+          path: build/reports/tests/test/index.html
