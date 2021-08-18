@@ -1,4 +1,4 @@
-grobidHome: ../grobid-home
+grobidHome: ${GROBID_HOME:- ../grobid-home}
 
 corsAllowedOrigins: "*"
 corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
@@ -14,7 +14,7 @@ linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module.local:8080}
 classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver.local:8080}
 #classResolverUrl: http://localhost:8090
 
-pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
+pythonVirtualEnv:  ${PYTHON_VIRTUALENV:- /Users/lfoppiano/opt/anaconda3/envs/test}
 pythonRedirectOutput: true
 
 # The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
