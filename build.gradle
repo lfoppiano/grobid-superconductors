@@ -18,7 +18,8 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id "de.undercouch.download" version "4.1.1"
 }
 
 
@@ -237,17 +238,38 @@ publishing {
 task copyModels(type: Copy) {
     from "${rootDir}/resources/models"
     include "**/*.wapiti"
+    include "**/*.wapiti.gz"
     include "**/config.json"
     include "**/model_weights.hdf5"
     include "**/preprocessor.json"
+    include "**/checkpoint"
+    include "**/events.out.tfevents.*"
+    include "**/model.ckpt-*"
+    include "**/bert_config.json"
+    include "**/vocab.txt"
     exclude "**/features-engineering/**"
     exclude "**/result-logs/**"
     into "${rootDir}/../grobid-home/models/"
+
+    doLast {
+        ant.gunzip(src: "${rootDir}/../grobid-home/models/superconductors/model.wapiti.gz", dest: "${rootDir}/../grobid-home/models/superconductors/")
+    }
+}
+
+task installScibert(dependsOn: copyModels) {
+    doLast {
+        download {
+            src "https://storagescienceminer.s3.eu-central-1.amazonaws.com/NIMS/superconductors-scibert.zip"
+            dest "${rootDir}/../grobid-home/models/superconductors-scibert.zip"
+            overwrite false        
+        }
+        ant.unzip(src: "${rootDir}/../grobid-home/models/superconductors-scibert.zip", dest: "${rootDir}/../grobid-home/models/")
+    }
 }
 
 
 wrapper {
-    gradleVersion "6.5.1"
+    gradleVersion "7.1.1"
 }
 
 
