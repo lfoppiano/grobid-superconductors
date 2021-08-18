@@ -4,13 +4,13 @@
 
 ## usage example with grobi version 0.6.2-SNAPSHOT: https://github.com/kermitt2/grobid/blob/master/Dockerfile.delft
 
-## docker build -t lfoppiano/grobid-superconductors:0.2.0-SNAPSHOT --build-arg GROBID_VERSION=0.2.0-SNAPSHOT --file Dockerfile .
+## docker build -t lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT --build-arg GROBID_VERSION=0.3.0-SNAPSHOT --file Dockerfile .
 
 ## no GPU:
-## docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v /home/lopez/grobid/grobid-home/config/grobid.properties:/opt/grobid/grobid-home/config/grobid.properties:ro  lfoppiano/grobid-superconductors:0.2.0-SNAPSHOT
+## docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v /Users/lfoppiano/development/projects/grobid/grobid-superconductors/resources/config/grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
 ## allocate all available GPUs (only Linux with proper nvidia driver installed on host machine):
-## docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v /home/lopez/obid/grobid-home/config/grobid.properties:/opt/grobid/grobid-home/config/grobid.properties:ro  lfoppiano/grobid-superconductors:0.2.0-SNAPSHOT
+## docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
 # -------------------
 # build builder image
@@ -23,28 +23,43 @@ USER root
 RUN apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git
 
-RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source && cd /opt/grobid-source && git checkout 0.6.2
+RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source && cd /opt/grobid-source && git checkout 0.7.0
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
-RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities
+RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities && git checkout 0.7.0
 WORKDIR /opt/grobid-source/grobid-quantities
 COPY gradle.properties .
-RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source
-RUN mkdir -p grobid-superconductors
-RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
+RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
+#RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
+
+COPY resources/models/ ./grobid-superconductors/resources/models/
+COPY resources/config/ ./grobid-superconductors/resources/config/
+COPY gradle/ ./grobid-superconductors/gradle/
+COPY localLibs/ ./grobid-superconductors/localLibs/
+COPY src/ ./grobid-superconductors/src/
+COPY build.gradle ./grobid-superconductors/
+COPY gradle.properties ./grobid-superconductors/
+COPY settings.gradle ./grobid-superconductors/
+COPY requirements.txt ./grobid-superconductors/
+COPY gradlew* ./grobid-superconductors/
+
 # Adjust config
-RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config.yml
+RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config-docker.yml
+
+# Preparing models
+RUN rm -rf /opt/grobid-source/grobid-home/models/*
+
+WORKDIR /opt/grobid-source/grobid-quantities
+RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source/grobid-superconductors
-COPY gradle.properties .
-COPY requirements.txt .
-RUN git clone https://github.com/lfoppiano/grobid-superconductors-tools.git ./resources/web
-
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
-RUN ./gradlew copyModels --no-daemon --info --stacktrace
+RUN ./gradlew installScibert --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.zip
+RUN #./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
+
 
 WORKDIR /opt
 
@@ -66,24 +81,8 @@ RUN apt-get update && \
 
 WORKDIR /opt/grobid
 
-# Grobid quantities
-#RUN mkdir -p ./grobid-home/models/quantities
-#COPY --from=builder /opt/grobid-source/grobid-home/models/quantities/* ./grobid-home/models/quantities
-#RUN mkdir -p ./grobid-home/models/units
-#COPY --from=builder /opt/grobid-source/grobid-home/models/units/* ./grobid-home/models/units
-#RUN mkdir -p ./grobid-home/models/values
-#COPY --from=builder /opt/grobid-source/grobid-home/models/values/* ./grobid-home/models/values
-
-# Grobid superconductors
-#RUN mkdir -p ./grobid-home/models/superconductors
-#COPY --from=builder /opt/grobid-source/grobid-home/models/superconductors/* ./grobid-home/models/superconductors/
-#RUN mkdir -p ./grobid-home/models/material
-#COPY --from=builder /opt/grobid-source/grobid-home/models/material/* ./grobid-home/models/material/
-#RUN mkdir -p ./grobid-home/models/entityLinker-material-tc
-#COPY --from=builder /opt/grobid-source/grobid-home/models/entityLinker-material-tc/* ./grobid-home/models/entityLinker-material-tc/
-
 RUN mkdir -p /opt/grobid/grobid-superconductors
-COPY --from=builder /opt/grobid-source/grobid-home ./grobid-home/
+COPY --from=builder /opt/grobid-source/grobid-home/models ./grobid-home/models
 COPY --from=builder /opt/grobid-source/grobid-superconductors/build/libs/* ./grobid-superconductors/
 COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/config.yml ./grobid-superconductors/
 
