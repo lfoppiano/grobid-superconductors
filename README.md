@@ -51,15 +51,15 @@ In order to run each service individually, is possible to run them separately:
 1. Chem data Extractor
     > docker run -t --rm --init -p 0876:8080 lfoppiano/chemdataextractor:0.0.1
 
-   1. Python service for linking and other functions: 
-       > docker run -t --rm --init -p 8090:8080 lfoppiano/linking-module:0.2.0
+2. Python service for linking and other functions: 
+    > docker run -t --rm --init -p 8090:8080 lfoppiano/linking-module:0.2.0
 
-      1. Grobid superconductors core service
-         - no GPU
-          > docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
+3. Grobid superconductors core service
+   - no GPU
+    > docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
    
-         - GPU
-         > docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yml.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
+   - GPU
+   > docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yml.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
 **Note**: the file in `resources/config/config-docker.yml` can be edited and the configurations are applied directly to the docker image. 
 For example is possible to switch between Deep Learning and CRF by just changing the individual models's configuration. 
