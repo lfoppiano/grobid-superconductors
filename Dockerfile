@@ -27,7 +27,7 @@ RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source && cd /o
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
-RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities && git checkout 0.7.0
+RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities && cd grobid-quantities && git checkout 0.7.0
 WORKDIR /opt/grobid-source/grobid-quantities
 COPY gradle.properties .
 
