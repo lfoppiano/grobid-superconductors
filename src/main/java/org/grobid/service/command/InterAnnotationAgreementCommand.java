@@ -87,7 +87,7 @@ public class InterAnnotationAgreementCommand extends ConfiguredCommand<GrobidSup
             .action(Arguments.storeTrue())
             .help("Output the detailed comparison. ");
 
-        subparser.addArgument("-m")
+        subparser.addArgument("--mode", "-m")
             .dest(MODE)
             .type(String.class)
             .choices(InterAnnotationAgreementType.CODING, InterAnnotationAgreementType.UNITIZING)
