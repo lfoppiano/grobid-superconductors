@@ -9,6 +9,7 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Link;
 import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
+import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.layout.BoundingBox;
@@ -29,7 +30,6 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.length;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.OTHER_LABEL;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_OTHER;
@@ -81,6 +81,7 @@ public class CRFBasedLinker {
             .collect(Collectors.toList());
 
         //Normalisation
+//        List<LayoutToken> layoutTokensNormalised = SuperconductorsParser.normalizeAndRetokenizeLayoutTokens(layoutTokens);
         List<LayoutToken> layoutTokensPreNormalised = layoutTokens.stream()
             .map(layoutToken -> {
                     LayoutToken newOne = new LayoutToken(layoutToken);
@@ -142,20 +143,7 @@ public class CRFBasedLinker {
     }
     
     public List<Span> process(String text, List<Span> annotations, String linkerType) {
-        if (isBlank(text)) {
-            return new ArrayList<>();
-        }
-
-        text = text.replace("\r", " ");
-        text = text.replace("\n", " ");
-        text = text.replace("\t", " ");
-
-        List<LayoutToken> tokens = new ArrayList<>();
-        try {
-            tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        } catch (Exception e) {
-            LOGGER.error("Tokenization failed: " + text, e);
-        }
+        List<LayoutToken> tokens = SuperconductorsParser.textToLayoutTokens(text);
 
         // I need to fill up the annotations' layout tokens
         for (Span span : annotations) {

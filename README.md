@@ -2,6 +2,8 @@
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Docker Hub](https://img.shields.io/docker/pulls/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Docker Pulls")
+[![Coverage Status](https://coveralls.io/repos/github/lfoppiano/grobid-superconductors/badge.svg?branch=master)](https://coveralls.io/github/lfoppiano/grobid-superconductors?branch=master)
+[![CircleCI](https://circleci.com/gh/lfoppiano/grobid-superconductors.svg?style=svg)](https://circleci.com/gh/lfoppiano/grobid-superconductors)
 
 __Work in progress.__
 

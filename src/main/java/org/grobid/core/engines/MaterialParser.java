@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -66,27 +68,7 @@ public class MaterialParser extends AbstractParser {
     }
 
     public List<Material> process(String text) {
-        if (isBlank(text)) {
-            return new ArrayList<>();
-        }
-
-        text = text.replace("\r", " ");
-        text = text.replace("\n", " ");
-        text = text.replace("\t", " ");
-
-        List<LayoutToken> tokens = new ArrayList<>();
-        try {
-            tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
-        } catch (Exception e) {
-            LOGGER.error("fail to tokenize:, " + text, e);
-        }
-
-        if (isEmpty(tokens)) {
-            return new ArrayList<>();
-        }
-
-        return process(tokens);
-
+        return process(SuperconductorsParser.textToLayoutTokens(text));
     }
 
 
@@ -95,17 +77,7 @@ public class MaterialParser extends AbstractParser {
         List<Material> entities = new ArrayList<>();
 
         //Normalisation
-        List<LayoutToken> layoutTokensNormalised = tokens.stream()
-            .map(layoutToken -> {
-                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
-
-                    return layoutToken;
-                }
-            ).collect(Collectors.toList());
-
-
-        if (isEmpty(layoutTokensNormalised))
-            return new ArrayList<>();
+        List<LayoutToken> layoutTokensNormalised = SuperconductorsParser.normalizeLayoutTokens(tokens);
 
         try {
             // string representation of the feature matrix for CRF lib

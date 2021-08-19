@@ -25,10 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -90,11 +87,8 @@ public class SuperconductorsParser extends AbstractParser {
             )
             .collect(Collectors.toList());
 
-
         List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
         List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
-
-//        mentions.stream().forEach(m -> System.out.println(">>>>>> " + m.getText() + " --> " + m.getType().name()));
 
         try {
             // string representation of the feature matrix for CRF lib
@@ -130,32 +124,15 @@ public class SuperconductorsParser extends AbstractParser {
 
     }
 
-    public List<Span> process(List<LayoutToken> layoutTokens) {
+    public List<Span> processSingle(List<LayoutToken> layoutTokens) {
 
         List<Span> entities = new ArrayList<>();
 
         //Normalisation
-        List<LayoutToken> layoutTokensPreNormalised = layoutTokens.stream()
-            .map(layoutToken -> {
-                    LayoutToken newOne = new LayoutToken(layoutToken);
-                    newOne.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
-//                        .replaceAll("\\p{C}", " ")));
-                    return newOne;
-                }
-            ).collect(Collectors.toList());
-
-        // List<LayoutToken> for the selected segment
-        List<LayoutToken> layoutTokensNormalised = DeepAnalyzer.getInstance()
-            .retokenizeLayoutTokens(layoutTokensPreNormalised);
-
-        // list of textual tokens of the selected segment
-        //List<String> texts = getTexts(tokenizationParts);
+        List<LayoutToken> layoutTokensNormalised = normalizeAndRetokenizeLayoutTokens(layoutTokens);
 
         List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(layoutTokensNormalised));
         List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
-
-        if (isEmpty(layoutTokensNormalised))
-            return new ArrayList<>();
 
         try {
             // string representation of the feature matrix for CRF lib
@@ -235,29 +212,95 @@ public class SuperconductorsParser extends AbstractParser {
         return isChemicalEntity;
     }
 
-    /**
-     * Extract all occurrences of measurement/quantities from a simple piece of text.
-     */
-    public List<Span> process(String text) {
+
+    public List<List<Span>> processText(List<String> text) {
+        List<List<LayoutToken>> tokens = text.stream()
+            .map(SuperconductorsParser::textToLayoutTokens)
+            .collect(Collectors.toList());
+
+        return process(tokens);
+    }
+
+    public static List<LayoutToken> textToLayoutTokens(String text) {
         if (isBlank(text)) {
             return new ArrayList<>();
         }
-
+        
         text = text.replace("\r", " ");
         text = text.replace("\n", " ");
         text = text.replace("\t", " ");
 
-        List<LayoutToken> tokens = new ArrayList<>();
+        List<LayoutToken> layoutTokens = new ArrayList<>();
         try {
-            tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+            layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         } catch (Exception e) {
             LOGGER.error("fail to tokenize:, " + text, e);
         }
 
-        if (isEmpty(tokens)) {
+        if (isEmpty(layoutTokens)) {
             return new ArrayList<>();
         }
-        return process(tokens);
+        
+        return layoutTokens;
+    }
+
+
+    /**
+     * Extract all occurrences of measurement/quantities from a simple piece of text.
+     */
+    public List<Span> processSingle(String text) {
+        return processSingle(textToLayoutTokens(text));
+    }
+
+    public List<List<Span>> process(List<List<LayoutToken>> layoutTokensBatch) {
+
+        List<List<LayoutToken>> normalisedTokens = layoutTokensBatch.stream()
+            .map(SuperconductorsParser::normalizeAndRetokenizeLayoutTokens)
+            .collect(Collectors.toList());
+        
+        List<String> tokensWithFeatures = normalisedTokens.stream()
+            .map(lt -> {
+                List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(lt));
+                List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(lt, mentions);
+
+                return addFeatures(lt, listAnnotations);
+            })
+            .collect(Collectors.toList());
+        
+        // labeled result from CRF lib
+        String labellingResult = null;
+        try {
+            labellingResult = label(tokensWithFeatures);
+        } catch (Exception e) {
+            throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
+        }
+
+        List<String> resultingBlocks = Arrays.asList(labellingResult.split("\n\n"));
+        List<List<Span>> localEntities = extractParallelResults(normalisedTokens, resultingBlocks);
+
+        return localEntities;
+    }
+
+    public static List<LayoutToken> normalizeAndRetokenizeLayoutTokens(List<LayoutToken> layoutTokens) {
+        List<LayoutToken> layoutTokensPreNormalised = normalizeLayoutTokens(layoutTokens);
+
+        List<LayoutToken> layoutTokensNormalised = DeepAnalyzer.getInstance()
+            .retokenizeLayoutTokens(layoutTokensPreNormalised);
+
+        if (isEmpty(layoutTokensNormalised))
+            return new ArrayList<>();
+        
+        return layoutTokensNormalised;
+    }
+
+    public static List<LayoutToken> normalizeLayoutTokens(List<LayoutToken> layoutTokens) {
+        return layoutTokens.stream()
+            .map(layoutToken -> {
+                    LayoutToken newOne = new LayoutToken(layoutToken);
+                    newOne.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+                    return newOne;
+                }
+            ).collect(Collectors.toList());
     }
 
 
@@ -293,6 +336,15 @@ public class SuperconductorsParser extends AbstractParser {
         return result.toString();
     }
 
+    public List<List<Span>> extractParallelResults(List<List<LayoutToken>> tokens, List<String> results) {
+        List<List<Span>> spans = new ArrayList<>();
+        for (int i =0 ; i < tokens.size(); i++) {
+            spans.add(extractResults(tokens.get(i), results.get(i)));
+        }
+        
+        return spans;
+    }
+    
     /**
      * Extract identified quantities from a labeled text.
      */
