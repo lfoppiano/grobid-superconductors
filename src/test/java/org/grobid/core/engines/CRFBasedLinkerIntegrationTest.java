@@ -18,10 +18,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -187,7 +184,7 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldExtract0Links_3() throws Exception {
         String input = "The experimental realisation of the superconductivity in H 3 S and PH 3 inspired us to search for other hydride superconductors.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
+        List<TextPassage> paragraphs = moduleEngine.process(Collections.singletonList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
 
         TextPassage paragraph = paragraphs.get(0);
