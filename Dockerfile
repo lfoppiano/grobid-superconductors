@@ -43,7 +43,7 @@ COPY src/ ./grobid-superconductors/src/
 COPY build.gradle ./grobid-superconductors/
 COPY gradle.properties ./grobid-superconductors/
 COPY settings.gradle ./grobid-superconductors/
-COPY requirements.txt ./grobid-superconductors/
+#COPY requirements.txt ./grobid-superconductors/
 COPY gradlew* ./grobid-superconductors/
 
 # Adjust config
