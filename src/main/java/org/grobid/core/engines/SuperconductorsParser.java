@@ -263,7 +263,8 @@ public class SuperconductorsParser extends AbstractParser {
                 List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(lt));
                 List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(lt, mentions);
 
-                return addFeatures(lt, listAnnotations);
+                //TODO: remove this hack! :-) 
+                return addFeatures(lt, listAnnotations) + "\n";
             })
             .collect(Collectors.toList());
         
