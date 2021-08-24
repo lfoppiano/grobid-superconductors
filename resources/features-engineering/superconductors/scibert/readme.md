@@ -10,7 +10,7 @@ The data used for fine-tuning is text data from scientific articles in material 
 Sentences: 100001987
 Tokens: TBA
 
-
+Useful: SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
 
 ### Preliminary steps
 
@@ -23,16 +23,20 @@ Starting from a text file containing one paragraph per line, we performed the fo
     -rw-r--r-- 1 lfoppian0 tdm  50M Aug 12 10:29 SciCorpora+SuperMat.sentences.sharded01
      [...]
     ```
-3. Create pre-training for short sequences, which preprocess the sentences and add masking (`max_sequence_lenght=128`):
-   ```
-    for x in ../sharded_corpus/*; do python create_pretraining_data.py    --input_file=${x}    --output_file=./pretrained_128/science+supermat.tfrecord_${x##*.}   --vocab_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/vocab.txt    --do_lower_case=False    --max_seq_length=128    --max_predictions_per_seq=20    --masked_lm_prob=0.15    --random_seed=12345    --dupe_factor=5; done
-   ```
-4. Create pre-training for large sequences, which preprocess the sentences and add masking (`max_sequence_lenght=512`):
-    ```
-    for x in ../sharded_corpus/*; do python create_pretraining_data.py    --input_file=${x}    --output_file=./pretrained_512/science+supermat.tfrecord_${x##*.}   --vocab_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/vocab.txt    --do_lower_case=False    --max_seq_length=512    --max_predictions_per_seq=20    --masked_lm_prob=0.15    --random_seed=23233    --dupe_factor=5; done
-   ```
+3. Create pre-training, preprocess the sentences and add masking: 
+   1. short sequences (`max_sequence_lenght=128`):
+      ```
+       for x in ../sharded_corpus/*; do python create_pretraining_data.py    --input_file=${x}    --output_file=./pretrained_128/science+supermat.tfrecord_${x##*.}   --vocab_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/vocab.txt    --do_lower_case=False    --max_seq_length=128    --max_predictions_per_seq=20    --masked_lm_prob=0.15    --random_seed=12345    --dupe_factor=5; done
+      ```
+   2. for large sequences (`max_sequence_lenght=512` and `max_predictions_per_seq=78` (0.15*512)):
+       ```
+       for x in ../sharded_corpus/*; do python create_pretraining_data.py    --input_file=${x}    --output_file=./pretrained_512/science+supermat.tfrecord_${x##*.}   --vocab_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/vocab.txt    --do_lower_case=False    --max_seq_length=512    --max_predictions_per_seq=78    --masked_lm_prob=0.15    --random_seed=23233    --dupe_factor=5; done
+       ```
+      
+4. Run pre-training 
 
 ## Summary results 
+
 TBD: improve this table 
 
 | Name  | training steps    | Notes | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
@@ -53,3 +57,4 @@ TBD: integrate this in the main table
 
 ## Additional information
 
+TBA
