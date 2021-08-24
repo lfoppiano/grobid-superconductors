@@ -11,6 +11,7 @@ Sentences: 100001987
 Tokens: TBA
 
 Useful: SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
+Point of attention: [memory consumption](https://github.com/google-research/bert#out-of-memory-issues) 
 
 ### Preliminary steps
 
@@ -37,7 +38,8 @@ Starting from a text file containing one paragraph per line, we performed the fo
 
 ## Summary results 
 
-TBD: improve this table 
+TBD: improve this table and re-do these experiments with a clearer description (e.g. we want to split the training into 
+two steps, one with shorter sequence and one wiht longer ones) - [ref](https://github.com/google-research/bert#pre-training-tips-and-caveats)
 
 | Name  | training steps    | Notes | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
 |--------|--------- |------|---------|----|--------|--------|
