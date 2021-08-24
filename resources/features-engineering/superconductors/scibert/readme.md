@@ -17,17 +17,17 @@ Tokens: TBA
 Starting from a text file containing one paragraph per line, we performed the following operations: 
 
 1. Split paragraphs in sentences using [BlingFire](https://github.com/Microsoft/BlingFire), a sentence splitter. 
-   1. Shard the obtained resulted large file, into several smaller (max 250000 sentences). See [ref](https://github.com/google-research/bert/issues/117).
-       ```
-       -rw-r--r-- 1 lfoppian0 tdm  50M Aug 12 10:29 SciCorpora+SuperMat.sentences.sharded00
-       -rw-r--r-- 1 lfoppian0 tdm  50M Aug 12 10:29 SciCorpora+SuperMat.sentences.sharded01
-        [...]
-       ```
-2. Create pre-training for short sequences, which preprocess the sentences and add masking (`max_sequence_lenght=128`):
+2. Shard the obtained resulted large file, into several smaller (max 250000 sentences). See [ref](https://github.com/google-research/bert/issues/117).
+    ```
+    -rw-r--r-- 1 lfoppian0 tdm  50M Aug 12 10:29 SciCorpora+SuperMat.sentences.sharded00
+    -rw-r--r-- 1 lfoppian0 tdm  50M Aug 12 10:29 SciCorpora+SuperMat.sentences.sharded01
+     [...]
+    ```
+3. Create pre-training for short sequences, which preprocess the sentences and add masking (`max_sequence_lenght=128`):
    ```
     for x in ../sharded_corpus/*; do python create_pretraining_data.py    --input_file=${x}    --output_file=./pretrained_128/science+supermat.tfrecord_${x##*.}   --vocab_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/vocab.txt    --do_lower_case=False    --max_seq_length=128    --max_predictions_per_seq=20    --masked_lm_prob=0.15    --random_seed=12345    --dupe_factor=5; done
    ```
-3. Create pre-training for large sequences, which preprocess the sentences and add masking (`max_sequence_lenght=512`):
+4. Create pre-training for large sequences, which preprocess the sentences and add masking (`max_sequence_lenght=512`):
     ```
     for x in ../sharded_corpus/*; do python create_pretraining_data.py    --input_file=${x}    --output_file=./pretrained_512/science+supermat.tfrecord_${x##*.}   --vocab_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/vocab.txt    --do_lower_case=False    --max_seq_length=512    --max_predictions_per_seq=20    --masked_lm_prob=0.15    --random_seed=23233    --dupe_factor=5; done
    ```
