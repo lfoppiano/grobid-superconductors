@@ -17,25 +17,41 @@ Point of attention: [memory consumption](https://github.com/google-research/bert
 
 #### Vocab comparison
 
-This comparison attempt to figure out roughly how distant the vocabulary of the fine-tuning data and the original SciBERT dataset are. 
+This comparison attempt to figure out roughly how distant the vocabulary of the fine-tuning data (`myvocab`) and the original SciBERT dataset (`scivocab`) are. 
+
+Notes: 
+ - the vocabulary used in *BERT is limited to 31k items, so is very unlikely that the two vocabularies are going to overlap 100%
+ - what is the weight of each token in the vocabulary? 
+ - there are 100 unused tokens that BERT allocate for "common tokens that could appear in a specific domain" ([cf](https://github.com/allenai/scibert/issues/38#issuecomment-490520991)). Could we get these most important 100 tokesn from our `myvocab`?
 
 ##### Steps:
+
 1. Generate a new vocabulary by training the sentencepiece model 
-    ``python 
-    import sentencepiece as spm
-    spm.SentencePieceTrainer.Train('--input=[...] --model_prefix=100B_9999_cased --vocab_size=31000 --character_coverage=0.9999 --model_type=bpe --input_sentence_size=100001987 --shuffle_input_sentence=true')
-   ``
-2. Transform the output vocabulary (````) as described [here](https://github.com/allenai/scibert/issues/38#issuecomment-488867883). The steps are roughly: 
-   1. ``cut -f1 100B_9999_cased.vocab  > vocab_2.txt``
-   2. ``sed -e 's/^\([^_▁<]\)/##\1/' vocab_2.txt > vocab_2._1.txt``
-   3. ``sed -e 's/^▁//' vocab_2._1.txt > vocab_2._2.txt``
-   4. ``cat vocab.txt vocab_2.replace_2.txt | gsort | guniq -d > aggregated_intersection.txt``
+    ``
+       python 
+       import sentencepiece as spm
+       spm.SentencePieceTrainer.Train('--input=[...] --model_prefix=100B_9999_cased --vocab_size=31000 --character_coverage=0.9999 --model_type=bpe --input_sentence_size=100001987 --shuffle_input_sentence=true')
+    ``
+
+2. Transform the output vocabulary (``100B_9999_cased.vocab``) as described [here](https://github.com/allenai/scibert/issues/38#issuecomment-488867883). The steps are roughly: 
+   1. ``cut -f1 100B_9999_cased.vocab  > myvocab.txt``
+   2. ``sed -e 's/^\([^_▁<]\)/##\1/' myvocab.txt > myvocab.tmp.txt``
+   3. ``sed -e 's/^▁//' myvocab.tmp.txt > myvocab.postprocessed.txt``
+   4. ``cat myvocab.postprocessed.txt scivocab.txt | gsort | guniq -d > scivocab.intersection.myvocab.txt``
+   5. ``gsort myvocab.postprocessed.txt > myvocab.postprocessed.sorted.txt``
+   6. ``gsort scivocab.txt > scivocab.sorted.txt``
+   7. ``comm -23 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > myvocab.only.txt``
+   8. ``comm -13 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > scivocab.only.txt``
+
 
 ##### Results
 
-vocabulary length: 31000
-vocabulary intersection: 18107
-rate: 50.40 %
+Vocabulary length: 31000
+Vocabulary intersection (scivocab vs myvocab): 18107 (58.40%)
+Tokens only in scivocab: 12907
+Tokens only in myvocab: 12895   
+
+Output is [here](vocab): 
 
 ### Fine-tuning
 
