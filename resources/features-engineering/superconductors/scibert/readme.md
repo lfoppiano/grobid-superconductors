@@ -52,10 +52,10 @@ Notes:
 
 ##### Results
 
-Vocabulary length: 31000
-Vocabulary intersection (scivocab vs myvocab): 18107 (58.40%)
-Tokens only in scivocab: 12907
-Tokens only in myvocab: 12895   
+- Vocabulary length: 31000
+- Vocabulary intersection (scivocab vs myvocab): 18107 (58.40%)
+- Tokens only in scivocab: 12907
+- Tokens only in myvocab: 12895   
 
 Output is [here](./vocab): 
 
@@ -110,8 +110,8 @@ TBD: integrate this in the main table
 
 Various people have helped with small feedback or more useful observations and ideas: 
 
-Pedro Ortiz pedro.ortiz@inria.fr
-arij.riabi@inria.fr
-Romain roman.castagne@inria.fr
-Patrice Lopez patrice.lopez@science-miner.com
+- Pedro Ortiz pedro.ortiz@inria.fr
+- arij.riabi@inria.fr
+- Romain roman.castagne@inria.fr
+- Patrice Lopez patrice.lopez@science-miner.com
 
