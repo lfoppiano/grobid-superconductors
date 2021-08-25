@@ -7,11 +7,12 @@ This process was performed following the guide [here](https://github.com/google-
 
 The data used for fine-tuning is text data from scientific articles in material science (~21Gb) and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materials.
 
-Sentences: 100001987
-Tokens: TBA
+- Sentences: 100001987
+- Tokens: TBA
 
-Useful: SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
-Point of attention: [memory consumption](https://github.com/google-research/bert#out-of-memory-issues) 
+- Useful references: 
+  - SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
+  - [memory consumption](https://github.com/google-research/bert#out-of-memory-issues) 
 
 ### Preliminary studies
 
