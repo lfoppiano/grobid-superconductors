@@ -5,7 +5,7 @@
 This page contains notes and information about the process of fine-tuning SciBERT for improving the results in the task of NER for materials science scientific papers. 
 This process was performed following the guide [here](https://github.com/google-research/bert#pre-training-with-bert).
 
-The data used for fine-tuning is text data from scientific articles in material science (~21Gb) + [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materials.
+The data used for fine-tuning is text data from scientific articles in material science (~21Gb) and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materials.
 
 Sentences: 100001987
 Tokens: TBA
@@ -13,7 +13,31 @@ Tokens: TBA
 Useful: SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
 Point of attention: [memory consumption](https://github.com/google-research/bert#out-of-memory-issues) 
 
-### Preliminary steps
+### Preliminary studies
+
+#### Vocab comparison
+
+This comparison attempt to figure out roughly how distant the vocabulary of the fine-tuning data and the original SciBERT dataset are. 
+
+##### Steps:
+1. Generate a new vocabulary by training the sentencepiece model 
+    ``python 
+    import sentencepiece as spm
+    spm.SentencePieceTrainer.Train('--input=[...] --model_prefix=100B_9999_cased --vocab_size=31000 --character_coverage=0.9999 --model_type=bpe --input_sentence_size=100001987 --shuffle_input_sentence=true')
+   ``
+2. Transform the output vocabulary (````) as described [here](https://github.com/allenai/scibert/issues/38#issuecomment-488867883). The steps are roughly: 
+   1. ``cut -f1 100B_9999_cased.vocab  > vocab_2.txt``
+   2. ``sed -e 's/^\([^_▁<]\)/##\1/' vocab_2.txt > vocab_2._1.txt``
+   3. ``sed -e 's/^▁//' vocab_2._1.txt > vocab_2._2.txt``
+   4. ``cat vocab.txt vocab_2.replace_2.txt | gsort | guniq -d > aggregated_intersection.txt``
+
+##### Results
+
+vocabulary length: 31000
+vocabulary intersection: 18107
+rate: 50.40 %
+
+### Fine-tuning
 
 Starting from a text file containing one paragraph per line, we performed the following operations: 
 
@@ -59,4 +83,4 @@ TBD: integrate this in the main table
 
 ## Additional information
 
-TBA
+
