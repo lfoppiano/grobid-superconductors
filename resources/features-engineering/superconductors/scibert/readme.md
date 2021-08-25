@@ -5,10 +5,7 @@
 This page contains notes and information about the process of fine-tuning SciBERT for improving the results in the task of NER for materials science scientific papers. 
 This process was performed following the guide [here](https://github.com/google-research/bert#pre-training-with-bert).
 
-The data used for fine-tuning is text data from scientific articles in material science (~21Gb) and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materials.
-
-- Sentences: 100001987
-- Tokens: TBA
+The data used for fine-tuning is text data from scientific articles in material science and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materials (in total ~21Gb, 100001987 sentences, TBA tokens). 
 
 - Useful references: 
   - SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
