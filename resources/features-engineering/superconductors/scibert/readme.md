@@ -44,9 +44,9 @@ Notes:
    8. ``comm -23 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > myvocab.only.txt``
    9. ``comm -13 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > scivocab.only.txt``
 
-3. Match each item from the [myvocab.only.txt](myvocab.only.txt) into the original line of [myvocab.sentencepiece.txt](myvocab.sentencepiece.txt) using the script [token-match.py](token-match.py):
-   1. result considering any token [myvocab.only.txt](myvocab.only.txt) is matched and saved into [myvocab.lookedup_from_myvocab.only.txt](vocab/myvocab.lookedup_from_myvocab.only.txt)
-   2. result considering only token that are not "subwords" (do not start with a `##`) is matched and saved into  [myvocab.lookedup_from_myvocab.only.only_full_words.txt](myvocab.lookedup_from_myvocab.only.only_full_words.txt)
+3. Match each item from the [myvocab.only.txt](vocab/myvocab.only.txt) into the original line of [myvocab.sentencepiece.txt](vocab/myvocab.sentencepiece.txt) using the script [token-match.py](token-match.py):
+   1. result considering any token [myvocab.only.txt](vocab/myvocab.only.txt) is matched and saved into [myvocab.lookedup_from_myvocab.only.txt](vocab/myvocab.lookedup_from_myvocab.only.txt)
+   2. result considering only token that are not "subwords" (do not start with a `##`) is matched and saved into  [myvocab.lookedup_from_myvocab.only.only_full_words.txt](vocab/myvocab.lookedup_from_myvocab.only.only_full_words.txt)
 
  
 
