@@ -31,8 +31,9 @@ if __name__ == '__main__':
         for term in term_f:
             term = term.rstrip("\n")
             if term.startswith("##"):
-                continue
-#                 original_term = term.replace("##", "")
+                # If I want to avoid sub words I should uncomment this 
+                #continue
+                original_term = term.replace("##", "")
             else:
                 original_term = '▁' + term
 
