@@ -34,15 +34,21 @@ Notes:
     ``
 
 2. Transform the output vocabulary (``100B_9999_cased.vocab``) as described [here](https://github.com/allenai/scibert/issues/38#issuecomment-488867883). The steps are roughly: 
-   1. ``cut -f1 100B_9999_cased.vocab  > myvocab.txt``
-   2. ``sed -e 's/^\([^_▁<]\)/##\1/' myvocab.txt > myvocab.tmp.txt``
-   3. ``sed -e 's/^▁//' myvocab.tmp.txt > myvocab.postprocessed.txt``
-   4. ``cat myvocab.postprocessed.txt scivocab.txt | gsort | guniq -d > scivocab.intersection.myvocab.txt``
-   5. ``gsort myvocab.postprocessed.txt > myvocab.postprocessed.sorted.txt``
-   6. ``gsort scivocab.txt > scivocab.sorted.txt``
-   7. ``comm -23 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > myvocab.only.txt``
-   8. ``comm -13 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > scivocab.only.txt``
+   1. ``mv 100B_9999_cased.vocab myvocab.sentencepiece.txt``
+   2. ``cut -f1 myvocab.sentencepiece.txt  > myvocab.txt``
+   3. ``sed -e 's/^\([^▁<]\)/##\1/' myvocab.txt > myvocab.tmp.txt``
+   4. ``sed -e 's/^▁//' myvocab.tmp.txt > myvocab.postprocessed.txt``
+   5. ``cat myvocab.postprocessed.txt scivocab.txt | gsort | guniq -d > scivocab.intersection.myvocab.txt``
+   6. ``gsort myvocab.postprocessed.txt > myvocab.postprocessed.sorted.txt``
+   7. ``gsort scivocab.txt > scivocab.sorted.txt``
+   8. ``comm -23 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > myvocab.only.txt``
+   9. ``comm -13 myvocab.postprocessed.sorted.txt scivocab.sorted.txt > scivocab.only.txt``
 
+3. Match each item from the `myvocab.only.txt` into the original line of `myvocab.sentencepiece.txt` using the script `token-match.py`
+   1. result considering any token `myvocab.only.txt` is matched and saved into `myvocab.lookedup_from_myvocab.only.txt`
+   2. result considering only token that are not "subwords" (do not start with a `##`) is matched and saved into  `myvocab.lookedup_from_myvocab.only.only_full_words.txt`
+
+ 
 
 ##### Results
 
@@ -51,7 +57,7 @@ Vocabulary intersection (scivocab vs myvocab): 18107 (58.40%)
 Tokens only in scivocab: 12907
 Tokens only in myvocab: 12895   
 
-Output is [here](vocab): 
+Output is [here](./vocab): 
 
 ### Fine-tuning
 
@@ -99,4 +105,13 @@ TBD: integrate this in the main table
 
 ## Additional information
 
+
+# Credits
+
+Various people have helped with small feedback or more useful observations and ideas: 
+
+Pedro Ortiz pedro.ortiz@inria.fr
+arij.riabi@inria.fr
+Romain roman.castagne@inria.fr
+Patrice Lopez patrice.lopez@science-miner.com
 
