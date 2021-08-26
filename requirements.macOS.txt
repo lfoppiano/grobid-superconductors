@@ -50,7 +50,7 @@ scipy==1.5.4
 six==1.16.0
 smart-open==5.1.0
 tensorboard==1.15.0
-tensorflow==1.15.5
+tensorflow==2.5.1
 tensorflow-estimator==1.15.1
 termcolor==1.1.0
 textblob==0.15.3
