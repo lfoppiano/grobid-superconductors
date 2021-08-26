@@ -41,10 +41,11 @@ RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-s
 #    #COPY localLibs/ ./grobid-superconductors/localLibs/
 #COPY src/ ./grobid-superconductors/src/
 #COPY build.gradle ./grobid-superconductors/
-#COPY gradle.properties ./grobid-superconductors/
 #COPY settings.gradle ./grobid-superconductors/
 #    #COPY requirements.txt ./grobid-superconductors/
 #COPY gradlew* ./grobid-superconductors/
+
+COPY gradle.properties ./grobid-superconductors/
 
 # Adjust config
 RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config-docker.yml
