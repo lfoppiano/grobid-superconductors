@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,15 +46,18 @@ public class RuleBasedLinkerTest {
         Link createdLink = new Link("1", "tefdfd", "<tcValue>", "type");
         outputSpan.setLinks(Arrays.asList(createdLink));
         clientReturnedPassage.setSpans(Arrays.asList(outputSpan));
-        Capture<TextPassage> passageCapture = EasyMock.newCapture();
+        Capture<List<TextPassage>> passageCapture = EasyMock.newCapture();
         EasyMock
             .expect(mockLinkingModuleClient.extractLinks(EasyMock.capture(passageCapture), EasyMock.anyObject(), EasyMock.anyBoolean()))
-            .andReturn(clientReturnedPassage);
+            .andReturn(Arrays.asList(clientReturnedPassage));
 
         EasyMock.replay(mockLinkingModuleClient);
 
-        TextPassage outputPassage = target.process(textPassage);
-        TextPassage capturedPassage = passageCapture.getValue();
+        List<TextPassage> outputPassages = target.process(Arrays.asList(textPassage));
+        TextPassage outputPassage = outputPassages.get(0);
+        
+        List<TextPassage> capturedPassages = passageCapture.getValue();
+        TextPassage capturedPassage = capturedPassages.get(0);
         assertThat(capturedPassage, is(not(nullValue())));
         assertThat(capturedPassage.getSpans(), hasSize(1));
         assertThat(capturedPassage.getSpans().get(0).getLinks(), hasSize(0));
@@ -63,9 +67,9 @@ public class RuleBasedLinkerTest {
         assertThat(outputPassage.getSpans().get(0).getLinks().get(0).getType(), is(createdLink.getType()));
         assertThat(outputPassage.getSpans().get(0).getLinks().get(0).getTargetText(), is(createdLink.getTargetText()));
         assertThat(outputPassage.getSpans().get(0).getLinks().get(0).getTargetType(), is(createdLink.getTargetType()));
-        
+
         assertThat(outputPassage.getSpans().get(0).getAttributes().keySet(), hasSize(1));
-        
+
         EasyMock.verify(mockLinkingModuleClient);
     }
 
@@ -86,23 +90,26 @@ public class RuleBasedLinkerTest {
         Span outputSpan2 = new Span("miao", "tcValue");
         outputSpan1.setLinkable(true);
         clientReturnedPassage.setSpans(Arrays.asList(outputSpan1, outputSpan2));
-        Capture<TextPassage> passageCapture = EasyMock.newCapture();
+        Capture<List<TextPassage>> passageCapture = EasyMock.newCapture();
         EasyMock
             .expect(mockLinkingModuleClient.markCriticalTemperature(EasyMock.capture(passageCapture)))
-            .andReturn(clientReturnedPassage);
+            .andReturn(Arrays.asList(clientReturnedPassage));
 
         EasyMock.replay(mockLinkingModuleClient);
 
-        TextPassage outputPassage = target.markTemperatures(textPassage);
-        TextPassage capturedPassage = passageCapture.getValue();
-        
+        List<TextPassage> outputPassages = target.markTemperatures(Arrays.asList(textPassage));
+        TextPassage outputPassage = outputPassages.get(0);  
+
+        List<TextPassage> capturedPassages = passageCapture.getValue();
+        TextPassage capturedPassage = capturedPassages.get(0);
+
         assertThat(capturedPassage, is(not(nullValue())));
         assertThat(capturedPassage.getSpans(), hasSize(2));
         assertThat(capturedPassage.getSpans().get(0).getLinks(), hasSize(0));
         assertThat(capturedPassage.getSpans().get(0).isLinkable(), is(false));
         assertThat(capturedPassage.getSpans().get(1).getLinks(), hasSize(0));
         assertThat(capturedPassage.getSpans().get(1).isLinkable(), is(false));
-        
+
         assertThat(outputPassage.getSpans(), hasSize(2));
         assertThat(outputPassage.getSpans().get(0).getLinks(), hasSize(0));
         assertThat(outputPassage.getSpans().get(0).getText(), is(inputSpan1.getText()));

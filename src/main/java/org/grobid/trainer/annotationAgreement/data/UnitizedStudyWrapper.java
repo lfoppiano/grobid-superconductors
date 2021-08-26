@@ -6,8 +6,8 @@ import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationStudy;
 import org.dkpro.statistics.agreement.unitizing.IUnitizingAnnotationUnit;
 import org.dkpro.statistics.agreement.unitizing.KrippendorffAlphaUnitizingAgreement;
 import org.dkpro.statistics.agreement.unitizing.UnitizingAnnotationStudy;
-import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.handler.AnnotationOffsetsTEIExtractionStaxHandler;
 
 import javax.xml.stream.XMLStreamException;
@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.grobid.service.command.InterAnnotationAgreementCommand.*;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.ANNOTATION_DEFAULT_TAG_TYPES;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
 /**
  * Wrapper around the UnifiedStudy which will simplify the processing of inter annotation agreement measures

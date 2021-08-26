@@ -58,7 +58,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                     fileDesc.insertChild(titleStatement, 0);
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_KEYWORDS)) {
                     Element abKeywords = SuperconductorsTeiUtils.getElement(profileDesc, "ab");
-                    if(abKeywords == null) {
+                    if (abKeywords == null) {
                         abKeywords = trainingExtraction(block.getSpans(), block.getLayoutTokens(), "ab", Pair.of("type", "keywords"));
                         profileDesc.appendChild(abKeywords);
                     } else {

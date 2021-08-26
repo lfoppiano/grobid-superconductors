@@ -61,7 +61,7 @@ public class TextChunkSaxHandler extends DefaultHandler {
     }
 
     public void endElement(String uri, String localName, String qName)
-            throws SAXException {
+        throws SAXException {
         if (accumule) {
             if (qName.equals("p") || qName.equals("paragraph")) {
                 CollectionUtils.addIgnoreNull(chunks, StringUtils.trimToNull(getText()));

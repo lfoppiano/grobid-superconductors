@@ -66,16 +66,16 @@ public class CRFBasedLinker {
     public CRFBasedLinker(Map<String, EntityLinker> annotationsLinks) {
         this.annotationLinks = annotationsLinks;
     }
-    
+
     public List<Span> process(List<LayoutToken> layoutTokens, List<Span> annotations, String linkerType) {
 
         if (!this.annotationLinks.containsKey(linkerType)) {
             throw new RuntimeException("the linker type " + linkerType + "does not exists. ");
         }
-        
+
         EntityLinker linkingImplementation = this.annotationLinks.get(linkerType);
         List<Span> taggedAnnotations = linkingImplementation.markLinkableEntities(annotations);
-        
+
         List<Span> linkableAnnotations = taggedAnnotations.stream()
             .filter(Span::isLinkable)
             .collect(Collectors.toList());
@@ -101,11 +101,11 @@ public class CRFBasedLinker {
             List<Span> filteredAnnotations = linkableAnnotations.stream()
                 .filter(a -> linkingImplementation.getAnnotationsToBeLinked().contains(a.getType()))
                 .collect(Collectors.toList());
-            
+
             List<ChemicalSpan> mentions = filteredAnnotations.stream()
                 .map(a -> new ChemicalSpan(a.getOffsetStart(), a.getOffsetEnd(), a.getType()))
                 .collect(Collectors.toList());
-            
+
             List<String> listAnnotations = synchroniseLayoutTokensWithMentions(layoutTokensNormalised, mentions);
 
             // string representation of the feature matrix for CRF lib
@@ -138,10 +138,10 @@ public class CRFBasedLinker {
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         }
-        
+
         return taggedAnnotations;
     }
-    
+
     public List<Span> process(String text, List<Span> annotations, String linkerType) {
         List<LayoutToken> tokens = SuperconductorsParser.textToLayoutTokens(text);
 
@@ -162,7 +162,7 @@ public class CRFBasedLinker {
         if (isEmpty(tokens)) {
             return new ArrayList<>();
         }
-        
+
         return process(tokens, annotations, linkerType);
     }
 
@@ -170,10 +170,10 @@ public class CRFBasedLinker {
     /**
      * Extract identified quantities from a labeled text.
      */
-    public static List<Span> extractResults(List<LayoutToken> tokens, String result, List<Span> annotations, 
-                                            GrobidModel model, TaggingLabel leftTaggingLabel, 
+    public static List<Span> extractResults(List<LayoutToken> tokens, String result, List<Span> annotations,
+                                            GrobidModel model, TaggingLabel leftTaggingLabel,
                                             TaggingLabel rightTaggingLabel, TaggingLabel otherTaggingLabel) {
-        
+
         TaggingTokenClusteror clusteror = new TaggingTokenClusteror(model, result, tokens);
         List<TaggingTokenCluster> clusters = clusteror.cluster();
 
@@ -183,7 +183,7 @@ public class CRFBasedLinker {
         List<TaggingTokenCluster> detectedClusters = clusters.stream()
             .filter(a -> !a.getTaggingLabel().getLabel().equals(OTHER_LABEL))
             .collect(Collectors.toList());
-        
+
         if (detectedClusters.size() != annotations.size()) {
             LOGGER.info("Some annotation will not be linked. Input entities: " + annotations.size() + ", output links: " + detectedClusters.size());
         }

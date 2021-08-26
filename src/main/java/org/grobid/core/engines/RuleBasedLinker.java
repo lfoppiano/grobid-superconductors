@@ -1,19 +1,19 @@
 package org.grobid.core.engines;
 
 import com.google.inject.Singleton;
-import org.apache.commons.collections4.CollectionUtils;
 import org.grobid.core.data.Link;
 import org.grobid.core.data.Span;
 import org.grobid.core.data.TextPassage;
-import org.grobid.core.data.Token;
-import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.utilities.LinkingModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,7 +23,6 @@ public class RuleBasedLinker {
 
     private GrobidSuperconductorsConfiguration configuration;
     private final LinkingModuleClient client;
-    private boolean disabled = false;
 
     @Inject
     public RuleBasedLinker(GrobidSuperconductorsConfiguration configuration, LinkingModuleClient client) {
@@ -31,80 +30,101 @@ public class RuleBasedLinker {
         this.client = client;
     }
 
-    public TextPassage markTemperatures(TextPassage passage) {
-        if (CollectionUtils.isEmpty(passage.getSpans()) || disabled) {
-            return passage;
-        }
+    public List<TextPassage> markTemperatures(List<TextPassage> passages) {
+        List<TextPassage> newObjectList = passages.stream()
+            .map(this::createNewCleanObject)
+            .collect(Collectors.toList());
 
-        TextPassage requestPassage = createNewCleanObject(passage);
-        TextPassage responsePassage = this.client.markCriticalTemperature(requestPassage);
+        List<TextPassage> responsePassages = client.markCriticalTemperature(newObjectList);
 
-        TextPassage outputPassage = TextPassage.of(passage);
-        
-        //Copy linkability
-        if (responsePassage.getSpans().size() != outputPassage.getSpans().size()) {
-            LOGGER.warn("The size of the processed spans is different than the original spans. Skipping linking");
-        } else {
-            for (int i = 0; i < outputPassage.getSpans().size(); i++) {
-                Span processedSpan = responsePassage.getSpans().get(i);
-                Span originalSpan = outputPassage.getSpans().get(i);
-                if (processedSpan.getId().equals(originalSpan.getId())) {
-                    originalSpan.setLinkable(processedSpan.isLinkable());
+        assert (responsePassages.size() == passages.size());
+
+        List<TextPassage> outputPassages = new ArrayList<>();
+
+        for (int i = 0; i < passages.size(); i++) {
+            TextPassage outputPassage = TextPassage.of(passages.get(i));
+
+            //Fetch only what is needed
+            Map<String, Span> spansMap = responsePassages.get(i).getSpans()
+                .stream()
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            //Copy linkability
+            if (responsePassages.get(i).getSpans().size() != outputPassage.getSpans().size()) {
+                LOGGER.warn("The size of the processed spans is different than the original spans. Skipping linking");
+            } else {
+                for (int j = 0; j < outputPassage.getSpans().size(); j++) {
+                    Span processedSpan = responsePassages.get(i).getSpans().get(j);
+                    Span originalSpan = outputPassage.getSpans().get(j);
+                    if (processedSpan.getId().equals(originalSpan.getId())) {
+                        originalSpan.setLinkable(processedSpan.isLinkable());
+                    }
                 }
             }
+
+            outputPassages.add(outputPassage);
         }
-        
-        return outputPassage;
+        return outputPassages;
     }
 
 
-    public TextPassage process(TextPassage passage){
-        return process(passage, Arrays.asList(Link.MATERIAL_TCVALUE_TYPE, Link.TCVALUE_PRESSURE_TYPE, Link.TCVALUE_ME_METHOD_TYPE), false);    
+    public List<TextPassage> process(List<TextPassage> passage) {
+        return process(passage, Arrays.asList(Link.MATERIAL_TCVALUE_TYPE, Link.TCVALUE_PRESSURE_TYPE, Link.TCVALUE_ME_METHOD_TYPE), false);
     }
 
-    public TextPassage process(TextPassage passage, List<String> linkTypes){
+    public List<TextPassage> process(List<TextPassage> passage, List<String> linkTypes) {
         return process(passage, linkTypes, false);
     }
-    
+
     /**
      * Apply the linking to a text passage
-     * 
-     * @param passage the text passage to be processed
-     * @param linkTypes type of links to be processed
-     * @param skipClassification indicate if to skip the classification of tc 
+     *
+     * @param passages           the text passage to be processed
+     * @param linkTypes          type of links to be processed
+     * @param skipClassification indicate if to skip the classification of tc
      * @return
      */
-    public TextPassage process(TextPassage passage, List<String> linkTypes, boolean skipClassification) {
-        if (CollectionUtils.isEmpty(passage.getSpans()) || disabled) {
-            return passage;
+    public List<TextPassage> process(List<TextPassage> passages, List<String> linkTypes, boolean skipClassification) {
+        List<TextPassage> newObjectList = passages.stream()
+            .map(this::createNewCleanObject)
+            .collect(Collectors.toList());
+
+        List<TextPassage> responsePassages = client.extractLinks(newObjectList, linkTypes, skipClassification);
+
+        assert (responsePassages.size() == passages.size());
+
+        List<TextPassage> outputPassages = new ArrayList<>();
+
+        for (int i = 0; i < passages.size(); i++) {
+            TextPassage outputPassage = TextPassage.of(passages.get(i));
+
+            //Fetch only what is needed
+            Map<String, Span> spansMap = responsePassages.get(i).getSpans()
+                .stream()
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            outputPassage.getSpans()
+                .stream()
+                .forEach(s -> {
+                    if (spansMap.containsKey(s.getId())) {
+                        Span span = spansMap.get(s.getId());
+                        s.getLinks().addAll(span.getLinks());
+                        s.setLinkable(span.isLinkable());
+                    }
+                });
+
+            outputPassage.setRelationships(responsePassages.get(i).getRelationships());
+            outputPassages.add(outputPassage);
         }
-
-        TextPassage requestPassage = createNewCleanObject(passage);
-
-        //TODO: process in bulk asynchronously 
-        TextPassage responsePassage = client.extractLinks(requestPassage, linkTypes, skipClassification);
-        
-        TextPassage outputPassage = TextPassage.of(passage);
-        
-        //Fetch only what is needed
-        Map<String, Span> spansMap = responsePassage.getSpans().stream().collect(Collectors.toMap(Span::getId, Function.identity()));
-        
-        outputPassage.getSpans().stream().forEach(s -> {
-            if(spansMap.containsKey(s.getId())) {
-                Span span = spansMap.get(s.getId());
-                s.getLinks().addAll(span.getLinks());
-                s.setLinkable(span.isLinkable());
-            }
-        });
-        outputPassage.setRelationships(responsePassage.getRelationships());
-
-        return outputPassage;
+        return outputPassages;
     }
 
     private TextPassage createNewCleanObject(TextPassage passage) {
         TextPassage requestPassage = new TextPassage();
-        List<Span> newSpans = passage.getSpans().stream()
-            .map(s -> { Span newSpan = new Span(s);
+        List<Span> newSpans = passage.getSpans()
+            .stream()
+            .map(s -> {
+                Span newSpan = new Span(s);
                 newSpan.setBoundingBoxes(new ArrayList<>());
                 newSpan.setLinks(new ArrayList<>());
                 return newSpan;

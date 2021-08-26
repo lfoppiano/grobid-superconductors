@@ -119,9 +119,9 @@ public class AbbreviationsAnnotationSaxHandler extends DefaultHandler {
         if (currentTag == null)
             currentTag = "<other>";
         if ((qName.equals("acronym")) ||
-                (qName.equals("measure")) || (qName.equals("num")) || (qName.equals("date")) ||
-                (qName.equals("paragraph")) || (qName.equals("p")) ||
-                (qName.equals("div"))
+            (qName.equals("measure")) || (qName.equals("num")) || (qName.equals("date")) ||
+            (qName.equals("paragraph")) || (qName.equals("p")) ||
+            (qName.equals("div"))
         ) {
 
             String text = getText();

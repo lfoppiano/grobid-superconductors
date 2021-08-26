@@ -13,8 +13,6 @@ import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.EntityLinkerAnnotationTEIStaxHandler;
-import org.grobid.trainer.stax.handler.AnnotationOffsetsTEIExtractionStaxHandler;
-import org.grobid.trainer.stax.handler.EntityLinkerAnnotationTEIStaxHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -99,9 +97,9 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                EntityLinkerAnnotationTEIStaxHandler handler = 
+                EntityLinkerAnnotationTEIStaxHandler handler =
                     new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
-                    SOURCE, DESTINATION);
+                        SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 

@@ -93,7 +93,7 @@ public class SuperconductorsParserTrainingData {
         GrobidAnalysisConfig config =
             new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
                 .build();
-        
+
         Document document = null;
         try {
             document = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);

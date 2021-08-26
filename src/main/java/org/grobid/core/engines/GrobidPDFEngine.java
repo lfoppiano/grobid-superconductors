@@ -52,17 +52,17 @@ public class GrobidPDFEngine {
         TaggingLabels.EQUATION_MARKER);
 
     /**
-     * @use processDocument(Document doc, GrobidAnalysisConfig config, Consumer<DocumentBlock> closure) {
+     * @use processDocument(Document doc, GrobidAnalysisConfig config, Consumer < DocumentBlock > closure) {
      */
     @Deprecated
-    public static BiblioInfo processDocument(Document doc, Consumer<DocumentBlock>closure) {
+    public static BiblioInfo processDocument(Document doc, Consumer<DocumentBlock> closure) {
         GrobidAnalysisConfig config = GrobidAnalysisConfig.builder()
             .consolidateHeader(1)
             .withSentenceSegmentation(true)
             .build();
         return processDocument(doc, config, closure);
     }
-    
+
     /**
      * In the following, we process the relevant textual content of the document
      * for refining the process based on structures, we need to filter
@@ -80,7 +80,7 @@ public class GrobidPDFEngine {
         if (headerDocumentParts != null) {
             BiblioItem resHeader = new BiblioItem();
 
-            
+
             parsers.getHeaderParser().processingHeaderSection(config, doc, resHeader, false);
 
             // title

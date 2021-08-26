@@ -96,9 +96,9 @@ public class EntityLinkerTcValuePressureTrainer extends AbstractTrainerNew {
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                EntityLinkerAnnotationTEIStaxHandler handler = 
-                    new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, 
-                    SOURCE, DESTINATION);
+                EntityLinkerAnnotationTEIStaxHandler handler =
+                    new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
+                        SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 

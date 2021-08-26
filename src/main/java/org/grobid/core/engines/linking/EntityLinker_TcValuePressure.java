@@ -1,18 +1,12 @@
 package org.grobid.core.engines.linking;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModel;
-import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Span;
-import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.AbstractParser;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
-import org.grobid.core.utilities.UnicodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,13 +18,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 
 @Singleton
-public class EntityLinker_TcValuePressure extends AbstractParser  implements EntityLinker {
+public class EntityLinker_TcValuePressure extends AbstractParser implements EntityLinker {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityLinker_TcValuePressure.class);
 
     private static volatile EntityLinker_TcValuePressure instance;

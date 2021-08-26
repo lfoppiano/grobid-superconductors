@@ -14,7 +14,9 @@ package org.grobid.core.data.chemspot;
 
 import static org.grobid.core.data.chemspot.Constants.*;
 
-/** Borrowed from chemspot source **/
+/**
+ * Borrowed from chemspot source
+ **/
 public class Mention {
     private int start;
     private int end;
@@ -24,7 +26,8 @@ public class Mention {
     private String documentText;
     private ChemicalType type;
 
-    public Mention() {}
+    public Mention() {
+    }
 
     /**
      * Represents a chemical entity found in a text.
@@ -245,7 +248,7 @@ public class Mention {
 
         Mention other = (Mention) obj;
         if (getStart() != other.getStart() || getEnd() != other.getEnd()
-                || (getText() == null && other.getText() != null) || (getText() != null && !getText().equals(other.getText()))) {
+            || (getText() == null && other.getText() != null) || (getText() != null && !getText().equals(other.getText()))) {
             return false;
         }
 
@@ -261,10 +264,10 @@ public class Mention {
 
     public boolean overlaps(Mention mention) {
         return mention != null
-                && ((getStart() >= mention.getStart() && getStart() < mention.getEnd())
-                || (getEnd() >= mention.getStart() && getEnd() < mention.getEnd())
-                || (mention.getStart() >= getStart() && mention.getStart() < getEnd())
-                || (mention.getEnd() >= getStart() && mention.getEnd() < getEnd()));
+            && ((getStart() >= mention.getStart() && getStart() < mention.getEnd())
+            || (getEnd() >= mention.getStart() && getEnd() < mention.getEnd())
+            || (mention.getStart() >= getStart() && mention.getStart() < getEnd())
+            || (mention.getEnd() >= getStart() && mention.getEnd() < getEnd()));
     }
 
     public String getDocumentText() {

@@ -96,7 +96,9 @@ public class DocumentResponse {
         return out.toString();
     }
 
-    /** Converts all the entities to CSV **/
+    /**
+     * Converts all the entities to CSV
+     **/
     public String toCsvAll() {
         List<SuperconEntry> outputList = ModuleEngine.extractEntities(getParagraphs());
         List<List<String>> outputCSV = outputList.stream().map(SuperconEntry::toCsv).collect(Collectors.toList());

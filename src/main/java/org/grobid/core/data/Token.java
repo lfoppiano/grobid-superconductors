@@ -17,7 +17,7 @@ public class Token {
     private final double fontSize;
 
     @JsonCreator
-    public Token(@JsonProperty("text")  String text, @JsonProperty("font") String font, @JsonProperty("fontSize") double fontSize, @JsonProperty("style") String style, @JsonProperty("offset") int offset, @JsonProperty("italic") boolean isItalic, @JsonProperty("bold") boolean isBold) {
+    public Token(@JsonProperty("text") String text, @JsonProperty("font") String font, @JsonProperty("fontSize") double fontSize, @JsonProperty("style") String style, @JsonProperty("offset") int offset, @JsonProperty("italic") boolean isItalic, @JsonProperty("bold") boolean isBold) {
         this.text = text;
         this.font = font;
         this.fontSize = fontSize;

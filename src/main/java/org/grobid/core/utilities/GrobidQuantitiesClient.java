@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.Consts;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -70,7 +68,7 @@ public class GrobidQuantitiesClient {
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
             request.setEntity(entity);
 
-            try(CloseableHttpResponse response = httpClient.execute(request)) {
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {

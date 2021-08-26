@@ -8,6 +8,6 @@ public abstract class AbstractTrainerNew extends AbstractTrainer {
     public AbstractTrainerNew(GrobidModel model) {
         super(model);
     }
-    
-    public abstract int createCRFPPDataSingle(File inputFile, File outputDirectory); 
+
+    public abstract int createCRFPPDataSingle(File inputFile, File outputDirectory);
 }

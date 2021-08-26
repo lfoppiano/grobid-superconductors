@@ -9,7 +9,10 @@ import org.grobid.core.engines.SentenceSegmenter;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
+import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.OffsetPosition;
+import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 

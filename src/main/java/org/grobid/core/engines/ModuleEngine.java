@@ -184,9 +184,10 @@ public class ModuleEngine {
     }
 
     /**
-     * Process a chunk of text, namely a sentence 
-     * @param text paragraph or sentence to be processed
-     * @param disableLinking disable the linking 
+     * Process a chunk of text, namely a sentence
+     *
+     * @param text           paragraph or sentence to be processed
+     * @param disableLinking disable the linking
      * @return
      */
     public DocumentResponse process(String text, boolean disableLinking) {
@@ -198,7 +199,7 @@ public class ModuleEngine {
             .map(sentence -> DeepAnalyzer.getInstance().tokenizeWithLayoutToken(sentence))
             .map(RawPassage::new)
             .collect(Collectors.toList());
-        
+
         List<TextPassage> textPassages = process(sentencesAsLayoutToken, disableLinking);
 
         return new DocumentResponse(textPassages);
@@ -268,12 +269,12 @@ public class ModuleEngine {
 
                 List<LayoutToken> cleanedLayoutTokensRetokenized = DeepAnalyzer.getInstance()
                     .retokenizeLayoutTokens(cleanedLayoutTokens);
-                
+
                 accumulatedSentences.add(new RawPassage(cleanedLayoutTokensRetokenized, documentBlock.getSection(), documentBlock.getSubSection()));
             });
 
             documentResponse.addParagraphs(process(accumulatedSentences, disableLinking));
-                
+
             List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
 
             documentResponse.setPages(pages);
@@ -286,21 +287,21 @@ public class ModuleEngine {
 
         return documentResponse;
     }
-    
+
     public List<TextPassage> process(List<RawPassage> inputPassage, boolean disableLinking) {
-        
-        List<List<LayoutToken>> accumulatedLayoutTokens  = inputPassage.stream()
+
+        List<List<LayoutToken>> accumulatedLayoutTokens = inputPassage.stream()
             .map(RawPassage::getLayoutTokens)
             .collect(Collectors.toList());
 
         List<List<Span>> superconductorsList = superconductorsParser.process(accumulatedLayoutTokens);
-        
-        List<TextPassage> outputList = new ArrayList<>();
-        
-        for(int index = 0; index < superconductorsList.size(); index++) {
+
+        List<TextPassage> intermediateList = new ArrayList<>();
+
+        for (int index = 0; index < superconductorsList.size(); index++) {
             List<Span> rawSuperconductorsSpans = superconductorsList.get(index);
             List<LayoutToken> tokens = accumulatedLayoutTokens.get(index);
-            
+
             // Re-calculate the offsets to be based on the current paragraph - TODO: investigate this mismatch
             List<Span> superconductorsSpans = rawSuperconductorsSpans.stream()
                 .map(s -> {
@@ -320,7 +321,6 @@ public class ModuleEngine {
                 })
                 .collect(Collectors.toList());
 
-
             List<Span> aggregatedSpans = new ArrayList<>();
             aggregatedSpans.addAll(superconductorsSpans);
             aggregatedSpans.addAll(quantitiesSpans);
@@ -338,15 +338,21 @@ public class ModuleEngine {
             }
             textPassage.setType("sentence");
             textPassage.setSpans(pruneOverlappingAnnotations(aggregatedSpans));
+            intermediateList.add(textPassage);
+        }
 
-            if (disableLinking || CollectionUtils.size(textPassage.getSpans()) <= 1) {
-                outputList.add(textPassage);
-                continue;
-            }
+        if (disableLinking) {
+            return intermediateList;
+        }
 
-            TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassage);
+        List<TextPassage> outputList = new ArrayList<>();
 
-            List<Span> spansCopy = textPassage.getSpans().stream()
+        List<TextPassage> textPassagesWithLinks = ruleBasedLinker.process(intermediateList);
+
+        for (int i = 0; i < textPassagesWithLinks.size(); i++) {
+            TextPassage textPassageWithLinks = textPassagesWithLinks.get(i);
+
+            List<Span> spansCopy = intermediateList.get(i).getSpans().stream()
                 .map(Span::new)
                 .collect(Collectors.toList());
 
@@ -361,6 +367,8 @@ public class ModuleEngine {
                         s.setLinkable(mapById.get(s.getId()).isLinkable());
                     }
                 });
+
+            List<LayoutToken> tokens = accumulatedLayoutTokens.get(i);
 
             Map<String, Span> resultMaterialTcValueLinkerCrf = crfBasedLinker.process(tokens, spansCopy, MATERIAL_TCVALUE_ID)
                 .parallelStream()
@@ -383,22 +391,22 @@ public class ModuleEngine {
             // Merge
             textPassageWithLinks.getSpans().stream()
                 .forEach(s -> {
-                    if(resultMaterialTcValueLinkerCrf.containsKey(s.getId())) {
+                    if (resultMaterialTcValueLinkerCrf.containsKey(s.getId())) {
                         s.getLinks().addAll(resultMaterialTcValueLinkerCrf.get(s.getId()).getLinks());
                     }
 
-                    if(resultTcValuePressureLinkerCrf.containsKey(s.getId())) {
+                    if (resultTcValuePressureLinkerCrf.containsKey(s.getId())) {
                         s.getLinks().addAll(resultTcValuePressureLinkerCrf.get(s.getId()).getLinks());
                     }
 
-                    if(resultTcValueMeMethodLinkerCrf.containsKey(s.getId())) {
+                    if (resultTcValueMeMethodLinkerCrf.containsKey(s.getId())) {
                         s.getLinks().addAll(resultTcValueMeMethodLinkerCrf.get(s.getId()).getLinks());
                     }
                 });
 
             outputList.add(textPassageWithLinks);
         }
-        
+
         return outputList;
     }
 

@@ -10,20 +10,18 @@ import org.grobid.core.layout.LayoutToken;
 
 import java.util.*;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-
 /**
  * This is a generic implementation of a class representing a span, namely an entity
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Span implements Cloneable{
+public class Span implements Cloneable {
     //We use the hashcode to generate an unique id
 
     private String id = null;
-    
+
     private String text;
     private String formattedText;
-    
+
     private String type;
 
     //offset in the text
@@ -61,7 +59,7 @@ public class Span implements Cloneable{
 
     public Span() {
     }
-    
+
     public Span(Span other) {
         this.id = other.getId();
         this.text = other.getText();
@@ -69,18 +67,18 @@ public class Span implements Cloneable{
         this.type = other.getType();
         this.offsetStart = other.getOffsetStart();
         this.offsetEnd = other.getOffsetEnd();
-        
+
         this.tokenStart = other.getTokenStart();
         this.tokenEnd = other.getTokenEnd();
-        this.linkable  = other.isLinkable();
+        this.linkable = other.isLinkable();
         this.layoutTokens = new ArrayList<>(other.getLayoutTokens());
         this.source = other.getSource();
         this.links = new ArrayList<>(other.getLinks());
-        
+
         this.attributes = new HashMap<>(other.getAttributes());
         this.boundingBoxes = new ArrayList<>(other.getBoundingBoxes());
         this.layoutTokens = new ArrayList<>(other.getLayoutTokens());
-        
+
     }
 
     public Span(String id, String text, String type) {

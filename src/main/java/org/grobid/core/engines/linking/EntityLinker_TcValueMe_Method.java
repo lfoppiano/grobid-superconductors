@@ -102,7 +102,7 @@ public class EntityLinker_TcValueMe_Method extends AbstractParser implements Ent
                 return n;
             })
             .collect(Collectors.toList());
-        
+
         return markedAnnotations;
     }
 

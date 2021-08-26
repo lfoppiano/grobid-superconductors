@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -53,6 +51,17 @@ public class ChemDataExtractorClient {
 
     public List<ChemicalSpan> processText(String text) {
         List<ChemicalSpan> mentions = new ArrayList<>();
+
+        //Unless we are using wapiti or delft + FEATURES there is no need to call this client 
+        if (this.configuration.getModels()
+            .stream()
+            .anyMatch(m -> m.name.equals("superconductors")
+                && (m.engine.equals("delft")
+                && !m.delft.architecture.endsWith("FEATURES")))) {
+
+            return mentions;
+        }
+
         try {
             final HttpPost request = new HttpPost(serverUrl + "/process");
             request.setHeader("Accept", APPLICATION_JSON);

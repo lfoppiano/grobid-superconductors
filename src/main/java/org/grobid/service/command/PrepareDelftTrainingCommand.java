@@ -66,8 +66,8 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
             .addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .choices(Arrays.asList("superconductors", 
-                "material", 
+            .choices(Arrays.asList("superconductors",
+                "material",
                 "entityLinker-material-tcValue",
                 "entityLinker-tcValue-pressure",
                 "entityLinker-tcValue-me_method",
@@ -117,9 +117,9 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         } else if ("superconductors-no-features".equals(modelName)) {
             trainer = new SuperconductorsNoFeaturesTrainer();
         }
-        
+
         String filename = File.separator + modelName + "-" + formatter.format(date) + ".train";
-        if (inputPath != null && !inputPath.isDirectory() ) {
+        if (inputPath != null && !inputPath.isDirectory()) {
             filename = File.separator + modelName + "-" + inputPath.getName().replaceAll(".tei.xml", "") + ".train";
         }
 
@@ -132,7 +132,7 @@ public class PrepareDelftTrainingCommand extends ConfiguredCommand<GrobidSuperco
         } else {
             System.out.println("Output or delft directory do not exists. ");
             System.exit(-1);
-        }   
+        }
 
         if (inputPath == null) {
             inputPath = GrobidProperties.getCorpusPath(new File("/"), model);

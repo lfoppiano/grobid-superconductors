@@ -39,9 +39,9 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String corsAllowedMethods = "OPTIONS,GET,PUT,POST,DELETE,HEAD";
     @JsonProperty
     private String corsAllowedHeaders = "X-Requested-With,Content-Type,Accept,Origin";
-    
+
     private List<GrobidConfig.ModelParameters> models = new ArrayList<>();
-    
+
     // Max requests
     private int maxParallelRequests = 0;
 

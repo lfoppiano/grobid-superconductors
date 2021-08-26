@@ -9,7 +9,9 @@ import org.grobid.core.lang.impl.OpenNLPSentenceDetector;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.OffsetPosition;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -31,7 +33,7 @@ public class SentenceSegmenter {
 
         return tokenizer.detect(paragraph);
     }
-    
+
     public List<OffsetPosition> detect(String text) {
         return tokenizer.detect(text);
     }
