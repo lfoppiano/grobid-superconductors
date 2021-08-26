@@ -31,8 +31,8 @@ consolidation:
 
 models:
   - name: "superconductors"
-#    engine: "wapiti"
-    engine: "delft"
+    engine: "wapiti"
+    #    engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
@@ -40,115 +40,69 @@ models:
       nbMaxIterations: 2000
     delft:
       # deep learning parameters
-#      architecture: "BidLSTM_CRF"
+      #      architecture: "BidLSTM_CRF"
       architecture: "scibert"
-      useELMo: false
       embeddings_name: "glove-840B"
+      runtime:
+        # parameters used at runtime/prediction
+        max_sequence_length: 3000
+        batch_size: 4
 
   - name: "material"
     engine: "wapiti"
-    #engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-    delft:
-      # deep learning parameters
-      architecture: "BidLSTM_CRF"
-      #architecture: "scibert"
-      useELMo: false
-      embeddings_name: "glove-840B"
 
   - name: "entityLinker-material-tcValue"
     engine: "wapiti"
-    #engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-    delft:
-      # deep learning parameters
-      architecture: "BidLSTM_CRF"
-      #architecture: "scibert"
-      useELMo: false
-      embeddings_name: "glove-840B"
 
   - name: "entityLinker-tcValue-pressure"
     engine: "wapiti"
-    #engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-    delft:
-      # deep learning parameters
-      architecture: "BidLSTM_CRF"
-      #architecture: "scibert"
-      useELMo: false
-      embeddings_name: "glove-840B"
-      
+
   - name: "entityLinker-tcValue-me_method"
     engine: "wapiti"
-    #engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-    delft:
-      # deep learning parameters
-      architecture: "BidLSTM_CRF"
-      #architecture: "scibert"
-      useELMo: false
-      embeddings_name: "glove-840B"      
 
   - name: "quantities"
     engine: "wapiti"
-    #engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-    delft:
-      # deep learning parameters
-      architecture: "BidLSTM_CRF"
-      #architecture: "scibert"
-      useELMo: false
-      embeddings_name: "glove-840B"
-  
+
   - name: "units"
     engine: "wapiti"
-    #engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-    delft:
-      # deep learning parameters
-      architecture: "BidLSTM_CRF"
-      #architecture: "scibert"
-      useELMo: false
-      embeddings_name: "glove-840B" 
-        
+
   - name: "values"
     engine: "wapiti"
-    #engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-    delft:
-      # deep learning parameters
-      architecture: "BidLSTM_CRF"
-      #architecture: "scibert"
-      useELMo: false
-      embeddings_name: "glove-840B"
 
 server:
   type: custom

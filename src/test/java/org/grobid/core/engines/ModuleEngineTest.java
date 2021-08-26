@@ -46,8 +46,8 @@ public class ModuleEngineTest {
         modelParameters.name = "bao";
         GrobidProperties.addModel(modelParameters);
     }
-    
-    
+
+
     @Before
     public void setUp() throws Exception {
         PowerMock.mockStatic(Lexicon.class);
@@ -80,13 +80,15 @@ public class ModuleEngineTest {
         quantity.setLayoutTokens(Arrays.asList(tokens.get(13), tokens.get(14)));
         temperature.setAtomicQuantity(quantity);
 
-        EasyMock.expect(mockSuperconductorsParser.process(tokens)).andReturn(Arrays.asList(superconductor));
+        List<List<LayoutToken>> aggregatedTokens = Arrays.asList(tokens);
+
+        EasyMock.expect(mockSuperconductorsParser.process(aggregatedTokens)).andReturn(Arrays.asList(Arrays.asList(superconductor)));
         EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature));
 //        EasyMock.expect(mockEntityLinkerParser.process((List<LayoutToken>) EasyMock.anyObject(), EasyMock.anyObject())).andReturn(new ArrayList<>());
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        TextPassage response = target.process(tokens, true);
+        List<TextPassage> response = target.process(Arrays.asList(new RawPassage(tokens)), true);
 
         EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 
@@ -163,7 +165,7 @@ public class ModuleEngineTest {
 
         assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
     }
-    
+
     @Test
     public void testComputeTabularData() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("14fcc539b1.json");
@@ -173,7 +175,7 @@ public class ModuleEngineTest {
         List<SuperconEntry> superconEntries = ModuleEngine.computeTabularData(documentResponse.getParagraphs());
 
         assertThat(superconEntries, hasSize(20));
-        
+
         assertThat(superconEntries.get(18).getRawMaterial(), is("HgBa 2 Ca 2 Cu 3 O 9"));
         assertThat(superconEntries.get(18).getCriticalTemperature(), is("55 K"));
         assertThat(superconEntries.get(18).getAppliedPressure(), is(nullValue()));

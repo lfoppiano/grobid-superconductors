@@ -27,24 +27,24 @@ RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source && cd /o
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
-RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities && git checkout 0.7.0
+RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities && cd grobid-quantities && git checkout 0.7.0
 WORKDIR /opt/grobid-source/grobid-quantities
 COPY gradle.properties .
 
 WORKDIR /opt/grobid-source
-RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
-#RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors
+#RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
+RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors && cd grobid-superconductors && git checkout feature/aggregate-processing-scibert
 
-COPY resources/models/ ./grobid-superconductors/resources/models/
-COPY resources/config/ ./grobid-superconductors/resources/config/
-COPY gradle/ ./grobid-superconductors/gradle/
-COPY localLibs/ ./grobid-superconductors/localLibs/
-COPY src/ ./grobid-superconductors/src/
-COPY build.gradle ./grobid-superconductors/
-COPY gradle.properties ./grobid-superconductors/
-COPY settings.gradle ./grobid-superconductors/
-COPY requirements.txt ./grobid-superconductors/
-COPY gradlew* ./grobid-superconductors/
+#COPY resources/models/ ./grobid-superconductors/resources/models/
+#COPY resources/config/ ./grobid-superconductors/resources/config/
+#COPY gradle/ ./grobid-superconductors/gradle/
+#    #COPY localLibs/ ./grobid-superconductors/localLibs/
+#COPY src/ ./grobid-superconductors/src/
+#COPY build.gradle ./grobid-superconductors/
+#COPY gradle.properties ./grobid-superconductors/
+#COPY settings.gradle ./grobid-superconductors/
+#    #COPY requirements.txt ./grobid-superconductors/
+#COPY gradlew* ./grobid-superconductors/
 
 # Adjust config
 RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config-docker.yml
@@ -57,7 +57,7 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
-RUN ./gradlew installScibert --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.zip
+RUN ./gradlew installScibert --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
 RUN #./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
 
 

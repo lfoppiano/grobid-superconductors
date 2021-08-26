@@ -184,20 +184,22 @@ public class ModuleEngine {
     }
 
     /**
-     * The text is a paragraph
+     * Process a chunk of text, namely a sentence 
+     * @param text paragraph or sentence to be processed
+     * @param disableLinking disable the linking 
+     * @return
      */
     public DocumentResponse process(String text, boolean disableLinking) {
         List<OffsetPosition> sentenceOffsets = SentenceUtilities.getInstance()
             .runSentenceDetection(text, new Language("en"));
 
-        List<TextPassage> textPassages = new ArrayList<>();
-        for (OffsetPosition sentenceOffset : sentenceOffsets) {
-            String sentence = text.substring(sentenceOffset.start, sentenceOffset.end);
-            List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(sentence);
-
-            TextPassage textPassage = process(tokens, disableLinking);
-            textPassages.add(textPassage);
-        }
+        List<RawPassage> sentencesAsLayoutToken = sentenceOffsets.stream()
+            .map(sentenceOffset -> text.substring(sentenceOffset.start, sentenceOffset.end))
+            .map(sentence -> DeepAnalyzer.getInstance().tokenizeWithLayoutToken(sentence))
+            .map(RawPassage::new)
+            .collect(Collectors.toList());
+        
+        List<TextPassage> textPassages = process(sentencesAsLayoutToken, disableLinking);
 
         return new DocumentResponse(textPassages);
     }
@@ -255,6 +257,7 @@ public class ModuleEngine {
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
+            final List<RawPassage> accumulatedSentences = new ArrayList<>();
             BiblioInfo biblioInfo = GrobidPDFEngine.processDocument(doc, config, (documentBlock) -> {
                 List<LayoutToken> cleanedLayoutTokens = documentBlock.getLayoutTokens().stream()
                     .map(l -> {
@@ -265,11 +268,12 @@ public class ModuleEngine {
 
                 List<LayoutToken> cleanedLayoutTokensRetokenized = DeepAnalyzer.getInstance()
                     .retokenizeLayoutTokens(cleanedLayoutTokens);
-
-                documentResponse.addParagraph(process(cleanedLayoutTokensRetokenized, disableLinking,
-                    documentBlock.getSection(), documentBlock.getSubSection()));
+                
+                accumulatedSentences.add(new RawPassage(cleanedLayoutTokensRetokenized, documentBlock.getSection(), documentBlock.getSubSection()));
             });
 
+            documentResponse.addParagraphs(process(accumulatedSentences, disableLinking));
+                
             List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
 
             documentResponse.setPages(pages);
@@ -282,110 +286,120 @@ public class ModuleEngine {
 
         return documentResponse;
     }
-
-    public TextPassage process(List<LayoutToken> tokens, boolean disableLinking) {
-        return process(tokens, disableLinking, null, null);
-    }
-
-    public TextPassage process(List<LayoutToken> tokens, boolean disableLinking, String section, String subSection) {
-        TextPassage textPassage = new TextPassage();
-
-        textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
-        textPassage.setText(LayoutTokensUtil.toText(tokens));
-        if (section != null) {
-            textPassage.setSection(section);
-            textPassage.setSubSection(subSection);
-        }
-        textPassage.setType("sentence");
-
-        List<Span> spans = new ArrayList<>();
-        List<Span> superconductorsList = superconductorsParser.process(tokens);
-        // Re-calculate the offsets to be based on the current paragraph - TODO: investigate this mismatch
-        List<Span> correctedSuperconductorsSpans = superconductorsList.stream()
-            .map(s -> {
-                int paragraphOffsetStart = tokens.get(0).getOffset();
-                s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
-                s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
-                return s;
-            })
-            .collect(Collectors.toList());
-
-        List<Span> quantitiesList = getQuantities(tokens).stream()
-            .map(s -> {
-                int paragraphOffsetStart = tokens.get(0).getOffset();
-                s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
-                s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
-                return s;
-            })
-            .collect(Collectors.toList());
-
-        spans.addAll(correctedSuperconductorsSpans);
-        spans.addAll(quantitiesList);
-
-        List<Span> sortedSpans = spans
-            .stream()
-            .sorted(Comparator.comparingInt(Span::getOffsetStart))
-            .collect(Collectors.toList());
-
-        textPassage.setSpans(pruneOverlappingAnnotations(sortedSpans));
-
-        if (disableLinking || CollectionUtils.size(textPassage.getSpans()) <= 1) {
-            return textPassage;
-        }
+    
+    public List<TextPassage> process(List<RawPassage> inputPassage, boolean disableLinking) {
         
-        TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassage);
-
-        List<Span> spansCopy = textPassage.getSpans().stream()
-            .map(Span::new)
+        List<List<LayoutToken>> accumulatedLayoutTokens  = inputPassage.stream()
+            .map(RawPassage::getLayoutTokens)
             .collect(Collectors.toList());
 
-        Map<String, Span> mapById = textPassageWithLinks.getSpans().stream()
-            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
-            .collect(Collectors.toMap(Span::getId, Function.identity()));
+        List<List<Span>> superconductorsList = superconductorsParser.process(accumulatedLayoutTokens);
+        
+        List<TextPassage> outputList = new ArrayList<>();
+        
+        for(int index = 0; index < superconductorsList.size(); index++) {
+            List<Span> rawSuperconductorsSpans = superconductorsList.get(index);
+            List<LayoutToken> tokens = accumulatedLayoutTokens.get(index);
+            
+            // Re-calculate the offsets to be based on the current paragraph - TODO: investigate this mismatch
+            List<Span> superconductorsSpans = rawSuperconductorsSpans.stream()
+                .map(s -> {
+                    int paragraphOffsetStart = tokens.get(0).getOffset();
+                    s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
+                    s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
+                    return s;
+                })
+                .collect(Collectors.toList());
 
-        spansCopy.stream()
-            .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+            List<Span> quantitiesSpans = getQuantities(tokens).stream()
+                .map(s -> {
+                    int paragraphOffsetStart = tokens.get(0).getOffset();
+                    s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
+                    s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
+                    return s;
+                })
+                .collect(Collectors.toList());
+
+
+            List<Span> aggregatedSpans = new ArrayList<>();
+            aggregatedSpans.addAll(superconductorsSpans);
+            aggregatedSpans.addAll(quantitiesSpans);
+
+            TextPassage textPassage = new TextPassage();
+            textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
+            textPassage.setText(LayoutTokensUtil.toText(tokens));
+
+            String section = inputPassage.get(index).getSection();
+            String subSection = inputPassage.get(index).getSubSection();
+
+            if (section != null) {
+                textPassage.setSection(section);
+                textPassage.setSubSection(subSection);
+            }
+            textPassage.setType("sentence");
+            textPassage.setSpans(pruneOverlappingAnnotations(aggregatedSpans));
+
+            if (disableLinking || CollectionUtils.size(textPassage.getSpans()) <= 1) {
+                outputList.add(textPassage);
+                continue;
+            }
+
+            TextPassage textPassageWithLinks = ruleBasedLinker.process(textPassage);
+
+            List<Span> spansCopy = textPassage.getSpans().stream()
+                .map(Span::new)
+                .collect(Collectors.toList());
+
+            Map<String, Span> mapById = textPassageWithLinks.getSpans().stream()
+                .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            spansCopy.stream()
+                .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
                 .forEach(s -> {
                     if (mapById.containsKey(s.getId())) {
                         s.setLinkable(mapById.get(s.getId()).isLinkable());
                     }
                 });
 
-        Map<String, Span> resultMaterialTcValueLinkerCrf = crfBasedLinker.process(tokens, spansCopy, MATERIAL_TCVALUE_ID)
-            .parallelStream()
-            .filter(s -> crfBasedLinker.getLinkingEngines().get(MATERIAL_TCVALUE_ID).getAnnotationsToBeLinked().contains(s.getType()))
-            .filter(s -> isNotEmpty(s.getLinks()))
-            .collect(Collectors.toMap(Span::getId, Function.identity()));
-        
-        Map<String, Span> resultTcValuePressureLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_PRESSURE_ID)
-            .parallelStream()
-            .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_PRESSURE_ID).getAnnotationsToBeLinked().contains(s.getType()))
-            .filter(s -> isNotEmpty(s.getLinks()))
-            .collect(Collectors.toMap(Span::getId, Function.identity()));
-        
-        Map<String, Span> resultTcValueMeMethodLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_ME_METHOD_ID)
-            .parallelStream()
-            .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_ME_METHOD_ID).getAnnotationsToBeLinked().contains(s.getType()))
-            .filter(s -> isNotEmpty(s.getLinks()))
-            .collect(Collectors.toMap(Span::getId, Function.identity()));
-        
-        // Merge
-        textPassageWithLinks.getSpans().stream()
-            .forEach(s -> { 
-                if(resultMaterialTcValueLinkerCrf.containsKey(s.getId())) {
-                    s.getLinks().addAll(resultMaterialTcValueLinkerCrf.get(s.getId()).getLinks());
-                }
+            Map<String, Span> resultMaterialTcValueLinkerCrf = crfBasedLinker.process(tokens, spansCopy, MATERIAL_TCVALUE_ID)
+                .parallelStream()
+                .filter(s -> crfBasedLinker.getLinkingEngines().get(MATERIAL_TCVALUE_ID).getAnnotationsToBeLinked().contains(s.getType()))
+                .filter(s -> isNotEmpty(s.getLinks()))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
 
-                if(resultTcValuePressureLinkerCrf.containsKey(s.getId())) {
-                    s.getLinks().addAll(resultTcValuePressureLinkerCrf.get(s.getId()).getLinks());
-                }
+            Map<String, Span> resultTcValuePressureLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_PRESSURE_ID)
+                .parallelStream()
+                .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_PRESSURE_ID).getAnnotationsToBeLinked().contains(s.getType()))
+                .filter(s -> isNotEmpty(s.getLinks()))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
 
-                if(resultTcValueMeMethodLinkerCrf.containsKey(s.getId())) {
-                    s.getLinks().addAll(resultTcValueMeMethodLinkerCrf.get(s.getId()).getLinks());
-                }
-            });
+            Map<String, Span> resultTcValueMeMethodLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_ME_METHOD_ID)
+                .parallelStream()
+                .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_ME_METHOD_ID).getAnnotationsToBeLinked().contains(s.getType()))
+                .filter(s -> isNotEmpty(s.getLinks()))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            // Merge
+            textPassageWithLinks.getSpans().stream()
+                .forEach(s -> {
+                    if(resultMaterialTcValueLinkerCrf.containsKey(s.getId())) {
+                        s.getLinks().addAll(resultMaterialTcValueLinkerCrf.get(s.getId()).getLinks());
+                    }
+
+                    if(resultTcValuePressureLinkerCrf.containsKey(s.getId())) {
+                        s.getLinks().addAll(resultTcValuePressureLinkerCrf.get(s.getId()).getLinks());
+                    }
+
+                    if(resultTcValueMeMethodLinkerCrf.containsKey(s.getId())) {
+                        s.getLinks().addAll(resultTcValueMeMethodLinkerCrf.get(s.getId()).getLinks());
+                    }
+                });
+
+            outputList.add(textPassageWithLinks);
+        }
         
-        return textPassageWithLinks;
+        return outputList;
     }
 
 

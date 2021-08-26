@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.RawPassage;
 import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
 import org.grobid.core.engines.linking.CRFBasedLinker;
@@ -17,10 +18,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -33,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class CRFBasedLinkerIntegrationTest {
 
     private CRFBasedLinker target;
-    private ModuleEngine entityParser;
+    private ModuleEngine moduleEngine;
     private ChemDataExtractorClient mockChemspotClient;
 
 
@@ -50,7 +48,7 @@ public class CRFBasedLinkerIntegrationTest {
         target = new CRFBasedLinker();
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
         SuperconductorsParser superParser = new SuperconductorsParser(mockChemspotClient, new MaterialParser(null));
-        this.entityParser = new ModuleEngine(new GrobidSuperconductorsConfiguration(), superParser, QuantityParser.getInstance(true), null, null);
+        this.moduleEngine = new ModuleEngine(new GrobidSuperconductorsConfiguration(), superParser, QuantityParser.getInstance(true), null, null);
     }
 
     @Test
@@ -61,7 +59,11 @@ public class CRFBasedLinkerIntegrationTest {
         
         EasyMock.expect(mockChemspotClient.processText(EasyMock.anyString())).andReturn(new ArrayList<>());
         EasyMock.replay(mockChemspotClient);
-        TextPassage passage = entityParser.process(layoutTokens, true);
+        List<TextPassage> passages = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
+        
+        assertThat(passages, hasSize(1));
+        
+        TextPassage passage = passages.get(0);
         List<Span> annotations = passage.getSpans();
         assertThat(annotations, hasSize(4));
         
@@ -90,7 +92,10 @@ public class CRFBasedLinkerIntegrationTest {
 
         EasyMock.expect(mockChemspotClient.processText(EasyMock.anyString())).andReturn(new ArrayList<>());
         EasyMock.replay(mockChemspotClient);
-        TextPassage paragraph = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
+        assertThat(paragraphs, hasSize(1));
+        
+        TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
         assertThat(annotations, hasSize(annotations.size()));
 
@@ -116,7 +121,10 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldNotLink() throws Exception {
         String input = "Previous studies have shown that pressure of 1 GPa can reduce T c , but only by less than 2 K in MgB 2 .";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        TextPassage paragraph = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
+        assertThat(paragraphs, hasSize(1));
+
+        TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
         target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
 
@@ -129,7 +137,10 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldExtract1Links_1() throws Exception {
         String input = "Theory-oriented experiments show that the compressed hydride of Group VI (hydrogen sulfide, H 3 S) exhibits a superconducting state at 203 K. ";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        TextPassage paragraph = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
+        assertThat(paragraphs, hasSize(1));
+
+        TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
 
         // Set the materials to be linkable
@@ -149,7 +160,10 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldExtract1Links_2() throws Exception {
         String input = "Moreover, a Group V hydride (phosphorus hydride, PH 3 ) has also been studied and its T c reached a maximum of 103 K.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        TextPassage paragraph = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
+        assertThat(paragraphs, hasSize(1));
+
+        TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
 
         // Set the materials to be linkable
@@ -162,6 +176,7 @@ public class CRFBasedLinkerIntegrationTest {
         List<Span> linkedEntities = processedSpans.stream()
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .collect(Collectors.toList());
+        
         assertThat(linkedEntities, hasSize(1));
     }
 
@@ -169,7 +184,10 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldExtract0Links_3() throws Exception {
         String input = "The experimental realisation of the superconductivity in H 3 S and PH 3 inspired us to search for other hydride superconductors.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        TextPassage paragraph = entityParser.process(layoutTokens, true);
+        List<TextPassage> paragraphs = moduleEngine.process(Collections.singletonList(new RawPassage(layoutTokens)), true);
+        assertThat(paragraphs, hasSize(1));
+
+        TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
 
         // Set the materials to be linkable
