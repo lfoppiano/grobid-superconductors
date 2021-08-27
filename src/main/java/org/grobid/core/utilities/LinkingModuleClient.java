@@ -82,7 +82,7 @@ public class LinkingModuleClient {
 
     public List<TextPassage> extractLinks(List<TextPassage> textPassage, List<String> linkTypes, boolean skipClassification) {
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/link/single");
+            final HttpPost request = new HttpPost(serverUrl + "/process/link");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -145,7 +145,7 @@ public class LinkingModuleClient {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<TextPassage>() {
+            return mapper.readValue(inputLine, new TypeReference<List<TextPassage>>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
