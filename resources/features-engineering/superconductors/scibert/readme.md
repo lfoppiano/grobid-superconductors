@@ -5,7 +5,11 @@
 This page contains notes and information about the process of fine-tuning SciBERT for improving the results in the task of NER for materials science scientific papers. 
 This process was performed following the guide [here](https://github.com/google-research/bert#pre-training-with-bert).
 
-The data used for fine-tuning is text data from scientific articles in material science and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materials (in total ~21Gb, 100001987 sentences, TBA tokens). 
+The data used for fine-tuning is text data from scientific articles in material science and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materials. 
+
+| Space | sentences | tokens |
+|-------|---|---|
+| ~21Gb | 100001987 (100M) | 3260171825 (3.2B) |
 
 - Useful references: 
   - SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
@@ -78,27 +82,33 @@ Starting from a text file containing one paragraph per line, we performed the fo
        for x in ../sharded_corpus/*; do python create_pretraining_data.py    --input_file=${x}    --output_file=./pretrained_512/science+supermat.tfrecord_${x##*.}   --vocab_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/vocab.txt    --do_lower_case=False    --max_seq_length=512    --max_predictions_per_seq=78    --masked_lm_prob=0.15    --random_seed=23233    --dupe_factor=5; done
        ```
       
-4. Run pre-training 
+4. Run pre-training ([ref](https://github.com/google-research/bert#pre-training-tips-and-caveats))
 
-## Summary results 
+**NOTE**: The num_train_steps is used as "global max step", therefore when doing incremental training is important to consider that as an absolute value. [Ref](https://github.com/google-research/bert/issues/632). 
 
-TBD: improve this table and re-do these experiments with a clearer description (e.g. we want to split the training into 
-two steps, one with shorter sequence and one wiht longer ones) - [ref](https://github.com/google-research/bert#pre-training-tips-and-caveats)
+| Name  | Notes | max_sequence_lenght | train_batch_size | num_train_steps | learning_rate | max_prediction_seq | init_checkpoint | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
+|--------|--------- |------|---------|----|--------|--------|---- | ---- | ---- | --- | --- |
+| Baseline short sequences | total = 500000*256=12000000 | 128 | 256 | 500000 |  1000 | 1e-4 | 20 | |
+| Baseline long sequences |total = 300000*64=19000200  | 512 | 64 | 800000 |  100 | 1e-5 | 76 |  |
 
-| Name  | training steps    | Notes | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
-|--------|--------- |------|---------|----|--------|--------|
-| o23445 | 20       | Just a test | 0.6763816 | 1.5105013 | 0.96125 | 0.121605136 | 
-| o23446 | 100000   | running with 100000 steps and 10000 of warm up steps | 0.70375 | 1.3560376 | 0.97875 | 0.060185157 |
-| o23449 | 1000000  | running with 1000000 asteps and 10000 of warm up steps | 0.7238158 | 1.2188154 | 0.97625 | 0.049554683 |
+## Log and results 
+
+| Name  | Notes | max_sequence_lenght | train_batch_size | num_train_steps | learning_rate | max_prediction_seq | init_checkpoint | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
+|--------|--------- |------|---------|----|--------|--------|---- | ---- | ---- | --- | --- |
+| Sc+Sm fine tuning short sequences | o23483, same parameters as described by SciBERT's authors |128 | 256 | 12000000 |  1000 | 1e-4 | 20 | OOM |
+| Sc+Sm fine tuning short sequences | o23485, same parameters as described by SciBERT's authors |128 | 128 | 24000000 |  1000 | 1e-4 | 20 | OOM |
+| Sc+Sm fine tuning short sequences | o23487, same parameters as described by SciBERT's authors |128 | 64 | 48000000 |  1000 | 1e-4 | 20 | OOM |
+| Sc+Sm fine tuning short sequences | o23488, same parameters as described by SciBERT's authors |128 | 32 | 96000000 |  1000 | 1e-4 | 20 | TBD |
+| - |
+| Sc+Sm fine tuning short sequences | o23489, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | TBD |
+| - |
+| Sc+Sm fine tuning short sequences | 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | TBD |
+| - |
+| Sc+Sm fine tuning short sequences |  | 128 | 32 | 96000000 |  1000 | 1e-5 | 20 | TBD |
+| - |
 
 
 ## Details parameters 
-
-TBD: integrate this in the main table 
-
-- o23445: `--input_file=pretrained/science+supermat.tfrecord_*   --output_dir=pretraining_output    --do_train=True    --do_eval=True    --bert_config_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/bert_config.json    --init_checkpoint=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/bert_model.ckpt    --train_batch_size=32    --max_seq_length=128    --max_predictions_per_seq=20    --num_train_steps=100000    --num_warmup_steps=10000    --learning_rate=2e-5`
-- o23446: `--input_file=pretrained/science+supermat.tfrecord_*   --output_dir=pretraining_output    --do_train=True    --do_eval=True    --bert_config_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/bert_config.json    --init_checkpoint=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/bert_model.ckpt    --train_batch_size=32    --max_seq_length=128    --max_predictions_per_seq=20    --num_train_steps=100000    --num_warmup_steps=10000    --learning_rate=2e-5`
-- o23449: `--input_file=pretrained/science+supermat.tfrecord_*   --output_dir=pretraining_output    --do_train=True    --do_eval=True    --bert_config_file=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/bert_config.json    --init_checkpoint=/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased/bert_model.ckpt    --train_batch_size=32    --max_seq_length=128    --max_predictions_per_seq=20    --num_train_steps=1000000    --num_warmup_steps=10000    --learning_rate=2e-5`
 
 
 ## Additional information
