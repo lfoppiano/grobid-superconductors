@@ -6,8 +6,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxParserContentHandler;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

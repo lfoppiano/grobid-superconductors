@@ -30,9 +30,9 @@ public class GrobidExceptionsTranslationUtility {
 
 //            String requestUri = uriInfo.getRequestUri().toString();
             return Response.status(status)
-                    .type(MediaType.APPLICATION_JSON_TYPE)
-                    .entity(buildJson(getExceptionName(exception), descriptions, status, null, null))
-                    .build();
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .entity(buildJson(getExceptionName(exception), descriptions, status, null, null))
+                .build();
         } finally {
             cleanMdc();
         }

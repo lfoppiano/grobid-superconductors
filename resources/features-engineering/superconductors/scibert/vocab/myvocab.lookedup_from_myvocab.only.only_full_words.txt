@@ -1,5 +1,3 @@
-Input lenght 31000
-Voc lenght 31000
 ▁temp 	 -267
 ▁differe 	 -290
 ▁energ 	 -332

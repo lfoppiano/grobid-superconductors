@@ -4,8 +4,8 @@ import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
+import org.grobid.core.data.TextPassage;
 import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.trainer.stax.StaxUtils;
@@ -70,7 +70,7 @@ public class LinkerController {
         if (!getLinkEngines().contains(linkerType)) {
             throw new RuntimeException("The supplied linker type " + linkerType + "does not exists. Please one among " + getLinkEngines());
         }
-        
+
         List<TextPassage> textPassages = new ArrayList<>();
 
         String textPreprocessed = text.replace("\r\n", "\n");
@@ -87,7 +87,7 @@ public class LinkerController {
             List<Pair<String, String>> identifiers = handler.getIdentifiers();
 
             List<Span> annotations = new ArrayList<>();
-            
+
             for (int i = 0; i < labeled.size(); i++) {
                 Pair<String, String> labeledToken = labeled.get(i);
                 String token = labeledToken.getLeft();

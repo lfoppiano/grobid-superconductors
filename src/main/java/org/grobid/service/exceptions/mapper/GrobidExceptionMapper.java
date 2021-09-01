@@ -1,7 +1,6 @@
 package org.grobid.service.exceptions.mapper;
 
 import com.google.inject.Inject;
-import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.exceptions.GrobidException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

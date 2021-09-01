@@ -31,6 +31,6 @@ public class HealthCheck extends com.codahale.metrics.health.HealthCheck {
     @Override
     protected Result check() throws Exception {
         return configuration.getGrobidHome() != null ? Result.healthy() :
-                Result.unhealthy("Grobid home is null in the configuration");
+            Result.unhealthy("Grobid home is null in the configuration");
     }
 }

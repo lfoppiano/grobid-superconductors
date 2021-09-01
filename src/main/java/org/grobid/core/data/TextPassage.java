@@ -27,7 +27,7 @@ public class TextPassage {
     private List<Token> tokens = new ArrayList<>();
 
     private List<Relationship> relationships = new ArrayList<>();
-    
+
     public static TextPassage of(TextPassage other) {
         TextPassage textPassage = new TextPassage();
         textPassage.setText(other.getText());
@@ -37,7 +37,7 @@ public class TextPassage {
         textPassage.setSpans(other.getSpans().stream().map(Span::new).collect(Collectors.toList()));
         textPassage.setTokens(new ArrayList<>(other.getTokens()));
         textPassage.setRelationships(new ArrayList<>(other.getRelationships()));
-        
+
         return textPassage;
     }
 

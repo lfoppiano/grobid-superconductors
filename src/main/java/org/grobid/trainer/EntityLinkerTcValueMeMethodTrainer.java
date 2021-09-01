@@ -53,7 +53,7 @@ public class EntityLinkerTcValueMeMethodTrainer extends AbstractTrainerNew {
 
             Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath()
                 .replaceFirst(SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName(), "superconductors") + File.separator + "final");
-            
+
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -99,7 +99,7 @@ public class EntityLinkerTcValueMeMethodTrainer extends AbstractTrainerNew {
 
                 EntityLinkerAnnotationTEIStaxHandler handler =
                     new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
-                    SOURCE, DESTINATION);
+                        SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 

@@ -3,7 +3,6 @@ package org.grobid.trainer.stax.handler;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.QuantityAnalyzer;
 import org.grobid.core.data.LinkToken;
@@ -119,7 +118,7 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
 
             }
 
-            String entityLabel = linkToken.getEntityLabel().startsWith("I-") ? linkToken.getEntityLabel().substring(3).replaceAll("[<>]","") : linkToken.getEntityLabel().replaceAll("[<>]","");
+            String entityLabel = linkToken.getEntityLabel().startsWith("I-") ? linkToken.getEntityLabel().substring(3).replaceAll("[<>]", "") : linkToken.getEntityLabel().replaceAll("[<>]", "");
             if (nonRelevantLinkIds.contains(id) || isBlank(id) || (!entityLabel.equals(sourceLabel) && !entityLabel.equals(destinationLabel))) {
                 if (currentEntityLinkLabel != null) {
                     currentEntityLinkLabel = null;
@@ -207,7 +206,7 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
                     this.currentAnnotationType = attributeValue;
                     //destination (e.g. material)
                     writeData();
-                    
+
                     insideEntity = true;
                     currentId = getAttributeValue(reader, "id");
                 } else {

@@ -463,7 +463,7 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
 
             writer.write(output + "\n");
             writer.write("\n");
-            
+
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         } finally {

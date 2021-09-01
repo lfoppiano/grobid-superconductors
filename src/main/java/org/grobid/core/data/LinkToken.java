@@ -16,7 +16,7 @@ public class LinkToken {
     private final String text;
     private final String linkLabel;
     private final String entityLabel;
-    
+
     public LinkToken(String id, String entityId, String text, String linkLabel, String entityLabel) {
         this.text = text;
         this.id = id;

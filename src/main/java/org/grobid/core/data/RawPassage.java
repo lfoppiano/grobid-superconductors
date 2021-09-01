@@ -9,26 +9,27 @@ import java.util.List;
  * This represent a TextPassage raw material
  */
 public class RawPassage {
-    
+
     private List<LayoutToken> layoutTokens = new ArrayList<>();
-    
-    private String text; 
-    
-    private String section; 
-    
+
+    private String text;
+
+    private String section;
+
     private String subSection;
 
     public RawPassage(List<LayoutToken> layoutTokens, String section, String subSection) {
         this.layoutTokens = layoutTokens;
-        this.section = section; 
+        this.section = section;
         this.subSection = subSection;
     }
 
     public RawPassage(List<LayoutToken> layoutTokens) {
         this.layoutTokens = layoutTokens;
     }
-    
-    public RawPassage() {}
+
+    public RawPassage() {
+    }
 
 
     public List<LayoutToken> getLayoutTokens() {

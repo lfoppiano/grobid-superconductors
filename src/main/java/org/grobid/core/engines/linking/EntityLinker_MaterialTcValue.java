@@ -86,8 +86,8 @@ public class EntityLinker_MaterialTcValue extends AbstractParser implements Enti
      */
     public List<Span> extractResults(List<LayoutToken> tokens, String result, List<Span> annotations) {
         return CRFBasedLinker.extractResults(tokens, result, annotations,
-                SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT,
-                ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT, ENTITY_LINKER_MATERIAL_TC_OTHER);
+            SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT,
+            ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT, ENTITY_LINKER_MATERIAL_TC_OTHER);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class EntityLinker_MaterialTcValue extends AbstractParser implements Enti
                 if (n.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL)) {
                     n.setLinkable(true);
                 }
-                
+
                 return n;
             })
             .collect(Collectors.toList());

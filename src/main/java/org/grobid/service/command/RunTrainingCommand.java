@@ -59,12 +59,12 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             .dest(MODEL_NAME)
             .type(String.class)
             .required(true)
-            .choices(Arrays.asList("superconductors", 
-                "material", 
+            .choices(Arrays.asList("superconductors",
+                "material",
                 "entityLinker-" + CRFBasedLinker.MATERIAL_TCVALUE_ID,
-                "entityLinker-" + CRFBasedLinker.TCVALUE_ME_METHOD_ID, 
+                "entityLinker-" + CRFBasedLinker.TCVALUE_ME_METHOD_ID,
                 "entityLinker-" + CRFBasedLinker.TCVALUE_PRESSURE_ID,
-                "superconductors-no-features", 
+                "superconductors-no-features",
                 "superconductors-no-features-abstracts"))
             .help("Model to train");
 

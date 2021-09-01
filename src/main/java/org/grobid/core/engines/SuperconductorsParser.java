@@ -225,7 +225,7 @@ public class SuperconductorsParser extends AbstractParser {
         if (isBlank(text)) {
             return new ArrayList<>();
         }
-        
+
         text = text.replace("\r", " ");
         text = text.replace("\n", " ");
         text = text.replace("\t", " ");
@@ -240,7 +240,7 @@ public class SuperconductorsParser extends AbstractParser {
         if (isEmpty(layoutTokens)) {
             return new ArrayList<>();
         }
-        
+
         return layoutTokens;
     }
 
@@ -253,21 +253,24 @@ public class SuperconductorsParser extends AbstractParser {
     }
 
     public List<List<Span>> process(List<List<LayoutToken>> layoutTokensBatch) {
-
         List<List<LayoutToken>> normalisedTokens = layoutTokensBatch.stream()
             .map(SuperconductorsParser::normalizeAndRetokenizeLayoutTokens)
             .collect(Collectors.toList());
         
-        List<String> tokensWithFeatures = normalisedTokens.stream()
-            .map(lt -> {
-                List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(lt));
-                List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(lt, mentions);
-
-                //TODO: remove this hack! :-) 
-                return addFeatures(lt, listAnnotations) + "\n";
-            })
+        List<String> texts = normalisedTokens.stream()
+            .map(LayoutTokensUtil::toText)
             .collect(Collectors.toList());
         
+        List<List<ChemicalSpan>> mentions = chemicalAnnotator.processBulk(texts);
+        List<String> tokensWithFeatures = new ArrayList<>();
+        
+        for (int i =0; i < normalisedTokens.size(); i++) {
+            List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(normalisedTokens.get(i), mentions.get(i));
+
+            //TODO: remove this hack! :-) 
+            tokensWithFeatures.add(addFeatures(normalisedTokens.get(i), listAnnotations) + "\n");
+        }
+
         // labeled result from CRF lib
         String labellingResult = null;
         try {
@@ -290,7 +293,7 @@ public class SuperconductorsParser extends AbstractParser {
 
         if (isEmpty(layoutTokensNormalised))
             return new ArrayList<>();
-        
+
         return layoutTokensNormalised;
     }
 
@@ -339,13 +342,13 @@ public class SuperconductorsParser extends AbstractParser {
 
     public List<List<Span>> extractParallelResults(List<List<LayoutToken>> tokens, List<String> results) {
         List<List<Span>> spans = new ArrayList<>();
-        for (int i =0 ; i < tokens.size(); i++) {
+        for (int i = 0; i < tokens.size(); i++) {
             spans.add(extractResults(tokens.get(i), results.get(i)));
         }
-        
+
         return spans;
     }
-    
+
     /**
      * Extract identified quantities from a labeled text.
      */

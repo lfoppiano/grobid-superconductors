@@ -13,8 +13,8 @@ import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
-import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.StaxUtils;
+import org.grobid.trainer.stax.SuperconductorsStackTags;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 
 import java.io.*;

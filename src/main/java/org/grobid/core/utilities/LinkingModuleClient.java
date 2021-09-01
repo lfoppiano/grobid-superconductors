@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -14,11 +13,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Span;
 import org.grobid.core.data.TextPassage;
-import org.grobid.core.data.Token;
-import org.grobid.core.layout.LayoutToken;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,15 +25,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.grobid.core.engines.linking.CRFBasedLinker.MATERIAL_TCVALUE_ID;
-import static org.grobid.core.engines.linking.CRFBasedLinker.TCVALUE_PRESSURE_ID;
 
 @Singleton
 public class LinkingModuleClient {
@@ -60,9 +49,9 @@ public class LinkingModuleClient {
         this.httpClient = HttpClientBuilder.create().build();
     }
 
-    public TextPassage markCriticalTemperature(TextPassage textPassage) {
+    public List<TextPassage> markCriticalTemperature(List<TextPassage> textPassage) {
 
-        TextPassage outPassage = textPassage;
+        List<TextPassage> outPassage = textPassage;
         try {
             final HttpPost request = new HttpPost(serverUrl + "/classify/tc");
             request.setHeader("Accept", APPLICATION_JSON);
@@ -91,15 +80,15 @@ public class LinkingModuleClient {
         return outPassage;
     }
 
-    public TextPassage extractLinks(TextPassage textPassage, List<String> linkTypes, boolean skipClassification) {
+    public List<TextPassage> extractLinks(List<TextPassage> textPassage, List<String> linkTypes, boolean skipClassification) {
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/link/single");
+            final HttpPost request = new HttpPost(serverUrl + "/process/link");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setCharset(StandardCharsets.UTF_8);
             builder.addTextBody("input", toJson(textPassage), ContentType.APPLICATION_JSON);
-            builder.addTextBody("types", toJson(linkTypes), ContentType.APPLICATION_JSON);
+            builder.addTextBody("types", toJson_listOfString(linkTypes), ContentType.APPLICATION_JSON);
             builder.addTextBody("skip_classification", String.valueOf(skipClassification));
 
             HttpEntity multipart = builder.build();
@@ -118,12 +107,12 @@ public class LinkingModuleClient {
         } catch (IOException e) {
             LOGGER.error("Something generally bad happened. ", e);
         }
-        
+
         return textPassage;
     }
 
 
-    public String toJson(TextPassage passage) {
+    public String toJson(List<TextPassage> passage) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
@@ -137,7 +126,7 @@ public class LinkingModuleClient {
         return null;
     }
 
-    public String toJson(List<String> linkTypes) {
+    public static String toJson_listOfString(List<String> linkTypes) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
@@ -151,12 +140,12 @@ public class LinkingModuleClient {
         return null;
     }
 
-    public TextPassage fromJson(InputStream inputLine) {
+    public List<TextPassage> fromJson(InputStream inputLine) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<TextPassage>() {
+            return mapper.readValue(inputLine, new TypeReference<List<TextPassage>>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
