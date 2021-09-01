@@ -95,17 +95,18 @@ Starting from a text file containing one paragraph per line, we performed the fo
 
 | Name  | Notes | max_sequence_lenght | train_batch_size | num_train_steps | learning_rate | max_prediction_seq | init_checkpoint | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
 |--------|--------- |------|---------|----|--------|--------|---- | ---- | ---- | --- | --- |
+| SciBERT's original parameters |
 | Sc+Sm fine tuning short sequences | o23483, same parameters as described by SciBERT's authors |128 | 256 | 12000000 |  1000 | 1e-4 | 20 | OOM |
 | Sc+Sm fine tuning short sequences | o23485, same parameters as described by SciBERT's authors |128 | 128 | 24000000 |  1000 | 1e-4 | 20 | OOM |
 | Sc+Sm fine tuning short sequences | o23487, same parameters as described by SciBERT's authors |128 | 64 | 48000000 |  1000 | 1e-4 | 20 | OOM |
-| Sc+Sm fine tuning short sequences | o23488, same parameters as described by SciBERT's authors |128 | 32 | 96000000 |  1000 | 1e-4 | 20 | TBD |
+| Sc+Sm fine tuning short sequences (SciBERT's params) | o23488, same parameters as described by SciBERT's authors (pretraining_output_128_1e4) |128 | 32 | 96000000 |  1000 | 1e-4 | 20 | TBD |
+| Sc+Sm fine tuning short sequences | TBD | 128 | 32 | 96000000 |  1000 | 1e-5 | 20 | TBD |
+| Lower number of steps  |
+| Sc+Sm fine tuning short sequences (100K steps) | o23495, o23497, 900k train steps |128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.72401315 | 1.2320863 | 0.985 | 0.052595373 |
+| Sc+Sm fine tuning short sequences (200K steps) | o23489, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
+| Sc+Sm fine tuning short sequences (~11M steps) | o23490, 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | TBD |
 | - |
-| Sc+Sm fine tuning short sequences | o23489, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | TBD |
-| - |
-| Sc+Sm fine tuning short sequences | 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | TBD |
-| - |
-| Sc+Sm fine tuning short sequences |  | 128 | 32 | 96000000 |  1000 | 1e-5 | 20 | TBD |
-| - |
+
 
 
 ## Details parameters 
