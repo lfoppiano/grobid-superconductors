@@ -33,7 +33,7 @@ COPY gradle.properties .
 
 WORKDIR /opt/grobid-source
 #RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
-RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors && cd grobid-superconductors && git checkout feature/aggregate-processing-scibert
+RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors 
 
 #COPY resources/models/ ./grobid-superconductors/resources/models/
 #COPY resources/config/ ./grobid-superconductors/resources/config/
