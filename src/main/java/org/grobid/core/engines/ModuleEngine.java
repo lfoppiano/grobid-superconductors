@@ -389,7 +389,8 @@ public class ModuleEngine {
                 .collect(Collectors.toMap(Span::getId, Function.identity()));
 
             // Merge
-            textPassageWithLinks.getSpans().stream()
+            textPassageWithLinks.getSpans()
+                .stream()
                 .forEach(s -> {
                     if (resultMaterialTcValueLinkerCrf.containsKey(s.getId())) {
                         s.getLinks().addAll(resultMaterialTcValueLinkerCrf.get(s.getId()).getLinks());
