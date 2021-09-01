@@ -126,7 +126,7 @@ public class LinkingModuleClient {
         return null;
     }
 
-    public String toJson_listOfString(List<String> linkTypes) {
+    public static String toJson_listOfString(List<String> linkTypes) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);

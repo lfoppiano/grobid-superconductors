@@ -256,16 +256,20 @@ public class SuperconductorsParser extends AbstractParser {
         List<List<LayoutToken>> normalisedTokens = layoutTokensBatch.stream()
             .map(SuperconductorsParser::normalizeAndRetokenizeLayoutTokens)
             .collect(Collectors.toList());
-
-        List<String> tokensWithFeatures = normalisedTokens.stream()
-            .map(lt -> {
-                List<ChemicalSpan> mentions = chemicalAnnotator.processText(LayoutTokensUtil.toText(lt));
-                List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(lt, mentions);
-
-                //TODO: remove this hack! :-) 
-                return addFeatures(lt, listAnnotations) + "\n";
-            })
+        
+        List<String> texts = normalisedTokens.stream()
+            .map(LayoutTokensUtil::toText)
             .collect(Collectors.toList());
+        
+        List<List<ChemicalSpan>> mentions = chemicalAnnotator.processBulk(texts);
+        List<String> tokensWithFeatures = new ArrayList<>();
+        
+        for (int i =0; i < normalisedTokens.size(); i++) {
+            List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(normalisedTokens.get(i), mentions.get(i));
+
+            //TODO: remove this hack! :-) 
+            tokensWithFeatures.add(addFeatures(normalisedTokens.get(i), listAnnotations) + "\n");
+        }
 
         // labeled result from CRF lib
         String labellingResult = null;
