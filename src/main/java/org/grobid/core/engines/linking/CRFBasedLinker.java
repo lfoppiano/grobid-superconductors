@@ -68,6 +68,10 @@ public class CRFBasedLinker {
     }
 
     public List<Span> process(List<LayoutToken> layoutTokens, List<Span> annotations, String linkerType) {
+        
+        if (CollectionUtils.isEmpty(annotations)) {
+            return annotations;
+        }
 
         if (!this.annotationLinks.containsKey(linkerType)) {
             throw new RuntimeException("the linker type " + linkerType + "does not exists. ");
@@ -185,7 +189,7 @@ public class CRFBasedLinker {
             .collect(Collectors.toList());
 
         if (detectedClusters.size() != annotations.size()) {
-            LOGGER.info("Some annotation will not be linked. Input entities: " + annotations.size() + ", output links: " + detectedClusters.size());
+            LOGGER.debug("Some annotation will not be linked. Input entities: " + annotations.size() + ", output links: " + detectedClusters.size());
         }
         Span leftSide = null;
 
