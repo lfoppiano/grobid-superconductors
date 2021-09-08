@@ -51,25 +51,33 @@ Should spawn grobid-superconductors and his microservices.
 In order to run each service individually, is possible to run them separately: 
 
 1. Chem data Extractor
-    > docker run -t --rm --init -p 0876:8080 lfoppiano/chemdataextractor:0.0.1
+    > docker run -t --rm --init -p 0876:8080 lfoppiano/chemdataextractor:1.0
 
 2. Python service for linking and other functions: 
-    > docker run -t --rm --init -p 8090:8080 lfoppiano/linking-module:0.2.0
+    > docker run -t --rm --init -p 8090:8080 lfoppiano/linking-module:1.0
 
 3. Grobid superconductors core service
    - no GPU
-    > docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
+    > docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0
    
    - GPU
-   > docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yml.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
+   > docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yml.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0
 
 **Note**: the file in `resources/config/config-docker.yml` can be edited and the configurations are applied directly to the docker image. 
-For example is possible to switch between Deep Learning and CRF by just changing the individual models's configuration. 
+For example is possible to switch between Deep Learning and CRF by just changing the individual models' configuration. 
 Obviously this works only if the model for the requested architecture has been provided. 
 
 ### Provided models 
 
 In the following table are listed the models (in `resources/models/` ) that are currently provided. 
+
+| Model name   | Description    | Provided architecture  |
+|--------------|----------------|------------------------|
+| superconductors | extract the superconductors materials and properties such as temperature, pressure | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE, scibert |  
+| material | segment the material names | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE |   
+| entityLinking-material-tcValue | links materials and superconducting critical temperature  | CRF |   
+| entityLinking-tcValue-pressure | links superconducting critical temperature and pressure  | CRF |   
+| entityLinking-tcValue-me_methods | superconducting critical temperature and measurement method | CRF|   
 
 
 Below, in the Section [accuracy](#accuracy), we present the accuracies for each model. 
@@ -78,40 +86,46 @@ Below, in the Section [accuracy](#accuracy), we present the accuracies for each 
 
 ### Extraction (Sequence labelling task)
 
-Evaluation made on the 05/01/2020 using 114 papers.
+Evaluation made on the 01/08/2021 using 168 papers.
 The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds).
-We also indicate the best and worst results over the 10 folds in the complete result page.
 
-| Labels       | CRF        |             |               | BidLSTM+CRF|             |               |
-|--------------|------------|-------------|---------------|------------|-------------|---------------|
-| Metrics      | Precision  |  Recall     | F1-Score      | Precision  |  Recall     | F1-Score      | 
-| `<class>`    | 81.66      |   72.36     | 76.64          |  73.75     |  65.42      |  69.29        |    
-| `<material>` | 81.89      |   80.09     | 80.96          |  74.57     |  75.33      |  74.91        |    
-| `<me_method>`| 73.57      |   71.24     | 72.26          |  69.75     |  82.87      |  75.73        |    
-| `<pressure>` | 55.27      |   34.4      | 41.54          |  39.25     |  18.89      |  23.06        |     
-| `<tc>`       | 82.3       |   77.61     | 79.83          |  80.09     |  76.85      |  78.41        |    
-| `<tcValue>`  | 74.64      |   61.8      | 67.56          |  74.85     |  67.24      |  70.68        |  
-| All (micro avg)  | 80.41  |   75.89     | 78.07         |  74.82     |   73.79     |  74.27        |  
+| Labels       | CRF        |          |           | BidLSTM+CRF|         |          | SciBERT    |         |          |
+|--------------|------------|----------|-----------|------------|---------|----------|------------|---------|----------|
+| Metrics      | Precision  |  Recall  | F1-Score  | Precision  |  Recall | F1-Score | Precision  |  Recall | F1-Score | 
+| `<class>`    | 79.69      |   75.54  | 77.55     |  81.84     |  83.96  |  82.85   |  79.58     |  85.79  |  82.56   |    
+| `<material>` | 82.9       |   81.33  | 82.1      |  85.18     |  83.86  |  84.51   |  83.89     |  86.13  |  84.99   |    
+| `<me_method>`| 82.47      |   81.26  | 81.84     |  83.51     |  83.37  |  83.43   |  83.92     |  86.50  |  85.19   |    
+| `<pressure>` | 65.03      |   54.01  | 58.26     |  63.79     |  73.24  |  67.98   |  63.92     |  71.18  |  67.27   |     
+| `<tc>`       | 84.63      |   80.73  | 82.63     |  83.70     |  81.66  |  82.66   |  80.91     |  83.00  |  81.94   |    
+| `<tcValue>`  | 79.3       |   74.95  | 76.97     |  73.23     |  80.73  |  76.76   |  76.74     |  85.00  |  80.65   |  
+| All (micro avg)  | 82.43  |   79.68  | 81.03     |  83.01     |  82.89  |  82.95   |  81.92     |  85.06  | **83.46**|    
 
-All evaluation measures recorded over time, are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
-See [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations.
+Detailed evaluation measures are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
+See the documentation of [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations.
+
+### Linking (Relation extraction task)
+
+| Name | Method | Task | Description | Precision | Recall  | F1 |
+|------|--------|---------|-----------|---------|---------|--------|
+| rb-supermat-baseline      | Rule-based    | material-tcValue | eval against SuperMat       | 88    | 74    | 81    | 
+| crf-10fold-baseline       | CRF           | material-tcValue | 10 fold cross-validation    | 68.52  | 70.11 | 69.16 | 
+| crf-10fold-baseline       | CRF           | tcValue-pressure | 10 fold cross-validation    | 72.92 | 67.67  | 69.76 | 
+| crf-10fold-baseline       | CRF           | tcValue-me_method | 10 fold cross-validation    | 49.99 | 45.21 | 44.65 | 
+|------|--------|---------|-----------|---------|---------|--------|
+| crf-supermat-baseline     | CRF           | material-tcValue | eval against SuperMat (-)   | 91    | 66    | 77    | 
+
+(-) biased evaluation - for information only - trained and evaluated on the same corpus
 
 ### End to end evaluation (Extraction + Linking)
 
+**TBU**
 Corpus of 500 PDF papers from American Institute of Physics (AIP),
 American Physical Society (APS) and Institute of Physics (IOP).
 Results are approximate, they are calculated based on manual correction on the output data:
 
-| Model name   | Description    | Provided architecture  |
-|--------------|----------------|------------------------|
-| superconductors | extract the superconductors materials and properties such as temperature, pressure | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE, scibert |  
-| material | segment the material names | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE|   
-| entityLinking-material-tcValue | links materials and superconducting critical temperature  | CRF|   
-| entityLinking-tcValue-pressure | links superconducting critical temperature and pressure  | CRF|   
-| entityLinking-tcValue-me_methods | superconducting critical temperature and measurement method | CRF|   
-|Total links|	Correct links|	Wrong links|	Error rate|	Precision|	Recall|	F1-score|
-|---------------|---------------|---------------|---------------|---------------|---------------|---------------|
-|597|	441|	156|	26.13|	73.86|	66.33|	69.90|
+|Total links    | Correct links | Wrong links   | Error rate    | Precision     | Recall    | F1-score  |
+|---------------|---------------|---------------|---------------|---------------|-----------|-----------|
+|597            |	441         |	156         |	26.13       |	73.86       |	66.33   |	69.90   |
 
 ## Developer guide  
 
@@ -355,7 +369,7 @@ tc: 0.7981279136158688
 
 ## Acknowledgement 
 
-Our warmest thanks to @kermitt2 ([Science-miner](http://www.science-miner.com)): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
+Our warmest thanks to Patrice Lopez (@kermitt from [Science-miner](http://www.science-miner.com)): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
 
 This project has been developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
 
