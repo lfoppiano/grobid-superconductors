@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.grobid.core.utilities.LinkingModuleClient.toJson_listOfString;
@@ -51,7 +52,9 @@ public class ChemDataExtractorClient {
     }
 
     public List<List<ChemicalSpan>> processBulk(List<String> texts) {
-        List<List<ChemicalSpan>> mentions = new ArrayList<>();
+        List<List<ChemicalSpan>> mentions = texts.stream()
+            .map(a -> new ArrayList<ChemicalSpan>())
+            .collect(Collectors.toList());
 
         //Unless we are using wapiti or delft + FEATURES there is no need to call this client 
         if (this.configuration.getModels()
