@@ -22,7 +22,6 @@ import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
-import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.SentenceUtilities;
 import org.slf4j.Logger;
@@ -32,6 +31,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -114,7 +114,9 @@ public class GrobidPDFEngine {
             // Other bibliographic data
             if (isNotBlank(resHeader.getAuthors())) {
                 String authors = resHeader.getFullAuthors().stream()
-                    .map(a -> StringUtils.strip(LayoutTokensUtil.toText(a.getLayoutTokens())))
+                    .map(a -> Stream.of(StringUtils.trimToEmpty(a.getFirstName()), StringUtils.trimToEmpty(a.getMiddleName()), StringUtils.trimToEmpty(a.getLastName()))
+                        .filter(StringUtils::isNotBlank)
+                        .collect(Collectors.joining(" ")))
                     .collect(Collectors.joining(", "));
                 biblioInfo.setAuthors(authors);
             }
