@@ -206,9 +206,16 @@ public class ModuleEngine {
     }
 
     private List<Span> getQuantities(List<LayoutToken> tokens) {
-        List<Measurement> measurements = quantityParser.process(tokens);
-
         List<Span> spans = new ArrayList<>();
+        List<Measurement> measurements = new ArrayList<>();
+        
+        //TODO: remove this when quantities will be updated
+        try {
+             measurements = quantityParser.process(tokens);
+        } catch (Exception e) {
+            LOGGER.warn("Error when processing quantities", e);
+            return spans;
+        }
 
         spans.addAll(getTemperatures(measurements).stream()
             .flatMap(p -> Stream.of(MeasurementUtils.toSpan(p, tokens, SUPERCONDUCTORS_TC_VALUE_LABEL)))

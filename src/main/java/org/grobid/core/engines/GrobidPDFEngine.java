@@ -307,6 +307,15 @@ public class GrobidPDFEngine {
                             AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(markerLayoutTokens),
                             AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(markerLayoutTokens)))
                         .collect(Collectors.toList());
+                    
+                    // We need adjust overlapping markers
+                    if (markersExtremitiesAsIndex.size() > 1) {
+                        for (int i = 0; i < markersExtremitiesAsIndex.size() - 1; i++) {
+                            if (markersExtremitiesAsIndex.get(i).getRight() > markersExtremitiesAsIndex.get(i + 1).getLeft()) {
+                                markersExtremitiesAsIndex.set(i, Pair.of(markersExtremitiesAsIndex.get(i).getLeft(), markersExtremitiesAsIndex.get(i + 1).getLeft()));
+                            }
+                        }
+                    }
 
                     markersPositionsAsOffsetsInText = getMarkersAsOffsets(documentBlock, markersExtremitiesAsIndex);
                 }
