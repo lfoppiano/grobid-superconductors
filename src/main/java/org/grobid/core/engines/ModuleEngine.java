@@ -506,18 +506,18 @@ public class ModuleEngine {
                         } else if (StringUtils.length(previous.getText()) < StringUtils.length(current.getText())) {
                             toBeRemoved.add(current);
                         } else {
-                            if (current.getSource().equals("grobid-superconductors")) {
+                            if (current.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(current.getBoundingBoxes()) && isNotEmpty(previous.getBoundingBoxes())) {
                                     current.setBoundingBoxes(previous.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(previous);
-                            } else if (previous.getSource().equals("grobid-superconductors")) {
+                            } else if (previous.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(previous.getBoundingBoxes()) && isNotEmpty(current.getBoundingBoxes())) {
                                     previous.setBoundingBoxes(current.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(current);
                             } else {
@@ -532,18 +532,18 @@ public class ModuleEngine {
                         } else if (StringUtils.length(previous.getText()) > StringUtils.length(current.getText())) {
                             toBeRemoved.add(previous);
                         } else {
-                            if (current.getSource().equals("grobid-superconductors")) {
+                            if (current.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(current.getBoundingBoxes()) && isNotEmpty(previous.getBoundingBoxes())) {
                                     current.setBoundingBoxes(previous.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(previous);
-                            } else if (previous.getSource().equals("grobid-superconductors")) {
+                            } else if (previous.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(previous.getBoundingBoxes()) && isNotEmpty(current.getBoundingBoxes())) {
                                     previous.setBoundingBoxes(current.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(current);
                             } else {

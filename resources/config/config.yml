@@ -23,9 +23,10 @@ maxParallelRequests: 8
 consolidation:
   # define the bibliographical data consolidation service to be used: 
     # - "crossref" for CrossRef REST API or 
-    # - "glutton" for https://github.com/kermitt2/biblio-glutton, removing the value
-    # empty value will disable the data consolidation
-  service: "glutton"
+    # - "glutton" for https://github.com/kermitt2/biblio-glutton, and 
+    # - empty value will disable the data consolidation
+#  service: "glutton"
+  service: 
   glutton:
     url: "http://falcon.nims.go.jp/glutton"
 

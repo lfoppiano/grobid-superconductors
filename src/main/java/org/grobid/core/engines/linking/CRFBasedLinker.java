@@ -211,7 +211,7 @@ public class CRFBasedLinker {
 
             if (clusterLabel.equals(leftTaggingLabel)) {
                 if (insideLink) {
-                    LOGGER.info("Found link-left label with content " + clusterContent);
+                    LOGGER.debug("Found link-left label with content " + clusterContent);
 
 //                    Pair<Integer, Integer> extremitiesAsIndex = getExtremitiesAsIndex(tokens, startPos, endPos);
 //                    List<LayoutToken> link = new ArrayList<>();
@@ -232,9 +232,9 @@ public class CRFBasedLinker {
                         Span rightSide = collect.get(0);
 
                         if (rightSide.getType().equals(leftSide.getType())) {
-                            LOGGER.warn("Linking two entities of the same type. Ignoring.");
+                            LOGGER.debug("Linking two entities of the same type. Ignoring.");
                         } else {
-                            LOGGER.info("Link left -> " + rightSide.getText());
+                            LOGGER.debug("Link left -> " + rightSide.getText());
                             leftSide.addLink(new Link(String.valueOf(rightSide.getId()), rightSide.getText(), rightSide.getType(), "crf"));
                             rightSide.addLink(new Link(String.valueOf(leftSide.getId()), leftSide.getText(), leftSide.getType(), "crf"));
                             // After linking I remove the references to both sides

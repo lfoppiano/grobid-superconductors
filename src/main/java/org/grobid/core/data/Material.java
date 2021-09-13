@@ -147,7 +147,7 @@ public class Material {
         }
 
         if (isEmpty(material.getFormula())) {
-            LOGGER.warn("Cannot resolve variables, as the material representation doesn't have a formula " + material.getFormula());
+            LOGGER.debug("Cannot resolve variables, as the material representation doesn't have a formula " + material.getFormula());
         }
 
         Set<String> variables = material.getVariables().keySet();
@@ -162,7 +162,7 @@ public class Material {
         }
 
         if (containedVariables.size() != variables.size()) {
-            LOGGER.warn("While processing the variables, some are not present in the material formula and " +
+            LOGGER.debug("While processing the variables, some are not present in the material formula and " +
                 "won't be substituted: " + SetUtils.disjunction(variables, containedVariables));
         }
 
@@ -194,7 +194,7 @@ public class Material {
             try {
                 generatePermutations(cleanedMapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
             } catch (NumberFormatException e2) {
-                LOGGER.warn("Cannot replace variables " + Arrays.toString(variables.toArray()));
+                LOGGER.debug("Cannot replace variables " + Arrays.toString(variables.toArray()));
             }
         }
 
@@ -272,7 +272,7 @@ public class Material {
                     } else if (variableIndex + variable.length() == formula.length()) {
                         returnFormula = returnFormula.replaceFirst(variable, value);
                     } else {
-                        LOGGER.warn("The variable " + variable + " substitution with value " + value + " into " + formula);
+                        LOGGER.debug("The variable " + variable + " substitution with value " + value + " into " + formula);
                     }
                 }
             }

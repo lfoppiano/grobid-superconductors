@@ -86,10 +86,10 @@ public class MaterialClassResolver {
         if (resolvedVariables.size() == 1) {
             sampleFormula = resolvedVariables.get(0);
         } else if (resolvedVariables.size() > 1) {
-            LOGGER.warn("Something wrong came out from the material sampling in the class detection. " +
+            LOGGER.debug("Something wrong came out from the material sampling in the class detection. " +
                 "Input formula: " + sampleMaterial.getFormula() + ", resolvedFormula: " + Arrays.toString(resolvedVariables.toArray()));
         } else {
-            LOGGER.warn("No formula came out from the material sampling in the class detection. " +
+            LOGGER.debug("No formula came out from the material sampling in the class detection. " +
                 "Input formula: " + sampleMaterial.getFormula());
         }
         return sampleFormula;
