@@ -26,15 +26,15 @@ See the [References](https://github.com/lfoppiano/grobid-superconductors#referen
 
 The [Grobid Superconductors Tool project](https://github.com/lfoppiano/grobid-superconductors-tools) project contains also other utilities, more particularly all that is implemented in python. 
 
-### Output databases
+[comment]: <> (### Output databases)
 
-The output database can be easily created using the [Extraction process](./resources/web/process) on a set of PDFs. 
+[comment]: <> (The output database can be easily created using the [Extraction process]&#40;./resources/web/process&#41; on a set of PDFs. )
 
-Example of database output, organised by dates, can be found [here](./resources/dataset/database): 
+[comment]: <> (Example of database output, organised by dates, can be found [here]&#40;./resources/dataset/database&#41;: )
     
- - [500-papers](https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/500-papers) is the output from 500 papers from American Institute of Physics (AIP), American Physical Society (APS) and Institute of Physics (IOP). They were automatically selected using keywords relative to the superconductors domain such as 'tc', 'superconductivity'. 
+[comment]: <> ( - [500-papers]&#40;https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/500-papers&#41; is the output from 500 papers from American Institute of Physics &#40;AIP&#41;, American Physical Society &#40;APS&#41; and Institute of Physics &#40;IOP&#41;. They were automatically selected using keywords relative to the superconductors domain such as 'tc', 'superconductivity'. )
     
- - [IOP-0953-2048](https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/IOP-0953-2048) contains the output obtained processing the journal ``IOP - Superconductors science and technology`` 
+[comment]: <> ( - [IOP-0953-2048]&#40;https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/IOP-0953-2048&#41; contains the output obtained processing the journal ``IOP - Superconductors science and technology`` )
 
 ## Getting started
 The quickest way to get started is to use directly docker-compose contained in the project directory.
@@ -79,10 +79,28 @@ In the following table are listed the models (in `resources/models/` ) that are 
 | entityLinking-tcValue-pressure | links superconducting critical temperature and pressure  | CRF |   
 | entityLinking-tcValue-me_methods | superconducting critical temperature and measurement method | CRF|   
 
-
 Below, in the Section [accuracy](#accuracy), we present the accuracies for each model. 
 
-## Accuracy
+
+## Performances: Speed
+
+Grobid is designed for fast processing using a lightweight and tighly integrated system. 
+Grobid-superconductors contains more moving parts which are separated from the main application. 
+The linking module, the class classifier and the chem data extractors are provided on different micro-services. 
+To reduce the overhead of the http connection all sentences of a document are bundled together and sent with one http requests.
+
+The performance are summarised in the table below (RPS: request per second, FPS: failure per second) 
+The detailed reports and explanation can be found [here](resources/performances/readme.md).
+
+- CRF: 
+  - 
+- GPU: 
+  - BidLSTM_CRF_FEATURE: 
+  - scibert: 1.0/0.9 RPS/FPS (4Gb GPU), 1.0/0.8 RPS/FPS (16Gb GPU)
+
+- python services: ~40 RPS
+
+## Performances: Accuracy 
 
 ### Extraction (Sequence labelling task)
 
