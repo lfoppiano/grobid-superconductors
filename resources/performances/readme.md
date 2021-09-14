@@ -14,16 +14,16 @@ The servers used for testing are as follows:
 
 | name/description                  | server            | architecture          | RPS       | FPS       | Report                                                                        |
 |--------                           |----------------   |-------                |-------    |-------    |----------                                                                     |
-| process text                      | falcon            | CRF                   | 6.2       | 0.0       | [open](reports/falcon-30m-50u,only_text,crf.html)                             |
-| process text, batch_size=1000     | falcon            | BidLSTM_CRF_FEATURES  | 6.1       | 0.0       | [open](reports/falcon-30m-50u,only_text,bidlstm_crf,batch_size=1000.html)     |                                      |
-| process text, batch_size=1000     | yomite            | BidLSTM_CRF_FEATURES  | 6.1       | 0.0       | [open](reports/yomite-30m-50u,only_text,bidlstm_crf,batch_size=1000.html)     |
-| process text, batch_size=1000     | falcon            | scibert               | 1.8       | 0         | [open](reports/falcon-30m-50u-only_text,batch_size=1000.html)                 |
-| process text, batch_size=1000     | yomite            | scibert               | 4.6       | 0         | [open](reports/yomite-30m-50u-only_text,batch_size=1000.html)                 |
-| process pdfs                      | falcon            | CRF                   | 1.2       | 0.1       | [open](reports/falcon-30m-50u,only_pdfs,crf.html)                             |
-| process pdfs, batch_size=1000     | falcon            | BidLSTM_CRF_FEATURES  | 1.2       | 0.1       | [open](reports/falcon-30m-50u,only_pdfs,bidlstm_crf,batch_size=1000.html)     |
-| process pdfs, batch_size=1000     | yomite            | BidLSTM_CRF_FEATURES  | 1.1       | 0.2       | [open](reports/yomite-30m-50u,only_pdfs,bidlstm_crf,batch_size=1000.html)     |
-| process pdfs, batch_size=1000     | falcon            | scibert               | 1.0       | 0.9       | [open](reports/falcon-30m-50u,only_pdfs,batch_size=1000.html)                 |
-| process pdfs, batch_size=1000     | yomite            | scibert               | 1.8       | 0.8       | [open](reports/yomite-30m-50u,only_pdfs,batch_size=1000.html)                 |
+| process text                      | falcon            | CRF                   | 6.2       | 0.0       | [open](reports/falcon-30m-50u,only_text,crf.pdf)                             |
+| process text, batch_size=1000     | falcon            | BidLSTM_CRF_FEATURES  | 6.1       | 0.0       | [open](reports/falcon-30m-50u,only_text,bidlstm_crf,batch_size=1000.pdf)     |                                      |
+| process text, batch_size=1000     | yomite            | BidLSTM_CRF_FEATURES  | 6.1       | 0.0       | [open](reports/yomite-30m-50u,only_text,bidlstm_crf,batch_size=1000.pdf)     |
+| process text, batch_size=1000     | falcon            | scibert               | 1.8       | 0         | [open](reports/falcon-30m-50u-only_text,batch_size=1000.pdf)                 |
+| process text, batch_size=1000     | yomite            | scibert               | 4.6       | 0         | [open](reports/yomite-30m-50u-only_text,batch_size=1000.pdf)                 |
+| process pdfs                      | falcon            | CRF                   | 1.2       | 0.1       | [open](reports/falcon-30m-50u,only_pdfs,crf.pdf)                             |
+| process pdfs, batch_size=1000     | falcon            | BidLSTM_CRF_FEATURES  | 1.2       | 0.1       | [open](reports/falcon-30m-50u,only_pdfs,bidlstm_crf,batch_size=1000.pdf)     |
+| process pdfs, batch_size=1000     | yomite            | BidLSTM_CRF_FEATURES  | 1.1       | 0.2       | [open](reports/yomite-30m-50u,only_pdfs,bidlstm_crf,batch_size=1000.pdf)     |
+| process pdfs, batch_size=1000     | falcon            | scibert               | 1.0       | 0.9       | [open](reports/falcon-30m-50u,only_pdfs,batch_size=1000.pdf)                 |
+| process pdfs, batch_size=1000     | yomite            | scibert               | 1.8       | 0.8       | [open](reports/yomite-30m-50u,only_pdfs,batch_size=1000.pdf)                 |
 
 Terms definition: 
   - process text = each sample is a sentence
