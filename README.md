@@ -92,10 +92,9 @@ To reduce the overhead of the http connection all sentences of a document are bu
 The performance are summarised in the table below (RPS: request per second, FPS: failure per second) 
 The detailed reports and explanation can be found [here](resources/performances/readme.md).
 
-- CRF: 
-  - 
-- GPU: 
-  - BidLSTM_CRF_FEATURE: 
+- Pdf processing: 
+  - CRF: 1.2/0.1
+  - BidLSTM_CRF_FEATURE: 1.2/0.1 RPS/FPS (4Gb GPU), 1.1/0.2 RPS/FPS (16Gb GPU)
   - scibert: 1.0/0.9 RPS/FPS (4Gb GPU), 1.0/0.8 RPS/FPS (16Gb GPU)
 
 - python services: ~40 RPS

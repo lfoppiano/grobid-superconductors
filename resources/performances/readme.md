@@ -8,7 +8,7 @@ The test is designed as follow: `30 minutes, ramping up the concurrent users fro
 
 The system is limited to maximum 6 concurrent requests, and will return 503 if this limit is passed.
 
-The servers used for testing are as follow
+The servers used for testing are as follows:
 - yomite: GPU Tesla P100-PCIE 16Gb, 24 CPUs, 96Gb of Ram
 - falcon: GPU Quadro P2000 5Gb, 12 CPUs, 64Gb of Ram
 
@@ -24,3 +24,7 @@ The servers used for testing are as follow
 | process text, batch_size=1000     | falcon            | BidLSTM_CRF_FEATURES  | 6.1       | 0.0       | [open](reports/falcon-30m-50u,only_text,bidlstm_crf,batch_size=1000.html)     |                                      |
 | process pdfs, batch_size=1000     | yomite            | BidLSTM_CRF_FEATURES  | 1.1       | 0.2       | [open](reports/yomite-30m-50u,only_pdfs,bidlstm_crf,batch_size=1000.html)     |
 | process pdfs, batch_size=1000     | falcon            | BidLSTM_CRF_FEATURES  | 1.2       | 0.1       | [open](reports/falcon-30m-50u,only_pdfs,bidlstm_crf,batch_size=1000.html)     |
+
+
+RPS: Rate per second
+FPS: Failures per second
