@@ -213,12 +213,6 @@ public class CRFBasedLinker {
                 if (insideLink) {
                     LOGGER.debug("Found link-left label with content " + clusterContent);
 
-//                    Pair<Integer, Integer> extremitiesAsIndex = getExtremitiesAsIndex(tokens, startPos, endPos);
-//                    List<LayoutToken> link = new ArrayList<>();
-//                    for (int x = extremitiesAsIndex.getLeft(); x < extremitiesAsIndex.getRight(); x++) {
-//                        link.add(tokens.get(x));
-//                    }
-
                     int layoutTokenListStartOffset = AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(theTokens);
                     int layoutTokenListEndOffset = AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(theTokens);
                     List<Span> collect = annotations.stream().filter(a -> {
@@ -251,7 +245,7 @@ public class CRFBasedLinker {
                 }
 
             } else if (clusterLabel.equals(rightTaggingLabel)) {
-                LOGGER.info("Found link-right label with content " + clusterContent);
+                LOGGER.debug("Found link-right label with content " + clusterContent);
 
                 int layoutTokenListStartOffset = AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(theTokens);
                 int layoutTokenListEndOffset = AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(theTokens);
@@ -261,12 +255,7 @@ public class CRFBasedLinker {
 
                     return supLayoutStart == layoutTokenListStartOffset && supLayoutEnd == layoutTokenListEndOffset;
                 }).collect(Collectors.toList());
-//
-//                    Pair<Integer, Integer> extremitiesAsIndex = getExtremitiesAsIndex(tokens, startPos, endPos);
-//                    List<LayoutToken> link = new ArrayList<>();
-//                    for (int x = extremitiesAsIndex.getLeft(); x < extremitiesAsIndex.getRight(); x++) {
-//                        link.add(tokens.get(x));
-//                    }
+                
                 if (!insideLink) {
                     if (spansCorrespondingToCurrentLink.size() == 1) {
                         LOGGER.info("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
