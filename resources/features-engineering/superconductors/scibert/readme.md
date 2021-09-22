@@ -68,7 +68,30 @@ Notes:
 
 Output is [here](./vocab):
 
-### Fine-tuning
+
+#### Vocab domain-specific additional terms
+
+##### Steps
+
+BERT's vocabulary allow 100 terms to be set in the configuration file. They represent eventual domain-specific terms that might be very frequent and relevant when pre-training on a new domain. 
+In this section we discuss the process followed to extract such list of 100 terms. 
+
+1. Ran [keybert](https://github.com/MaartenGr/KeyBERT) on each file with the following parameters ``stop_words=[], use_mmr=False, use_maxsum=False, nr_candidates=100, top_n=10``. The script is [here](https://github.com/lfoppiano/grobid-superconductors-tools/blob/master/vocab-builder/run_keybert.py) and outputs a JSONL where each line is a list of tuples with (term, score).   
+
+2. Aggregate each file into a single one 
+   1. ``for x in `find output -name *.json`; do cat $x >> aggregated_raw.jsonl; done``
+   2. ``sed 's/\(\]\]\)\(\[\[\)/\1\n\2/g' aggregated_raw.jsonl > aggregated.jsonl``
+
+3. Unwind each document's list as a line in a file: ``while read in; do echo "$in" | jq '.[][0]' >> aggregated.as_list.txt ; done < aggregated.jsonl`` 
+
+4. Calculate and sort by frequency: ``awk '{A[$1]++}END{for(k in A) print k, A[k]}' aggregated.as_list.txt | sort -rnk2  | head -n 100``
+
+##### Results
+TBD
+
+Output is ...
+
+### Pre-training
 
 Starting from a text file containing one paragraph per line, we performed the following operations:
 
@@ -108,14 +131,13 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 | Sc+Sm fine tuning short sequences | o23483, same parameters as described by SciBERT's authors |128 | 256 | 12000000 |  1000 | 1e-4 | 20 | OOM |
 | Sc+Sm fine tuning short sequences | o23485, same parameters as described by SciBERT's authors |128 | 128 | 24000000 |  1000 | 1e-4 | 20 | OOM |
 | Sc+Sm fine tuning short sequences | o23487, same parameters as described by SciBERT's authors |128 | 64 | 48000000 |  1000 | 1e-4 | 20 | OOM |
-| Sc+Sm fine tuning short sequences (SciBERT's params) | o23488, same parameters as described by SciBERT's authors (pretraining_output_128_1e4) |128 | 32 | 96000000 |  1000 | 1e-4 | 20 | TBD |
-| Sc+Sm fine tuning short sequences | TBD | 128 | 32 | 96000000 |  1000 | 1e-5 | 20 | TBD |
+| Sc+Sm fine tuning short sequences (SciBERT's original equivalent with lower batch size) | o23488, same parameters as described by SciBERT's authors (pretraining_output_128_1e4) |128 | 32 | 96000000 |  1000 | 1e-4 | 20 | TBD |
+| Sc+Sm fine tuning short sequences (SciBERT's original equivalent with lower batch size), lower learning rate | TBD | 128 | 32 | 96000000 |  1000 | 1e-5 | 20 | TBD |
 | Lower number of steps  |
-| Sc+Sm fine tuning short sequences (100K steps) | o23497, 900k train steps |128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7224342 | 1.2316597 | 0.9825 | 0.04809034 |
-| Sc+Sm fine tuning long sequences (100K steps), from o23497 | ?? , 1M train steps | 128 | 32 | 900000 |  1000 | 1e-4 | 20 | TBD |
-| Sc+Sm fine tuning short sequences (200K steps) | o23489, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
+| Sc+Sm fine tuning short sequences (100K steps) | ~~o23497~~, 900k train steps |128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7224342 | 1.2316597 | 0.9825 | 0.04809034 |
+| Sc+Sm fine tuning long sequences (100K steps), from o23497 | ~~o23529~~, 1M train steps | 128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7668856 | 1.0131468 | 0.99625 | 0.021626918 |
+| Sc+Sm fine tuning short sequences (200K steps) | ~~o23489~~, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
 | Sc+Sm fine tuning short sequences (~11M steps) | o23490, 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | TBD |
-| - |
 
 ## Details parameters
 
