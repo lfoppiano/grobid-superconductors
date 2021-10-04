@@ -32,6 +32,7 @@ Notes:
 - there are 100 unused tokens that BERT allocate for "common tokens that could appear in a specific
   domain" ([cf](https://github.com/allenai/scibert/issues/38#issuecomment-490520991)). Could we get these most important
   100 tokesn from our `myvocab`?
+- [thread](https://github.com/google-research/bert/issues/9) discussing how to enlarge the BERT vocabulary. Example script [here](https://github.com/huggingface/transformers/issues/1413#issuecomment-538083512).
 
 ##### Steps:
 
@@ -86,10 +87,25 @@ In this section we discuss the process followed to extract such list of 100 term
 
 4. Calculate and sort by frequency: ``awk '{A[$1]++}END{for(k in A) print k, A[k]}' aggregated.as_list.txt | sort -rnk2  | head -n 100``
 
-##### Results
-TBD
+5. Obtain the list of terms by removing unnecessary quotes and frequency  ``awk '{gsub(/\"|\;/,"",$1); print $1 }' filename``
 
-Output is ...
+##### Results
+The output data is in the following form: 
+```
+polymer
+materials
+chemistry
+polymers
+catalytic
+magnetic
+semiconductor
+chemical
+spectroscopy
+synthesis
+nanoparticles
+```
+
+The raw data can be found [here](features-engineering/superconductors/scibert/domain-specific-vocab). 
 
 ### Pre-training
 
