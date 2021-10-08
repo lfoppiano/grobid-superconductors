@@ -105,7 +105,45 @@ synthesis
 nanoparticles
 ```
 
-The raw data can be found [here](features-engineering/superconductors/scibert/domain-specific-vocab). 
+The raw data can be found [here](features-engineering/superconductors/scibert/domain-specific-vocab):
+    - `myvocab-100.clean.txt` (list 100 most frequent terms)
+    - `myvocab-all.clean.txt` (list of all the extracted terms, sorted by frequency)
+    - `myvocab-100.txt` (list 100 most frequent terms and frequency)
+    - `myvocab-all.txt` (list of all the extracted terms and frequency, sorted by frequency)
+
+#### Extract exclusive terms from the domain-specific vocabulary
+
+This final task reduce the domain-specific vocabulary to the only terms that are not already included in the Bert/SCIBert pre-defined vocabulary.
+``vocab.txt``: SciBERT/BERT vocabulary
+``myvocab.txt``: domain-specific vocabulary (obtained from the procedure above)
+
+##### Steps
+
+1. Sort vocabularies
+   ``sort vocab.txt > vocab.sorted.txt``
+   ``sort myvocab-all.clean.txt > myvocab.sorted.txt``
+
+2. Find terms that are only in the domain-specific vocabulary: 
+   ``comm -13 vocab.sorted.txt myvocab.sorted.txt > myvocab.only.txt``
+
+3. Now we need to find the frequencies, which are mapped into ``myvocab-all.txt``. Inside that files the terms are quoted, so we need to add the quotes to the file resulting from previous step:  
+    ``awk '{ print "\""$0"\""}' myvocab.only.txt > myvocab.only.quoted.txt``
+
+4. Sort everything 
+    ``sort myvocab.only.quotedtxt > myvocab.only.quoted.sorted.txt``
+
+5. Map the terms not in the BERT/SCIBert vocabulary to the frequencies:
+   ``join -1 1 -2 1 -o 1.1 2.2 myvocab.only.quoted.sorted.txt myvocab.sorted.txt > myvocab.only.with_recomputed_frequencies.txt``
+
+6. Sort the terms by frequencies:  
+``sort -rnk2 myvocab.only.with_recomputed_frequencies.txt > myvocab-excluding_scibert_terms.all.txt``
+
+7. Sort and extract the 100 most frequent terms: 
+``sort -rnk2 intersection | head -n 100 > myvocab-excluding_scibert_terms.100.txt``
+
+##### Results
+ - ``myvocab-excluding_scibert_terms.100.txt``: vocabulary of the 100 most frequent keyterms that are not already included in the SciBERT vocabulary
+ - ``myvocab-excluding_scibert_terms.all.txt``: complete domain-specific vocabulary for material science text excluding terms that are not already included in the SciBERT vocabulary. 
 
 ### Pre-training
 
@@ -143,17 +181,16 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 
 | Name  | Notes | max_sequence_lenght | train_batch_size | num_train_steps | learning_rate | max_prediction_seq | init_checkpoint | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
 |--------|--------- |------|---------|----|--------|--------|---- | ---- | ---- | --- | --- |
-| SciBERT's original parameters |
-| Sc+Sm fine tuning short sequences | o23483, same parameters as described by SciBERT's authors |128 | 256 | 12000000 |  1000 | 1e-4 | 20 | OOM |
-| Sc+Sm fine tuning short sequences | o23485, same parameters as described by SciBERT's authors |128 | 128 | 24000000 |  1000 | 1e-4 | 20 | OOM |
-| Sc+Sm fine tuning short sequences | o23487, same parameters as described by SciBERT's authors |128 | 64 | 48000000 |  1000 | 1e-4 | 20 | OOM |
-| Sc+Sm fine tuning short sequences (SciBERT's original equivalent with lower batch size) | o23488, same parameters as described by SciBERT's authors (pretraining_output_128_1e4) |128 | 32 | 96000000 |  1000 | 1e-4 | 20 | TBD |
-| Sc+Sm fine tuning short sequences (SciBERT's original equivalent with lower batch size), lower learning rate | TBD | 128 | 32 | 96000000 |  1000 | 1e-5 | 20 | TBD |
-| Lower number of steps  |
-| Sc+Sm fine tuning short sequences (100K steps) | ~~o23497~~, 900k train steps |128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7224342 | 1.2316597 | 0.9825 | 0.04809034 |
-| Sc+Sm fine tuning long sequences (100K steps), from o23497 | ~~o23529~~, 1M train steps | 128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7668856 | 1.0131468 | 0.99625 | 0.021626918 |
-| Sc+Sm fine tuning short sequences (200K steps) | ~~o23489~~, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
-| Sc+Sm fine tuning short sequences (~11M steps) | o23490, 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | TBD |
+| -- | SciBERT's original parameters |
+| Sc+Sm pre-training short sequences | o23483, same parameters as described by SciBERT's authors |128 | 256 | 1300000 |  1000 | 1e-4 | 20 | OOM |
+| Sc+Sm pre-training short sequences | o23485, same parameters as described by SciBERT's authors |128 | 128 | 2600000 |  1000 | 1e-4 | 20 | OOM |
+| Sc+Sm pre-training short sequences | o23487, same parameters as described by SciBERT's authors |128 | 64  | 5200000 |  1000 | 1e-4 | 20 | OOM |
+| Sc+Sm pre-training short sequences | same parameters as described by SciBERT's authors |128 | 32  | 10400000 |  1000 | 1e-4 | 20 | TBD |
+| Sc+Sm pre-training short sequences (~11M steps) | o23490, 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | TBD |
+| -- | Lower number of steps  |
+| Sc+Sm pre-training short sequences (100K steps) | ~~o23497~~, 900k train steps |128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7224342 | 1.2316597 | 0.9825 | 0.04809034 |
+| Sc+Sm pre-training long sequences (100K steps), from o23497 | ~~o23529~~, 1M train steps | 128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7668856 | 1.0131468 | 0.99625 | 0.021626918 |
+| Sc+Sm pre-training short sequences (200K steps) | ~~o23489~~, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
 
 ## Details parameters
 
