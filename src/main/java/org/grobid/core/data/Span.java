@@ -15,7 +15,7 @@ import java.util.*;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Span implements Cloneable {
-    //We use the hashcode to generate an unique id
+    //We use the hashcode to generate a unique id
 
     private String id = null;
 

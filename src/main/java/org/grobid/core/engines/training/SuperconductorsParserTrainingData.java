@@ -15,10 +15,7 @@ import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.ChemDataExtractorClient;
-import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.MeasurementUtils;
-import org.grobid.core.utilities.UnitUtilities;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +38,12 @@ public class SuperconductorsParserTrainingData {
 
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
+    private StructureIdentificationModuleClient structureIdentificationModuleClient;
     private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> trainingOutputFormatters = new HashMap<>();
 
 
-    public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient) {
-        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance(null)),
+    public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient, StructureIdentificationModuleClient structureIdentificationModuleClient) {
+        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance(null), structureIdentificationModuleClient),
             QuantityParser.getInstance(true));
     }
 

@@ -13,6 +13,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,30 +31,30 @@ import java.util.List;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Singleton
-public class SpaceGroupsModuleClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpaceGroupsModuleClient.class);
+public class StructureIdentificationModuleClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StructureIdentificationModuleClient.class);
 
     private final String serverUrl;
     private GrobidSuperconductorsConfiguration configuration;
     private CloseableHttpClient httpClient;
 
-    public SpaceGroupsModuleClient(String serverUrl) {
+    public StructureIdentificationModuleClient(String serverUrl) {
         this.serverUrl = serverUrl;
         this.httpClient = HttpClientBuilder.create().build();
     }
 
     @Inject
-    public SpaceGroupsModuleClient(GrobidSuperconductorsConfiguration configuration) {
+    public StructureIdentificationModuleClient(GrobidSuperconductorsConfiguration configuration) {
         this.configuration = configuration;
-        this.serverUrl = configuration.getClassResolverUrl();
+        this.serverUrl = configuration.getLinkingModuleUrl();
         this.httpClient = HttpClientBuilder.create().build();
     }
 
-    public List<String> processSpaceGroups(String text) {
+    public List<String> processStructure(String text) {
 
         List<String> outputClasses = new ArrayList<>();
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/spacegropu/text/single");
+            final HttpPost request = new HttpPost(serverUrl + "/process/structure/text/single");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -80,11 +81,11 @@ public class SpaceGroupsModuleClient {
         return outputClasses;
     }
 
-    public List<List<String>> processSpaceGroupsMulti(List<String> texts) {
+    public List<List<ChemicalSpan>> extractStructuresMulti(List<String> texts) {
 
-        List<List<String>> outputClasses = new ArrayList<>();
+        List<List<ChemicalSpan>> outputClasses = new ArrayList<>();
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/spacegropu/text");
+            final HttpPost request = new HttpPost(serverUrl + "/process/structure/text");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -98,7 +99,7 @@ public class SpaceGroupsModuleClient {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    outputClasses = fromJsonMultiple(response.getEntity().getContent());
+                    outputClasses = ChemDataExtractorClient.fromJsonBulk(response.getEntity().getContent());
                 }
             }
 

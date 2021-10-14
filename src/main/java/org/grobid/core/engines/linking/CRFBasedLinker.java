@@ -287,7 +287,7 @@ public class CRFBasedLinker {
 
         return annotations;
     }
-
+    
     public static List<String> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
         List<String> output = new ArrayList<>();
 
