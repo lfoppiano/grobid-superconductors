@@ -12,6 +12,7 @@ import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.StructureIdentificationModuleClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,6 +42,7 @@ public class SuperconductorsParserTest {
 
     private ChemDataExtractorClient mockChemspotClient;
     private MaterialParser mockMaterialParser;
+    private StructureIdentificationModuleClient mockSpaceGroupsClient;
 
 
     @BeforeClass
@@ -49,14 +51,15 @@ public class SuperconductorsParserTest {
         modelParameters.name = "bao";
         GrobidProperties.addModel(modelParameters);
     }
-    
-    
+
+
     @Before
     public void setUp() throws Exception {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
         mockMaterialParser = EasyMock.createMock(MaterialParser.class);
+        mockSpaceGroupsClient = EasyMock.createMock(StructureIdentificationModuleClient.class);
         PowerMock.mockStatic(Lexicon.class);
-        target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient, mockMaterialParser);
+        target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient, mockMaterialParser, mockSpaceGroupsClient);
     }
 
     @Test
@@ -175,7 +178,27 @@ public class SuperconductorsParserTest {
     private static List<String> getFeatures(List<LayoutToken> layoutTokens) {
 
         return layoutTokens.stream()
-                .map(token -> FeaturesVectorSuperconductors.addFeatures(token, null, new LayoutToken(), null).printVector())
-                .collect(Collectors.toList());
+            .map(token -> FeaturesVectorSuperconductors
+                .addFeatures(token, null, new LayoutToken(), null)
+                .printVector())
+            .collect(Collectors.toList());
+    }
+
+    @Test
+    public void testExtractSpans() throws Exception {
+        String text = "WB 4.2 crystallizes in the space group P6 3 /mmc (No. 194) and has a crystal structure that is derived from the simple diborides";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+        List<ChemicalSpan> mentions = Arrays.asList(
+            new ChemicalSpan(39, 48, "space-group","P6 3 /mmc") 
+        );
+            
+        List<Span> spans = target.extractSpans(layoutTokens, mentions);
+        
+        assertThat(spans, hasSize(1));
+        assertThat(spans.get(0).getText(), is("P6 3 /mmc"));
+        assertThat(spans.get(0).getTokenStart(), is(16));
+        assertThat(spans.get(0).getTokenEnd(), is(23));
+        assertThat(spans.get(0).getOffsetStart(), is(39));
+        assertThat(spans.get(0).getOffsetEnd(), is(48));
     }
 }

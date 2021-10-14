@@ -154,7 +154,7 @@ public class ChemDataExtractorClient {
         return null;
     }
 
-    public List<List<ChemicalSpan>> fromJsonBulk(InputStream inputLine) {
+    public static List<List<ChemicalSpan>> fromJsonBulk(InputStream inputLine) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);

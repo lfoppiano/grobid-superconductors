@@ -13,6 +13,7 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.StructureIdentificationModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -33,6 +34,7 @@ public class CRFBasedLinkerIntegrationTest {
     private CRFBasedLinker target;
     private ModuleEngine moduleEngine;
     private ChemDataExtractorClient mockChemspotClient;
+    private StructureIdentificationModuleClient mockSpaceGroupsClient;
 
 
     @Before
@@ -47,7 +49,8 @@ public class CRFBasedLinkerIntegrationTest {
         
         target = new CRFBasedLinker();
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
-        SuperconductorsParser superParser = new SuperconductorsParser(mockChemspotClient, new MaterialParser(null));
+        mockSpaceGroupsClient = EasyMock.createMock(StructureIdentificationModuleClient.class);
+        SuperconductorsParser superParser = new SuperconductorsParser(mockChemspotClient, new MaterialParser(null), mockSpaceGroupsClient);
         this.moduleEngine = new ModuleEngine(new GrobidSuperconductorsConfiguration(), superParser, QuantityParser.getInstance(true), null, null);
     }
 
@@ -58,7 +61,8 @@ public class CRFBasedLinkerIntegrationTest {
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
         
         EasyMock.expect(mockChemspotClient.processText(EasyMock.anyString())).andReturn(new ArrayList<>());
-        EasyMock.replay(mockChemspotClient);
+        EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
+        EasyMock.replay(mockChemspotClient, mockSpaceGroupsClient);
         List<TextPassage> passages = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         
         assertThat(passages, hasSize(1));
@@ -81,7 +85,7 @@ public class CRFBasedLinkerIntegrationTest {
         assertThat(linkedEntities.get(0).getText(), is("MgB 2"));
         assertThat(linkedEntities.get(0).getLinks().get(0).getTargetText(), is("40 K"));
         
-        EasyMock.verify(mockChemspotClient);
+        EasyMock.verify(mockChemspotClient, mockSpaceGroupsClient);
     }
 
 
@@ -91,7 +95,8 @@ public class CRFBasedLinkerIntegrationTest {
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
 
         EasyMock.expect(mockChemspotClient.processText(EasyMock.anyString())).andReturn(new ArrayList<>());
-        EasyMock.replay(mockChemspotClient);
+        EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
+        EasyMock.replay(mockChemspotClient, mockSpaceGroupsClient);
         List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
         
@@ -114,7 +119,7 @@ public class CRFBasedLinkerIntegrationTest {
         Optional<Span> linkedSpan = linkedEntities.stream().filter(le -> String.valueOf(le.getId()).equals(linkId)).findFirst();
         assertThat(linkedSpan.isPresent(), is(true));
         assertThat(linkedSpan.get().getText(), is("26 K"));
-        EasyMock.verify(mockChemspotClient);
+        EasyMock.verify(mockChemspotClient, mockSpaceGroupsClient);
     }
 
     @Test

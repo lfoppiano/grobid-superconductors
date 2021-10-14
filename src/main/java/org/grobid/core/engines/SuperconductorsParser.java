@@ -10,16 +10,14 @@ import org.grobid.core.data.Material;
 import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
+import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.BoundingBoxCalculator;
-import org.grobid.core.utilities.ChemDataExtractorClient;
-import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.UnicodeUtil;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +40,14 @@ public class SuperconductorsParser extends AbstractParser {
     public static final String NONE_CHEMSPOT_TYPE = "NONE";
     private final MaterialParser materialParser;
     private final ChemDataExtractorClient chemicalAnnotator;
+    private final StructureIdentificationModuleClient structureIdentificationModuleClient;
 
-    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient, MaterialParser materialParser) {
+    public static SuperconductorsParser getInstance(ChemDataExtractorClient chemspotClient, MaterialParser materialParser,
+                                                    StructureIdentificationModuleClient structureIdentificationModuleClient) {
         if (instance == null) {
             synchronized (SuperconductorsParser.class) {
                 if (instance == null) {
-                    instance = new SuperconductorsParser(chemspotClient, materialParser);
+                    instance = new SuperconductorsParser(chemspotClient, materialParser, structureIdentificationModuleClient);
                 }
             }
         }
@@ -55,15 +55,16 @@ public class SuperconductorsParser extends AbstractParser {
     }
 
     @Inject
-    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser) {
-        this(SuperconductorsModels.SUPERCONDUCTORS, chemicalAnnotator, materialParser);
+    public SuperconductorsParser(ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser, StructureIdentificationModuleClient structureIdentificationModuleClient) {
+        this(SuperconductorsModels.SUPERCONDUCTORS, chemicalAnnotator, materialParser, structureIdentificationModuleClient);
         instance = this;
     }
 
-    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser) {
+    public SuperconductorsParser(GrobidModel model, ChemDataExtractorClient chemicalAnnotator, MaterialParser materialParser, StructureIdentificationModuleClient structureIdentificationModuleClient) {
         super(model);
         this.chemicalAnnotator = chemicalAnnotator;
         this.materialParser = materialParser;
+        this.structureIdentificationModuleClient = structureIdentificationModuleClient;
         instance = this;
     }
 
@@ -157,6 +158,82 @@ public class SuperconductorsParser extends AbstractParser {
         }
 
         return entities;
+    }
+
+    public List<Span> extractSpans(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
+        List<Span> output = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(mentions)) {
+            return output;
+        }
+
+        mentions = mentions.stream()
+            .sorted(Comparator.comparingInt(ChemicalSpan::getStart))
+            .collect(Collectors.toList());
+
+        int globalOffset = Iterables.getFirst(tokens, new LayoutToken()).getOffset();
+
+        int mentionId = 0;
+        ChemicalSpan mention = mentions.get(mentionId);
+        Span currentSpan = null;
+
+        boolean newMention = true;
+        int tokenId = 0; 
+        for (LayoutToken token : tokens) {
+            //normalise the offsets
+            int mentionStart = globalOffset + mention.getStart();
+            int mentionEnd = globalOffset + mention.getEnd();
+
+            if (token.getOffset() < mentionStart) {
+                tokenId++;
+                continue;
+            } else {
+                if (token.getOffset() >= mentionStart
+                    && token.getOffset() + length(token.getText()) <= mentionEnd) {
+                    if (newMention) {
+                        currentSpan = new Span();
+                        currentSpan.setType(mention.getLabel());
+                        currentSpan.setTokenStart(tokenId);
+                        currentSpan.setOffsetStart(mention.getStart());
+                        currentSpan.setOffsetEnd(mention.getEnd());
+                        output.add(currentSpan);
+                        newMention = false;
+                    }
+
+                    currentSpan.getLayoutTokens().add(token);
+
+//                    if (StringUtils.isNotBlank(mention.getType())) {
+//                        currentSpan.setType(mention.getType());
+//                    }
+                    tokenId++;
+                    continue;
+                }
+
+                if (mentionId == mentions.size() - 1) {
+                    currentSpan.setTokenEnd(tokenId);
+                    break;
+                } else {
+                    currentSpan.setTokenEnd(tokenId);
+                    mentionId++;
+                    mention = mentions.get(mentionId);
+                    newMention = true;
+                    currentSpan.getId();
+                }
+            }
+            tokenId++;
+        }
+//        if (tokens.size() > output.size()) {
+//
+//            for (int counter = output.size(); counter < tokens.size(); counter++) {
+//            }
+//        }
+
+        output.stream().forEach(s -> {
+            s.setText(LayoutTokensUtil.toText(s.getLayoutTokens()));
+            s.getId();
+        });
+
+        return output;
     }
 
     protected List<Boolean> synchroniseLayoutTokensWithMentions(List<LayoutToken> tokens, List<ChemicalSpan> mentions) {
@@ -256,20 +333,27 @@ public class SuperconductorsParser extends AbstractParser {
         List<List<LayoutToken>> normalisedTokens = layoutTokensBatch.stream()
             .map(SuperconductorsParser::normalizeAndRetokenizeLayoutTokens)
             .collect(Collectors.toList());
-        
+
         List<String> texts = normalisedTokens.stream()
             .map(LayoutTokensUtil::toText)
             .collect(Collectors.toList());
-        
+
+        List<List<ChemicalSpan>> structures = structureIdentificationModuleClient.extractStructuresMulti(texts);
         List<List<ChemicalSpan>> mentions = chemicalAnnotator.processBulk(texts);
         List<String> tokensWithFeatures = new ArrayList<>();
-        
-        for (int i =0; i < normalisedTokens.size(); i++) {
-            List<Boolean> listAnnotations = synchroniseLayoutTokensWithMentions(normalisedTokens.get(i), mentions.get(i));
+
+        List<List<Span>> structuredCumulatedSpans = new ArrayList<>();
+
+        for (int i = 0; i < normalisedTokens.size(); i++) {
+            List<Boolean> listChemicalAnnotations = synchroniseLayoutTokensWithMentions(normalisedTokens.get(i), mentions.get(i));
+
+            structuredCumulatedSpans.add(extractSpans(normalisedTokens.get(i), structures.get(i)));
 
             //TODO: remove this hack! :-) 
-            tokensWithFeatures.add(addFeatures(normalisedTokens.get(i), listAnnotations) + "\n");
+            //TODO: one day, son... One day... 
+            tokensWithFeatures.add(addFeatures(normalisedTokens.get(i), listChemicalAnnotations) + "\n");
         }
+
 
         // labeled result from CRF lib
         String labellingResult = null;
@@ -281,6 +365,11 @@ public class SuperconductorsParser extends AbstractParser {
 
         List<String> resultingBlocks = Arrays.asList(labellingResult.split("\n\n"));
         List<List<Span>> localEntities = extractParallelResults(normalisedTokens, resultingBlocks);
+
+        // add the entities from the extracted structures to the list of entities 
+        for (int i = 0; i < normalisedTokens.size(); i++) {
+            localEntities.get(i).addAll(structuredCumulatedSpans.get(i));
+        }
 
         return localEntities;
     }

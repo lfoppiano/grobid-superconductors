@@ -14,6 +14,7 @@ import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.StructureIdentificationModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,9 +98,10 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
         Boolean recursive = namespace.get(RECURSIVE);
 
         ChemDataExtractorClient chemspotClient = new ChemDataExtractorClient(configuration);
+        StructureIdentificationModuleClient structureIdentificationModuleClient = new StructureIdentificationModuleClient(configuration);
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory.getAbsolutePath(),
+            new SuperconductorsParserTrainingData(chemspotClient, structureIdentificationModuleClient).createTrainingBatch(inputDirectory.getAbsolutePath(),
                 outputDirectory.getAbsolutePath(),
                 TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)), recursive);
         } else {
