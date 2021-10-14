@@ -347,9 +347,13 @@ public class SuperconductorsParser extends AbstractParser {
         for (int i = 0; i < normalisedTokens.size(); i++) {
             List<Boolean> listChemicalAnnotations = synchroniseLayoutTokensWithMentions(normalisedTokens.get(i), mentions.get(i));
 
-            List<Span> structureSpan = extractSpans(normalisedTokens.get(i), structures.get(i));
-            structureSpan.stream().forEach(s -> s.setLinkable(true));
-            structuredCumulatedSpans.add(structureSpan);
+            if (CollectionUtils.isEmpty(structures)) {
+                LOGGER.debug("Structures extraction (crystal structure and space groups) disabled. ");
+            } else {
+                List<Span> structureSpan = extractSpans(normalisedTokens.get(i), structures.get(i));
+                structureSpan.stream().forEach(s -> s.setLinkable(true));
+                structuredCumulatedSpans.add(structureSpan);
+            }
 
             //TODO: remove this hack! :-) 
             //TODO: one day, son... One day... 
@@ -370,7 +374,11 @@ public class SuperconductorsParser extends AbstractParser {
 
         // add the entities from the extracted structures to the list of entities 
         for (int i = 0; i < normalisedTokens.size(); i++) {
-            localEntities.get(i).addAll(structuredCumulatedSpans.get(i));
+            if (CollectionUtils.isEmpty(structures)) {
+                LOGGER.debug("Structures extraction (crystal structure and space groups) disabled. ");
+            } else {
+                localEntities.get(i).addAll(structuredCumulatedSpans.get(i));
+            }
         }
 
         return localEntities;
