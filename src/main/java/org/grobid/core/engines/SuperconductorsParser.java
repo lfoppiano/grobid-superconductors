@@ -347,7 +347,9 @@ public class SuperconductorsParser extends AbstractParser {
         for (int i = 0; i < normalisedTokens.size(); i++) {
             List<Boolean> listChemicalAnnotations = synchroniseLayoutTokensWithMentions(normalisedTokens.get(i), mentions.get(i));
 
-            structuredCumulatedSpans.add(extractSpans(normalisedTokens.get(i), structures.get(i)));
+            List<Span> structureSpan = extractSpans(normalisedTokens.get(i), structures.get(i));
+            structureSpan.stream().forEach(s -> s.setLinkable(true));
+            structuredCumulatedSpans.add(structureSpan);
 
             //TODO: remove this hack! :-) 
             //TODO: one day, son... One day... 
