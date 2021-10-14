@@ -69,7 +69,7 @@ public class RuleBasedLinker {
 
 
     public List<TextPassage> process(List<TextPassage> passage) {
-        return process(passage, Arrays.asList(Link.MATERIAL_TCVALUE_TYPE, Link.TCVALUE_PRESSURE_TYPE, Link.TCVALUE_ME_METHOD_TYPE), false);
+        return process(passage, Arrays.asList(Link.MATERIAL_TCVALUE_TYPE, Link.TCVALUE_PRESSURE_TYPE, Link.TCVALUE_ME_METHOD_TYPE, Link.MATERIAL_CRYSTAL_STRUCTURE, Link.MATERIAL_SPACE_GROUPS), false);
     }
 
     public List<TextPassage> process(List<TextPassage> passage, List<String> linkTypes) {
