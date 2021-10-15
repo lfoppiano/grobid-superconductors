@@ -20,9 +20,9 @@ In this table we show the best results in comparison with the baseline. For all 
 | [baseline-by_sentences-updated_corpus-gloves-keep_all_sentences-no_features](baseline/baseline-by_sentences-updated_corpus-glove-no_features) | 172 papers, gloVe, corpus manually segmented by sentences |  77.08    |80.41  | 78.70  | 0.81 |
 | [baseline-by_sentences-updated_corpus-oL+Sc+Sm-keep_all_sentences-no_features](oL+Sc+Sm/baseline-by_sentences-updated_corpus-oL+Sc+Sm-no_features) | 172 papers, oL+Sc+Sm, corpus manually segmented by sentences |  76.82  |80.05  |  78.38  | 1.08 |
 | [scibert-by_sentences-updated_corpus](scibert/by_sentences-updated_corpus) | 172 papers, scibert, corpus manually segmented by sentences | 77.71  |  82.90  |  80.22 | |
-| [scibert-by_sentences-updated_corpus-removed_10_worst](scibert/by_sentences-minus_worst_10) | 172 papers, scibert, corpus manually segmented by sentences, removed 10 worst papers | 81.92 | 85.06 | 83.46 | |
+| [scibert-by_sentences-updated_corpus-removed_10_worst](scibert/by_sentences-minus_worst_10) | 172 papers, scibert, corpus manually segmented by sentences, removed 10 worst papers | 81.92 | 85.06 | **83.46** | |
 | [scibert-by_sentences-updated_corpus-removed_10_worst-keep_all_sentences](scibert/by_sentences-minus_worst_10-keep_all_sentences) | 172 papers, scibert, corpus manually segmented by sentences, removed 10 worst papers, keep all sentences| 7756 |   82.34 |   79.88| |
-
+| [scibert-by_sentences-updated_corpus-removed_10_worst-updated_scibert](scibert/scibert-by_sentences-updated_corpus-removed_10_worst-updated_scibert) | 172 papers, updated scibert with SciCorpus+Supermat (12M steps for max_sequence=128), corpus manually segmented by sentences, removed 10 worst papers | 81.35 | 84.21 | 82.76 |
 
 ## Embeddings
 
