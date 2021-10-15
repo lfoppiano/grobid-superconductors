@@ -177,6 +177,8 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 | Baseline short sequences | total = 500000*256=12000000 | 128 | 256 | 500000 |  1000 | 1e-4 | 20 | |
 | Baseline long sequences |total = 300000*64=19000200  | 512 | 64 | 800000 |  100 | 1e-5 | 76 |  |
 
+
+
 ## Log and results
 
 | Name  | Notes | max_sequence_lenght | train_batch_size | num_train_steps | learning_rate | max_prediction_seq | init_checkpoint | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
@@ -185,16 +187,31 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 | Sc+Sm pre-training short sequences | o23483, same parameters as described by SciBERT's authors |128 | 256 | 1300000 |  1000 | 1e-4 | 20 | OOM |
 | Sc+Sm pre-training short sequences | o23485, same parameters as described by SciBERT's authors |128 | 128 | 2600000 |  1000 | 1e-4 | 20 | OOM |
 | Sc+Sm pre-training short sequences | o23487, same parameters as described by SciBERT's authors |128 | 64  | 5200000 |  1000 | 1e-4 | 20 | OOM |
-| Sc+Sm pre-training short sequences | same parameters as described by SciBERT's authors |128 | 32  | 10400000 |  1000 | 1e-4 | 20 | TBD |
-| Sc+Sm pre-training short sequences (~11M steps) | o23490, 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | TBD |
-| -- | Lower number of steps  |
+| -- | Test 0  | Lower number of steps |
 | Sc+Sm pre-training short sequences (100K steps) | ~~o23497~~, 900k train steps |128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7224342 | 1.2316597 | 0.9825 | 0.04809034 |
-| Sc+Sm pre-training long sequences (100K steps), from o23497 | ~~o23529~~, 1M train steps | 128 | 32 | 900000 |  1000 | 1e-4 | 20 | 0.7668856 | 1.0131468 | 0.99625 | 0.021626918 |
+| Sc+Sm pre-training long sequences (100K steps), from o23497 | ~~o23529~~, 1M train steps | 128 | 8 | 900000 |  1000 | 1e-4 | 78 | 0.7668856 | 1.0131468 | 0.99625 | 0.021626918 |
+| -- | Test 1 | Too high number of steps |
+| Sc+Sm pre-training short sequences (~11M steps) | ~~o23490~~, 12M train steps |128 | 32 | 12000000 |  1000 | 1e-4 | 20 | 0.74782896 | 1.0797467 | 0.98875 | 0.023861337 |
+| Sc+Sm pre-training long sequences, from o23490 | o23651, +2.4M (total: 14.4M) train steps | 512 | 8 | 14400000 |  1000 | 1e-5 | 78 | TBD |
+| -- | Test 2 | Re-calculated number of steps | 
+| Sc+Sm pre-training short sequences | o23652, Re-calculated number of steps 4.8M steps |128 | 32  | 4800000 |  1000 | 1e-4 | 20 | TBD |
+| -- | Other cases |
 | Sc+Sm pre-training short sequences (200K steps) | ~~o23489~~, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
 
 ## Details parameters
 
 ## Additional information
+
+### Steps calculation madness
+
+| Length | nb_steps (relative) | nb_steps (absolute) | batch size |  
+| ---- | --- | --- | --- | 
+| SciBERT original work |
+| 128 | 500000 | 500000 | 256 | 
+| 512 | 300000 | 800000 | 64 |
+| Adjusted number of steps due to the GPU limitation | 
+| 128 | 500000*8=4000000 | 4000000 + 800000 = 4800000 | 32 | 
+| 512 | 300000*8=2400000 | 4800000 + 2400000 = 7200000 | 8 | 
 
 # Credits
 
