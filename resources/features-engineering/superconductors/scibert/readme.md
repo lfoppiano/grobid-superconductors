@@ -11,7 +11,7 @@ and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materi
 
 | Space | sentences | tokens |
 |-------|---|---|
-| ~21Gb | 100001987 (100M) | 3260171825 (3.2B) |
+| ~21Gb | 142306511 (142M) | 3286118146 (3.2B) |
 
 - Useful references:
     - SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
@@ -149,8 +149,8 @@ This final task reduce the domain-specific vocabulary to the only terms that are
 
 Starting from a text file containing one paragraph per line, we performed the following operations:
 
-1. Split paragraphs in sentences using [BlingFire](https://github.com/Microsoft/BlingFire), a sentence splitter.
-2. Shard the obtained resulted large file, into several smaller (max 250000 sentences).
+1. Split paragraphs in sentences using [BlingFire](https://github.com/Microsoft/BlingFire), a sentence splitter ([script](sentence-splitter.py)).
+2. Shard the obtained resulted large file, into several smaller (max 250000 sentences). E.g. ``split --lines=250000 --numeric-suffixes input prefix``. 
    See [ref](https://github.com/google-research/bert/issues/117).
     ```
     -rw-r--r-- 1 lfoppian0 tdm  50M Aug 12 10:29 SciCorpora+SuperMat.sentences.sharded00
