@@ -8,6 +8,7 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.RawPassage;
 import org.grobid.core.data.TextPassage;
 import org.grobid.core.data.Span;
+import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.main.LibraryLoader;
@@ -33,7 +34,7 @@ public class CRFBasedLinkerIntegrationTest {
 
     private CRFBasedLinker target;
     private ModuleEngine moduleEngine;
-    private ChemDataExtractorClient mockChemspotClient;
+    private ChemDataExtractorClient mockChemdataExtractorClient;
     private StructureIdentificationModuleClient mockSpaceGroupsClient;
 
 
@@ -48,9 +49,9 @@ public class CRFBasedLinkerIntegrationTest {
         LibraryLoader.load();
         
         target = new CRFBasedLinker();
-        mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
+        mockChemdataExtractorClient = EasyMock.createMock(ChemDataExtractorClient.class);
         mockSpaceGroupsClient = EasyMock.createMock(StructureIdentificationModuleClient.class);
-        SuperconductorsParser superParser = new SuperconductorsParser(mockChemspotClient, new MaterialParser(null), mockSpaceGroupsClient);
+        SuperconductorsParser superParser = new SuperconductorsParser(mockChemdataExtractorClient, new MaterialParser(null, null), mockSpaceGroupsClient);
         this.moduleEngine = new ModuleEngine(new GrobidSuperconductorsConfiguration(), superParser, QuantityParser.getInstance(true), null, null);
     }
 
@@ -59,10 +60,11 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldExtract1Link() throws Exception {
         String input = "MgB 2 was discovered to be a superconductor in 2001, and it has a remarkably high critical temperature (T c ) around 40 K with a simple hexagonal structure.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
-        
-        EasyMock.expect(mockChemspotClient.processText(EasyMock.anyString())).andReturn(new ArrayList<>());
+
+        EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
         EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
-        EasyMock.replay(mockChemspotClient, mockSpaceGroupsClient);
+        EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
+        
         List<TextPassage> passages = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         
         assertThat(passages, hasSize(1));
@@ -85,7 +87,7 @@ public class CRFBasedLinkerIntegrationTest {
         assertThat(linkedEntities.get(0).getText(), is("MgB 2"));
         assertThat(linkedEntities.get(0).getLinks().get(0).getTargetText(), is("40 K"));
         
-        EasyMock.verify(mockChemspotClient, mockSpaceGroupsClient);
+        EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
     }
 
 
@@ -94,9 +96,10 @@ public class CRFBasedLinkerIntegrationTest {
         String input = "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K .";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
 
-        EasyMock.expect(mockChemspotClient.processText(EasyMock.anyString())).andReturn(new ArrayList<>());
+        EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
         EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
-        EasyMock.replay(mockChemspotClient, mockSpaceGroupsClient);
+        EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
+
         List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
         
@@ -119,22 +122,30 @@ public class CRFBasedLinkerIntegrationTest {
         Optional<Span> linkedSpan = linkedEntities.stream().filter(le -> String.valueOf(le.getId()).equals(linkId)).findFirst();
         assertThat(linkedSpan.isPresent(), is(true));
         assertThat(linkedSpan.get().getText(), is("26 K"));
-        EasyMock.verify(mockChemspotClient, mockSpaceGroupsClient);
+        EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
     }
 
     @Test
     public void testRealCase_shouldNotLink() throws Exception {
         String input = "Previous studies have shown that pressure of 1 GPa can reduce T c , but only by less than 2 K in MgB 2 .";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
+
+        EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
+        EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
+        EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
+        
         List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
 
         TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
-        target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
+        
+        
+        target.process(layoutTokens, annotations, CRFBasedLinker.MATERIAL_TCVALUE_ID);
 
         List<Span> linkedEntities = annotations.stream().filter(l -> isNotEmpty(l.getLinks())).collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(0));
+        EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
     }
 
     @Test
@@ -142,6 +153,11 @@ public class CRFBasedLinkerIntegrationTest {
     public void testRealCase_shouldExtract1Links_1() throws Exception {
         String input = "Theory-oriented experiments show that the compressed hydride of Group VI (hydrogen sulfide, H 3 S) exhibits a superconducting state at 203 K. ";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
+
+        EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
+        EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
+        EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
+
         List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
 
@@ -159,12 +175,19 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(1));
+
+        EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
     }
 
     @Test
     public void testRealCase_shouldExtract1Links_2() throws Exception {
         String input = "Moreover, a Group V hydride (phosphorus hydride, PH 3 ) has also been studied and its T c reached a maximum of 103 K.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
+
+        EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
+        EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
+        EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
+
         List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
 
@@ -183,12 +206,19 @@ public class CRFBasedLinkerIntegrationTest {
             .collect(Collectors.toList());
         
         assertThat(linkedEntities, hasSize(1));
+
+        EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
     }
 
     @Test
     public void testRealCase_shouldExtract0Links_3() throws Exception {
         String input = "The experimental realisation of the superconductivity in H 3 S and PH 3 inspired us to search for other hydride superconductors.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
+
+        EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
+        EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
+        EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
+        
         List<TextPassage> paragraphs = moduleEngine.process(Collections.singletonList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
 
@@ -206,6 +236,8 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(0));
+
+        EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
     }
 
 }

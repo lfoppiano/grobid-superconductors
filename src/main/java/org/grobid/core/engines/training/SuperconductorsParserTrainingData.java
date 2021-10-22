@@ -43,7 +43,7 @@ public class SuperconductorsParserTrainingData {
 
 
     public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient, StructureIdentificationModuleClient structureIdentificationModuleClient) {
-        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance(null), structureIdentificationModuleClient),
+        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance(null, null), structureIdentificationModuleClient),
             QuantityParser.getInstance(true));
     }
 

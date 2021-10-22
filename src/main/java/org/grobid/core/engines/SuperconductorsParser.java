@@ -10,7 +10,6 @@ import org.grobid.core.data.Material;
 import org.grobid.core.data.Span;
 import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.engines.label.TaggingLabel;
-import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.BoundingBox;
@@ -178,7 +177,7 @@ public class SuperconductorsParser extends AbstractParser {
         Span currentSpan = null;
 
         boolean newMention = true;
-        int tokenId = 0; 
+        int tokenId = 0;
         for (LayoutToken token : tokens) {
             //normalise the offsets
             int mentionStart = globalOffset + mention.getStart();
@@ -228,10 +227,11 @@ public class SuperconductorsParser extends AbstractParser {
 //            }
 //        }
 
-        output.stream().forEach(s -> {
-            s.setText(LayoutTokensUtil.toText(s.getLayoutTokens()));
-            s.getId();
-        });
+        output.stream()
+            .forEach(s -> {
+                s.setText(LayoutTokensUtil.toText(s.getLayoutTokens()));
+                s.getId();
+            });
 
         return output;
     }
@@ -240,7 +240,8 @@ public class SuperconductorsParser extends AbstractParser {
         List<Boolean> isChemicalEntity = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(mentions)) {
-            tokens.stream().forEach(t -> isChemicalEntity.add(Boolean.FALSE));
+            tokens.stream()
+                .forEach(t -> isChemicalEntity.add(Boolean.FALSE));
 
             return isChemicalEntity;
         }
@@ -381,6 +382,14 @@ public class SuperconductorsParser extends AbstractParser {
             }
         }
 
+        if (materialParser != null && materialParser.getChemicalMaterialParserClient() != null) {
+            localEntities.stream()
+                .forEach(p -> p.stream()
+                    .filter(e -> e.getType().equals(SUPERCONDUCTORS_CLASS_LABEL))
+                    .forEach(e -> System.out.println(e.getText() + " >>> " + materialParser.getChemicalMaterialParserClient().convertNameToFormula(e.getText())))
+                );
+        }
+
         return localEntities;
     }
 
@@ -484,13 +493,20 @@ public class SuperconductorsParser extends AbstractParser {
 
             if (clusterLabel.equals(SUPERCONDUCTORS_MATERIAL)) {
                 superconductor.setType(SUPERCONDUCTORS_MATERIAL_LABEL);
-                superconductor.setText(clusterContent);
+                boolean hasFormula = false;
+
                 List<Material> parsedMaterials = materialParser.process(theTokens);
                 int i = 0;
                 for (Material parsedMaterial : parsedMaterials) {
+                    if (StringUtils.isNotBlank(parsedMaterial.getFormula())) {
+                        hasFormula = true;
+                    }
                     superconductor.getAttributes().putAll(Material.asAttributeMap(parsedMaterial, "material" + i));
                     i++;
                 }
+                String rawMaterialString = hasFormula ? materialParser.postProcessFormula(clusterContent) : clusterContent;
+                superconductor.setText(rawMaterialString);
+
                 superconductor.setLayoutTokens(theTokens);
                 superconductor.setBoundingBoxes(boundingBoxes);
                 superconductor.setOffsetStart(startPos);

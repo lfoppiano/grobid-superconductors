@@ -54,7 +54,7 @@ public class MaterialTrainer extends AbstractTrainerNew {
     public void createTrainingDataFromSuperconductors(String inputDirectory, String outputDirectory, boolean recursive) {
         Path inputPath = Paths.get(inputDirectory);
 
-        MaterialParser materialParser = MaterialParser.getInstance(null);
+        MaterialParser materialParser = MaterialParser.getInstance(null, null);
 
         int maxDept = recursive ? Integer.MAX_VALUE : 1;
         List<File> refFiles = new ArrayList<>();

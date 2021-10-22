@@ -48,7 +48,7 @@ public class MaterialParserTest {
     @Before
     public void setUp() throws Exception {
         PowerMock.mockStatic(Lexicon.class);
-        target = new MaterialParser(GrobidModels.DUMMY, null);
+        target = new MaterialParser(GrobidModels.DUMMY, null, null);
     }
 
     private List<String> generateFeatures(List<LayoutToken> layoutTokens) {

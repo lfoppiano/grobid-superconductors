@@ -2,7 +2,6 @@ package org.grobid.core.data;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.collection.IsCollectionWithSize;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -229,13 +228,13 @@ public class MaterialTest {
         assertThat(result.get(2), is("Li 0.2 (NH 3 ) 0.1 Fe 2 (Te 0.1 Se 0.9 ) 2"));
         assertThat(result.get(3), is("Li 0.2 (NH 3 ) 0.2 Fe 2 (Te 0.1 Se 0.9 ) 2"));
     }
-    
-    @Test 
+
+    @Test
     public void testAsAttributeMap_materialWithFormula() {
         Material material = new Material();
         material.setFormula("La Fe 2");
         Map<String, String> attributeMap = Material.asAttributeMap(material, "test");
-        
+
         assertThat(attributeMap.keySet(), hasSize(1));
         assertThat(attributeMap.get("test_formula"), is("La Fe 2"));
     }
@@ -272,15 +271,17 @@ public class MaterialTest {
         material.addVariable("y", Arrays.asList("1", "2", "3"));
 
         Map<String, String> attributeMap = Material.asAttributeMap(material);
-        assertThat(attributeMap.keySet(), hasSize(4));
+        assertThat(attributeMap.keySet(), hasSize(6));
         assertThat(attributeMap.get("name"), is("name"));
         assertThat(attributeMap.get("shape"), is("shape"));
         assertThat(attributeMap.get("doping"), is("10%-Zn"));
         assertThat(attributeMap.get("formula"), is("Cu x Fe y"));
+        assertThat(attributeMap.get("variable_0"), is("x=1,2,3"));
+        assertThat(attributeMap.get("variable_1"), is("y=1,2,3"));
     }
 
     @Test
-    public void testAsAttributeMapWithPrefix_materialWithaAdditionalInformation() {
+    public void testAsAttributeMapWithPrefix_materialWithAdditionalInformation() {
         Material material = new Material();
 
         material.setName("name");
@@ -291,11 +292,14 @@ public class MaterialTest {
         material.addVariable("y", Arrays.asList("1", "2", "3"));
 
         Map<String, String> attributeMap = Material.asAttributeMap(material, "bao123");
-        assertThat(attributeMap.keySet(), hasSize(4));
+        assertThat(attributeMap.keySet(), hasSize(6));
         assertThat(attributeMap.get("bao123_name"), is("name"));
         assertThat(attributeMap.get("bao123_shape"), is("shape"));
         assertThat(attributeMap.get("bao123_doping"), is("doping"));
         assertThat(attributeMap.get("bao123_formula"), is("Cu x Fe y"));
+        assertThat(attributeMap.get("bao123_variable_0"), is("x=1,2,3"));
+        assertThat(attributeMap.get("bao123_variable_1"), is("y=1,2,3"));
+
     }
 
 }

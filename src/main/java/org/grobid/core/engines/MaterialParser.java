@@ -3,6 +3,7 @@ package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
@@ -15,10 +16,7 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.BoundingBoxCalculator;
-import org.grobid.core.utilities.LayoutTokensUtil;
-import org.grobid.core.utilities.OffsetPosition;
-import org.grobid.core.utilities.UnicodeUtil;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,29 +40,35 @@ public class MaterialParser extends AbstractParser {
 
     private static MaterialParser instance;
     private MaterialClassResolver materialClassResolver;
+    private ChemicalMaterialParserClient chemicalMaterialParserClient;
 
-    public static MaterialParser getInstance(MaterialClassResolver materialClassResolver) {
+    public static MaterialParser getInstance(MaterialClassResolver materialClassResolver, ChemicalMaterialParserClient chemicalMaterialParserClient) {
         if (instance == null) {
-            getNewInstance(materialClassResolver);
+            getNewInstance(materialClassResolver, chemicalMaterialParserClient);
         }
         return instance;
     }
 
-    private static synchronized void getNewInstance(MaterialClassResolver materialClassResolver) {
-        instance = new MaterialParser(materialClassResolver);
+    private static synchronized void getNewInstance(MaterialClassResolver materialClassResolver, ChemicalMaterialParserClient chemicalMaterialParserClient) {
+        instance = new MaterialParser(materialClassResolver, chemicalMaterialParserClient);
     }
 
     @Inject
-    public MaterialParser(MaterialClassResolver materialClassResolver) {
-        this(MATERIAL, materialClassResolver);
+    public MaterialParser(MaterialClassResolver materialClassResolver, ChemicalMaterialParserClient chemicalMaterialParserClient) {
+        this(MATERIAL, materialClassResolver, chemicalMaterialParserClient);
     }
 
-    protected MaterialParser(GrobidModel model, MaterialClassResolver materialClassResolver) {
+    protected MaterialParser(GrobidModel model, MaterialClassResolver materialClassResolver, ChemicalMaterialParserClient chemicalMaterialParserClient) {
         super(model);
         if (materialClassResolver == null) {
-            LOGGER.info("The material class resolver has not specified. Class will not be resolved. ");
+            LOGGER.info("The material class resolver is missing or null. The Material class will not be resolved. ");
+        }
+
+        if (chemicalMaterialParserClient == null) {
+            LOGGER.info("The chemical material parser has not specified. Advanced chemical parsing will not be performed. ");
         }
         this.materialClassResolver = materialClassResolver;
+        this.chemicalMaterialParserClient = chemicalMaterialParserClient;
     }
 
     public List<Material> process(String text) {
@@ -203,7 +207,7 @@ public class MaterialParser extends AbstractParser {
                 rawTaggedValue.append(clusterLabel.getLabel().replace("<", "</"));
             }
             LabeledTokensContainer last = Iterables.getLast(cluster.getLabeledTokensContainers());
-            if (last.isTrailingSpace()) {
+            if (last != null && last.isTrailingSpace()) {
                 rawTaggedValue.append(" ");
             }
 
@@ -214,6 +218,9 @@ public class MaterialParser extends AbstractParser {
                 if (StringUtils.isNotEmpty(currentMaterial.getName())) {
                     extracted.add(currentMaterial);
                     currentMaterial = new Material();
+                }
+                if (chemicalMaterialParserClient != null) {
+                    System.out.println(clusterContent + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(clusterContent));
                 }
                 currentMaterial.setName(clusterContent);
                 currentMaterial.addOffset(new OffsetPosition(startPos, endPos));
@@ -227,7 +234,11 @@ public class MaterialParser extends AbstractParser {
                     extracted.add(currentMaterial);
                     currentMaterial = new Material();
                 }
-                currentMaterial.setFormula(postProcessFormula(clusterContent));
+                String finalFormula = postProcessFormula(clusterContent);
+                if (chemicalMaterialParserClient != null) {
+                    System.out.println(finalFormula + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(finalFormula));
+                }
+                currentMaterial.setFormula(finalFormula);
                 currentMaterial.addOffset(new OffsetPosition(startPos, endPos));
                 currentMaterial.addBoundingBoxes(boundingBoxes);
 
@@ -289,7 +300,11 @@ public class MaterialParser extends AbstractParser {
                 for (String doping : dopings) {
                     Material newMaterial = new Material();
                     newMaterial.setName(singleExtractedMaterial.getName());
-                    newMaterial.setFormula(postProcessFormula(singleExtractedMaterial.getFormula()));
+                    String finalFormula = postProcessFormula(singleExtractedMaterial.getFormula());
+                    if (chemicalMaterialParserClient != null) {
+                        System.out.println(finalFormula + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(finalFormula));
+                    }
+                    newMaterial.setFormula(finalFormula);
                     newMaterial.setDoping(doping);
                     singleExtractedMaterial.getVariables().entrySet().stream()
                         .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
@@ -311,8 +326,16 @@ public class MaterialParser extends AbstractParser {
                     extracted = new ArrayList<>();
                     for (String substrate : substrates) {
                         Material newMaterial = new Material();
-                        newMaterial.setName(singleExtractedMaterial.getName());
-                        newMaterial.setFormula(postProcessFormula(singleExtractedMaterial.getFormula()));
+                        String finalName = singleExtractedMaterial.getName();
+                        if (chemicalMaterialParserClient != null) {
+                            System.out.println(finalName + " >>> " + chemicalMaterialParserClient.convertNameToFormula(finalName));
+                        }
+                        newMaterial.setName(finalName);
+                        String finalFormula = postProcessFormula(singleExtractedMaterial.getFormula());
+                        if (chemicalMaterialParserClient != null) {
+                            System.out.println(finalFormula + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(finalFormula));
+                        }
+                        newMaterial.setFormula(finalFormula);
                         newMaterial.setSubstrate(substrate);
                         singleExtractedMaterial.getVariables().entrySet().stream()
                             .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
@@ -330,7 +353,7 @@ public class MaterialParser extends AbstractParser {
         String singleShape = String.join(", ", shapes);
         String singleFabrication = String.join(", ", fabrications);
 
-        /** Post_processing the variables-> values **/
+        /** Post_processing the variables -> values **/
         for (Material material : extracted) {
             List<String> resolvedFormulas = Material.resolveVariables(material);
 
@@ -346,6 +369,11 @@ public class MaterialParser extends AbstractParser {
                     .flatMap(f -> Material.expandFormula(f).stream())
                     .collect(Collectors.toList());
                 material.setResolvedFormulas(resolvedAndExpandedFormulas);
+            }
+
+            if (chemicalMaterialParserClient != null) {
+                resolvedFormulas.stream()
+                    .forEach(rf -> System.out.println(rf + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(rf)));
             }
 
             /** Shape and fabrication are shared properties **/
@@ -367,7 +395,7 @@ public class MaterialParser extends AbstractParser {
 
             material.setRawTaggedValue(rawTaggedValue.toString());
 
-            //This modify the material object!
+            //This modifies the material object!
             if (materialClassResolver != null) {
                 materialClassResolver.process(material);
             }
@@ -434,6 +462,13 @@ public class MaterialParser extends AbstractParser {
     private static final Pattern REGEX_COMMA_INSTEAD_DOT = Pattern.compile("([A-Za-z]+ {0,1})([0-9])[,]([0-9])");
     private static final Pattern REGEX_COLON_INSTEAD_DOT = Pattern.compile("([0-9]):([0-9])");
 
+    private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS = Arrays.asList(
+        Pair.of("À", "-"),
+        Pair.of("Ϸ", "≈"),
+        Pair.of("¼", "-"),
+        Pair.of(" ͑", "")
+    );
+
     public String postProcessFormula(String formula) {
         if (formula == null) {
             return "";
@@ -448,9 +483,19 @@ public class MaterialParser extends AbstractParser {
         String formulaWithFixedCommas = REGEX_COMMA_INSTEAD_DOT
             .matcher(formulaWithFixedDots).replaceAll("$1$2.$3");
 
-        String formulaWithReplacedMinus = formulaWithFixedCommas.replaceAll("À", "-");
+        String formulaSequencialReplacement = formulaWithFixedCommas;
+        for (Pair<String, String> replacementSymbol : REPLACEMENT_SYMBOLS) {
+            formulaSequencialReplacement = formulaSequencialReplacement.replaceAll(replacementSymbol.getLeft(), replacementSymbol.getRight());
+        }
 
-        return formulaWithReplacedMinus.replaceAll("\\p{C}", " ");
+        return formulaSequencialReplacement.replaceAll("\\p{C}", " ");
     }
 
+    public ChemicalMaterialParserClient getChemicalMaterialParserClient() {
+        return chemicalMaterialParserClient;
+    }
+
+    public void setChemicalMaterialParserClient(ChemicalMaterialParserClient chemicalMaterialParserClient) {
+        this.chemicalMaterialParserClient = chemicalMaterialParserClient;
+    }
 }
