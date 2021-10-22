@@ -8,8 +8,8 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 public class MaterialTest {
 
@@ -20,6 +20,7 @@ public class MaterialTest {
         assertThat(outputFormulas, hasSize(1));
         assertThat(outputFormulas.get(0), is("(TMTTF) 2 PF 6"));
     }
+
     @Test
     public void testResolveFormula() throws Exception {
         List<String> outputFormulas = Material.expandFormula("(Sr, Na)Fe 2 As 2");
@@ -66,7 +67,7 @@ public class MaterialTest {
         List<String> expandedFormulas = Material.expandFormula(inputFormula);
 
         assertThat(expandedFormulas, hasSize(1));
-        assertThat(expandedFormulas.get(0), is("Sr x La 1-x Fe 2 O 7"))  ;
+        assertThat(expandedFormulas.get(0), is("Sr x La 1-x Fe 2 O 7"));
 
     }
 
@@ -77,11 +78,11 @@ public class MaterialTest {
         List<String> expandedFormulas = Material.expandFormula(inputFormula);
 
         assertThat(expandedFormulas, hasSize(1));
-        assertThat(expandedFormulas.get(0), is("Sr 1-x-y-z La x Cu y K z Fe 2 O 7"))  ;
+        assertThat(expandedFormulas.get(0), is("Sr 1-x-y-z La x Cu y K z Fe 2 O 7"));
 
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void testExpandFormulaWithTooManyVariables_shouldThrowsException() throws Exception {
         String inputFormula = "(Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe) Cu 2 O 13";
 
@@ -194,28 +195,6 @@ public class MaterialTest {
     }
 
     @Test
-    @Ignore("Not testing much")
-    public void testToJson() {
-        Material material = new Material();
-
-        material.setName("Material Name");
-        material.setDoping("Doping!");
-        material.setShape("shape!");
-        material.setFormula("Cu x Fe y");
-        material.addVariable("x", Arrays.asList("1", "2", "3"));
-        material.addVariable("y", Arrays.asList("1", "2", "3"));
-
-//        List<String> outputMaterials = Material.resolveVariables(material);
-
-//        System.out.println(material.toJson());
-        Map<String, String> x = Material.asAttributeMap(material);
-//        assertThat();
-        System.out.println(x);
-        Map<String, String> y = Material.asAttributeMap(material, "bao123");
-        System.out.println(y);
-    }
-
-    @Test
     public void testGeneratePermutations() {
         String formula = "Li x (NH 3 ) y Fe 2 (Te z Se 1−z ) 2";
 
@@ -249,7 +228,74 @@ public class MaterialTest {
         assertThat(result.get(1), is("Li 0.1 (NH 3 ) 0.2 Fe 2 (Te 0.1 Se 0.9 ) 2"));
         assertThat(result.get(2), is("Li 0.2 (NH 3 ) 0.1 Fe 2 (Te 0.1 Se 0.9 ) 2"));
         assertThat(result.get(3), is("Li 0.2 (NH 3 ) 0.2 Fe 2 (Te 0.1 Se 0.9 ) 2"));
+    }
+    
+    @Test 
+    public void testAsAttributeMap_materialWithFormula() {
+        Material material = new Material();
+        material.setFormula("La Fe 2");
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "test");
+        
+        assertThat(attributeMap.keySet(), hasSize(1));
+        assertThat(attributeMap.get("test_formula"), is("La Fe 2"));
+    }
 
+    @Test
+    public void testAsAttributeMap_materialWithName() {
+        Material material = new Material();
+        material.setName("Oxygen");
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "test");
+
+        assertThat(attributeMap.keySet(), hasSize(1));
+        assertThat(attributeMap.get("test_name"), is("Oxygen"));
+    }
+
+    @Test
+    public void testAsAttributeMap_variableAndValue() {
+        Material material = new Material();
+        material.addVariable("x", Arrays.asList("0.5"));
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "test");
+
+        assertThat(attributeMap.keySet(), hasSize(1));
+        assertThat(attributeMap.get("test_variable_0"), is("x=0.5"));
+    }
+
+    @Test
+    public void testAsAttributeMap_materialWithAdditionalInformation() {
+        Material material = new Material();
+
+        material.setName("name");
+        material.setDoping("10%-Zn");
+        material.setShape("shape");
+        material.setFormula("Cu x Fe y");
+        material.addVariable("x", Arrays.asList("1", "2", "3"));
+        material.addVariable("y", Arrays.asList("1", "2", "3"));
+
+        Map<String, String> attributeMap = Material.asAttributeMap(material);
+        assertThat(attributeMap.keySet(), hasSize(4));
+        assertThat(attributeMap.get("name"), is("name"));
+        assertThat(attributeMap.get("shape"), is("shape"));
+        assertThat(attributeMap.get("doping"), is("10%-Zn"));
+        assertThat(attributeMap.get("formula"), is("Cu x Fe y"));
+    }
+
+    @Test
+    public void testAsAttributeMapWithPrefix_materialWithaAdditionalInformation() {
+        Material material = new Material();
+
+        material.setName("name");
+        material.setDoping("doping");
+        material.setShape("shape");
+        material.setFormula("Cu x Fe y");
+        material.addVariable("x", Arrays.asList("1", "2", "3"));
+        material.addVariable("y", Arrays.asList("1", "2", "3"));
+
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "bao123");
+        assertThat(attributeMap.keySet(), hasSize(4));
+        assertThat(attributeMap.get("bao123_name"), is("name"));
+        assertThat(attributeMap.get("bao123_shape"), is("shape"));
+        assertThat(attributeMap.get("bao123_doping"), is("doping"));
+        assertThat(attributeMap.get("bao123_formula"), is("Cu x Fe y"));
     }
 
 }

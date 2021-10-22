@@ -31,7 +31,7 @@ import static org.apache.commons.lang3.StringUtils.trim;
 public class Material {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Material.class);
-
+    private static final String ENGLISH_ALPHABETH = "xyzabcdefghijklmnopqrstuvw";
     private String name;
     private String shape;
     private String formula;
@@ -407,8 +407,8 @@ public class Material {
                     expandedFormulas.add(formula);
                 } else if (splittedDopants.size() == 2) {
                     expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
-                } else if (splittedDopants.size() > 2 && splittedDopants.size() < "xyzabcdefghijklmnopqrstuvw".length()) {
-                    char[] alphabet = "xyzabcdefghijklmnopqrstuvw".toCharArray();
+                } else if (splittedDopants.size() > 2 && splittedDopants.size() < ENGLISH_ALPHABETH.length()) {
+                    char[] alphabet = ENGLISH_ALPHABETH.toCharArray();
                     StringBuilder sb = new StringBuilder();
                     StringBuilder sb2 = new StringBuilder();
                     for (int i = 0; i < splittedDopants.size() - 1; i++) {
@@ -456,7 +456,7 @@ public class Material {
     public static Map<String, String> asAttributeMap(Material material, final String keyPrefix) {
         Map<String, String> stringStringMap = asAttributeMap(material);
 
-        ArrayList<String> keys = new ArrayList(stringStringMap.keySet());
+        List<String> keys = new ArrayList<>(stringStringMap.keySet());
         for (String k : keys) {
             stringStringMap.put(keyPrefix + "_" + k, stringStringMap.get(k));
             stringStringMap.remove(k);
@@ -469,6 +469,7 @@ public class Material {
     public static Map<String, String> asAttributeMap(Material material) {
         List<String> resolvedFormulas = material.getResolvedFormulas();
         material.setResolvedFormulas(null);
+        Map<String, List<String>> variables = material.getVariables();
 
         ObjectMapper m = new ObjectMapper();
         Map<String, String> mappedObject = m.convertValue(material, new TypeReference<Map<String, String>>() {
@@ -477,6 +478,15 @@ public class Material {
         if (CollectionUtils.isNotEmpty(resolvedFormulas)) {
             IntStream.range(0, resolvedFormulas.size())
                 .forEach(i -> mappedObject.put("resolvedFormula_" + i, resolvedFormulas.get(i)));
+        }
+        
+        if(CollectionUtils.isNotEmpty(variables.keySet())) {
+            List<String> streamedVariables = variables.keySet().stream()
+                .map(var -> var + "=" + String.join(",", variables.get(var)))
+                .collect(Collectors.toList());
+
+            IntStream.range(0, streamedVariables.size())
+                .forEach(i -> mappedObject.put("variable_" + i, streamedVariables.get(i)));
         }
 
         return mappedObject;
