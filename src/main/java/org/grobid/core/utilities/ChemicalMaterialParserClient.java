@@ -114,7 +114,7 @@ public class ChemicalMaterialParserClient {
 
     public List<String> convertNameToFormula(String name) {
 
-        List<String> outputClasses = new ArrayList<>();
+        List<String> outputFormula = new ArrayList<>();
         try {
             final HttpPost request = new HttpPost(serverUrl + "/convert/name/formula");
             request.setHeader("Accept", APPLICATION_JSON);
@@ -130,7 +130,7 @@ public class ChemicalMaterialParserClient {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    outputClasses = fromJson(response.getEntity().getContent());
+                    outputFormula = fromJson(response.getEntity().getContent());
                 }
             }
 
@@ -140,7 +140,7 @@ public class ChemicalMaterialParserClient {
             LOGGER.error("Something generally bad happened. ", e);
         }
 
-        return outputClasses;
+        return outputFormula;
     }
 
 //    public List<List<String>> convertNameToFormulaMulti(List<String> names) {

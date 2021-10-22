@@ -498,7 +498,7 @@ public class SuperconductorsParser extends AbstractParser {
                 List<Material> parsedMaterials = materialParser.process(theTokens);
                 int i = 0;
                 for (Material parsedMaterial : parsedMaterials) {
-                    if (StringUtils.isNotBlank(parsedMaterial.getFormula())) {
+                    if (parsedMaterial.getFormula() != null && StringUtils.isNotBlank(parsedMaterial.getFormula().getRawValue())) {
                         hasFormula = true;
                     }
                     superconductor.getAttributes().putAll(Material.asAttributeMap(parsedMaterial, "material" + i));

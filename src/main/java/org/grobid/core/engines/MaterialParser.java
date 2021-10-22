@@ -7,6 +7,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
+import org.grobid.core.data.ChemicalComposition;
+import org.grobid.core.data.Formula;
 import org.grobid.core.data.Material;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
@@ -219,9 +221,13 @@ public class MaterialParser extends AbstractParser {
                     extracted.add(currentMaterial);
                     currentMaterial = new Material();
                 }
-                if (chemicalMaterialParserClient != null) {
-                    System.out.println(clusterContent + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(clusterContent));
-                }
+//                if (chemicalMaterialParserClient != null) {
+//                    List<String> convertedFormula = chemicalMaterialParserClient.convertNameToFormula(clusterContent);
+//                    if (convertedFormula.size() >= 3 && StringUtils.isNotBlank(convertedFormula.get(2))) {
+//                        currentMaterial.setCalculatedFormulaFromName(convertedFormula.get(2));                        
+//                    }
+//                }
+
                 currentMaterial.setName(clusterContent);
                 currentMaterial.addOffset(new OffsetPosition(startPos, endPos));
                 currentMaterial.addBoundingBoxes(boundingBoxes);
@@ -230,15 +236,18 @@ public class MaterialParser extends AbstractParser {
                 dopings.add(clusterContent);
 
             } else if (clusterLabel.equals(MATERIAL_FORMULA)) {
-                if (StringUtils.isNotEmpty(currentMaterial.getFormula())) {
+                if (currentMaterial.getFormula() != null && StringUtils.isNotBlank(currentMaterial.getFormula().getRawValue())) {
                     extracted.add(currentMaterial);
                     currentMaterial = new Material();
                 }
                 String finalFormula = postProcessFormula(clusterContent);
+                Formula formula = new Formula(finalFormula);
                 if (chemicalMaterialParserClient != null) {
-                    System.out.println(finalFormula + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(finalFormula));
+                    ChemicalComposition chemicalComposition = chemicalMaterialParserClient.convertFormulaToComposition(finalFormula);
+                    formula.setFormulaComposition(chemicalComposition.getElements());
                 }
-                currentMaterial.setFormula(finalFormula);
+
+                currentMaterial.setFormula(formula);
                 currentMaterial.addOffset(new OffsetPosition(startPos, endPos));
                 currentMaterial.addBoundingBoxes(boundingBoxes);
 
@@ -293,50 +302,50 @@ public class MaterialParser extends AbstractParser {
 
         String singleDoping = "";
         String singleSubstrate = "";
+
         if (dopings.size() > 1) {
+
+            // Multiple dopings AND single material -> create multiple materials 
             if (extracted.size() == 1) {
                 Material singleExtractedMaterial = extracted.get(0);
                 extracted = new ArrayList<>();
                 for (String doping : dopings) {
                     Material newMaterial = new Material();
                     newMaterial.setName(singleExtractedMaterial.getName());
-                    String finalFormula = postProcessFormula(singleExtractedMaterial.getFormula());
-                    if (chemicalMaterialParserClient != null) {
-                        System.out.println(finalFormula + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(finalFormula));
-                    }
-                    newMaterial.setFormula(finalFormula);
+                    newMaterial.setFormula(singleExtractedMaterial.getFormula());
                     newMaterial.setDoping(doping);
                     singleExtractedMaterial.getVariables().entrySet().stream()
                         .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
+                    // Class will be computed later, 
+                    // Substrate and fabrication will be added later as single or joined information 
                     extracted.add(newMaterial);
                 }
             } else {
+                // Multiple dopings AND multiple materials -> merge dopings and assign to each material
                 singleDoping = String.join(", ", dopings);
             }
         } else {
+            // Single doping
             if (dopings.size() == 1) {
-                singleDoping = String.join(", ", dopings);
+                singleDoping = dopings.get(0);
             }
 
             if (substrates.size() == 1) {
                 singleSubstrate = substrates.get(0);
             } else if (substrates.size() > 1) {
+
+                // Multiple substrate AND single material -> create multiple materials 
                 if (extracted.size() == 1) {
                     Material singleExtractedMaterial = extracted.get(0);
                     extracted = new ArrayList<>();
                     for (String substrate : substrates) {
                         Material newMaterial = new Material();
-                        String finalName = singleExtractedMaterial.getName();
-                        if (chemicalMaterialParserClient != null) {
-                            System.out.println(finalName + " >>> " + chemicalMaterialParserClient.convertNameToFormula(finalName));
-                        }
-                        newMaterial.setName(finalName);
-                        String finalFormula = postProcessFormula(singleExtractedMaterial.getFormula());
-                        if (chemicalMaterialParserClient != null) {
-                            System.out.println(finalFormula + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(finalFormula));
-                        }
-                        newMaterial.setFormula(finalFormula);
+                        newMaterial.setName(singleExtractedMaterial.getName());
+                        newMaterial.setFormula(singleExtractedMaterial.getFormula());
                         newMaterial.setSubstrate(substrate);
+                        // Class will be computed later, 
+                        // Doping and Fabrication will be added later as single or joined information
+
                         singleExtractedMaterial.getVariables().entrySet().stream()
                             .forEach(entry -> newMaterial.getVariables().put(entry.getKey(), entry.getValue()));
                         extracted.add(newMaterial);
@@ -359,22 +368,25 @@ public class MaterialParser extends AbstractParser {
 
             //If there are no resolved formulas (no variable) I could still have a (A, B)C1,D2 formula type that can
             // be expanded
-            if (isEmpty(resolvedFormulas) && StringUtils.isNotEmpty(material.getFormula())) {
-                resolvedFormulas.add(material.getFormula());
+            if (isEmpty(resolvedFormulas) && (material.getFormula() != null && StringUtils.isNotBlank(material.getFormula().getRawValue()))) {
+                resolvedFormulas.add(material.getFormula().getRawValue());
             }
 
             //Expand formulas of type (A, B)blabla
             if (isNotEmpty(resolvedFormulas)) {
-                List<String> resolvedAndExpandedFormulas = resolvedFormulas.stream()
+                List<Formula> resolvedAndExpandedFormulas = resolvedFormulas.stream()
                     .flatMap(f -> Material.expandFormula(f).stream())
+                    .map(f -> {
+                        Formula createdFormula = new Formula(f);
+                        if (chemicalMaterialParserClient != null) {
+                            createdFormula.setFormulaComposition(chemicalMaterialParserClient.convertFormulaToComposition(f).getElements());
+                        }
+                        return createdFormula;
+                    })
                     .collect(Collectors.toList());
                 material.setResolvedFormulas(resolvedAndExpandedFormulas);
             }
 
-            if (chemicalMaterialParserClient != null) {
-                resolvedFormulas.stream()
-                    .forEach(rf -> System.out.println(rf + " >>> " + chemicalMaterialParserClient.convertFormulaToComposition(rf)));
-            }
 
             /** Shape and fabrication are shared properties **/
             if (isNotBlank(singleShape) && isBlank(material.getShape())) {
@@ -394,6 +406,19 @@ public class MaterialParser extends AbstractParser {
             }
 
             material.setRawTaggedValue(rawTaggedValue.toString());
+
+            // If we don't have any formula but a name, let's try to calculate the formula from the name... 
+
+            if ((material.getFormula() == null
+                || StringUtils.isBlank(material.getFormula().getRawValue()))
+                && StringUtils.isNotBlank(material.getName())) {
+                if (chemicalMaterialParserClient != null) {
+                    List<String> convertedFormula = chemicalMaterialParserClient.convertNameToFormula(material.getName());
+                    if (convertedFormula.size() >= 3 && StringUtils.isNotBlank(convertedFormula.get(2))) {
+                        material.setFormula(new Formula(convertedFormula.get(2)));
+                    }
+                }
+            }
 
             //This modifies the material object!
             if (materialClassResolver != null) {
