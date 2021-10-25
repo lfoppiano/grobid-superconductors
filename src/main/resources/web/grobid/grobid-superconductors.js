@@ -1128,6 +1128,23 @@ let grobid = (function ($) {
             return type.replace("<", "").replace(">", "");
         }
 
+        var createNestedObject = function (base, names, value) {
+            // If a value is given, remove the last name and keep it for later:
+            var lastName = arguments.length === 3 ? names.pop() : false;
+
+            // Walk the hierarchy, creating new objects where needed.
+            // If the lastName was removed, then the last object is not set yet:
+            for (var i = 0; i < names.length; i++) {
+                base = base[names[i]] = base[names[i]] || {};
+            }
+
+            // If a value was given, set it to the last name:
+            if (lastName) base = base[lastName] = value;
+
+            // Return the last object in the hierarchy:
+            return base;
+        };
+
         // Transformation to HTML
         function spanToHtml(span, topPos) {
             let string = "";
@@ -1181,32 +1198,61 @@ let grobid = (function ($) {
 
             if (span.attributes) {
                 let previousPrefix = "";
-                let resolvedFormulas = [];
-                let formula = "";
-                let attributeHtmlString = "<div class='border col-12 p-0'>";
+                let attributeHtmlStringStart = "<div class='border col-12 p-0'>";
+                let attributeHtmlString = ""
+                obj = {}
+
                 Object.keys(span.attributes).sort().forEach(function (key) {
                     let splits = key.split("_");
-                    let prefix = splits[0];
-                    let propertyName = splits[1];
+                    let value = span.attributes[key];
 
-                    if (propertyName === "formula") {
-                        formula = span.attributes[key];
-                        attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
-                    } else if (propertyName === 'rawTaggedValue') {
-                        //Ignoring
-
-                    } else if (propertyName === 'resolvedFormula') {
-                        resolvedFormulas.push(span.attributes[key])
-                    } else {
-                        attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
-                    }
-                    previousPrefix = prefix;
+                    createNestedObject(obj, splits, value);
                 });
 
-                if (resolvedFormulas.length > 0 && resolvedFormulas[0] !== formula) {
-                    attributeHtmlString += "<row><div class='col-12'>resolvedFormula: <strong>" + resolvedFormulas.join(", ") + "</strong></div></row>";
-                }
-                attributeHtmlString += "</div>";
+                Object.keys(obj).forEach(function (key) {
+                    console.log(key)
+                    attributeHtmlString += attributeHtmlStringStart;
+                    let resolvedFormulas = [];
+                    let formula = "";
+                    let variables = []
+
+                    Object.keys(obj[key]).forEach(function (sub_key) {
+                        console.log(sub_key)
+                        propertyName = sub_key
+
+                        if (propertyName === "formula") {
+                            formula = obj[key][sub_key]['rawValue'];
+                            attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + formula + "</strong></div></row>";
+                        } else if (propertyName === 'rawTaggedValue') {
+                            // continue
+                        } else if (propertyName === 'clazz') {
+                            attributeHtmlString += "<row><div class='col-12'>Class: <strong>" + obj[key][sub_key] + "</strong></div></row>";
+                        } else if (propertyName === 'resolvedFormulas') {
+                            let resolvedFormulasList = obj[key][sub_key];
+                            Object.keys(resolvedFormulasList).forEach(function (k) {
+                                resolvedFormulas.push(resolvedFormulasList[k]['rawValue'])
+                            });
+                        } else if (propertyName === 'variables') {
+                            let variableList = obj[key][sub_key]
+                            Object.keys(variableList).forEach(function (variable_name) {
+                                let var_values = variableList[variable_name];
+                                Object.keys(var_values).forEach(function (var_value_index) {
+                                    variables.push(var_values[var_value_index]);
+                                })
+                                attributeHtmlString += "<row><div class='col-12'>" + "variable " +variable_name +": <strong>" + variables.join(", ") + "</strong></div></row>";
+                            });
+                        } else {
+                            attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + obj[key][sub_key] + "</strong></div></row>";
+                        }
+                        previousPrefix = key;
+
+                    })
+
+                    if (resolvedFormulas.length > 0 && resolvedFormulas[0] !== formula) {
+                        attributeHtmlString += "<row><div class='col-12'>resolvedFormula: <strong>" + resolvedFormulas.join(", ") + "</strong></div></row>";
+                    }
+                    attributeHtmlString += "</div>";
+                })
 
                 string += attributeHtmlString;
             }
@@ -1219,7 +1265,7 @@ let grobid = (function ($) {
 
         let examples_superconductors = [
             "The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
-            "For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "For intercalated graphite, T c is reported to be 11.4 K for CaC and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
             "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc leties from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
             "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K .",
             "Our single crystal x-ray diffraction characterization shows, in agreement with earlier work, that WB 4.2 crystallizes in the space group P6 3 /mmc (No. 194) and has a crystal structure that is derived from the simple diborides but with a systematic W-deficiency-B 3 substitution-each missing W atom in the 2b position is replaced by three B atoms in the 6h position.",
