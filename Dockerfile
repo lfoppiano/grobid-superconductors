@@ -68,7 +68,7 @@ WORKDIR /opt
 # build runtime image
 # -------------------
 
-FROM grobid/grobid:0.7.0
+FROM lfoppiano/grobid.gpu:0.7.0
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
