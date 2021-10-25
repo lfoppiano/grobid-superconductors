@@ -83,7 +83,7 @@ public class StructureIdentificationModuleClient {
 
     public List<List<ChemicalSpan>> extractStructuresMulti(List<String> texts) {
 
-        List<List<ChemicalSpan>> outputClasses = new ArrayList<>();
+        List<List<ChemicalSpan>> outputStructures = new ArrayList<>();
         try {
             final HttpPost request = new HttpPost(serverUrl + "/process/structure/text");
             request.setHeader("Accept", APPLICATION_JSON);
@@ -99,7 +99,7 @@ public class StructureIdentificationModuleClient {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    outputClasses = ChemDataExtractorClient.fromJsonBulk(response.getEntity().getContent());
+                    outputStructures = ChemDataExtractorClient.fromJsonBulk(response.getEntity().getContent());
                 }
             }
 
@@ -109,7 +109,7 @@ public class StructureIdentificationModuleClient {
             LOGGER.error("Something generally bad happened. ", e);
         }
 
-        return outputClasses;
+        return outputStructures;
     }
 
 

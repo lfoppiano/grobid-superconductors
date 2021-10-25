@@ -80,7 +80,8 @@ public class ChemDataExtractorClient {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    return fromJsonBulk(response.getEntity().getContent());
+                    List<List<ChemicalSpan>> respondedEntities = fromJsonBulk(response.getEntity().getContent());
+                    mentions = respondedEntities != null ? respondedEntities : mentions;
                 }
             }
 

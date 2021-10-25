@@ -1,15 +1,16 @@
 package org.grobid.core.data;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.collection.IsCollectionWithSize;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 public class MaterialTest {
 
@@ -20,6 +21,7 @@ public class MaterialTest {
         assertThat(outputFormulas, hasSize(1));
         assertThat(outputFormulas.get(0), is("(TMTTF) 2 PF 6"));
     }
+
     @Test
     public void testResolveFormula() throws Exception {
         List<String> outputFormulas = Material.expandFormula("(Sr, Na)Fe 2 As 2");
@@ -66,7 +68,7 @@ public class MaterialTest {
         List<String> expandedFormulas = Material.expandFormula(inputFormula);
 
         assertThat(expandedFormulas, hasSize(1));
-        assertThat(expandedFormulas.get(0), is("Sr x La 1-x Fe 2 O 7"))  ;
+        assertThat(expandedFormulas.get(0), is("Sr x La 1-x Fe 2 O 7"));
 
     }
 
@@ -77,11 +79,11 @@ public class MaterialTest {
         List<String> expandedFormulas = Material.expandFormula(inputFormula);
 
         assertThat(expandedFormulas, hasSize(1));
-        assertThat(expandedFormulas.get(0), is("Sr 1-x-y-z La x Cu y K z Fe 2 O 7"))  ;
+        assertThat(expandedFormulas.get(0), is("Sr 1-x-y-z La x Cu y K z Fe 2 O 7"));
 
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void testExpandFormulaWithTooManyVariables_shouldThrowsException() throws Exception {
         String inputFormula = "(Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La,Sr, Fe, La, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe, Sr, Fe, La,Sr, Fe) Cu 2 O 13";
 
@@ -91,7 +93,7 @@ public class MaterialTest {
     @Test
     public void testResolveVariable_1() throws Exception {
         Material material = new Material();
-        material.setFormula("Fe1-xCuxO2");
+        material.setFormula(new Formula("Fe1-xCuxO2"));
         material.getVariables().put("x", Arrays.asList("0.1", "0.2", "0.3"));
         List<String> outputMaterials = Material.resolveVariables(material);
 
@@ -104,7 +106,7 @@ public class MaterialTest {
     @Test
     public void testResolveVariable_2() throws Exception {
         Material material = new Material();
-        material.setFormula("Fe1-xCuyO2");
+        material.setFormula(new Formula("Fe1-xCuyO2"));
         material.getVariables().put("x", Arrays.asList("0.1", "0.2", "0.3"));
         material.getVariables().put("y", Arrays.asList("-1", "-0.2", "0.3", "0.5"));
 
@@ -129,7 +131,7 @@ public class MaterialTest {
     @Test
     public void testResolveVariable_3() throws Exception {
         Material material = new Material();
-        material.setFormula("Li x (NH 3 ) y Fe 2 (Te z Se 1−z ) 2");
+        material.setFormula(new Formula("Li x (NH 3 ) y Fe 2 (Te z Se 1−z ) 2"));
         material.getVariables().put("x", Arrays.asList("0.1"));
         material.getVariables().put("y", Arrays.asList("0.1"));
         material.getVariables().put("z", Arrays.asList("0.1"));
@@ -142,7 +144,7 @@ public class MaterialTest {
     @Test
     public void testResolveVariable_interval() throws Exception {
         Material material = new Material();
-        material.setFormula("Li x (NH 3 ) 1-x Fe 2 (Te x Se 1−x ) 2");
+        material.setFormula(new Formula("Li x (NH 3 ) 1-x Fe 2 (Te x Se 1−x ) 2"));
         material.getVariables().put("x", Arrays.asList("< 0.1", "> 0.01"));
         List<String> outputMaterials = Material.resolveVariables(material);
 
@@ -194,28 +196,6 @@ public class MaterialTest {
     }
 
     @Test
-    @Ignore("Not testing much")
-    public void testToJson() {
-        Material material = new Material();
-
-        material.setName("Material Name");
-        material.setDoping("Doping!");
-        material.setShape("shape!");
-        material.setFormula("Cu x Fe y");
-        material.addVariable("x", Arrays.asList("1", "2", "3"));
-        material.addVariable("y", Arrays.asList("1", "2", "3"));
-
-//        List<String> outputMaterials = Material.resolveVariables(material);
-
-//        System.out.println(material.toJson());
-        Map<String, String> x = Material.asAttributeMap(material);
-//        assertThat();
-        System.out.println(x);
-        Map<String, String> y = Material.asAttributeMap(material, "bao123");
-        System.out.println(y);
-    }
-
-    @Test
     public void testGeneratePermutations() {
         String formula = "Li x (NH 3 ) y Fe 2 (Te z Se 1−z ) 2";
 
@@ -249,7 +229,150 @@ public class MaterialTest {
         assertThat(result.get(1), is("Li 0.1 (NH 3 ) 0.2 Fe 2 (Te 0.1 Se 0.9 ) 2"));
         assertThat(result.get(2), is("Li 0.2 (NH 3 ) 0.1 Fe 2 (Te 0.1 Se 0.9 ) 2"));
         assertThat(result.get(3), is("Li 0.2 (NH 3 ) 0.2 Fe 2 (Te 0.1 Se 0.9 ) 2"));
+    }
+
+    @Test
+    public void testAsAttributeMap_materialWithFormula() {
+        Material material = new Material();
+        material.setFormula(new Formula("La Fe 2"));
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "test");
+
+        assertThat(attributeMap.keySet(), hasSize(1));
+        assertThat(attributeMap.get("test_formula_rawValue"), is("La Fe 2"));
+    }
+
+    @Test
+    public void testAsAttributeMap_materialWithName() {
+        Material material = new Material();
+        material.setName("Oxygen");
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "test");
+
+        assertThat(attributeMap.keySet(), hasSize(1));
+        assertThat(attributeMap.get("test_name"), is("Oxygen"));
+    }
+
+    @Test
+    public void testAsAttributeMap_variableAndValue() {
+        Material material = new Material();
+        material.addVariable("x", Arrays.asList("0.5"));
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "test");
+
+        assertThat(attributeMap.keySet(), hasSize(1));
+        assertThat(attributeMap.get("test_variables_x_0"), is("0.5"));
+    }
+
+    @Test
+    public void testAsAttributeMap_materialWithAdditionalInformation() {
+        Material material = new Material();
+
+        material.setName("name");
+        material.setDoping("10%-Zn");
+        material.setShape("shape");
+        material.setFormula(new Formula("Cu x Fe y"));
+        material.addVariable("x", Arrays.asList("1", "2", "3"));
+        material.addVariable("y", Arrays.asList("1", "2", "3"));
+        material.setResolvedFormulas(Arrays.asList(new Formula("res1"), new Formula("res2")));
+
+        Map<String, String> attributeMap = Material.asAttributeMap(material);
+        assertThat(attributeMap.keySet(), hasSize(12));
+        assertThat(attributeMap.get("name"), is("name"));
+        assertThat(attributeMap.get("shape"), is("shape"));
+        assertThat(attributeMap.get("doping"), is("10%-Zn"));
+        assertThat(attributeMap.get("formula_rawValue"), is("Cu x Fe y"));
+        assertThat(attributeMap.get("variables_x_0"), is("1"));
+        assertThat(attributeMap.get("variables_x_1"), is("2"));
+        assertThat(attributeMap.get("variables_x_2"), is("3"));
+        assertThat(attributeMap.get("variables_y_0"), is("1"));
+        assertThat(attributeMap.get("variables_y_1"), is("2"));
+        assertThat(attributeMap.get("variables_y_2"), is("3"));
+        assertThat(attributeMap.get("resolvedFormulas_0_rawValue"), is("res1"));
+        assertThat(attributeMap.get("resolvedFormulas_1_rawValue"), is("res2"));
+    }
+
+    @Test
+    public void testAsAttributeMapWithPrefix_materialWithAdditionalInformation() {
+        Material material = new Material();
+
+        material.setName("name");
+        material.setDoping("doping");
+        material.setShape("shape");
+        material.setFormula(new Formula("Cu x Fe y"));
+        material.addVariable("x", Arrays.asList("1", "2", "3"));
+        material.addVariable("y", Arrays.asList("1", "2", "3"));
+
+        Map<String, String> attributeMap = Material.asAttributeMap(material, "bao123");
+        assertThat(attributeMap.keySet(), hasSize(10));
+        assertThat(attributeMap.get("bao123_name"), is("name"));
+        assertThat(attributeMap.get("bao123_shape"), is("shape"));
+        assertThat(attributeMap.get("bao123_doping"), is("doping"));
+        assertThat(attributeMap.get("bao123_formula_rawValue"), is("Cu x Fe y"));
+        assertThat(attributeMap.get("bao123_variables_x_0"), is("1"));
+        assertThat(attributeMap.get("bao123_variables_x_1"), is("2"));
+        assertThat(attributeMap.get("bao123_variables_x_2"), is("3"));
+        assertThat(attributeMap.get("bao123_variables_y_0"), is("1"));
+        assertThat(attributeMap.get("bao123_variables_y_1"), is("2"));
+        assertThat(attributeMap.get("bao123_variables_y_2"), is("3"));
 
     }
 
+    @Test
+    public void testLinkedHashMapToString_onlyStrings() throws Exception {
+        Material material = new Material();
+        material.setName("name");
+        material.setDoping("doping");
+        material.setShape("shape");
+        
+        ObjectMapper m = new ObjectMapper();
+        Map<String, Object> mappedObject = m.convertValue(material, new TypeReference<Map<String, Object>>() {
+        });
+
+        Map<String, String> stringStringMap = Material.linkedHashMapToString(mappedObject);
+        
+        assertThat(stringStringMap.keySet(), hasSize(3));
+        assertThat(stringStringMap.get("name"), is("name"));
+        assertThat(stringStringMap.get("doping"), is("doping"));
+        assertThat(stringStringMap.get("shape"), is("shape"));
+    }
+
+    @Test
+    public void testLinkedHashMapToString_stringsMixedWithLists() throws Exception {
+        Material material = new Material();
+        material.setFormula(new Formula("formula"));
+        material.setShape("shape");
+
+        ObjectMapper m = new ObjectMapper();
+        Map<String, Object> mappedObject = m.convertValue(material, new TypeReference<Map<String, Object>>() {
+        });
+
+        Map<String, String> stringStringMap = Material.linkedHashMapToString(mappedObject);
+
+        assertThat(stringStringMap.keySet(), hasSize(2));
+        assertThat(stringStringMap.get("shape"), is("shape"));
+        assertThat(stringStringMap.get("formula_rawValue"), is("formula"));
+    }
+
+    @Test
+    public void testLinkedHashMapToString_stringsMixedWithLists_2() throws Exception {
+        Material material = new Material();
+        Formula formula = new Formula("formula");
+        formula.setFormulaComposition(Map.of("La", "2", "Fe", "4"));
+        material.setFormula(formula);
+        material.setShape("shape");
+        material.setName("name");
+        material.setResolvedFormulas(Arrays.asList(new Formula("12345"), new Formula("abcde")));
+
+        ObjectMapper m = new ObjectMapper();
+        Map<String, Object> mappedObject = m.convertValue(material, new TypeReference<Map<String, Object>>() {
+        });
+
+        Map<String, String> stringStringMap = Material.linkedHashMapToString(mappedObject);
+
+        assertThat(stringStringMap.keySet(), hasSize(7));
+        assertThat(stringStringMap.get("shape"), is("shape"));
+        assertThat(stringStringMap.get("formula_rawValue"), is("formula"));
+        assertThat(stringStringMap.get("formula_formulaComposition_La"), is("2"));
+        assertThat(stringStringMap.get("formula_formulaComposition_Fe"), is("4"));
+        assertThat(stringStringMap.get("resolvedFormulas_0_rawValue"), is("12345"));
+        assertThat(stringStringMap.get("resolvedFormulas_1_rawValue"), is("abcde"));
+    }
 }

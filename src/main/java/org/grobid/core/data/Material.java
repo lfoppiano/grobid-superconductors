@@ -22,19 +22,18 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Material {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Material.class);
-
+    private static final String ENGLISH_ALPHABETH = "xyzabcdefghijklmnopqrstuvw";
     private String name;
     private String shape;
-    private String formula;
+    private Formula formula;
     private String doping;
     private String fabrication;
     private String substrate;
@@ -45,9 +44,8 @@ public class Material {
     // calculate the class from the formula
     private String sampleFormula;
 
-    private List<String> resolvedFormulas = new ArrayList<>();
+    private List<Formula> resolvedFormulas = new ArrayList<>();
 
-    @JsonIgnore
     private final Map<String, List<String>> variables = new HashMap<>();
     @JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
@@ -73,11 +71,11 @@ public class Material {
         this.shape = shape;
     }
 
-    public String getFormula() {
+    public Formula getFormula() {
         return formula;
     }
 
-    public void setFormula(String formula) {
+    public void setFormula(Formula formula) {
         this.formula = formula;
     }
 
@@ -133,7 +131,7 @@ public class Material {
         offsets.add(offsetPosition);
     }
 
-    public void setResolvedFormulas(List<String> resolvedFormulas) {
+    public void setResolvedFormulas(List<Formula> resolvedFormulas) {
         this.resolvedFormulas = resolvedFormulas;
     }
 
@@ -142,23 +140,23 @@ public class Material {
     }
 
     public static List<String> resolveVariables(Material material) {
-        if (CollectionUtils.isEmpty(material.getVariables().keySet()) || isEmpty(material.getFormula())) {
+        if (CollectionUtils.isEmpty(material.getVariables().keySet()) || material.getFormula() == null || isBlank(material.getFormula().getRawValue())) {
             return new ArrayList<>();
         }
 
-        if (isEmpty(material.getFormula())) {
+        if (material.getFormula() == null || StringUtils.isBlank(material.getFormula().getRawValue())) {
             LOGGER.debug("Cannot resolve variables, as the material representation doesn't have a formula " + material.getFormula());
         }
 
         Set<String> variables = material.getVariables().keySet();
         Set<String> containedVariables = variables.stream()
-            .filter(var -> material.getFormula().contains(var))
+            .filter(var -> material.getFormula().getRawValue().contains(var))
             .collect(Collectors.toSet());
 
-        List<String> output = new ArrayList<>();
+        List<String> outputFormulasString = new ArrayList<>();
 
         if (containedVariables.size() == 0) {
-            return output;
+            return outputFormulasString;
         }
 
         if (containedVariables.size() != variables.size()) {
@@ -180,7 +178,7 @@ public class Material {
 //        }
 
         try {
-            generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
+            generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), outputFormulasString, Pair.of(0, 0), material.getFormula().getRawValue());
         } catch (NumberFormatException e) {
 
             Map<String, List<String>> cleanedMapOfContainedVariables = new HashMap<>();
@@ -192,7 +190,7 @@ public class Material {
             });
 
             try {
-                generatePermutations(cleanedMapOfContainedVariables, new ArrayList(containedVariables), output, Pair.of(0, 0), material.getFormula());
+                generatePermutations(cleanedMapOfContainedVariables, new ArrayList(containedVariables), outputFormulasString, Pair.of(0, 0), material.getFormula().getRawValue());
             } catch (NumberFormatException e2) {
                 LOGGER.debug("Cannot replace variables " + Arrays.toString(variables.toArray()));
             }
@@ -205,7 +203,7 @@ public class Material {
 //            return material1;
 //        }).collect(Collectors.toList());
 
-        return output;
+        return outputFormulasString;
     }
 
     /**
@@ -281,10 +279,11 @@ public class Material {
         return returnFormula;
     }
 
-    public List<String> getResolvedFormulas() {
+    public List<Formula> getResolvedFormulas() {
         return resolvedFormulas;
     }
 
+    @Deprecated
     public String toJson() {
         StringBuilder json = new StringBuilder();
         boolean started = false;
@@ -322,7 +321,7 @@ public class Material {
                 started = true;
             } else
                 json.append(", ");
-            json.append("\"formula\" : \"" + new String(jsonUtf8Encoder.quoteAsUTF8(formula)) + "\"");
+            json.append("\"formula\" : \"" + new String(jsonUtf8Encoder.quoteAsUTF8(formula.toString())) + "\"");
         }
 
 
@@ -334,12 +333,12 @@ public class Material {
 
             json.append("\"resolvedFormulas\" : [");
             boolean first = true;
-            for (String formula : resolvedFormulas) {
+            for (Formula formula : resolvedFormulas) {
                 if (first)
                     first = false;
                 else
                     json.append(",");
-                json.append("\"" + formula + "\"");
+                json.append("\"" + formula.getRawValue() + "\"");
             }
             json.append("] ");
         }
@@ -407,8 +406,8 @@ public class Material {
                     expandedFormulas.add(formula);
                 } else if (splittedDopants.size() == 2) {
                     expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
-                } else if (splittedDopants.size() > 2 && splittedDopants.size() < "xyzabcdefghijklmnopqrstuvw".length()) {
-                    char[] alphabet = "xyzabcdefghijklmnopqrstuvw".toCharArray();
+                } else if (splittedDopants.size() > 2 && splittedDopants.size() < ENGLISH_ALPHABETH.length()) {
+                    char[] alphabet = ENGLISH_ALPHABETH.toCharArray();
                     StringBuilder sb = new StringBuilder();
                     StringBuilder sb2 = new StringBuilder();
                     for (int i = 0; i < splittedDopants.size() - 1; i++) {
@@ -456,30 +455,86 @@ public class Material {
     public static Map<String, String> asAttributeMap(Material material, final String keyPrefix) {
         Map<String, String> stringStringMap = asAttributeMap(material);
 
-        ArrayList<String> keys = new ArrayList(stringStringMap.keySet());
+        List<String> keys = new ArrayList<>(stringStringMap.keySet());
         for (String k : keys) {
             stringStringMap.put(keyPrefix + "_" + k, stringStringMap.get(k));
             stringStringMap.remove(k);
         }
         ;
-
         return stringStringMap;
     }
 
+    public static Map<String, String> linkedHashMapToString(Map<String, Object> input) {
+        return linkedHashMapToString(input, "");
+
+    }
+
+    public static Map<String, String> linkedHashMapToString(Map<String, Object> input, String prefix) {
+        Map<String, String> output = new HashMap<>();
+
+        for (String key : input.keySet()) {
+            if (input.get(key) instanceof String) {
+                if (StringUtils.isNotBlank(prefix)) {
+                    output.put(prefix + "_" + key, (String) input.get(key));
+                } else {
+                    output.put(key, (String) input.get(key));
+                }
+            } else if (input.get(key) instanceof LinkedHashMap) {
+                if (StringUtils.isNotBlank(prefix)) {
+                    output.putAll(linkedHashMapToString((LinkedHashMap) input.get(key), prefix + "_" + key));
+                } else {
+                    output.putAll(linkedHashMapToString((LinkedHashMap) input.get(key), key));
+                }
+            } else if (input.get(key) instanceof ArrayList) {
+                ArrayList<?> item = (ArrayList<?>) input.get(key);
+                for (int i = 0; i < item.size(); i++) {
+                    if (item.get(i) instanceof String) {
+                        if (StringUtils.isNotBlank(prefix)) {
+                            output.put(prefix + "_" + key + "_" + i, (String) item.get(i));
+                        } else {
+                            output.put(key + "_" + i, (String) item.get(i));
+                        }
+                    } else if (item.get(i) instanceof LinkedHashMap) {
+                        if (StringUtils.isNotBlank(prefix)) {
+                            output.putAll(linkedHashMapToString((LinkedHashMap) item.get(i), prefix + "_" + key + "_" + i));
+                        } else {
+                            output.putAll(linkedHashMapToString((LinkedHashMap) item.get(i), key + "_" + i));
+                        }
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
     public static Map<String, String> asAttributeMap(Material material) {
-        List<String> resolvedFormulas = material.getResolvedFormulas();
-        material.setResolvedFormulas(null);
+
+        Map<String, String> output = new HashMap<>();
 
         ObjectMapper m = new ObjectMapper();
-        Map<String, String> mappedObject = m.convertValue(material, new TypeReference<Map<String, String>>() {
+        Map<String, Object> mappedObject = m.convertValue(material, new TypeReference<Map<String, Object>>() {
         });
 
-        if (CollectionUtils.isNotEmpty(resolvedFormulas)) {
-            IntStream.range(0, resolvedFormulas.size())
-                .forEach(i -> mappedObject.put("resolvedFormula_" + i, resolvedFormulas.get(i)));
-        }
+        output = linkedHashMapToString(mappedObject, "");
 
-        return mappedObject;
+//        if (CollectionUtils.isNotEmpty(resolvedFormulas)) {
+//            IntStream.range(0, resolvedFormulas.size())
+//                .forEach(i -> {
+//                    mappedObject.put("resolvedFormula_rawValue_" + i, resolvedFormulas.get(i).getRawValue());
+//                    mappedObject.put("resolvedFormula_composition_" + i, resolvedFormulas.get(i).getFormulaComposition().toString());
+//                });
+//        }
+
+//        if(CollectionUtils.isNotEmpty(variables.keySet())) {
+//            List<String> streamedVariables = variables.keySet().stream()
+//                .map(var -> var + "=" + String.join(",", variables.get(var)))
+//                .collect(Collectors.toList());
+//
+//            IntStream.range(0, streamedVariables.size())
+//                .forEach(i -> mappedObject.put("variable_" + i, streamedVariables.get(i)));
+//        }
+
+        return output;
     }
 
     public void setClazz(String clazz) {

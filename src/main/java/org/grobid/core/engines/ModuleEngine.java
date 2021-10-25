@@ -429,28 +429,28 @@ public class ModuleEngine {
                 sb.append(lt.getText());
             } else {
                 if (currentStyle.equals("baseline")) {
-                    sb.append("</").append(previousStyle.substring(0, 3)).append(">");
+                    sb.append("</").append(previousStyle, 0, 3).append(">");
                     opened = null;
                     sb.append(lt.getText());
                 } else if (currentStyle.equals("superscript")) {
                     if (previousStyle.equals("baseline")) {
-                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     } else {
-                        sb.append("</").append(previousStyle.substring(0, 3)).append(">");
-                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
+                        sb.append("</").append(previousStyle, 0, 3).append(">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     }
                 } else if (currentStyle.equals("subscript")) {
                     if (previousStyle.equals("baseline")) {
-                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     } else {
-                        sb.append("</").append(previousStyle.substring(0, 3)).append(">");
-                        sb.append("<").append(currentStyle.substring(0, 3)).append(">");
+                        sb.append("</").append(previousStyle, 0, 3).append(">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     }
