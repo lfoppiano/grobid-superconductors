@@ -10,9 +10,9 @@
  * http://www.opensource.org/licenses/cpl1.0
  */
 
-package org.grobid.core.data.chemspot;
+package org.grobid.core.data.external.chemspot;
 
-import static org.grobid.core.data.chemspot.Constants.*;
+import static org.grobid.core.data.external.chemspot.Constants.*;
 
 /**
  * Borrowed from chemspot source

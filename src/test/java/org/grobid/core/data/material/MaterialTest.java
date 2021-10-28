@@ -1,8 +1,10 @@
-package org.grobid.core.data;
+package org.grobid.core.data.material;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.data.material.Formula;
+import org.grobid.core.data.material.Material;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 
@@ -374,5 +376,54 @@ public class MaterialTest {
         assertThat(stringStringMap.get("formula_formulaComposition_Fe"), is("4"));
         assertThat(stringStringMap.get("resolvedFormulas_0_rawValue"), is("12345"));
         assertThat(stringStringMap.get("resolvedFormulas_1_rawValue"), is("abcde"));
+    }
+
+    @Test
+    public void testStringToLinkedHashMap_singleString() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, String> input = new HashMap<>();
+        input.put("material", "Mg B2");
+
+        Map<String, Object> output = Material.stringToLinkedHashMap(Arrays.asList("material"), "Mg B2", result);
+        
+        assertThat(output.keySet(), hasSize(1));
+        assertThat(output.get("material"), is("Mg B2"));
+    }
+
+    @Test
+    public void testStringToLinkedHashMap_2LevelsObject() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, String> input = new HashMap<>();
+        input.put("material_formula_rawValue", "Mg B2");
+
+        Map<String, Object> output = Material.stringToLinkedHashMap(Arrays.asList("material", "formula", "rawValue"), "Mg B2", result);
+
+        assertThat(output.keySet(), hasSize(1));
+        assertThat(((LinkedHashMap<String, Object>)((LinkedHashMap<String, Object>) output.get("material")).get("formula")).get("rawValue"), is("Mg B2"));
+    }
+
+    @Test
+    public void testStringToLinkedHashMap_0LevelsObject() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, String> input = new HashMap<>();
+
+        Map<String, Object> output = Material.stringToLinkedHashMap(new ArrayList<>(), "Mg B2", result);
+
+        assertThat(output.keySet(), hasSize(0));
+    }
+
+    @Test
+    public void testStringToLinkedHashMap_sample() throws Exception {
+        Map<String, Object> base = new HashMap<>();
+
+        List<String> names = Arrays.asList("a", "b", "c");
+        String value = "ciao";
+
+        Map<String, Object> output = Material.stringToLinkedHashMap(names, value, base);
+
+        assertThat(output.keySet(), hasSize(1));
+        assertThat(((Map<String, Object>) output.get("a")).keySet(), hasSize(1));
+        assertThat(((Map<?, ?>)((Map<?, ?>) output.get("a")).get("b")).get("c"), is("ciao"));
+
     }
 }

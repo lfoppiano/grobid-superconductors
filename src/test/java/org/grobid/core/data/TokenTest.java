@@ -1,10 +1,9 @@
 package org.grobid.core.data;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.grobid.core.utilities.IOUtilities;
+import org.grobid.core.data.document.Token;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;

@@ -1,8 +1,8 @@
 package org.grobid.core.engines.training;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.grobid.core.data.DocumentBlock;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.DocumentBlock;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
 

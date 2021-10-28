@@ -1,4 +1,4 @@
-package org.grobid.core.data;
+package org.grobid.core.data.document;
 
 import org.grobid.core.layout.LayoutToken;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This represent a TextPassage raw material
+ * This represents a TextPassage raw material
  */
 public class RawPassage {
 

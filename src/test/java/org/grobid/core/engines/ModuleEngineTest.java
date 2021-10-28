@@ -4,6 +4,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
+import org.grobid.core.data.document.DocumentResponse;
+import org.grobid.core.data.document.RawPassage;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.data.document.TextPassage;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
 import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.layout.LayoutToken;
@@ -22,7 +26,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -172,7 +178,7 @@ public class ModuleEngineTest {
 
         DocumentResponse documentResponse = DocumentResponse.fromJson(is);
 
-        List<SuperconEntry> superconEntries = ModuleEngine.computeTabularData(documentResponse.getParagraphs());
+        List<SuperconEntry> superconEntries = ModuleEngine.computeTabularData(documentResponse.getPassages());
 
         assertThat(superconEntries, hasSize(20));
 

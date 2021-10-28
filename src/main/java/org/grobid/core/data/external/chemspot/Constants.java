@@ -1,4 +1,4 @@
-package org.grobid.core.data.chemspot;
+package org.grobid.core.data.external.chemspot;
 
 /**
  * User: Tim Rocktaeschel

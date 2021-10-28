@@ -13,7 +13,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.grobid.core.data.ChemicalComposition;
+import org.grobid.core.data.material.ChemicalComposition;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,68 +50,6 @@ public class ChemicalMaterialParserClient {
         this.httpClient = HttpClientBuilder.create().build();
     }
 
-    public List<String> decomposeFormula(String formula) {
-
-        List<String> outputClasses = new ArrayList<>();
-        try {
-            final HttpPost request = new HttpPost(serverUrl + "/decompose/formula");
-            request.setHeader("Accept", APPLICATION_JSON);
-
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setCharset(StandardCharsets.UTF_8);
-            builder.addTextBody("input", formula, ContentType.APPLICATION_JSON);
-
-            HttpEntity multipart = builder.build();
-            request.setEntity(multipart);
-
-            try (CloseableHttpResponse response = httpClient.execute(request)) {
-                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
-                } else {
-                    outputClasses = fromJson(response.getEntity().getContent());
-                }
-            }
-
-        } catch (UnknownHostException e) {
-            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
-        } catch (IOException e) {
-            LOGGER.error("Something generally bad happened. ", e);
-        }
-
-        return outputClasses;
-    }
-
-//    public List<List<String>> decomposeFormulaMulti(List<String> formulas) {
-//
-//        List<List<String>> outputClasses = new ArrayList<>();
-//        try {
-//            final HttpPost request = new HttpPost(serverUrl + "/decompose/formula");
-//            request.setHeader("Accept", APPLICATION_JSON);
-//
-//            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-//            builder.setCharset(StandardCharsets.UTF_8);
-//            builder.addTextBody("input", toJson(formulas), ContentType.APPLICATION_JSON);
-//
-//            HttpEntity multipart = builder.build();
-//            request.setEntity(multipart);
-//
-//            try (CloseableHttpResponse response = httpClient.execute(request)) {
-//                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-//                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
-//                } else {
-//                    outputClasses = fromJsonMultiple(response.getEntity().getContent());
-//                }
-//            }
-//
-//        } catch (UnknownHostException e) {
-//            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
-//        } catch (IOException e) {
-//            LOGGER.error("Something generally bad happened. ", e);
-//        }
-//
-//        return outputClasses;
-//    }
-
     public List<String> convertNameToFormula(String name) {
 
         List<String> outputFormula = new ArrayList<>();
@@ -142,37 +80,6 @@ public class ChemicalMaterialParserClient {
 
         return outputFormula;
     }
-
-//    public List<List<String>> convertNameToFormulaMulti(List<String> names) {
-//
-//        List<List<String>> outputClasses = new ArrayList<>();
-//        try {
-//            final HttpPost request = new HttpPost(serverUrl + "/classify/formula");
-//            request.setHeader("Accept", APPLICATION_JSON);
-//
-//            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-//            builder.setCharset(StandardCharsets.UTF_8);
-//            builder.addTextBody("input", toJson(names), ContentType.APPLICATION_JSON);
-//
-//            HttpEntity multipart = builder.build();
-//            request.setEntity(multipart);
-//
-//            try (CloseableHttpResponse response = httpClient.execute(request)) {
-//                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-//                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
-//                } else {
-//                    outputClasses = fromJsonMultiple(response.getEntity().getContent());
-//                }
-//            }
-//
-//        } catch (UnknownHostException e) {
-//            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
-//        } catch (IOException e) {
-//            LOGGER.error("Something generally bad happened. ", e);
-//        }
-//
-//        return outputClasses;
-//    }
 
     public ChemicalComposition convertFormulaToComposition(String formula) {
 
@@ -205,38 +112,6 @@ public class ChemicalMaterialParserClient {
         return outputComposition;
     }
 
-//    public List<List<String>> convertFormulaToCompositionMulti(List<String> formulas) {
-//
-//        List<List<String>> outputClasses = new ArrayList<>();
-//        try {
-//            final HttpPost request = new HttpPost(serverUrl + "/classify/formula");
-//            request.setHeader("Accept", APPLICATION_JSON);
-//
-//            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-//            builder.setCharset(StandardCharsets.UTF_8);
-//            builder.addTextBody("input", toJson(formulas), ContentType.APPLICATION_JSON);
-//
-//            HttpEntity multipart = builder.build();
-//            request.setEntity(multipart);
-//
-//            try (CloseableHttpResponse response = httpClient.execute(request)) {
-//                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-//                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
-//                } else {
-//                    outputClasses = fromJsonMultiple(response.getEntity().getContent());
-//                }
-//            }
-//
-//        } catch (UnknownHostException e) {
-//            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
-//        } catch (IOException e) {
-//            LOGGER.error("Something generally bad happened. ", e);
-//        }
-//
-//        return outputClasses;
-//    }
-
-
     public String toJson(List<String> passage) {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -265,7 +140,7 @@ public class ChemicalMaterialParserClient {
         }
         return null;
     }
-    
+
     public static ChemicalComposition fromJsonToChemicalComposition(InputStream inputLine) {
         try {
             ObjectMapper mapper = new ObjectMapper();

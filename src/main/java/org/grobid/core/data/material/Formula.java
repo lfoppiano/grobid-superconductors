@@ -1,4 +1,4 @@
-package org.grobid.core.data;
+package org.grobid.core.data.material;
 
 import java.util.HashMap;
 import java.util.Map;

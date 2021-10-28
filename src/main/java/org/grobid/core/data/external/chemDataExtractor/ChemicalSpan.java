@@ -1,4 +1,4 @@
-package org.grobid.core.data.chemDataExtractor;
+package org.grobid.core.data.external.chemDataExtractor;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

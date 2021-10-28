@@ -6,7 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.*;
+import org.grobid.core.data.Measurement;
+import org.grobid.core.data.SuperconEntry;
+import org.grobid.core.data.document.*;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
@@ -32,7 +35,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.mapping;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.grobid.core.data.Token.getStyle;
+import static org.grobid.core.data.document.Token.getStyle;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 import static org.grobid.core.engines.linking.CRFBasedLinker.*;
 
@@ -208,10 +211,10 @@ public class ModuleEngine {
     private List<Span> getQuantities(List<LayoutToken> tokens) {
         List<Span> spans = new ArrayList<>();
         List<Measurement> measurements = new ArrayList<>();
-        
+
         //TODO: remove this when quantities will be updated
         try {
-             measurements = quantityParser.process(tokens);
+            measurements = quantityParser.process(tokens);
         } catch (Exception e) {
             LOGGER.warn("Error when processing quantities", e);
             return spans;
@@ -291,6 +294,7 @@ public class ModuleEngine {
         } finally {
             IOUtilities.removeTempFile(file);
         }
+
 
         return documentResponse;
     }
@@ -560,7 +564,9 @@ public class ModuleEngine {
         return newSortedEntitiers;
     }
 
-
+    /**
+     * Extract entities from a paragraph / sentence
+     */
     public static List<SuperconEntry> extractEntities(List<TextPassage> paragraphs) {
         Map<String, Span> spansById = new HashMap<>();
         Map<String, String> sentenceById = new HashMap<>();
@@ -587,25 +593,36 @@ public class ModuleEngine {
             dbEntry.setSentence(sentenceById.get(m.getId()));
 
             for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
-                String[] splits = a.getKey().split("_");
-                String prefix = splits[0];
-                String propertyName = splits[1];
+                List<String> splits = List.of(a.getKey().split("_"));
                 String value = a.getValue();
 
-                if (propertyName.equals("formula")) {
-                    dbEntry.setFormula(value);
-                } else if (propertyName.equals("name")) {
-                    dbEntry.setName(value);
-                } else if (propertyName.equals("clazz")) {
-                    dbEntry.setClassification(value);
-                } else if (propertyName.equals("shape")) {
-                    dbEntry.setShape(value);
-                } else if (propertyName.equals("doping")) {
-                    dbEntry.setDoping(value);
-                } else if (propertyName.equals("fabrication")) {
-                    dbEntry.setFabrication(value);
-                } else if (propertyName.equals("substrate")) {
-                    dbEntry.setSubstrate(value);
+                Map<String, Object> nestedAttributes = new LinkedHashMap<>();
+                nestedAttributes = Material.stringToLinkedHashMap(splits, value, nestedAttributes);
+
+                // first level is material0, material1 -> duplicate the dbEntry
+                // second level are the properties
+                // third and further levels are structured information
+
+                boolean firstMaterial = true;
+                for(String materialKey : nestedAttributes.keySet()) {
+                    if (firstMaterial) {
+                        firstMaterial = false; 
+                        // add to current
+                        Map<String, Object> materialObject = (Map<String, Object>) nestedAttributes.get(materialKey);
+                        Material.fillDbEntryFromAttributes(materialObject, dbEntry);
+
+                    } else {
+                        outputCSV.add(dbEntry);
+                        // create new and copy from previous 
+                        SuperconEntry newEntry = new SuperconEntry();
+                        dbEntry.setRawMaterial(m.getText());
+                        dbEntry.setSection(sectionsById.get(m.getId()).getLeft());
+                        dbEntry.setSubsection(sectionsById.get(m.getId()).getRight());
+                        dbEntry.setSentence(sentenceById.get(m.getId()));
+
+                        Map<String, Object> materialObject = (Map<String, Object>) nestedAttributes.get(materialKey);
+                        Material.fillDbEntryFromAttributes(materialObject, dbEntry);
+                    }
                 }
             }
 
@@ -652,6 +669,9 @@ public class ModuleEngine {
         return outputCSV;
     }
 
+    /**
+     * Compute passage to convert into CSV file
+     */
     //TODO: compute document information here and not in the workflow processor 
     public static List<SuperconEntry> computeTabularData(List<TextPassage> paragraphs) {
         Map<String, Span> spansById = new HashMap<>();
@@ -769,5 +789,50 @@ public class ModuleEngine {
             outputCSV.add(dbEntry);
         }
         return outputCSV;
+    }
+
+
+    //        var createNestedObject = function (base, names, value) {
+//            // If a value is given, remove the last name and keep it for later:
+//            var lastName = arguments.length === 3 ? names.pop() : false;
+//
+//            // Walk the hierarchy, creating new objects where needed.
+//            // If the lastName was removed, then the last object is not set yet:
+//            for (var i = 0; i < names.length; i++) {
+//                base = base[names[i]] = base[names[i]] || {};
+//            }
+//
+//            // If a value was given, set it to the last name:
+//            if (lastName) base = base[lastName] = value;
+//
+//            // Return the last object in the hierarchy:
+//            return base;
+//        };
+
+    public Map<String, Object> createNestedObjects(Map<String, Object> base, List<String> names, String value) {
+        if (isEmpty(names)) {
+            return base;
+        }
+
+        String lastName = null;
+
+        if (StringUtils.isNotBlank(value)) {
+            lastName = names.get(names.size() - 1);
+        }
+
+        Map<String, Object> original = base;
+        for (String name : names) {
+            if (!base.containsKey(name)) {
+                base.put(name, new HashMap<String, Object>());
+                base = (Map<String, Object>) base.get(name);
+            }
+        }
+
+        if (StringUtils.isNotEmpty(lastName)) {
+            base.put(lastName, value);
+        }
+
+        return original;
+
     }
 }

@@ -3,7 +3,7 @@ package org.grobid.core.engines;
 import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.engines.linking.EntityLinker;
 import org.grobid.core.engines.linking.EntityLinker_MaterialTcValue;

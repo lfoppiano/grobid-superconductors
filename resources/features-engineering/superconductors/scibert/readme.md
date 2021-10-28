@@ -1,8 +1,8 @@
-# Scibert fine-tuning
+# SciBERT pre-training and fine-tuning experiments
 
 ## Introduction
 
-This page contains notes and information about the process of fine-tuning SciBERT for improving the results in the task
+This page contains notes and information about the process of pre-training [SciBERT](https://github.com/allenai/scibert) for improving the results in the task
 of NER for materials science scientific papers. This process was performed following the
 guide [here](https://github.com/google-research/bert#pre-training-with-bert).
 

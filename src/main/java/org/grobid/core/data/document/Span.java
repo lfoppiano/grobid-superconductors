@@ -1,10 +1,12 @@
-package org.grobid.core.data;
+package org.grobid.core.data.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.grobid.core.data.Quantity;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 
@@ -15,8 +17,8 @@ import java.util.*;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Span implements Cloneable {
-    //We use the hashcode to generate a unique id
 
+    //We use the hashcode to generate a unique id
     private String id = null;
 
     private String text;
@@ -39,16 +41,16 @@ public class Span implements Cloneable {
     @JsonProperty("token_end")
     private int tokenEnd;
     private boolean linkable;
-
+    
     //The source where this span was generated from, namely the model
-
     private String source;
+
     // Contains the references triple (destinationId, destinationType, linkingMethod)
-
     private List<Link> links = new ArrayList<>();
-    // Attribute map, used for adding lower-models information
 
+    // Attribute map, used for adding lower-models information
     private Map<String, String> attributes = new HashMap<>();
+    
     /**
      * These are internal objects that should not be serialised to JSON
      **/
@@ -310,5 +312,16 @@ public class Span implements Cloneable {
 
     public void addLinks(List<Link> links) {
         this.links.addAll(links);
+    }
+
+    @Override
+    public Span clone() {
+        try {
+            Span clone = (Span) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

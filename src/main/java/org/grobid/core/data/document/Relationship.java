@@ -1,4 +1,6 @@
-package org.grobid.core.data;
+package org.grobid.core.data.document;
+
+import org.grobid.core.data.document.Span;
 
 public class Relationship {
 

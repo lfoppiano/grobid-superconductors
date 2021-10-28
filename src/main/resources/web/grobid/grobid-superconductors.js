@@ -448,11 +448,11 @@ let grobid = (function ($) {
 
             let cumulativeOutput = "";
             if (responseText) {
-                responseText.forEach(function (paragraph, paragraphIdx) {
-                    let text = paragraph.text;
+                responseText.forEach(function (passage, passageIdx) {
+                    let text = passage.text;
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
@@ -462,10 +462,10 @@ let grobid = (function ($) {
 
             //Adding events, unfortunately I need to wait when the HTML tree is updated
             if (responseText) {
-                responseText.forEach(function (paragraph, paragraphIdx) {
+                responseText.forEach(function (passage, paragraphIdx) {
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
 
                     // Adding events
@@ -517,14 +517,14 @@ let grobid = (function ($) {
         function onSuccessText(responseText, statusText) {
             $('#infoResultMessage').html('');
 
-            let paragraphs = responseText.paragraphs;
+            let passages = responseText.passages;
             let cumulativeOutput = "";
-            if (paragraphs) {
-                paragraphs.forEach(function (paragraph, paragraphIdx) {
-                    let text = paragraph.text;
+            if (passages) {
+                passages.forEach(function (passage, paragraphIdx) {
+                    let text = passage.text;
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
@@ -533,11 +533,11 @@ let grobid = (function ($) {
             $('#requestResultTextContent').html(cumulativeOutput);
 
             //Adding events, unfortunately I need to wait when the HTML tree is updated
-            if (paragraphs) {
-                paragraphs.forEach(function (paragraph, paragraphIdx) {
+            if (passages) {
+                passages.forEach(function (passage, paragraphIdx) {
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
 
                     // Adding events
@@ -756,7 +756,7 @@ let grobid = (function ($) {
 
             let json = response;
             let pages = json['pages'];
-            let paragraphs = json.paragraphs;
+            let passages = json.passages;
 
             let spanGlobalIndex = 0;
             let copyButtonElement = $('#copy-button');
@@ -818,9 +818,9 @@ let grobid = (function ($) {
             }
 
             let globalLinkToPressures = []
-            paragraphs.forEach(function (paragraph, paragraphIdx) {
+            passages.forEach(function (passage, passageIdx) {
                 let addedLinks = []
-                let spans = paragraph.spans;
+                let spans = passage.spans;
                 let localSpans = []
                 // hey bro, this must be asynchronous to avoid blocking the brothers
 
@@ -887,11 +887,11 @@ let grobid = (function ($) {
                                         }
 
 
-                                        let paragraph_popover = annotateTextAsHtml(paragraph.text, [span, link_entity]);
+                                        let passage_popover = annotateTextAsHtml(passage.text, [span, link_entity]);
 
                                         $("#" + row_id).popover({
                                             content: function () {
-                                                return paragraph_popover;
+                                                return passage_popover;
                                             },
                                             html: true,
                                             // container: 'body',
@@ -908,7 +908,7 @@ let grobid = (function ($) {
 
             let addedLinks = []
 
-            //Reprocessing the links for which the targetId isn't in the same paragraph
+            //Reprocessing the links for which the targetId isn't in the same passage
             unlinkedElements.forEach(function (span, spanIdx) {
                 if (span.links !== undefined && span.links.length > 0) {
                     span.links.forEach(function (link, linkIdx) {

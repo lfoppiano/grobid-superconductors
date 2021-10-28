@@ -1,7 +1,8 @@
-package org.grobid.core.data;
+package org.grobid.core.data.material;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.data.SuperconEntry;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.OffsetPosition;
@@ -38,6 +40,7 @@ public class Material {
     private String fabrication;
     private String substrate;
     private String rawTaggedValue;
+    @JsonProperty("class")
     private String clazz;
 
     //This is the formula with each variable, replaced with random numbers, and can be used as a second attempt to
@@ -469,6 +472,30 @@ public class Material {
 
     }
 
+    public static Map<String, Object> stringToLinkedHashMap(List<String> keys, String value, Map<String, Object> result) {
+
+        List<String> keysMutable = new ArrayList<>(keys);
+        if (keysMutable.size() == 0) {
+            //error condition, go back and forget 
+            return result;
+        } else if (keysMutable.size() == 1) {
+            //stopping condition
+            result.put(keysMutable.get(0), value);
+            return result;
+        } else {
+            // first add, then remove first and pass over
+            String firstKey = keysMutable.get(0);
+            keysMutable.remove(0);
+            if (!result.containsKey(firstKey)) {
+                result.put(firstKey, new LinkedHashMap<String, Object>());
+                stringToLinkedHashMap(keysMutable, value, (Map<String, Object>) result.get(firstKey));
+                return result;
+            } else {
+                return stringToLinkedHashMap(keysMutable, value, result);
+            }
+        }
+    }
+
     public static Map<String, String> linkedHashMapToString(Map<String, Object> input, String prefix) {
         Map<String, String> output = new HashMap<>();
 
@@ -507,6 +534,39 @@ public class Material {
         return output;
     }
 
+    //This modifies the object
+    public static void fillDbEntryFromAttributes(Map<String, Object> materialObject, SuperconEntry dbEntry) {
+        for (String propertyName : materialObject.keySet()) {
+            switch (propertyName) {
+                case "formula":
+                    Map<String, Object> formula = (Map<String, Object>) materialObject.get(propertyName);
+                    dbEntry.setFormula((String) formula.get("rawValue"));
+                    break;
+                case "name":
+                    dbEntry.setName((String) materialObject.get(propertyName));
+                    break;
+                case "clazz":
+                    dbEntry.setClassification((String) materialObject.get(propertyName));
+                    break;
+                case "shape":
+                    dbEntry.setShape((String) materialObject.get(propertyName));
+                    break;
+                case "doping":
+                    dbEntry.setDoping((String) materialObject.get(propertyName));
+                    break;
+                case "fabrication":
+                    dbEntry.setFabrication((String) materialObject.get(propertyName));
+                    break;
+                case "substrate":
+                    dbEntry.setSubstrate((String) materialObject.get(propertyName));
+                    break;
+                case "variables":
+                    dbEntry.setVariables((String) materialObject.get(propertyName));
+                    break;
+            }
+        }
+    }
+
     public static Map<String, String> asAttributeMap(Material material) {
 
         Map<String, String> output = new HashMap<>();
@@ -516,23 +576,6 @@ public class Material {
         });
 
         output = linkedHashMapToString(mappedObject, "");
-
-//        if (CollectionUtils.isNotEmpty(resolvedFormulas)) {
-//            IntStream.range(0, resolvedFormulas.size())
-//                .forEach(i -> {
-//                    mappedObject.put("resolvedFormula_rawValue_" + i, resolvedFormulas.get(i).getRawValue());
-//                    mappedObject.put("resolvedFormula_composition_" + i, resolvedFormulas.get(i).getFormulaComposition().toString());
-//                });
-//        }
-
-//        if(CollectionUtils.isNotEmpty(variables.keySet())) {
-//            List<String> streamedVariables = variables.keySet().stream()
-//                .map(var -> var + "=" + String.join(",", variables.get(var)))
-//                .collect(Collectors.toList());
-//
-//            IntStream.range(0, streamedVariables.size())
-//                .forEach(i -> mappedObject.put("variable_" + i, streamedVariables.get(i)));
-//        }
 
         return output;
     }

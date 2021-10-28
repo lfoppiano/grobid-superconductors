@@ -1,4 +1,4 @@
-package org.grobid.core.data;
+package org.grobid.core.data.document;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;

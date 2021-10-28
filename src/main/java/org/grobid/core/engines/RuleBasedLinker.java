@@ -1,9 +1,9 @@
 package org.grobid.core.engines;
 
 import com.google.inject.Singleton;
-import org.grobid.core.data.Link;
-import org.grobid.core.data.Span;
-import org.grobid.core.data.TextPassage;
+import org.grobid.core.data.document.Link;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.data.document.TextPassage;
 import org.grobid.core.utilities.LinkingModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;

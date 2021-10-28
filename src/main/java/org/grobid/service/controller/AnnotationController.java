@@ -4,7 +4,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.grobid.core.data.DocumentResponse;
+import org.grobid.core.data.document.DocumentResponse;
 import org.grobid.core.data.SuperconEntry;
 import org.grobid.core.engines.ModuleEngine;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
@@ -113,9 +113,9 @@ public class AnnotationController {
                                                               @FormDataParam("outputAll") boolean outputEverything) {
         List<SuperconEntry> superconEntries = new ArrayList<>();
         if (!outputEverything) {
-            superconEntries = ModuleEngine.computeTabularData(jsonResponse.getParagraphs());
+            superconEntries = ModuleEngine.computeTabularData(jsonResponse.getPassages());
         } else {
-            superconEntries = ModuleEngine.extractEntities(jsonResponse.getParagraphs());
+            superconEntries = ModuleEngine.extractEntities(jsonResponse.getPassages());
         }
 
         if (CollectionUtils.isEmpty(superconEntries)) {

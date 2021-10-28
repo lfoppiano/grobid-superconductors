@@ -1,4 +1,4 @@
-package org.grobid.core.data;
+package org.grobid.core.data.document;
 
 import java.util.StringJoiner;
 

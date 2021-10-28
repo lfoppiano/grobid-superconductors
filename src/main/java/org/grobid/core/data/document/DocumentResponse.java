@@ -1,4 +1,4 @@
-package org.grobid.core.data;
+package org.grobid.core.data.document;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
+import org.grobid.core.data.SuperconEntry;
 import org.grobid.core.engines.ModuleEngine;
 import org.grobid.service.controller.AnnotationController;
 import org.slf4j.Logger;
@@ -32,24 +33,24 @@ public class DocumentResponse {
 
     private BiblioInfo biblio;
 
-    private List<TextPassage> paragraphs;
+    private List<TextPassage> passages;
 
     private List<Page> pages;
 
     public DocumentResponse() {
-        paragraphs = new ArrayList<>();
+        passages = new ArrayList<>();
     }
 
-    public DocumentResponse(List<TextPassage> paragraphs) {
-        this.paragraphs = paragraphs;
+    public DocumentResponse(List<TextPassage> passages) {
+        this.passages = passages;
     }
 
-    public List<TextPassage> getParagraphs() {
-        return paragraphs;
+    public List<TextPassage> getPassages() {
+        return passages;
     }
 
-    public void setParagraphs(List<TextPassage> paragraphs) {
-        this.paragraphs = paragraphs;
+    public void setPassages(List<TextPassage> passages) {
+        this.passages = passages;
     }
 
     public void addParagraphs(List<TextPassage> paragraphs) {
@@ -57,7 +58,7 @@ public class DocumentResponse {
     }
 
     public void addParagraph(TextPassage paragraph) {
-        this.paragraphs.add(paragraph);
+        this.passages.add(paragraph);
     }
 
     public long getRuntime() {
@@ -77,7 +78,7 @@ public class DocumentResponse {
     }
 
     public String toCsv() {
-        List<SuperconEntry> outputList = ModuleEngine.computeTabularData(getParagraphs());
+        List<SuperconEntry> outputList = ModuleEngine.computeTabularData(getPassages());
         List<List<String>> outputCSV = outputList.stream().map(SuperconEntry::toCsv).collect(Collectors.toList());
 
         StringBuilder out = new StringBuilder();
@@ -100,7 +101,7 @@ public class DocumentResponse {
      * Converts all the entities to CSV
      **/
     public String toCsvAll() {
-        List<SuperconEntry> outputList = ModuleEngine.extractEntities(getParagraphs());
+        List<SuperconEntry> outputList = ModuleEngine.extractEntities(getPassages());
         List<List<String>> outputCSV = outputList.stream().map(SuperconEntry::toCsv).collect(Collectors.toList());
 
         StringBuilder out = new StringBuilder();
