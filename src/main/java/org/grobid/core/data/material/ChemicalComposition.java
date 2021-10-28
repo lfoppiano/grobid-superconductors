@@ -1,6 +1,7 @@
 package org.grobid.core.data.material;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,10 @@ public class ChemicalComposition {
 
     public void setComposition(Map<String, String> composition) {
         this.composition = composition;
+    }
+
+    public boolean isEmpty() {
+        return StringUtils.isBlank(formula) && StringUtils.isBlank(name) && composition.keySet().size() == 0;
     }
 
     @Override

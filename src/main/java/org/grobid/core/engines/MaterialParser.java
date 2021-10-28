@@ -413,10 +413,20 @@ public class MaterialParser extends AbstractParser {
                 || StringUtils.isBlank(material.getFormula().getRawValue()))
                 && StringUtils.isNotBlank(material.getName())) {
                 if (chemicalMaterialParserClient != null) {
-                    List<String> convertedFormula = chemicalMaterialParserClient.convertNameToFormula(material.getName());
-                    if (convertedFormula.size() >= 3 && StringUtils.isNotBlank(convertedFormula.get(2))) {
-                        material.setFormula(new Formula(convertedFormula.get(2)));
-                    }
+                    ChemicalComposition convertedFormula = chemicalMaterialParserClient.convertNameToFormula(material.getName());
+                    Formula formula = null;
+                    if (isNotBlank(convertedFormula.getFormula())) {
+                        formula = new Formula(convertedFormula.getFormula());
+                        material.setFormula(formula);
+                    } 
+                    
+                    if (convertedFormula.getComposition().keySet().size() > 0) {
+                        if (formula == null) {
+                            formula = new Formula();
+                        }
+                        formula.setFormulaComposition(convertedFormula.getComposition());
+                        material.setFormula(formula);
+                    }                     
                 }
             }
 

@@ -17,6 +17,10 @@ public class Formula {
         this.formulaComposition = formulaComposition;
     }
 
+    public Formula() {
+        
+    }
+
     public Map<String, String> getFormulaComposition() {
         return formulaComposition;
     }

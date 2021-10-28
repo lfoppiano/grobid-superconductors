@@ -1020,7 +1020,7 @@ let grobid = (function ($) {
         }
 
         function addRow() {
-            console.log("Adding new row. ");
+            // console.log("Adding new row. ");
 
             let random_number = '_' + Math.random().toString(36).substr(2, 9);
 
@@ -1210,14 +1210,12 @@ let grobid = (function ($) {
                 });
 
                 Object.keys(obj).forEach(function (key) {
-                    console.log(key)
                     attributeHtmlString += attributeHtmlStringStart;
                     let resolvedFormulas = [];
                     let formula = "";
                     let variables = []
 
                     Object.keys(obj[key]).forEach(function (sub_key) {
-                        console.log(sub_key)
                         propertyName = sub_key
 
                         if (propertyName === "formula") {

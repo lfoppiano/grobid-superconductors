@@ -50,9 +50,9 @@ public class ChemicalMaterialParserClient {
         this.httpClient = HttpClientBuilder.create().build();
     }
 
-    public List<String> convertNameToFormula(String name) {
+    public ChemicalComposition convertNameToFormula(String name) {
 
-        List<String> outputFormula = new ArrayList<>();
+        ChemicalComposition outputFormula = new ChemicalComposition();
         try {
             final HttpPost request = new HttpPost(serverUrl + "/convert/name/formula");
             request.setHeader("Accept", APPLICATION_JSON);
@@ -65,10 +65,12 @@ public class ChemicalMaterialParserClient {
             request.setEntity(multipart);
 
             try (CloseableHttpResponse response = httpClient.execute(request)) {
-                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
+                int statusCode = response.getStatusLine().getStatusCode();
+                
+                if (statusCode == HttpURLConnection.HTTP_OK) {
+                    outputFormula = fromJsonToChemicalComposition(response.getEntity().getContent());
                 } else {
-                    outputFormula = fromJson(response.getEntity().getContent());
+                    LOGGER.error("Not OK answer. Status code: " + statusCode);
                 }
             }
 
