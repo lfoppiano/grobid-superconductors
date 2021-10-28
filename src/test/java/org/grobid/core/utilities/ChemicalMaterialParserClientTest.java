@@ -16,16 +16,13 @@ public class ChemicalMaterialParserClientTest {
     @Test
     public void testFromJsonToChemicalComposition() {
         
-        InputStream is = IOUtils.toInputStream("{\"elements\": {\"La\": \"3\", \"Ir\": \"2\", \"Ge\": \"2\"}, \"amounts_vars\": {}, \"elements_vars\": {}, \"formula\": \"La3Ir2Ge2\",\n" +
-            "\"oxygen_deficiency\": null}");
+        InputStream is = IOUtils.toInputStream("{\"composition\": {\"La\": \"3\", \"Ir\": \"2\", \"Ge\": \"2\"}, \"name\": \"\", \"formula\": \"La3Ir2Ge2\"}");
         ChemicalComposition chemicalComposition = ChemicalMaterialParserClient.fromJsonToChemicalComposition(is);
         
         assertThat(chemicalComposition, is(notNullValue()));
         assertThat(chemicalComposition.getFormula(), is("La3Ir2Ge2"));
-        assertThat(chemicalComposition.getElements(), is(notNullValue()));
-        assertThat(chemicalComposition.getElements().keySet(), hasSize(3));
-        assertThat(chemicalComposition.getElements().get("La"), is("3"));
-        assertThat(chemicalComposition.getAmountsVars().keySet(), hasSize(0));
-        assertThat(chemicalComposition.getOxygenDeficency(), is(nullValue()));
+        assertThat(chemicalComposition.getComposition(), is(notNullValue()));
+        assertThat(chemicalComposition.getComposition().keySet(), hasSize(3));
+        assertThat(chemicalComposition.getComposition().get("La"), is("3"));
     }
 }

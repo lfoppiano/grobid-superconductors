@@ -244,7 +244,7 @@ public class MaterialParser extends AbstractParser {
                 Formula formula = new Formula(finalFormula);
                 if (chemicalMaterialParserClient != null) {
                     ChemicalComposition chemicalComposition = chemicalMaterialParserClient.convertFormulaToComposition(finalFormula);
-                    formula.setFormulaComposition(chemicalComposition.getElements());
+                    formula.setFormulaComposition(chemicalComposition.getComposition());
                 }
 
                 currentMaterial.setFormula(formula);
@@ -379,7 +379,7 @@ public class MaterialParser extends AbstractParser {
                     .map(f -> {
                         Formula createdFormula = new Formula(f);
                         if (chemicalMaterialParserClient != null) {
-                            createdFormula.setFormulaComposition(chemicalMaterialParserClient.convertFormulaToComposition(f).getElements());
+                            createdFormula.setFormulaComposition(chemicalMaterialParserClient.convertFormulaToComposition(f).getComposition());
                         }
                         return createdFormula;
                     })
