@@ -12,8 +12,8 @@ import java.util.Objects;
 public class SuperconEntry implements Cloneable {
 
     //"Raw material","Name","Formula","Doping","Shape","Class","Fabrication",
-    // "Substrate","Critical temperature","Applied pressure","Link type",
-    // "Section","Subsection","Sentence", "type", "path","filename"
+    // "Substrate","Critical temperature","Tc measurement method", "Applied pressure","Material-tc link type",
+    // "Section", "Subsection","Sentence", "type", "path","filename"
 
     private String rawMaterial;
     private String name;
@@ -24,6 +24,7 @@ public class SuperconEntry implements Cloneable {
     private String fabrication;
     private String substrate;
     private String criticalTemperature;
+    private String criticalTemperatureMeasurementMethod; 
     private String appliedPressure;
     private String linkType;
     private String section;
@@ -211,7 +212,9 @@ public class SuperconEntry implements Cloneable {
         outList.add(getClassification());
         outList.add(getFabrication());
         outList.add(getSubstrate());
+        outList.add(getVariables());
         outList.add(getCriticalTemperature());
+        outList.add(getCriticalTemperatureMeasurementMethod());
         outList.add(getAppliedPressure());
         outList.add(getLinkType());
         outList.add(getSection());
@@ -236,5 +239,13 @@ public class SuperconEntry implements Cloneable {
 
     public String getVariables() {
         return variables;
+    }
+
+    public String getCriticalTemperatureMeasurementMethod() {
+        return criticalTemperatureMeasurementMethod;
+    }
+
+    public void setCriticalTemperatureMeasurementMethod(String criticalTemperatureMeasurementMethod) {
+        this.criticalTemperatureMeasurementMethod = criticalTemperatureMeasurementMethod;
     }
 }

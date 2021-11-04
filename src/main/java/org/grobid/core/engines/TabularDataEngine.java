@@ -1,8 +1,6 @@
 package org.grobid.core.engines;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.data.SuperconEntry;
 import org.grobid.core.data.document.Span;
 import org.grobid.core.data.document.TextPassage;
@@ -25,7 +23,7 @@ import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 public class TabularDataEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TabularDataEngine.class);
-    
+
     /**
      * Extract entities from a paragraph / sentence
      */
@@ -100,15 +98,17 @@ public class TabularDataEngine {
     }
 
     /**
-     * Compute passage to convert into CSV file
+     * Compute passages and convert them into a tabular form (CSV format).
+     * The process ignores non-linked entities and, in particular, entities that are outside the link between
+     * material and critical temperature
      */
     //TODO: compute document information here and not in the workflow processor 
-    public static List<SuperconEntry> computeTabularData(List<TextPassage> paragraphs) {
+    public static List<SuperconEntry> computeTabularData(List<TextPassage> passages) {
         Map<String, Span> spansById = new HashMap<>();
         Map<String, String> sentenceById = new HashMap<>();
         Map<String, Pair<String, String>> sectionsById = new HashMap<>();
 
-        for (TextPassage paragraph : paragraphs) {
+        for (TextPassage paragraph : passages) {
             List<Span> linkedSpans = paragraph.getSpans().stream()
                 .filter(s -> s.getLinks().size() > 0)
                 .collect(Collectors.toList());
@@ -139,7 +139,7 @@ public class TabularDataEngine {
             Map<String, String> linkTypesGroupedByMaterialId = m.getLinks().stream()
                 .map(l -> Pair.of(l.getTargetId(), l.getType()))
                 .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
-            
+
             // Process TC
             boolean firstTemp = true;
             for (Map.Entry<String, String> entry : linkTypesGroupedByMaterialId.entrySet()) {
@@ -162,15 +162,24 @@ public class TabularDataEngine {
                                 anotherNewDbEntry.setLinkType(entry.getValue());
                                 newClones.add(anotherNewDbEntry);
                             } catch (CloneNotSupportedException e) {
-                                LOGGER.error("Cannot create a duplicate of the supercon entry: " + ewa.getRawMaterial() + ". ", e);
+                                LOGGER.error("Cannot clone a supercon object entry: " + ewa.getRawMaterial() + ". ", e);
                             }
                         }
                         entriesRelatedToThisTc.addAll(newClones);
                     }
 
+                    // Process materials (with links)
+                    String meMethodsLinkedToThisTc = spansById.values().stream()
+                        .filter(span -> span.getType().equals(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL) &&
+                            span.getLinks().stream().anyMatch(a -> a.getTargetId().equals(linkedSpan.getId())))
+                        .map(Span::getText)
+                        .collect(Collectors.joining(", "));
 
-                    //Process pressures - only linked to what's linked to material
+                    entriesRelatedToThisTc.stream()
+                        .forEach(sE -> sE.setCriticalTemperatureMeasurementMethod(meMethodsLinkedToThisTc));
 
+
+                    //Process pressures - only linked to a Tc that is linked to material
                     List<Span> pressureLinkedToTheCurrentTc = linkedSpan.getLinks().stream()
                         .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
                         .map(l -> spansById.get(l.getTargetId()))
@@ -201,7 +210,7 @@ public class TabularDataEngine {
                     outputCSV.addAll(entriesRelatedToThisTc);
                 }
             }
-            
+
         }
         return outputCSV;
     }

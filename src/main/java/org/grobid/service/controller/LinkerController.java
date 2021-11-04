@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.length;
-import static org.grobid.core.exceptions.GrobidExceptionStatus.BAD_INPUT_DATA;
 
 @Singleton
 @Path("/linker")

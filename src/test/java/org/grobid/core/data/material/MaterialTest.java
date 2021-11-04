@@ -6,8 +6,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.SuperconEntry;
 import org.grobid.core.data.document.DocumentResponse;
 import org.grobid.core.data.document.Span;
-import org.grobid.core.data.material.Formula;
-import org.grobid.core.data.material.Material;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 

@@ -84,7 +84,9 @@ public class DocumentResponse {
         StringBuilder out = new StringBuilder();
         try {
             final CSVPrinter printer = CSVFormat.DEFAULT
-                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication", "Substrate", "Critical temperature", "Applied pressure", "Link type", "Section", "Subsection", "Sentence")
+                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication", 
+                    "Substrate", "Variables", "Critical temperature", "Tc measurement method", "Applied pressure", 
+                    "Link type", "Section", "Subsection", "Sentence")
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.ALL)
                 .print(out);
@@ -107,7 +109,9 @@ public class DocumentResponse {
         StringBuilder out = new StringBuilder();
         try {
             final CSVPrinter printer = CSVFormat.DEFAULT
-                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication", "Substrate", "Critical temperature", "Applied pressure", "Link type", "Section", "Subsection", "Sentence")
+                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication",
+                    "Substrate", "Variables", "Critical temperature", "Tc measurement method", "Applied pressure",
+                    "Link type", "Section", "Subsection", "Sentence")
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.ALL)
                 .print(out);

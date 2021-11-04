@@ -1,7 +1,5 @@
 package org.grobid.core.data.document;
 
-import org.grobid.core.data.document.Span;
-
 public class Relationship {
 
     private Span left;
