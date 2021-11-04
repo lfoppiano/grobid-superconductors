@@ -4,7 +4,7 @@ import com.google.inject.Singleton;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.data.material.Material;
-import org.grobid.core.utilities.ClassResolverModuleClient;
+import org.grobid.core.utilities.client.ClassResolverModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

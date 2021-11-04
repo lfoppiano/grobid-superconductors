@@ -16,6 +16,8 @@ import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.client.ChemDataExtractorClient;
+import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.grobid.core.utilities;
+package org.grobid.core.utilities.client;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParser;

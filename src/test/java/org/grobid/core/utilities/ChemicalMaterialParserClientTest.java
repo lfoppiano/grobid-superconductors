@@ -1,6 +1,7 @@
 package org.grobid.core.utilities;
 
 import org.grobid.core.data.material.ChemicalComposition;
+import org.grobid.core.utilities.client.ChemicalMaterialParserClient;
 import org.junit.Test;
 import shadedwipo.org.apache.commons.io.IOUtils;
 

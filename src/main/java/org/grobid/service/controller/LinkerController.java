@@ -8,6 +8,7 @@ import org.grobid.core.data.document.Span;
 import org.grobid.core.data.document.TextPassage;
 import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.grobid.service.exceptions.GrobidServiceException;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.length;
+import static org.grobid.core.exceptions.GrobidExceptionStatus.BAD_INPUT_DATA;
 
 @Singleton
 @Path("/linker")
@@ -129,7 +132,7 @@ public class LinkerController {
 
             textPassages.add(textPassage);
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            throw new GrobidServiceException("Invalid data supplied to the linker", e, Response.Status.BAD_REQUEST);
         }
 
         return textPassages;

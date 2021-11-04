@@ -2,6 +2,7 @@ package org.grobid.service.exceptions;
 
 import javax.ws.rs.core.Response;
 
+@Deprecated
 public class GrobidServicePropertyException extends GrobidServiceException {
 
     private static final long serialVersionUID = -756080338090769910L;

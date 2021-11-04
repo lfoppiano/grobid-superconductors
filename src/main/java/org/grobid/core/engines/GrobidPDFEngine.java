@@ -392,13 +392,6 @@ public class GrobidPDFEngine {
         return markersPositionsAsOffsetsInText;
     }
 
-    protected static String getPlainLabelName(String label) {
-        if (label == null) {
-            return label;
-        }
-        return label.replaceAll("<|>", "");
-    }
-
     /**
      * Check if to create a new paragraphs - applied to the PARAGRAPH label
      */

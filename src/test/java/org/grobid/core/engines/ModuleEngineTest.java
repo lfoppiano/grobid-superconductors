@@ -25,10 +25,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -170,23 +167,5 @@ public class ModuleEngineTest {
         String s = ModuleEngine.getFormattedString(layoutTokens);
 
         assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
-    }
-
-    @Test
-    public void testComputeTabularData() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("14fcc539b1.json");
-
-        DocumentResponse documentResponse = DocumentResponse.fromJson(is);
-
-        List<SuperconEntry> superconEntries = ModuleEngine.computeTabularData(documentResponse.getPassages());
-
-        assertThat(superconEntries, hasSize(20));
-
-        assertThat(superconEntries.get(18).getRawMaterial(), is("HgBa 2 Ca 2 Cu 3 O 9"));
-        assertThat(superconEntries.get(18).getCriticalTemperature(), is("55 K"));
-        assertThat(superconEntries.get(18).getAppliedPressure(), is(nullValue()));
-        assertThat(superconEntries.get(18).getRawMaterial(), is("HgBa 2 Ca 2 Cu 3 O 9"));
-        assertThat(superconEntries.get(19).getCriticalTemperature(), is("up to 164 K"));
-        assertThat(superconEntries.get(19).getAppliedPressure(), is("30 GPa"));
     }
 }

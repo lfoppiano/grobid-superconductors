@@ -1,4 +1,4 @@
-package org.grobid.core.utilities;
+package org.grobid.core.utilities.client;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

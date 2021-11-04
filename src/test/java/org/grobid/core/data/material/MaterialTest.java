@@ -3,11 +3,15 @@ package org.grobid.core.data.material;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.data.SuperconEntry;
+import org.grobid.core.data.document.DocumentResponse;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.data.material.Formula;
 import org.grobid.core.data.material.Material;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -425,5 +429,48 @@ public class MaterialTest {
         assertThat(((Map<String, Object>) output.get("a")).keySet(), hasSize(1));
         assertThat(((Map<?, ?>)((Map<?, ?>) output.get("a")).get("b")).get("c"), is("ciao"));
 
+    }
+
+    @Test
+    public void testProcessAttributes_singleMaterial() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("sample_response.json");
+
+        DocumentResponse documentResponse = DocumentResponse.fromJson(is);
+
+        Optional<Span> first = documentResponse.getPassages().get(0).getSpans().stream()
+            .filter(s -> s.getId().equals("450101894"))
+            .findFirst();
+
+        Span span = first.get();
+
+        SuperconEntry entry = new SuperconEntry();
+        List<SuperconEntry> superconEntries = Material.processAttributes(span, entry);
+
+        assertThat(superconEntries, hasSize(1));
+        assertThat(superconEntries.get(0).getClassification(), is("Oxides, Cuprates"));
+        assertThat(superconEntries.get(0).getFormula(), is("HgBa 2 Ca 2 Cu 3 O 9"));
+    }
+
+    @Test
+    public void testProcessAttributes_twoMaterials() throws Exception {
+        InputStream is = this.getClass().getResourceAsStream("sample_response_2materials.json");
+
+        DocumentResponse documentResponse = DocumentResponse.fromJson(is);
+
+        Optional<Span> first = documentResponse.getPassages().get(0).getSpans().stream()
+            .filter(s -> s.getId().equals("450101894"))
+            .findFirst();
+
+        Span span = first.get();
+
+        SuperconEntry entry = new SuperconEntry();
+        List<SuperconEntry> superconEntries = Material.processAttributes(span, entry);
+
+        assertThat(superconEntries, hasSize(2));
+        assertThat(superconEntries.get(0).getClassification(), is("Oxides, Cuprates"));
+        assertThat(superconEntries.get(0).getFormula(), is("HgBa 2 Ca 2 Cu 3 O 9"));
+
+        assertThat(superconEntries.get(1).getClassification(), is("Iron Based"));
+        assertThat(superconEntries.get(1).getFormula(), is("La 1 Fe 2"));
     }
 }

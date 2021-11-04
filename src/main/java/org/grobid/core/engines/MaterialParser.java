@@ -19,6 +19,7 @@ import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.client.ChemicalMaterialParserClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

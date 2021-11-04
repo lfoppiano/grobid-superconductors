@@ -1,4 +1,4 @@
-package org.grobid.core.utilities;
+package org.grobid.core.utilities.client;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -13,7 +13,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.grobid.core.data.external.chemDataExtractor.ChemicalSpan;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,35 +30,35 @@ import java.util.List;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Singleton
-public class StructureIdentificationModuleClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StructureIdentificationModuleClient.class);
+public class ClassResolverModuleClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassResolverModuleClient.class);
 
     private final String serverUrl;
     private GrobidSuperconductorsConfiguration configuration;
     private CloseableHttpClient httpClient;
 
-    public StructureIdentificationModuleClient(String serverUrl) {
+    public ClassResolverModuleClient(String serverUrl) {
         this.serverUrl = serverUrl;
         this.httpClient = HttpClientBuilder.create().build();
     }
 
     @Inject
-    public StructureIdentificationModuleClient(GrobidSuperconductorsConfiguration configuration) {
+    public ClassResolverModuleClient(GrobidSuperconductorsConfiguration configuration) {
         this.configuration = configuration;
-        this.serverUrl = configuration.getLinkingModuleUrl();
+        this.serverUrl = configuration.getClassResolverUrl();
         this.httpClient = HttpClientBuilder.create().build();
     }
 
-    public List<String> processStructure(String text) {
+    public List<String> getClassesFromFormula(String formula) {
 
         List<String> outputClasses = new ArrayList<>();
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/structure/text/single");
+            final HttpPost request = new HttpPost(serverUrl + "/classify/formula");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setCharset(StandardCharsets.UTF_8);
-            builder.addTextBody("text", text, ContentType.APPLICATION_JSON);
+            builder.addTextBody("input", formula, ContentType.APPLICATION_JSON);
 
             HttpEntity multipart = builder.build();
             request.setEntity(multipart);
@@ -81,16 +80,16 @@ public class StructureIdentificationModuleClient {
         return outputClasses;
     }
 
-    public List<List<ChemicalSpan>> extractStructuresMulti(List<String> texts) {
+    public List<List<String>> getClassesFromFormulas(List<String> formulas) {
 
-        List<List<ChemicalSpan>> outputStructures = new ArrayList<>();
+        List<List<String>> outputClasses = new ArrayList<>();
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/process/structure/text");
+            final HttpPost request = new HttpPost(serverUrl + "/classify/formula");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setCharset(StandardCharsets.UTF_8);
-            builder.addTextBody("input", toJson(texts), ContentType.APPLICATION_JSON);
+            builder.addTextBody("input", toJson(formulas), ContentType.APPLICATION_JSON);
 
             HttpEntity multipart = builder.build();
             request.setEntity(multipart);
@@ -99,7 +98,7 @@ public class StructureIdentificationModuleClient {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    outputStructures = ChemDataExtractorClient.fromJsonBulk(response.getEntity().getContent());
+                    outputClasses = fromJsonMultiple(response.getEntity().getContent());
                 }
             }
 
@@ -109,7 +108,7 @@ public class StructureIdentificationModuleClient {
             LOGGER.error("Something generally bad happened. ", e);
         }
 
-        return outputStructures;
+        return outputClasses;
     }
 
 

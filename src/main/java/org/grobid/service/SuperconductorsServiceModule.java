@@ -7,7 +7,7 @@ import com.google.inject.Provides;
 import com.hubspot.dropwizard.guicier.DropwizardAwareModule;
 import org.grobid.core.engines.*;
 import org.grobid.core.engines.linking.CRFBasedLinker;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.client.*;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.service.controller.AnnotationController;
 import org.grobid.service.controller.HealthCheck;

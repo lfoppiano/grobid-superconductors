@@ -1,4 +1,4 @@
-package org.grobid.core.utilities;
+package org.grobid.core.utilities.client;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.grobid.core.data.external.chemDataExtractor.ChemicalSpan;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,44 +21,57 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.grobid.core.utilities.client.LinkingModuleClient.toJson_listOfString;
 
 @Singleton
-public class ClassResolverModuleClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassResolverModuleClient.class);
+public class ChemDataExtractorClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChemDataExtractorClient.class);
 
     private final String serverUrl;
     private GrobidSuperconductorsConfiguration configuration;
     private CloseableHttpClient httpClient;
 
-    public ClassResolverModuleClient(String serverUrl) {
+    public ChemDataExtractorClient(String serverUrl) {
         this.serverUrl = serverUrl;
         this.httpClient = HttpClientBuilder.create().build();
     }
 
     @Inject
-    public ClassResolverModuleClient(GrobidSuperconductorsConfiguration configuration) {
+    public ChemDataExtractorClient(GrobidSuperconductorsConfiguration configuration) {
         this.configuration = configuration;
-        this.serverUrl = configuration.getClassResolverUrl();
+        this.serverUrl = configuration.getChemDataExtractorUrl();
         this.httpClient = HttpClientBuilder.create().build();
     }
 
-    public List<String> getClassesFromFormula(String formula) {
+    public List<List<ChemicalSpan>> processBulk(List<String> texts) {
+        List<List<ChemicalSpan>> mentions = texts.stream()
+            .map(a -> new ArrayList<ChemicalSpan>())
+            .collect(Collectors.toList());
 
-        List<String> outputClasses = new ArrayList<>();
+        //Unless we are using wapiti or delft + FEATURES there is no need to call this client 
+        if (this.configuration.getModels()
+            .stream()
+            .anyMatch(m -> m.name.equals("superconductors")
+                && (m.engine.equals("delft")
+                && !m.delft.architecture.endsWith("FEATURES")))) {
+
+            return mentions;
+        }
+
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/classify/formula");
+            final HttpPost request = new HttpPost(serverUrl + "/process/bulk");
             request.setHeader("Accept", APPLICATION_JSON);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setCharset(StandardCharsets.UTF_8);
-            builder.addTextBody("input", formula, ContentType.APPLICATION_JSON);
+            builder.addTextBody("input", toJson_listOfString(texts));
 
             HttpEntity multipart = builder.build();
             request.setEntity(multipart);
@@ -67,71 +80,72 @@ public class ClassResolverModuleClient {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    outputClasses = fromJson(response.getEntity().getContent());
+                    List<List<ChemicalSpan>> respondedEntities = fromJsonBulk(response.getEntity().getContent());
+                    mentions = respondedEntities != null ? respondedEntities : mentions;
                 }
             }
 
-        } catch (UnknownHostException e) {
-            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
+        } catch (UnknownHostException | ConnectException e) {
+            LOGGER.warn("Chemdata extractor is unreachable. Ignoring it. ");
         } catch (IOException e) {
-            LOGGER.error("Something generally bad happened. ", e);
+            LOGGER.error("Something generically bad happened. ", e);
         }
 
-        return outputClasses;
+        return mentions;
     }
+    
+    public List<ChemicalSpan> processText(String text) {
+        List<ChemicalSpan> mentions = new ArrayList<>();
 
-    public List<List<String>> getClassesFromFormulas(List<String> formulas) {
+        //Unless we are using wapiti or delft + FEATURES there is no need to call this client 
+        if (this.configuration.getModels()
+            .stream()
+            .anyMatch(m -> m.name.equals("superconductors")
+                && (m.engine.equals("delft")
+                && !m.delft.architecture.endsWith("FEATURES")))) {
 
-        List<List<String>> outputClasses = new ArrayList<>();
+            return mentions;
+        }
+
         try {
-            final HttpPost request = new HttpPost(serverUrl + "/classify/formula");
+            final HttpPost request = new HttpPost(serverUrl + "/process/single");
             request.setHeader("Accept", APPLICATION_JSON);
+//            request.setHeader("Content-type", APPLICATION_FORM_URLENCODED);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setCharset(StandardCharsets.UTF_8);
-            builder.addTextBody("input", toJson(formulas), ContentType.APPLICATION_JSON);
+            builder.addTextBody("text", text);
 
             HttpEntity multipart = builder.build();
             request.setEntity(multipart);
+
+//            List<NameValuePair> formparams = new ArrayList<>();
+//            formparams.add(new BasicNameValuePair("text", text));
+//            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
+//            request.setEntity(entity);
 
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                     LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    outputClasses = fromJsonMultiple(response.getEntity().getContent());
+                    return fromJson(response.getEntity().getContent());
                 }
             }
 
-        } catch (UnknownHostException e) {
-            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
+        } catch (UnknownHostException | ConnectException e) {
+            LOGGER.warn("Chemdata extractor is unreachable. Ignoring it. ");
         } catch (IOException e) {
-            LOGGER.error("Something generally bad happened. ", e);
+            LOGGER.error("Something generically bad happened. ", e);
         }
 
-        return outputClasses;
+        return mentions;
     }
 
-
-    public String toJson(List<String> passage) {
+    public List<ChemicalSpan> fromJson(InputStream inputLine) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.writeValueAsString(passage);
-        } catch (JsonGenerationException | JsonMappingException e) {
-            LOGGER.error("The input line cannot be processed\n " + passage + "\n ", e);
-        } catch (IOException e) {
-            LOGGER.error("Some serious error when deserialize the JSON object: \n" + passage, e);
-        }
-        return null;
-    }
-
-    public List<String> fromJson(InputStream inputLine) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-            mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<List<String>>() {
+            return mapper.readValue(inputLine, new TypeReference<List<ChemicalSpan>>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
@@ -141,12 +155,12 @@ public class ClassResolverModuleClient {
         return null;
     }
 
-    public List<List<String>> fromJsonMultiple(InputStream inputLine) {
+    public static List<List<ChemicalSpan>> fromJsonBulk(InputStream inputLine) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            return mapper.readValue(inputLine, new TypeReference<List<String>>() {
+            return mapper.readValue(inputLine, new TypeReference<List<List<ChemicalSpan>>>() {
             });
         } catch (JsonGenerationException | JsonMappingException e) {
             LOGGER.error("The input line cannot be processed\n " + inputLine + "\n ", e);
@@ -155,6 +169,5 @@ public class ClassResolverModuleClient {
         }
         return null;
     }
-
 
 }

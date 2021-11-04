@@ -19,6 +19,8 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.client.ChemDataExtractorClient;
+import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -490,6 +492,7 @@ public class SuperconductorsParser extends AbstractParser {
                 boolean hasFormula = false;
 
                 List<Material> parsedMaterials = materialParser.process(theTokens);
+//                superconductor.getOriginalMaterials().addAll(parsedMaterials);
                 int i = 0;
                 for (Material parsedMaterial : parsedMaterials) {
                     if (parsedMaterial.getFormula() != null && StringUtils.isNotBlank(parsedMaterial.getFormula().getRawValue())) {

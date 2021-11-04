@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.grobid.core.data.Quantity;
+import org.grobid.core.data.Measurement;
 import org.grobid.core.data.material.Material;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
@@ -27,22 +27,21 @@ public class Span implements Cloneable {
     private String type;
 
     //offset in the text
-
     @JsonProperty("offset_start")
     private int offsetStart;
 
     @JsonProperty("offset_end")
     private int offsetEnd;
+    
     //tokens index referred to the layout token list
-
     @JsonProperty("token_start")
     private int tokenStart;
 
     @JsonProperty("token_end")
     private int tokenEnd;
     private boolean linkable;
-    
-    //The source where this span was generated from, namely the model
+
+    //The source where this span was generated from, usually it indicates the model
     private String source;
 
     // Contains the references triple (destinationId, destinationType, linkingMethod)
@@ -54,6 +53,12 @@ public class Span implements Cloneable {
     /**
      * These are internal objects that should not be serialised to JSON
      **/
+//    @JsonIgnore
+//    private List<Material> originalMaterials = new ArrayList<>();
+    
+//    @JsonIgnore
+//    private List<Measurement> originalMeasurements = new ArrayList<>();
+    
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
     @JsonIgnore
@@ -324,4 +329,29 @@ public class Span implements Cloneable {
             throw new AssertionError();
         }
     }
+
+//    public List<Material> getOriginalMaterials() {
+//        return originalMaterials;
+//    }
+//
+//    public void addOriginalMaterials(Material originalMaterial) {
+//        this.originalMaterials.add(originalMaterial);
+//    }
+//    
+//
+//    public void setOriginalMaterials(List<Material> originalMaterials) {
+//        this.originalMaterials = originalMaterials;
+//    }
+//
+//    public List<Measurement> getOriginalMeasurements() {
+//        return originalMeasurements;
+//    }
+//
+//    public void setOriginalMeasurements(List<Measurement> originalMeasurements) {
+//        this.originalMeasurements = originalMeasurements;
+//    }
+//
+//    public void addOriginalMeasurement(Measurement originalMeasurement) {
+//        this.originalMeasurements.add(originalMeasurement);
+//    }
 }

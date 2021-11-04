@@ -771,21 +771,25 @@ let grobid = (function ($) {
             function appendLinkToTable(span, link, addedLinks) {
                 let encodedLinkId = encodeLinkAsString(span, link)
 
-                let classes = Object.keys(span.attributes)
-                    .filter(function (key) {
-                        return key.endsWith("clazz");
-                    })
-                    .map(function (key) {
-                        return span.attributes[key]
-                    }).join(", ");
+                let shapes = {}
+                let classes = {}
+                if (span.attributes) {
+                    classes = Object.keys(span.attributes)
+                        .filter(function (key) {
+                            return key.endsWith("clazz");
+                        })
+                        .map(function (key) {
+                            return span.attributes[key]
+                        }).join(", ");
 
-                let shapes = Object.keys(span.attributes)
-                    .filter(function (key) {
-                        return key.endsWith("shape");
-                    })
-                    .map(function (key) {
-                        return span.attributes[key]
-                    }).join(", ");
+                    shapes = Object.keys(span.attributes)
+                        .filter(function (key) {
+                            return key.endsWith("shape");
+                        })
+                        .map(function (key) {
+                            return span.attributes[key]
+                        }).join(", ");
+                }
 
                 let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes, shape = shapes);
                 let {
@@ -939,6 +943,14 @@ let grobid = (function ($) {
                     });
                 }
             });
+
+
+            let jsonResponse = vkbeautify.json(response);
+
+            $('#jsonCodePdf').html(cleanupHtml(jsonResponse));
+            window.prettyPrint && prettyPrint();
+            // hideResultDivs();
+            // $('#requestResultText').show();
         }
 
         function annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, type, pageInfo) {

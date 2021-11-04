@@ -11,6 +11,7 @@ import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.SuperconEntry;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.OffsetPosition;
@@ -488,11 +489,10 @@ public class Material {
             keysMutable.remove(0);
             if (!result.containsKey(firstKey)) {
                 result.put(firstKey, new LinkedHashMap<String, Object>());
-                stringToLinkedHashMap(keysMutable, value, (Map<String, Object>) result.get(firstKey));
-                return result;
-            } else {
-                return stringToLinkedHashMap(keysMutable, value, result);
             }
+            
+            stringToLinkedHashMap(keysMutable, value, (Map<String, Object>) result.get(firstKey));
+            return result;
         }
     }
 
@@ -565,6 +565,45 @@ public class Material {
                     break;
             }
         }
+    }
+
+    public static List<SuperconEntry> processAttributes(Span inputSpan, SuperconEntry dbEntry) {
+        List<SuperconEntry> resultingEntries = new ArrayList<>();
+
+        Map<String, Object> nestedAttributes = new LinkedHashMap<>();
+        for (Map.Entry<String, String> a : inputSpan.getAttributes().entrySet()) {
+            List<String> splits = List.of(a.getKey().split("_"));
+            String value = a.getValue();
+
+            nestedAttributes = Material.stringToLinkedHashMap(splits, value, nestedAttributes);
+        }
+        // first level is material0, material1 -> duplicate the dbEntry
+        // second level are the properties
+        // third and further levels are structured information
+
+        boolean firstMaterial = true;
+        for (String materialKey : nestedAttributes.keySet()) {
+            if (firstMaterial) {
+                firstMaterial = false;
+                // add to current
+                Map<String, Object> materialObject = (Map<String, Object>) nestedAttributes.get(materialKey);
+                Material.fillDbEntryFromAttributes(materialObject, dbEntry);
+                resultingEntries.add(dbEntry);
+            } else {
+                // create new and copy from previous 
+                SuperconEntry newEntry = new SuperconEntry();
+                newEntry.setRawMaterial(inputSpan.getText());
+                newEntry.setSection(dbEntry.getSection());
+                newEntry.setSubsection(dbEntry.getSubsection());
+                newEntry.setSentence(dbEntry.getSentence());
+                resultingEntries.add(newEntry);
+
+                Map<String, Object> materialObject = (Map<String, Object>) nestedAttributes.get(materialKey);
+                Material.fillDbEntryFromAttributes(materialObject, newEntry);
+            }
+        }
+
+        return resultingEntries;
     }
 
     public static Map<String, String> asAttributeMap(Material material) {

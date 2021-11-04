@@ -11,7 +11,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
 import org.grobid.core.data.SuperconEntry;
-import org.grobid.core.engines.ModuleEngine;
+import org.grobid.core.engines.TabularDataEngine;
 import org.grobid.service.controller.AnnotationController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,9 @@ public class DocumentResponse {
 
     private BiblioInfo biblio;
 
-    private List<TextPassage> passages;
+    private List<TextPassage> passages = new ArrayList<>();
 
-    private List<Page> pages;
+    private List<Page> pages = new ArrayList<>();
 
     public DocumentResponse() {
         passages = new ArrayList<>();
@@ -78,7 +78,7 @@ public class DocumentResponse {
     }
 
     public String toCsv() {
-        List<SuperconEntry> outputList = ModuleEngine.computeTabularData(getPassages());
+        List<SuperconEntry> outputList = TabularDataEngine.computeTabularData(getPassages());
         List<List<String>> outputCSV = outputList.stream().map(SuperconEntry::toCsv).collect(Collectors.toList());
 
         StringBuilder out = new StringBuilder();
@@ -101,7 +101,7 @@ public class DocumentResponse {
      * Converts all the entities to CSV
      **/
     public String toCsvAll() {
-        List<SuperconEntry> outputList = ModuleEngine.extractEntities(getPassages());
+        List<SuperconEntry> outputList = TabularDataEngine.extractEntities(getPassages());
         List<List<String>> outputCSV = outputList.stream().map(SuperconEntry::toCsv).collect(Collectors.toList());
 
         StringBuilder out = new StringBuilder();
