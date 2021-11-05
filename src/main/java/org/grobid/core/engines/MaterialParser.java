@@ -445,7 +445,10 @@ public class MaterialParser extends AbstractParser {
 
     protected List<String> extractVariableValues(String value) {
         String[] split = value.split(",|;|or|and");
-        return Arrays.stream(split).map(StringUtils::trim).collect(Collectors.toList());
+        return Arrays.stream(split)
+            .map(StringUtils::trim)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
     }
 
     public String generateTrainingData(List<LayoutToken> layoutTokens) {
