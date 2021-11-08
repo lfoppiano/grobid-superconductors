@@ -1,29 +1,3 @@
-function buildMaterialSummary(aggregatedMaterials, spansList) {
-    let string = "<p><ul>"
-    Object.keys(aggregatedMaterials)
-        .forEach(function (formula) {
-            string += "<li>"
-            let spans = aggregatedMaterials[formula];
-            let out_spans = spans
-                .map(function (span_id) {
-                    return spansList[span_id].text
-                })
-                .join(", ")
-
-            split_formula = formula.split(",")
-            split_formula.forEach(function (value) {
-                let s = value.split("=");
-                let compound = s[0]
-                let valence = s[1]
-                string += "<b>" + compound + "</b>" + "<sub>" + valence + "</sub> "
-            });
-            string += ": " + out_spans
-            string += "</li>"
-        });
-    string += "</ul></p>"
-    return string;
-}
-
 /**
  *  Javascript functions for the front end.
  *
@@ -241,6 +215,32 @@ let grobid = (function ($) {
             });
         }
 
+        function buildMaterialSummary(aggregatedMaterials, spansList) {
+            let string = "<p><ul>"
+            Object.keys(aggregatedMaterials)
+                .forEach(function (formula) {
+                    string += "<li>"
+                    let spans = aggregatedMaterials[formula];
+                    let out_spans = spans
+                        .map(function (span_id) {
+                            return spansList[span_id].text
+                        })
+                        .join(", ")
+
+                    split_formula = formula.split(",")
+                    split_formula.forEach(function (value) {
+                        let s = value.split("=");
+                        let compound = s[0]
+                        let valence = s[1]
+                        string += "<b>" + compound + "</b>" + "<sub>" + valence + "</sub> "
+                    });
+                    string += ": " + out_spans
+                    string += "</li>"
+                });
+            string += "</ul></p>"
+            return string;
+        }
+
         function downloadCSV() {
             let fileName = "export.csv";
             let a = document.createElement("a");
@@ -425,11 +425,25 @@ let grobid = (function ($) {
                     cumulativeOutput += "<p>";
                     for (let prop in material) {
                         if (prop === 'rawTaggedValue') {
+                        } else if (prop === 'formula') {
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop]['rawValue'] + " <br>";
                         } else if (prop === 'resolvedFormulas') {
-                            let resolvedFormulas = material[prop].join(", ");
-                            cumulativeOutput += "<strong>" + prop + "</strong>: " + resolvedFormulas + " <br>";
+                            let resolvedFormulasList = material[prop]
+                            let resolvedFormulas = Object.keys(resolvedFormulasList)
+                                .map(function (k) {
+                                    return resolvedFormulasList[k]['rawValue']
+                                })
+                                .join(", ")
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + resolvedFormulas + " <br/>";
+                        } else if (prop === 'variables') {
+                            let variables = material[prop]
+                            let values = Object.keys(variables).map(function (variable_name) {
+                                return "<b>" + variable_name + "</b>=" + variables[variable_name].join(", ")
+                            })
+
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + values.join("\n") + " <br/>";
                         } else {
-                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop] + " <br>";
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop] + " <br/>";
                         }
                     }
 
@@ -584,6 +598,7 @@ let grobid = (function ($) {
             window.prettyPrint && prettyPrint();
 
             let aggregatedMaterials = responseText.aggregatedMaterials;
+            $('#result-document-summary').html('There is no data to compute the summary');
             if (aggregatedMaterials !== undefined) {
                 let string = buildMaterialSummary(aggregatedMaterials, spansList);
 
@@ -595,6 +610,9 @@ let grobid = (function ($) {
         }
 
         function processPdf(action) {
+            //Need to select the first tab or the boxes will not positioned correctly 
+            $('#result-pdf-response-tab').trigger('click')
+
             let resultMessageBlock = $('#infoResultMessage');
             resultMessageBlock.html('<p class="text-secondary">Requesting server...</p>');
             let requestResult = $('#requestResultPdfContent');
