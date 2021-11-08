@@ -3,13 +3,11 @@ package org.grobid.core.data.material;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ChemicalComposition {
-    private Map<String, String> composition = new HashMap<>();
+    private Map<String, String> composition = new LinkedHashMap<>();
 
     private String formula;
 
@@ -50,5 +48,18 @@ public class ChemicalComposition {
             .add("formula='" + formula + "'")
             .add("name='" + name + "'")
             .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChemicalComposition that = (ChemicalComposition) o;
+        return Objects.equals(composition, that.composition) && Objects.equals(formula, that.formula) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(composition, formula, name);
     }
 }

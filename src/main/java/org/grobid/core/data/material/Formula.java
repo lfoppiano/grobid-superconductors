@@ -1,12 +1,19 @@
 package org.grobid.core.data.material;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.base.Joiner;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ComparatorUtils;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Formula {
     
     private String rawValue;
-    private Map<String, String> formulaComposition = new HashMap<>();
+    private Map<String, String> formulaComposition = new LinkedHashMap<>();
 
     public Formula(String rawValue) {
         this.rawValue = rawValue;
@@ -19,6 +26,18 @@ public class Formula {
 
     public Formula() {
         
+    }
+
+    @Override
+    public String toString() {
+//        Map<String, String> sorted = formulaComposition.entrySet().stream()
+//            .sorted(Map.Entry.comparingByKey())
+//            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+        if (CollectionUtils.isNotEmpty(formulaComposition.keySet())) {
+            return Joiner.on(",").withKeyValueSeparator("=").join(formulaComposition);
+        } else {
+            return rawValue;
+        }
     }
 
     public Map<String, String> getFormulaComposition() {
@@ -35,5 +54,27 @@ public class Formula {
 
     public void setRawValue(String rawValue) {
         this.rawValue = rawValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Formula formula = (Formula) o;
+        boolean areCompositionsEqual = Objects.equals(formulaComposition, formula.formulaComposition);
+        if(areCompositionsEqual && formulaComposition == null) {
+            return Objects.equals(rawValue, formula.rawValue);
+        } else {
+            return areCompositionsEqual;   
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        if (formulaComposition == null) {
+             return Objects.hash(rawValue);
+        } else {
+            return Objects.hash(formulaComposition);
+        }
     }
 }

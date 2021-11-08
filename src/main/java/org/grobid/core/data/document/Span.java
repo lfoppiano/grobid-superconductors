@@ -46,7 +46,7 @@ public class Span implements Cloneable {
     private List<Link> links = new ArrayList<>();
 
     // Attribute map, used for adding lower-models information
-    private Map<String, String> attributes = new HashMap<>();
+    private Map<String, String> attributes = new LinkedHashMap<>();
     
     /**
      * These are internal objects that should not be serialised to JSON
@@ -80,7 +80,7 @@ public class Span implements Cloneable {
         this.source = other.getSource();
         this.links = new ArrayList<>(other.getLinks());
 
-        this.attributes = new HashMap<>(other.getAttributes());
+        this.attributes = new LinkedHashMap<>(other.getAttributes());
         this.boundingBoxes = new ArrayList<>(other.getBoundingBoxes());
         this.layoutTokens = new ArrayList<>(other.getLayoutTokens());
 

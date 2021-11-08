@@ -11,6 +11,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
 import org.grobid.core.data.SuperconEntry;
+import org.grobid.core.data.material.Formula;
 import org.grobid.core.engines.TabularDataEngine;
 import org.grobid.service.controller.AnnotationController;
 import org.slf4j.Logger;
@@ -19,7 +20,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -32,6 +35,8 @@ public class DocumentResponse {
     private long runtime;
 
     private BiblioInfo biblio;
+
+    private Map<Formula, List<String>> aggregatedMaterials = new HashMap<>();
 
     private List<TextPassage> passages = new ArrayList<>();
 
@@ -145,5 +150,13 @@ public class DocumentResponse {
 
     public void setBiblio(BiblioInfo biblio) {
         this.biblio = biblio;
+    }
+
+    public void setAggregatedMaterials(Map<Formula, List<String>> aggregatedMaterials) {
+        this.aggregatedMaterials = aggregatedMaterials;
+    }
+
+    public Map<Formula, List<String>> getAggregatedMaterials() {
+        return aggregatedMaterials;
     }
 }

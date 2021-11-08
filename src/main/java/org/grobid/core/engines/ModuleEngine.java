@@ -8,6 +8,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.Measurement;
 import org.grobid.core.data.document.*;
+import org.grobid.core.data.material.Formula;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
@@ -32,8 +34,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.grobid.core.data.document.Token.getStyle;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_PRESSURE_LABEL;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 import static org.grobid.core.engines.linking.CRFBasedLinker.*;
 
 @Singleton
@@ -202,7 +203,12 @@ public class ModuleEngine {
 
         List<TextPassage> textPassages = process(sentencesAsLayoutToken, disableLinking);
 
-        return new DocumentResponse(textPassages);
+        DocumentResponse documentResponse = new DocumentResponse(textPassages);
+
+        Map<Formula, List<String>> aggregatedFormulaAtDocumentLevel = processFormulasAtDocumentLevel(documentResponse);
+        documentResponse.setAggregatedMaterials(aggregatedFormulaAtDocumentLevel);
+
+        return documentResponse;
     }
 
     private List<Span> getQuantities(List<LayoutToken> tokens) {
@@ -291,6 +297,9 @@ public class ModuleEngine {
         } finally {
             IOUtilities.removeTempFile(file);
         }
+
+        Map<Formula, List<String>> aggregatedFormulaAtDocumentLevel = processFormulasAtDocumentLevel(documentResponse);
+        documentResponse.setAggregatedMaterials(aggregatedFormulaAtDocumentLevel);
 
 
         return documentResponse;
@@ -466,6 +475,57 @@ public class ModuleEngine {
         return sb.toString();
     }
 
+    public Map<Formula, List<String>> processFormulasAtDocumentLevel(DocumentResponse document) {
+
+        Map<Formula, List<String>> aggregatedFormulas = document.getPassages().stream().parallel()
+            .filter(p -> isNotEmpty(p.getSpans()))
+            .flatMap(p -> p.getSpans().stream())
+            .filter(s -> (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL) || s.getType().equals(SUPERCONDUCTORS_CLASS_LABEL))
+                && s.getAttributes().keySet().stream()
+                .anyMatch(ak -> (ak.contains("_resolvedFormulas") && ak.contains("_formulaComposition")) ||
+                    (!ak.contains("_resolvedFormulas") && ak.contains("_formula_formulaComposition"))))
+            .map(s -> {
+//                Map<String, String> attributesWeCareAbout = s.getAttributes().entrySet().stream()
+//                    .filter(map -> (map.getKey().contains("_resolvedFormulas") && map.getKey().contains("_formulaComposition")) ||
+//                        (!map.getKey().contains("_resolvedFormulas") && map.getKey().contains("_formula_formulaComposition")))
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                Map<String, Object> nestedAttributes = Material.toNestedAttributes(s.getAttributes());
+
+                List<Pair<Span, Formula>> o = new ArrayList<>();
+                for (String materialKey : nestedAttributes.keySet()) {
+                    Map<String, Object> materialAttributes = (Map<String, Object>) nestedAttributes.get(materialKey);
+                    if (materialAttributes == null || !(materialAttributes.containsKey("formula") || materialAttributes.containsKey("resolvedFormulas"))) {
+                        continue;
+                    }
+                    if (materialAttributes.containsKey("resolvedFormulas")) {
+                        Map<String, Object> resolvedFormulas = (Map<String, Object>) materialAttributes.get("resolvedFormulas");
+                        for (String resolvedFormulaKey : resolvedFormulas.keySet()) {
+                            Map<String, Object> resolvedFormula = (Map<String, Object>) resolvedFormulas.get(resolvedFormulaKey);
+                            Formula f = createFormula(resolvedFormula);
+
+                            o.add(Pair.of(s, f));
+                        }
+                    } else {
+                        Map<String, Object> formula = (Map<String, Object>) materialAttributes.get("formula");
+                        Formula f = createFormula(formula);
+
+                        o.add(Pair.of(s, f));
+                    }
+                }
+                return o;
+            }).flatMap(Collection::stream)
+//            .collect(Collectors.groupingBy(p -> p.getRight().toString(), Collectors.mapping(u -> u.getLeft().getId(), Collectors.toList())));
+            .collect(Collectors.groupingBy(p -> p.getRight(), Collectors.mapping(u -> u.getLeft().getId(), Collectors.toList())));
+
+        return aggregatedFormulas;
+    }
+
+    private Formula createFormula(Map<String, Object> formula) {
+        String rawFormula = (String) formula.get("rawValue");
+        Map<String, String> composition = (Map<String, String>) formula.get("formulaComposition");
+        return new Formula(rawFormula, composition);
+    }
 
     /**
      * Remove overlapping annotations

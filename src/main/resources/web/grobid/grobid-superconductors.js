@@ -1,3 +1,29 @@
+function buildMaterialSummary(aggregatedMaterials, spansList) {
+    let string = "<p><ul>"
+    Object.keys(aggregatedMaterials)
+        .forEach(function (formula) {
+            string += "<li>"
+            let spans = aggregatedMaterials[formula];
+            let out_spans = spans
+                .map(function (span_id) {
+                    return spansList[span_id].text
+                })
+                .join(", ")
+
+            split_formula = formula.split(",")
+            split_formula.forEach(function (value) {
+                let s = value.split("=");
+                let compound = s[0]
+                let valence = s[1]
+                string += "<b>" + compound + "</b>" + "<sub>" + valence + "</sub> "
+            });
+            string += ": " + out_spans
+            string += "</li>"
+        });
+    string += "</ul></p>"
+    return string;
+}
+
 /**
  *  Javascript functions for the front end.
  *
@@ -519,6 +545,7 @@ let grobid = (function ($) {
 
             let passages = responseText.passages;
             let cumulativeOutput = "";
+            let spansList = {}
             if (passages) {
                 passages.forEach(function (passage, paragraphIdx) {
                     let text = passage.text;
@@ -534,7 +561,7 @@ let grobid = (function ($) {
 
             //Adding events, unfortunately I need to wait when the HTML tree is updated
             if (passages) {
-                passages.forEach(function (passage, paragraphIdx) {
+                passages.forEach(function (passage) {
                     let spans = [];
                     if (passage.spans) {
                         spans = passage.spans;
@@ -545,6 +572,8 @@ let grobid = (function ($) {
                         let annotationBlock = $('#annot_supercon-' + spans[annotationIdx].id);
                         annotationBlock.bind('hover', spans[annotationIdx], showSpanOnText_event);
                         annotationBlock.bind('click', spans[annotationIdx], showSpanOnText_event);
+
+                        spansList[spans[annotationIdx].id] = spans[annotationIdx];
                     }
                 });
             }
@@ -553,6 +582,14 @@ let grobid = (function ($) {
 
             $('#jsonCode').html(cleanupHtml(testStr));
             window.prettyPrint && prettyPrint();
+
+            let aggregatedMaterials = responseText.aggregatedMaterials;
+            if (aggregatedMaterials !== undefined) {
+                let string = buildMaterialSummary(aggregatedMaterials, spansList);
+
+                $('#result-document-summary').html(string)
+            }
+
             hideResultDivs();
             $('#requestResultText').show();
         }
@@ -949,6 +986,13 @@ let grobid = (function ($) {
 
             $('#jsonCodePdf').html(cleanupHtml(jsonResponse));
             window.prettyPrint && prettyPrint();
+
+            let aggregatedMaterials = json.aggregatedMaterials;
+            if (aggregatedMaterials !== undefined) {
+                let string = buildMaterialSummary(aggregatedMaterials, spansMap);
+
+                $('#result-pdf-summary').html(string)
+            }
             // hideResultDivs();
             // $('#requestResultText').show();
         }
@@ -1249,7 +1293,7 @@ let grobid = (function ($) {
                                 Object.keys(var_values).forEach(function (var_value_index) {
                                     variables.push(var_values[var_value_index]);
                                 })
-                                attributeHtmlString += "<row><div class='col-12'>" + "variable " +variable_name +": <strong>" + variables.join(", ") + "</strong></div></row>";
+                                attributeHtmlString += "<row><div class='col-12'>" + "variable " + variable_name + ": <strong>" + variables.join(", ") + "</strong></div></row>";
                             });
                         } else {
                             attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + obj[key][sub_key] + "</strong></div></row>";
@@ -1274,7 +1318,7 @@ let grobid = (function ($) {
         }
 
         let examples_superconductors = [
-            "The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
+            "We are studying the material La 3 A 2 Ge 2 (A = Ir, Rh). The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2.",
             "For intercalated graphite, T c is reported to be 11.4 K for CaC and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
             "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc leties from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
             "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K .",

@@ -50,7 +50,7 @@ public class Material {
 
     private List<Formula> resolvedFormulas = new ArrayList<>();
 
-    private final Map<String, List<String>> variables = new HashMap<>();
+    private final Map<String, List<String>> variables = new LinkedHashMap<>();
     @JsonIgnore
     private List<BoundingBox> boundingBoxes = new ArrayList<>();
     @JsonIgnore
@@ -459,12 +459,12 @@ public class Material {
     public static Map<String, String> asAttributeMap(Material material, final String keyPrefix) {
         Map<String, String> stringStringMap = asAttributeMap(material);
 
-        List<String> keys = new ArrayList<>(stringStringMap.keySet());
+        List<String> keys = new LinkedList<>(stringStringMap.keySet());
         for (String k : keys) {
             stringStringMap.put(keyPrefix + "_" + k, stringStringMap.get(k));
             stringStringMap.remove(k);
         }
-        ;
+        
         return stringStringMap;
     }
 
@@ -475,7 +475,7 @@ public class Material {
 
     public static Map<String, Object> stringToLinkedHashMap(List<String> keys, String value, Map<String, Object> result) {
 
-        List<String> keysMutable = new ArrayList<>(keys);
+        List<String> keysMutable = new LinkedList<>(keys);
         if (keysMutable.size() == 0) {
             //error condition, go back and forget 
             return result;
@@ -497,7 +497,7 @@ public class Material {
     }
 
     public static Map<String, String> linkedHashMapToString(Map<String, Object> input, String prefix) {
-        Map<String, String> output = new HashMap<>();
+        Map<String, String> output = new LinkedHashMap<>();
 
         for (String key : input.keySet()) {
             if (input.get(key) instanceof String) {
@@ -513,7 +513,7 @@ public class Material {
                     output.putAll(linkedHashMapToString((LinkedHashMap) input.get(key), key));
                 }
             } else if (input.get(key) instanceof ArrayList) {
-                ArrayList<?> item = (ArrayList<?>) input.get(key);
+                List<?> item = (ArrayList<?>) input.get(key);
                 for (int i = 0; i < item.size(); i++) {
                     if (item.get(i) instanceof String) {
                         if (StringUtils.isNotBlank(prefix)) {
@@ -570,13 +570,7 @@ public class Material {
     public static List<SuperconEntry> processAttributes(Span inputSpan, SuperconEntry dbEntry) {
         List<SuperconEntry> resultingEntries = new ArrayList<>();
 
-        Map<String, Object> nestedAttributes = new LinkedHashMap<>();
-        for (Map.Entry<String, String> a : inputSpan.getAttributes().entrySet()) {
-            List<String> splits = List.of(a.getKey().split("_"));
-            String value = a.getValue();
-
-            nestedAttributes = Material.stringToLinkedHashMap(splits, value, nestedAttributes);
-        }
+        Map<String, Object> nestedAttributes = toNestedAttributes(inputSpan.getAttributes());
         // first level is material0, material1 -> duplicate the dbEntry
         // second level are the properties
         // third and further levels are structured information
@@ -606,9 +600,20 @@ public class Material {
         return resultingEntries;
     }
 
+    public static Map<String, Object> toNestedAttributes(Map<String, String> attributes) {
+        Map<String, Object> nestedAttributes = new LinkedHashMap<>();
+        for (Map.Entry<String, String> a : attributes.entrySet()) {
+            List<String> splits = List.of(a.getKey().split("_"));
+            String value = a.getValue();
+
+            nestedAttributes = Material.stringToLinkedHashMap(splits, value, nestedAttributes);
+        }
+        return nestedAttributes;
+    }
+
     public static Map<String, String> asAttributeMap(Material material) {
 
-        Map<String, String> output = new HashMap<>();
+        Map<String, String> output = new LinkedHashMap<>();
 
         ObjectMapper m = new ObjectMapper();
         Map<String, Object> mappedObject = m.convertValue(material, new TypeReference<Map<String, Object>>() {
