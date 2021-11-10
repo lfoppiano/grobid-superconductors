@@ -5,6 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/lfoppiano/grobid-superconductors/badge.svg?branch=master)](https://coveralls.io/github/lfoppiano/grobid-superconductors?branch=master)
 [![CircleCI](https://circleci.com/gh/lfoppiano/grobid-superconductors.svg?style=svg)](https://circleci.com/gh/lfoppiano/grobid-superconductors)
 [![Docker Image CI](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/docker-image.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/docker-image.yml)
+[![Java CI](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/gradle.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/gradle.yml)
 
 __Work in progress.__
 
