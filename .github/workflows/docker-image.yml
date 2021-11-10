@@ -6,6 +6,10 @@ workflow_run:
   types:
     - completed
     
+concurrency:
+  group: docker
+  cancel-in-progress: true
+
 jobs:
 
   build:

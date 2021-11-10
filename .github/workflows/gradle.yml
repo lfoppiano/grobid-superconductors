@@ -2,6 +2,11 @@ name: Java CI
 
 on: [push]
 
+concurrency: 
+  group: gradle
+  cancel-in-progress: true
+
+
 jobs:
   build:
 
