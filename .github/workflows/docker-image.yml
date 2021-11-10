@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: set up proxy http 
-      run: echo "systemProp.http.proxyHost=wwwout.nims.go.jp\nsystemProp.http.proxyPort=8888\nsystemProp.http.nonProxyHosts=*.nims.go.jp,localhost\n\nsystemProp.https.proxyHost=wwwout.nims.go.jp\nsystemProp.https.proxyPort=8888\nsystemProp.https.nonProxyHosts=*.nims.go.jp,localhost" >> gradle.properties
+      run: echo -e "systemProp.http.proxyHost=wwwout.nims.go.jp\nsystemProp.http.proxyPort=8888\nsystemProp.http.nonProxyHosts=*.nims.go.jp,localhost\n\nsystemProp.https.proxyHost=wwwout.nims.go.jp\nsystemProp.https.proxyPort=8888\nsystemProp.https.nonProxyHosts=*.nims.go.jp,localhost" >> gradle.properties
     - name: check result proxy
       run: cat gradle.properties
     - name: Build the Docker image
