@@ -409,7 +409,7 @@ public class Material {
                 if (splittedDopants.size() == 1) {
                     expandedFormulas.add(formula);
                 } else if (splittedDopants.size() == 2) {
-                    expandedFormulas.add(trim(splittedDopants.get(0)) + " x " + trim(splittedDopants.get(1)) + " 1-x " + trim(formulaWithoutDopants));
+                    expandedFormulas.add(trim(splittedDopants.get(0)) + " 1-x " + trim(splittedDopants.get(1)) + " x " + trim(formulaWithoutDopants));
                 } else if (splittedDopants.size() > 2 && splittedDopants.size() < ENGLISH_ALPHABETH.length()) {
                     char[] alphabet = ENGLISH_ALPHABETH.toCharArray();
                     StringBuilder sb = new StringBuilder();
