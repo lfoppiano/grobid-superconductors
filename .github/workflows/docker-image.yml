@@ -1,16 +1,17 @@
 name: Docker Image CI
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+# Only trigger, when the build workflow succeeded
+workflow_run:
+  workflows: ["CI build"]
+  types:
+    - completed
+    
 jobs:
 
   build:
 
     runs-on: ubuntu-latest
+#    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
