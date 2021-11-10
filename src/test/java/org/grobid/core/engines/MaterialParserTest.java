@@ -439,7 +439,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_singleLessThan() throws Exception {
         String value = "1 <";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 
@@ -447,7 +447,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_singleGreaterThan() throws Exception {
         String value = "> 2";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 
@@ -455,7 +455,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_list() throws Exception {
         String value = "1,2,3 and 4";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
 
         assertThat(parsedValues, hasSize(4));
         assertThat(parsedValues.get(0), is("1"));
@@ -468,7 +468,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_interval() throws Exception {
         String value = "<2";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 }

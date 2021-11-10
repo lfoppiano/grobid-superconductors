@@ -31,6 +31,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.grobid.core.data.document.Token.getStyle;
@@ -515,10 +517,25 @@ public class ModuleEngine {
                 }
                 return o;
             }).flatMap(Collection::stream)
-//            .collect(Collectors.groupingBy(p -> p.getRight().toString(), Collectors.mapping(u -> u.getLeft().getId(), Collectors.toList())));
-            .collect(Collectors.groupingBy(p -> p.getRight(), Collectors.mapping(u -> u.getLeft().getId(), Collectors.toList())));
+            .collect(Collectors.groupingBy(Pair::getRight, Collectors.mapping(u -> u.getLeft().getId(), Collectors.toList())));
 
-        return aggregatedFormulas;
+        Map<Formula, List<String>> sortedAggregatedFormulas = aggregatedFormulas.entrySet().stream()
+            .sorted(comparingInt(e -> e.getValue().size()))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (a, b) -> {
+                    throw new AssertionError();
+                },
+                LinkedHashMap::new
+            ));
+        Map<Formula, List<String>> sortedAggregatedFormulasReversed = new LinkedHashMap<>();
+        List<Formula> keys = new LinkedList<>(sortedAggregatedFormulas.keySet());
+        for (int i = keys.size() - 1; i >= 0; i--) {
+            sortedAggregatedFormulasReversed.put(keys.get(i), sortedAggregatedFormulas.get(keys.get(i)));
+        }
+        
+        return sortedAggregatedFormulasReversed;
     }
 
     private Formula createFormula(Map<String, Object> formula) {
@@ -538,7 +555,7 @@ public class ModuleEngine {
         //Sorting by offsets
         List<Span> sortedEntities = spanList
             .stream()
-            .sorted(Comparator.comparingInt(Span::getOffsetStart))
+            .sorted(comparingInt(Span::getOffsetStart))
             .collect(Collectors.toList());
 
 //                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());

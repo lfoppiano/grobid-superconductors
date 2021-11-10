@@ -262,7 +262,7 @@ public class MaterialParser extends AbstractParser {
                 String value = clusterContent;
 
                 if (StringUtils.isNotEmpty(processingVariable)) {
-                    List<String> listValues = extractVariableValues(value);
+                    List<String> listValues = extractAndFilterVariableValues(value);
                     currentMaterial.getVariables().put(processingVariable, listValues);
                     if (isNotEmpty(prefixedValues)) {
                         currentMaterial.getVariables().get(processingVariable).addAll(prefixedValues);
@@ -277,6 +277,7 @@ public class MaterialParser extends AbstractParser {
                 }
             } else if (clusterLabel.equals(MATERIAL_VARIABLE)) {
                 String variable = clusterContent;
+                variable = postProcessVariable(variable);
                 if (StringUtils.isNotEmpty(processingVariable)) {
                     if (!processingVariable.equals(variable)) {
                         processingVariable = variable;
@@ -443,10 +444,11 @@ public class MaterialParser extends AbstractParser {
         return extracted;
     }
 
-    protected List<String> extractVariableValues(String value) {
+    protected List<String> extractAndFilterVariableValues(String value) {
         String[] split = value.split(",|;|or|and");
         return Arrays.stream(split)
             .map(StringUtils::trim)
+            .map(this::postProcessValue)
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toList());
     }
@@ -458,7 +460,8 @@ public class MaterialParser extends AbstractParser {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
         //Normalisation
-        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
+        List<LayoutToken> layoutTokensNormalised = tokens.stream()
+            .map(layoutToken -> {
                 layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
                 return layoutToken;
@@ -510,7 +513,34 @@ public class MaterialParser extends AbstractParser {
         Pair.of("¼", "-"),
         Pair.of(" ͑", "")
     );
+    
+    private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VALUES = Arrays.asList(
+        Pair.of(" ͑", ""),
+        Pair.of("¼", "")
+    );
 
+    private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VARIABLES = Arrays.asList(
+        Pair.of(" ͑", "")
+    );
+    
+    
+
+    public String postProcessVariable(String variable) {
+        String temp = variable;
+        for (Pair<String, String> replacementSymbol : REPLACEMENT_SYMBOLS_VARIABLES) {
+            temp = temp.replaceAll(replacementSymbol.getLeft(), replacementSymbol.getRight());
+        }
+        return temp;
+    }
+    
+    public String postProcessValue(String value) {
+        String temp = value;
+        for (Pair<String, String> replacementSymbol : REPLACEMENT_SYMBOLS_VALUES) {
+            temp = temp.replaceAll(replacementSymbol.getLeft(), replacementSymbol.getRight());
+        }
+        return temp;
+    }
+    
     public String postProcessFormula(String formula) {
         if (formula == null) {
             return "";

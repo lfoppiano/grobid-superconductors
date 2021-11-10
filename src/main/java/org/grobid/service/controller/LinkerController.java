@@ -37,8 +37,9 @@ import static org.apache.commons.lang3.StringUtils.length;
 public class LinkerController {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkerController.class);
 
-    private WstxInputFactory inputFactory = new WstxInputFactory();
+    private final WstxInputFactory inputFactory = new WstxInputFactory();
     private final GrobidSuperconductorsConfiguration configuration;
+    
     @Inject
     private CRFBasedLinker linker;
 

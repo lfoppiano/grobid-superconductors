@@ -216,7 +216,9 @@ let grobid = (function ($) {
         }
 
         function buildMaterialSummary(aggregatedMaterials, spansList) {
-            let string = "<p><ul>"
+            let string = "<div  class='px-3'>" +
+                "<p>The following list summarise aggregated formulas appearing in the document/text (parenthesis indicate cardinality):</p>" +
+                "<p><ul>"
             Object.keys(aggregatedMaterials)
                 .forEach(function (formula) {
                     string += "<li>"
@@ -225,7 +227,9 @@ let grobid = (function ($) {
                         .map(function (span_id) {
                             return spansList[span_id].text
                         })
-                        .join(", ")
+                        .reduce(function (acc, curr) {
+                            return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+                        }, {});
 
                     split_formula = formula.split(",")
                     split_formula.forEach(function (value) {
@@ -234,10 +238,13 @@ let grobid = (function ($) {
                         let valence = s[1]
                         string += "<b>" + compound + "</b>" + "<sub>" + valence + "</sub> "
                     });
-                    string += ": " + out_spans
+                    let mentionMap = Object.keys(out_spans).map(function (k) {
+                        return k + " (" + out_spans[k] + ")"
+                    }).join(", ");
+                    string += ": " + mentionMap;
                     string += "</li>"
                 });
-            string += "</ul></p>"
+            string += "</ul></p></div>"
             return string;
         }
 
@@ -611,7 +618,7 @@ let grobid = (function ($) {
 
         function processPdf(action) {
             //Need to select the first tab or the boxes will not positioned correctly 
-            $('#result-pdf-response-tab').trigger('click')
+            $('#result-pdf-annotations-tab').trigger('click')
 
             let resultMessageBlock = $('#infoResultMessage');
             resultMessageBlock.html('<p class="text-secondary">Requesting server...</p>');
