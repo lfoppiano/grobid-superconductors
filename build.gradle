@@ -17,6 +17,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id "de.undercouch.download" version "4.1.1"
     id 'com.github.kt3k.coveralls' version '2.12.0'
+    id 'com.palantir.git-version' version '0.12.3'
 }
 
 
@@ -110,8 +111,8 @@ configurations.all {
 }
 
 /** Other configuration **/
-sourceCompatibility = 1.11
-targetCompatibility = 1.11
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -154,10 +155,15 @@ run {
 //    }
 //}
 
+//def getVersionName = { ->
+//    def stdout = new ByteArrayOutputStream() exec { commandLine 'git', 'describe', ' tags ' standardOutput = stdout }
+//    return stdout.toString().trim() 
+//}
+
 processResources {
     filesMatching('version.txt') {
         filter {
-            it.replace('project.version', project.property('version'))
+            it.replace('project.version', project.property('version') + gitVersion())
         }
     }
 }
@@ -236,7 +242,7 @@ task installScibert(dependsOn: copyModels) {
         download {
             src "https://storagescienceminer.s3.eu-central-1.amazonaws.com/NIMS/superconductors-scibert.zip"
             dest "${rootDir}/../grobid-home/models/superconductors-scibert.zip"
-            overwrite false        
+            overwrite false
         }
         ant.unzip(src: "${rootDir}/../grobid-home/models/superconductors-scibert.zip", dest: "${rootDir}/../grobid-home/models/")
     }
