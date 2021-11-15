@@ -1,6 +1,6 @@
 package org.grobid.core.engines.linking;
 
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.layout.LayoutToken;
 
 import java.util.List;

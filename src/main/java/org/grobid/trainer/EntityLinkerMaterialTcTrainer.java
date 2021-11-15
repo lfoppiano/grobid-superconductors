@@ -4,7 +4,7 @@ import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.grobid.core.data.LinkToken;
+import org.grobid.core.data.document.LinkToken;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.exceptions.GrobidException;

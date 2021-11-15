@@ -6,9 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Material;
-import org.grobid.core.data.Span;
-import org.grobid.core.data.chemDataExtractor.ChemicalSpan;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.data.external.chemDataExtractor.ChemicalSpan;
+import org.grobid.core.data.material.ChemicalComposition;
+import org.grobid.core.data.material.Formula;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
@@ -16,7 +18,11 @@ import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.BoundingBoxCalculator;
+import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.UnicodeUtil;
+import org.grobid.core.utilities.client.ChemDataExtractorClient;
+import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -382,14 +388,6 @@ public class SuperconductorsParser extends AbstractParser {
             }
         }
 
-        if (materialParser != null && materialParser.getChemicalMaterialParserClient() != null) {
-            localEntities.stream()
-                .forEach(p -> p.stream()
-                    .filter(e -> e.getType().equals(SUPERCONDUCTORS_CLASS_LABEL))
-                    .forEach(e -> System.out.println(e.getText() + " >>> " + materialParser.getChemicalMaterialParserClient().convertNameToFormula(e.getText())))
-                );
-        }
-
         return localEntities;
     }
 
@@ -496,6 +494,7 @@ public class SuperconductorsParser extends AbstractParser {
                 boolean hasFormula = false;
 
                 List<Material> parsedMaterials = materialParser.process(theTokens);
+//                superconductor.getOriginalMaterials().addAll(parsedMaterials);
                 int i = 0;
                 for (Material parsedMaterial : parsedMaterials) {
                     if (parsedMaterial.getFormula() != null && StringUtils.isNotBlank(parsedMaterial.getFormula().getRawValue())) {
@@ -525,6 +524,18 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setTokenStart(tokenStartPos);
                 superconductor.setTokenEnd(tokenEndPos);
                 superconductor.setFormattedText(getFormattedString(theTokens));
+                
+                if (materialParser != null && materialParser.getChemicalMaterialParserClient() != null) {
+                    ChemicalComposition chemicalComposition = materialParser.getChemicalMaterialParserClient().convertNameToFormula(clusterContent);
+                    if (!chemicalComposition.isEmpty()) {
+                        Material classAsMaterial = new Material();
+                        classAsMaterial.setName(clusterContent);
+                        if (CollectionUtils.isNotEmpty(chemicalComposition.getComposition().keySet())) {
+                            classAsMaterial.setFormula(new Formula(chemicalComposition.getFormula(), chemicalComposition.getComposition()));
+                        }
+                        superconductor.getAttributes().putAll(Material.asAttributeMap(classAsMaterial, "class"));
+                    }
+                }
                 resultList.add(superconductor);
             } else if (clusterLabel.equals(SUPERCONDUCTORS_MEASUREMENT_METHOD)) {
                 superconductor.setType(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL);

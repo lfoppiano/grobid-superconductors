@@ -1,5 +1,6 @@
 package org.grobid.core.data;
 
+import org.grobid.core.data.document.Link;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
 import org.junit.Test;
 

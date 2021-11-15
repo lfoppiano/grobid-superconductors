@@ -1,7 +1,7 @@
 package org.grobid.core.engines.linking;
 
 import org.grobid.core.GrobidModel;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.engines.AbstractParser;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.exceptions.GrobidException;

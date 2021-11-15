@@ -501,8 +501,45 @@
                     </div>
                 </div>
             </div>
-            <div id="requestResultPdfContent">
+            <div id="requestResultPdfContainer" class="border">
+                <ul class="nav nav-tabs m-2" id="requestResultPdfTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="result-pdf-annotations-tab" data-toggle="tab"
+                           href="#result-pdf-annotations"
+                           role="tab"
+                           aria-controls="result-pdf-annotations" aria-selected="true">Annotations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="result-pdf-response-tab" data-toggle="tab" href="#result-pdf-response"
+                           role="tab"
+                           aria-controls="result-pdf-response" aria-selected="false">Response</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="result-pdf-summary-tab" data-toggle="tab" href="#result-pdf-summary"
+                           role="tab"
+                           aria-controls="result-pdf-summary" aria-selected="false">Summary</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="requestResultPdfTabContent">
+                    <div class="tab-pane fade show active" id="result-pdf-annotations" role="tabpanel"
+                         aria-labelledby="result-annotations">
+                        <div class="row m-3">
+                            <div id="requestResultPdfContent">
 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="result-pdf-response" role="tabpanel" aria-labelledby="result-pdf-response">
+                        <pre class='prettyprint lang-json' id='jsonCodePdf'></pre>
+                    </div>
+
+                    <div class="tab-pane fade" id="result-pdf-summary" role="tabpanel" aria-labelledby="result-pdf-summary">
+                        Document summary goes here.
+                    </div>
+                    
+                </div>
+                
             </div>
         </div>
         <div id="requestResultText" class="border">
@@ -518,6 +555,13 @@
                        role="tab"
                        aria-controls="result-response" aria-selected="false">Response</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="result-document-summary-tab" data-toggle="tab" href="#result-document-summary"
+                       role="tab"
+                       aria-controls="result-document-summary" aria-selected="false">Summary</a>
+                </li>
+                
             </ul>
 
             <div class="tab-content" id="requestResultTextTabContent">
@@ -534,6 +578,11 @@
                 <div class="tab-pane fade" id="result-response" role="tabpanel" aria-labelledby="result-response">
                     <pre class='prettyprint lang-json' id='jsonCode'></pre>
                 </div>
+
+                <div class="tab-pane fade" id="result-document-summary" role="tabpanel" aria-labelledby="result-document-summary">
+                    Document summary goes here.
+                </div>
+
             </div>
         </div>
         <div id="requestResultMaterial" class="border">
@@ -594,13 +643,13 @@
                 <div class="tab-pane fade" id="result-linker-response" role="tabpanel"
                      aria-labelledby="result-linker-response">
                     <pre class='prettyprint lang-json' id='jsonCodeLinker'></pre>
-                </div>
+                </div>                
             </div>
         </div>
     </div>
 
     <footer>
-        <p><span style="color:#848484;">&copy; GROBID contributors, 2019 - 2020 </span>
+        <p><span style="color:#848484;">&copy; GROBID contributors, 2019 - 2021 </span>
         </p>
     </footer>
 </div>

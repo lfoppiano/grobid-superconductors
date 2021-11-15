@@ -7,9 +7,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.ChemicalComposition;
-import org.grobid.core.data.Formula;
-import org.grobid.core.data.Material;
+import org.grobid.core.data.material.ChemicalComposition;
+import org.grobid.core.data.material.Formula;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorMaterial;
@@ -18,7 +18,11 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.*;
+import org.grobid.core.utilities.BoundingBoxCalculator;
+import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.OffsetPosition;
+import org.grobid.core.utilities.UnicodeUtil;
+import org.grobid.core.utilities.client.ChemicalMaterialParserClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -244,7 +248,7 @@ public class MaterialParser extends AbstractParser {
                 Formula formula = new Formula(finalFormula);
                 if (chemicalMaterialParserClient != null) {
                     ChemicalComposition chemicalComposition = chemicalMaterialParserClient.convertFormulaToComposition(finalFormula);
-                    formula.setFormulaComposition(chemicalComposition.getElements());
+                    formula.setFormulaComposition(chemicalComposition.getComposition());
                 }
 
                 currentMaterial.setFormula(formula);
@@ -258,7 +262,7 @@ public class MaterialParser extends AbstractParser {
                 String value = clusterContent;
 
                 if (StringUtils.isNotEmpty(processingVariable)) {
-                    List<String> listValues = extractVariableValues(value);
+                    List<String> listValues = extractAndFilterVariableValues(value);
                     currentMaterial.getVariables().put(processingVariable, listValues);
                     if (isNotEmpty(prefixedValues)) {
                         currentMaterial.getVariables().get(processingVariable).addAll(prefixedValues);
@@ -273,6 +277,7 @@ public class MaterialParser extends AbstractParser {
                 }
             } else if (clusterLabel.equals(MATERIAL_VARIABLE)) {
                 String variable = clusterContent;
+                variable = postProcessVariable(variable);
                 if (StringUtils.isNotEmpty(processingVariable)) {
                     if (!processingVariable.equals(variable)) {
                         processingVariable = variable;
@@ -379,7 +384,7 @@ public class MaterialParser extends AbstractParser {
                     .map(f -> {
                         Formula createdFormula = new Formula(f);
                         if (chemicalMaterialParserClient != null) {
-                            createdFormula.setFormulaComposition(chemicalMaterialParserClient.convertFormulaToComposition(f).getElements());
+                            createdFormula.setFormulaComposition(chemicalMaterialParserClient.convertFormulaToComposition(f).getComposition());
                         }
                         return createdFormula;
                     })
@@ -413,10 +418,20 @@ public class MaterialParser extends AbstractParser {
                 || StringUtils.isBlank(material.getFormula().getRawValue()))
                 && StringUtils.isNotBlank(material.getName())) {
                 if (chemicalMaterialParserClient != null) {
-                    List<String> convertedFormula = chemicalMaterialParserClient.convertNameToFormula(material.getName());
-                    if (convertedFormula.size() >= 3 && StringUtils.isNotBlank(convertedFormula.get(2))) {
-                        material.setFormula(new Formula(convertedFormula.get(2)));
-                    }
+                    ChemicalComposition convertedFormula = chemicalMaterialParserClient.convertNameToFormula(material.getName());
+                    Formula formula = null;
+                    if (isNotBlank(convertedFormula.getFormula())) {
+                        formula = new Formula(convertedFormula.getFormula());
+                        material.setFormula(formula);
+                    } 
+                    
+                    if (convertedFormula.getComposition().keySet().size() > 0) {
+                        if (formula == null) {
+                            formula = new Formula();
+                        }
+                        formula.setFormulaComposition(convertedFormula.getComposition());
+                        material.setFormula(formula);
+                    }                     
                 }
             }
 
@@ -429,9 +444,13 @@ public class MaterialParser extends AbstractParser {
         return extracted;
     }
 
-    protected List<String> extractVariableValues(String value) {
+    protected List<String> extractAndFilterVariableValues(String value) {
         String[] split = value.split(",|;|or|and");
-        return Arrays.stream(split).map(StringUtils::trim).collect(Collectors.toList());
+        return Arrays.stream(split)
+            .map(StringUtils::trim)
+            .map(this::postProcessValue)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
     }
 
     public String generateTrainingData(List<LayoutToken> layoutTokens) {
@@ -441,7 +460,8 @@ public class MaterialParser extends AbstractParser {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().retokenizeLayoutTokens(layoutTokens);
 
         //Normalisation
-        List<LayoutToken> layoutTokensNormalised = tokens.stream().map(layoutToken -> {
+        List<LayoutToken> layoutTokensNormalised = tokens.stream()
+            .map(layoutToken -> {
                 layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
                 return layoutToken;
@@ -493,7 +513,34 @@ public class MaterialParser extends AbstractParser {
         Pair.of("¼", "-"),
         Pair.of(" ͑", "")
     );
+    
+    private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VALUES = Arrays.asList(
+        Pair.of(" ͑", ""),
+        Pair.of("¼", "")
+    );
 
+    private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VARIABLES = Arrays.asList(
+        Pair.of(" ͑", "")
+    );
+    
+    
+
+    public String postProcessVariable(String variable) {
+        String temp = variable;
+        for (Pair<String, String> replacementSymbol : REPLACEMENT_SYMBOLS_VARIABLES) {
+            temp = temp.replaceAll(replacementSymbol.getLeft(), replacementSymbol.getRight());
+        }
+        return temp;
+    }
+    
+    public String postProcessValue(String value) {
+        String temp = value;
+        for (Pair<String, String> replacementSymbol : REPLACEMENT_SYMBOLS_VALUES) {
+            temp = temp.replaceAll(replacementSymbol.getLeft(), replacementSymbol.getRight());
+        }
+        return temp;
+    }
+    
     public String postProcessFormula(String formula) {
         if (formula == null) {
             return "";

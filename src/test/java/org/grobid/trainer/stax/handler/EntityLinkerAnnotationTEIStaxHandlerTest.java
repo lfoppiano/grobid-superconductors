@@ -2,7 +2,7 @@ package org.grobid.trainer.stax.handler;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.grobid.core.data.LinkToken;
+import org.grobid.core.data.document.LinkToken;
 import org.grobid.service.command.InterAnnotationAgreementCommand;
 import org.grobid.trainer.stax.StaxUtils;
 import org.junit.Before;
@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Iterators.getLast;
 import static org.hamcrest.CoreMatchers.is;

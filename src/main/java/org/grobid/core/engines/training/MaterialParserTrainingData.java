@@ -5,7 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.GrobidPDFEngine;
 import org.grobid.core.engines.MaterialParser;

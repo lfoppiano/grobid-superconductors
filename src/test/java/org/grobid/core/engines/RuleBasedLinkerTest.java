@@ -3,11 +3,11 @@ package org.grobid.core.engines;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
-import org.grobid.core.data.Link;
-import org.grobid.core.data.Span;
-import org.grobid.core.data.TextPassage;
-import org.grobid.core.data.Token;
-import org.grobid.core.utilities.LinkingModuleClient;
+import org.grobid.core.data.document.Link;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.data.document.TextPassage;
+import org.grobid.core.data.document.Token;
+import org.grobid.core.utilities.client.LinkingModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.Before;
 import org.junit.Test;

@@ -12,8 +12,8 @@ import java.util.Objects;
 public class SuperconEntry implements Cloneable {
 
     //"Raw material","Name","Formula","Doping","Shape","Class","Fabrication",
-    // "Substrate","Critical temperature","Applied pressure","Link type",
-    // "Section","Subsection","Sentence", "type", "path","filename"
+    // "Substrate","Critical temperature","Tc measurement method", "Applied pressure","Material-tc link type",
+    // "Section", "Subsection","Sentence", "type", "path","filename"
 
     private String rawMaterial;
     private String name;
@@ -24,6 +24,7 @@ public class SuperconEntry implements Cloneable {
     private String fabrication;
     private String substrate;
     private String criticalTemperature;
+    private String criticalTemperatureMeasurementMethod; 
     private String appliedPressure;
     private String linkType;
     private String section;
@@ -34,6 +35,7 @@ public class SuperconEntry implements Cloneable {
     private String hash;
     private String type;
     private Date timestamp;
+    private String variables;
 
     public String getRawMaterial() {
         return rawMaterial;
@@ -185,12 +187,12 @@ public class SuperconEntry implements Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SuperconEntry that = (SuperconEntry) o;
-        return Objects.equals(name, that.name) && Objects.equals(formula, that.formula) && Objects.equals(doping, that.doping) && Objects.equals(shape, that.shape) && Objects.equals(classification, that.classification) && Objects.equals(fabrication, that.fabrication) && Objects.equals(substrate, that.substrate) && Objects.equals(criticalTemperature, that.criticalTemperature) && Objects.equals(appliedPressure, that.appliedPressure) && Objects.equals(linkType, that.linkType) && Objects.equals(section, that.section) && Objects.equals(subsection, that.subsection) && Objects.equals(sentence, that.sentence) && Objects.equals(hash, that.hash) && Objects.equals(timestamp, that.timestamp);
+        return Objects.equals(name, that.name) && Objects.equals(variables, that.variables)&& Objects.equals(formula, that.formula) && Objects.equals(doping, that.doping) && Objects.equals(shape, that.shape) && Objects.equals(classification, that.classification) && Objects.equals(fabrication, that.fabrication) && Objects.equals(substrate, that.substrate) && Objects.equals(criticalTemperature, that.criticalTemperature) && Objects.equals(appliedPressure, that.appliedPressure) && Objects.equals(linkType, that.linkType) && Objects.equals(section, that.section) && Objects.equals(subsection, that.subsection) && Objects.equals(sentence, that.sentence) && Objects.equals(hash, that.hash) && Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, formula, doping, shape, classification, fabrication, substrate, criticalTemperature, appliedPressure, linkType, section, subsection, sentence, hash, timestamp);
+        return Objects.hash(name, formula, doping, variables, shape, classification, fabrication, substrate, criticalTemperature, appliedPressure, linkType, section, subsection, sentence, hash, timestamp);
     }
 
     @Override
@@ -204,12 +206,15 @@ public class SuperconEntry implements Cloneable {
         outList.add(getRawMaterial());
         outList.add(getName());
         outList.add(getFormula());
+        outList.add(getVariables());
         outList.add(getDoping());
         outList.add(getShape());
         outList.add(getClassification());
         outList.add(getFabrication());
         outList.add(getSubstrate());
+        outList.add(getVariables());
         outList.add(getCriticalTemperature());
+        outList.add(getCriticalTemperatureMeasurementMethod());
         outList.add(getAppliedPressure());
         outList.add(getLinkType());
         outList.add(getSection());
@@ -226,5 +231,21 @@ public class SuperconEntry implements Cloneable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public void setVariables(String variables) {
+        this.variables = variables;
+    }
+
+    public String getVariables() {
+        return variables;
+    }
+
+    public String getCriticalTemperatureMeasurementMethod() {
+        return criticalTemperatureMeasurementMethod;
+    }
+
+    public void setCriticalTemperatureMeasurementMethod(String criticalTemperatureMeasurementMethod) {
+        this.criticalTemperatureMeasurementMethod = criticalTemperatureMeasurementMethod;
     }
 }

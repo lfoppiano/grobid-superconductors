@@ -123,10 +123,4 @@ public class GrobidPDFEngineTest {
 
         assertThat(layoutTokens, hasSize(27));
     }
-
-    @Test
-    public void testGetPlainLabelName() throws Exception {
-        assertThat(GrobidPDFEngine.getPlainLabelName("<header>"), is("header"));
-    }
-
 }

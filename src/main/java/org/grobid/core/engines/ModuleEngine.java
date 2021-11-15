@@ -6,7 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.*;
+import org.grobid.core.data.Measurement;
+import org.grobid.core.data.document.*;
+import org.grobid.core.data.material.Formula;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
@@ -28,11 +31,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.mapping;
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.grobid.core.data.Token.getStyle;
+import static org.grobid.core.data.document.Token.getStyle;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 import static org.grobid.core.engines.linking.CRFBasedLinker.*;
 
@@ -202,16 +205,21 @@ public class ModuleEngine {
 
         List<TextPassage> textPassages = process(sentencesAsLayoutToken, disableLinking);
 
-        return new DocumentResponse(textPassages);
+        DocumentResponse documentResponse = new DocumentResponse(textPassages);
+
+        Map<Formula, List<String>> aggregatedFormulaAtDocumentLevel = processFormulasAtDocumentLevel(documentResponse);
+        documentResponse.setAggregatedMaterials(aggregatedFormulaAtDocumentLevel);
+
+        return documentResponse;
     }
 
     private List<Span> getQuantities(List<LayoutToken> tokens) {
         List<Span> spans = new ArrayList<>();
         List<Measurement> measurements = new ArrayList<>();
-        
+
         //TODO: remove this when quantities will be updated
         try {
-             measurements = quantityParser.process(tokens);
+            measurements = quantityParser.process(tokens);
         } catch (Exception e) {
             LOGGER.warn("Error when processing quantities", e);
             return spans;
@@ -291,6 +299,10 @@ public class ModuleEngine {
         } finally {
             IOUtilities.removeTempFile(file);
         }
+
+        Map<Formula, List<String>> aggregatedFormulaAtDocumentLevel = processFormulasAtDocumentLevel(documentResponse);
+        documentResponse.setAggregatedMaterials(aggregatedFormulaAtDocumentLevel);
+
 
         return documentResponse;
     }
@@ -465,6 +477,72 @@ public class ModuleEngine {
         return sb.toString();
     }
 
+    public Map<Formula, List<String>> processFormulasAtDocumentLevel(DocumentResponse document) {
+
+        Map<Formula, List<String>> aggregatedFormulas = document.getPassages().stream().parallel()
+            .filter(p -> isNotEmpty(p.getSpans()))
+            .flatMap(p -> p.getSpans().stream())
+            .filter(s -> (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL) || s.getType().equals(SUPERCONDUCTORS_CLASS_LABEL))
+                && s.getAttributes().keySet().stream()
+                .anyMatch(ak -> (ak.contains("_resolvedFormulas") && ak.contains("_formulaComposition")) ||
+                    (!ak.contains("_resolvedFormulas") && ak.contains("_formula_formulaComposition"))))
+            .map(s -> {
+//                Map<String, String> attributesWeCareAbout = s.getAttributes().entrySet().stream()
+//                    .filter(map -> (map.getKey().contains("_resolvedFormulas") && map.getKey().contains("_formulaComposition")) ||
+//                        (!map.getKey().contains("_resolvedFormulas") && map.getKey().contains("_formula_formulaComposition")))
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                Map<String, Object> nestedAttributes = Material.toNestedAttributes(s.getAttributes());
+
+                List<Pair<Span, Formula>> o = new ArrayList<>();
+                for (String materialKey : nestedAttributes.keySet()) {
+                    Map<String, Object> materialAttributes = (Map<String, Object>) nestedAttributes.get(materialKey);
+                    if (materialAttributes == null || !(materialAttributes.containsKey("formula") || materialAttributes.containsKey("resolvedFormulas"))) {
+                        continue;
+                    }
+                    if (materialAttributes.containsKey("resolvedFormulas")) {
+                        Map<String, Object> resolvedFormulas = (Map<String, Object>) materialAttributes.get("resolvedFormulas");
+                        for (String resolvedFormulaKey : resolvedFormulas.keySet()) {
+                            Map<String, Object> resolvedFormula = (Map<String, Object>) resolvedFormulas.get(resolvedFormulaKey);
+                            Formula f = createFormula(resolvedFormula);
+
+                            o.add(Pair.of(s, f));
+                        }
+                    } else {
+                        Map<String, Object> formula = (Map<String, Object>) materialAttributes.get("formula");
+                        Formula f = createFormula(formula);
+
+                        o.add(Pair.of(s, f));
+                    }
+                }
+                return o;
+            }).flatMap(Collection::stream)
+            .collect(Collectors.groupingBy(Pair::getRight, Collectors.mapping(u -> u.getLeft().getId(), Collectors.toList())));
+
+        Map<Formula, List<String>> sortedAggregatedFormulas = aggregatedFormulas.entrySet().stream()
+            .sorted(comparingInt(e -> e.getValue().size()))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (a, b) -> {
+                    throw new AssertionError();
+                },
+                LinkedHashMap::new
+            ));
+        Map<Formula, List<String>> sortedAggregatedFormulasReversed = new LinkedHashMap<>();
+        List<Formula> keys = new LinkedList<>(sortedAggregatedFormulas.keySet());
+        for (int i = keys.size() - 1; i >= 0; i--) {
+            sortedAggregatedFormulasReversed.put(keys.get(i), sortedAggregatedFormulas.get(keys.get(i)));
+        }
+        
+        return sortedAggregatedFormulasReversed;
+    }
+
+    private Formula createFormula(Map<String, Object> formula) {
+        String rawFormula = (String) formula.get("rawValue");
+        Map<String, String> composition = (Map<String, String>) formula.get("formulaComposition");
+        return new Formula(rawFormula, composition);
+    }
 
     /**
      * Remove overlapping annotations
@@ -477,7 +555,7 @@ public class ModuleEngine {
         //Sorting by offsets
         List<Span> sortedEntities = spanList
             .stream()
-            .sorted(Comparator.comparingInt(Span::getOffsetStart))
+            .sorted(comparingInt(Span::getOffsetStart))
             .collect(Collectors.toList());
 
 //                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());
@@ -558,216 +636,5 @@ public class ModuleEngine {
 
         List<Span> newSortedEntitiers = (List<Span>) CollectionUtils.removeAll(sortedEntities, toBeRemoved);
         return newSortedEntitiers;
-    }
-
-
-    public static List<SuperconEntry> extractEntities(List<TextPassage> paragraphs) {
-        Map<String, Span> spansById = new HashMap<>();
-        Map<String, String> sentenceById = new HashMap<>();
-        Map<String, Pair<String, String>> sectionsById = new HashMap<>();
-        for (TextPassage paragraph : paragraphs) {
-            for (Span span : paragraph.getSpans()) {
-                spansById.put(span.getId(), span);
-                sentenceById.put(span.getId(), paragraph.getText());
-                sectionsById.put(span.getId(), Pair.of(paragraph.getSection(), paragraph.getSubSection()));
-            }
-        }
-        // Materials
-        List<Span> materials = spansById.values().stream()
-            .filter(span -> span.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
-            .collect(Collectors.toList());
-
-        List<SuperconEntry> outputCSV = new ArrayList<>();
-
-        for (Span m : materials) {
-            SuperconEntry dbEntry = new SuperconEntry();
-            dbEntry.setRawMaterial(m.getText());
-            dbEntry.setSection(sectionsById.get(m.getId()).getLeft());
-            dbEntry.setSubsection(sectionsById.get(m.getId()).getRight());
-            dbEntry.setSentence(sentenceById.get(m.getId()));
-
-            for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
-                String[] splits = a.getKey().split("_");
-                String prefix = splits[0];
-                String propertyName = splits[1];
-                String value = a.getValue();
-
-                if (propertyName.equals("formula")) {
-                    dbEntry.setFormula(value);
-                } else if (propertyName.equals("name")) {
-                    dbEntry.setName(value);
-                } else if (propertyName.equals("clazz")) {
-                    dbEntry.setClassification(value);
-                } else if (propertyName.equals("shape")) {
-                    dbEntry.setShape(value);
-                } else if (propertyName.equals("doping")) {
-                    dbEntry.setDoping(value);
-                } else if (propertyName.equals("fabrication")) {
-                    dbEntry.setFabrication(value);
-                } else if (propertyName.equals("substrate")) {
-                    dbEntry.setSubstrate(value);
-                }
-            }
-
-            Map<String, String> linkedToMaterial = m.getLinks().stream()
-                .map(l -> Pair.of(l.getTargetId(), l.getType()))
-                .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
-
-            if (isNotEmpty(linkedToMaterial.entrySet())) {
-                for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
-                    Span tcValue = spansById.get(entry.getKey());
-                    dbEntry.setCriticalTemperature(tcValue.getText());
-                    List<Span> pressures = tcValue.getLinks().stream()
-                        .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
-                        .map(l -> spansById.get(l.getTargetId()))
-                        .collect(Collectors.toList());
-
-                    if (isNotEmpty(pressures)) {
-                        boolean first = true;
-                        for (Span pressure : pressures) {
-                            if (first) {
-                                dbEntry.setAppliedPressure(pressure.getText());
-                                outputCSV.add(dbEntry);
-                                first = false;
-                            } else {
-                                try {
-                                    SuperconEntry newEntry = dbEntry.clone();
-                                    newEntry.setAppliedPressure(pressure.getText());
-                                    newEntry.setLinkType(entry.getValue());
-                                } catch (CloneNotSupportedException e) {
-                                    LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
-                        outputCSV.add(dbEntry);
-                    }
-
-                }
-            } else {
-                outputCSV.add(dbEntry);
-            }
-        }
-        return outputCSV;
-    }
-
-    //TODO: compute document information here and not in the workflow processor 
-    public static List<SuperconEntry> computeTabularData(List<TextPassage> paragraphs) {
-        Map<String, Span> spansById = new HashMap<>();
-        Map<String, String> sentenceById = new HashMap<>();
-        Map<String, Pair<String, String>> sectionsById = new HashMap<>();
-        for (TextPassage paragraph : paragraphs) {
-            List<Span> linkedSpans = paragraph.getSpans().stream()
-                .filter(s -> s.getLinks().size() > 0)
-                .collect(Collectors.toList());
-
-            for (Span span : linkedSpans) {
-//                if (spansById.containsKey(span.getId())) {
-//                    System.out.println("duplicated key" + span.getId() + ", " + span.toString());
-//                }
-                spansById.put(span.getId(), span);
-                sentenceById.put(span.getId(), paragraph.getText());
-                sectionsById.put(span.getId(), Pair.of(paragraph.getSection(), paragraph.getSubSection()));
-            }
-        }
-
-        // Materials
-        List<Span> materials = spansById.values().stream()
-            .filter(span -> span.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
-            .collect(Collectors.toList());
-
-//        List<Span> tcValues = spansById.entrySet().stream()
-//            .filter(span -> span.getValue().getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
-//            .map(Map.Entry::getValue)
-//            .collect(Collectors.toList());
-//
-//        List<Span> pressures = spansById.entrySet().stream()
-//            .filter(span -> span.getValue().getType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
-//            .map(Map.Entry::getValue)
-//            .collect(Collectors.toList());
-
-        List<SuperconEntry> outputCSV = new ArrayList<>();
-        for (Span m : materials) {
-            SuperconEntry dbEntry = new SuperconEntry();
-            dbEntry.setRawMaterial(m.getText());
-            dbEntry.setSection(GrobidPDFEngine.getPlainLabelName(sectionsById.get(m.getId()).getLeft()));
-            dbEntry.setSubsection(GrobidPDFEngine.getPlainLabelName(sectionsById.get(m.getId()).getRight()));
-            dbEntry.setSentence(sentenceById.get(m.getId()));
-
-            for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
-                String[] splits = a.getKey().split("_");
-                String prefix = splits[0];
-                String propertyName = splits[1];
-                String value = a.getValue();
-
-                if (propertyName.equals("formula")) {
-                    dbEntry.setFormula(value);
-                } else if (propertyName.equals("name")) {
-                    dbEntry.setName(value);
-                } else if (propertyName.equals("clazz")) {
-                    dbEntry.setClassification(value);
-                } else if (propertyName.equals("shape")) {
-                    dbEntry.setShape(value);
-                } else if (propertyName.equals("doping")) {
-                    dbEntry.setDoping(value);
-                } else if (propertyName.equals("fabrication")) {
-                    dbEntry.setFabrication(value);
-                } else if (propertyName.equals("substrate")) {
-                    dbEntry.setSubstrate(value);
-                }
-            }
-
-            Map<String, String> linkedToMaterial = m.getLinks().stream()
-                .map(l -> Pair.of(l.getTargetId(), l.getType()))
-                .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
-
-            boolean firstTemp = true;
-            for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
-                Span tcValue = spansById.get(entry.getKey());
-                if (firstTemp) {
-                    dbEntry.setCriticalTemperature(tcValue.getText());
-                    firstTemp = false;
-                } else {
-                    outputCSV.add(dbEntry);
-                    try {
-                        dbEntry = dbEntry.clone();
-                        dbEntry.setAppliedPressure("");
-                        dbEntry.setCriticalTemperature(tcValue.getText());
-                        dbEntry.setLinkType(entry.getValue());
-                    } catch (CloneNotSupportedException e) {
-                        LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
-                        break;
-                    }
-                }
-
-                List<Span> pressures = tcValue.getLinks().stream()
-                    .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
-                    .map(l -> spansById.get(l.getTargetId()))
-                    .collect(Collectors.toList());
-
-                if (isNotEmpty(pressures)) {
-                    boolean first = true;
-                    for (Span pressure : pressures) {
-                        if (first) {
-                            dbEntry.setAppliedPressure(pressure.getText());
-                            first = false;
-                        } else {
-                            outputCSV.add(dbEntry);
-                            try {
-                                dbEntry = dbEntry.clone();
-                                dbEntry.setAppliedPressure(pressure.getText());
-                                dbEntry.setLinkType(entry.getValue());
-                            } catch (CloneNotSupportedException e) {
-                                LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            outputCSV.add(dbEntry);
-        }
-        return outputCSV;
     }
 }

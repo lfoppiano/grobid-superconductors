@@ -3,11 +3,10 @@ package org.grobid.core.engines;
 import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Material;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
-import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
 import org.hamcrest.Matcher;
@@ -193,7 +192,7 @@ public class MaterialParserTest {
         assertThat(materials.get(0).getFormula().getRawValue(), is("(Sr,K)Fe2As2"));
         assertThat(materials.get(0).getShape(), is("films"));
         assertThat(materials.get(0).getResolvedFormulas(), hasSize(1));
-        assertThat(materials.get(0).getResolvedFormulas().get(0).getRawValue(), is("Sr x K 1-x Fe2As2"));
+        assertThat(materials.get(0).getResolvedFormulas().get(0).getRawValue(), is("Sr 1-x K x Fe2As2"));
 
     }
 
@@ -440,7 +439,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_singleLessThan() throws Exception {
         String value = "1 <";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 
@@ -448,7 +447,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_singleGreaterThan() throws Exception {
         String value = "> 2";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 
@@ -456,7 +455,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_list() throws Exception {
         String value = "1,2,3 and 4";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
 
         assertThat(parsedValues, hasSize(4));
         assertThat(parsedValues.get(0), is("1"));
@@ -469,7 +468,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_interval() throws Exception {
         String value = "<2";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 }

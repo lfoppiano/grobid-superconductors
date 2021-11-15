@@ -1,7 +1,7 @@
 package org.grobid.service.controller;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.grobid.core.data.Material;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.engines.MaterialParser;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 

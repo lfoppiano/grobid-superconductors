@@ -5,7 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.grobid.core.analyzers.QuantityAnalyzer;
-import org.grobid.core.data.LinkToken;
+import org.grobid.core.data.document.LinkToken;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.trainer.stax.StaxParserContentHandler;
 import org.grobid.trainer.stax.SuperconductorsStackTags;

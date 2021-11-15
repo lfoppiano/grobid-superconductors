@@ -5,7 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.data.Measurement;
 import org.grobid.core.data.Quantity;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.engines.QuantitiesModels;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
