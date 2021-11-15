@@ -23,6 +23,10 @@ In order to process the data with RoBERTa, we preprocessed the data to have an e
       print > f 
       close(f)
       }' ../SuperMat+SciCorpus.RoBERTa.sentences.v2.txt  &``
+      the split resulted in 795345
+    - divide
+    - cleanup splits from empty lines ``sed -i '/^[[:space:]]*$/d' ${in};``
+    - aggregated back with one empty line in between each file: ``sed -s -e $'$a\\\n' ./*.txt > concat.out``
     
 ### Pre-training
 

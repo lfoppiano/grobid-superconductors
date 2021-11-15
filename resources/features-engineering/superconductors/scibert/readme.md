@@ -106,10 +106,10 @@ nanoparticles
 ```
 
 The raw data can be found [here](features-engineering/superconductors/scibert/domain-specific-vocab):
-    - `myvocab-100.clean.txt` (list 100 most frequent terms)
-    - `myvocab-all.clean.txt` (list of all the extracted terms, sorted by frequency)
-    - `myvocab-100.txt` (list 100 most frequent terms and frequency)
-    - `myvocab-all.txt` (list of all the extracted terms and frequency, sorted by frequency)
+ - `myvocab-100.clean.txt` (list 100 most frequent terms)
+ - `myvocab-all.clean.txt` (list of all the extracted terms, sorted by frequency)
+ - `myvocab-100.txt` (list 100 most frequent terms and frequency)
+ - `myvocab-all.txt` (list of all the extracted terms and frequency, sorted by frequency)
 
 #### Extract exclusive terms from the domain-specific vocabulary
 
@@ -169,6 +169,10 @@ Starting from a text file containing one paragraph per line, we performed the fo
 
 4. Run pre-training ([ref](https://github.com/google-research/bert#pre-training-tips-and-caveats))
 
+## Pre-training execution 
+
+### NIMS Analysis cluster 
+
 **NOTE**: The num_train_steps is used as "global max step", therefore when doing incremental training is important to
 consider that as an absolute value. [Ref](https://github.com/google-research/bert/issues/632).
 
@@ -176,8 +180,6 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 |--------|--------- |------|---------|----|--------|--------|---- | ---- | ---- | --- | --- |
 | Baseline short sequences | total = 500000*256=12000000 | 128 | 256 | 500000 |  1000 | 1e-4 | 20 | |
 | Baseline long sequences |total = 300000*64=19000200  | 512 | 64 | 800000 |  100 | 1e-5 | 76 |  |
-
-
 
 ## Log and results
 
@@ -197,6 +199,15 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 | Sc+Sm pre-training short sequences | o23652, Re-calculated number of steps 4.8M steps |128 | 32  | 4800000 |  1000 | 1e-4 | 20 | TBD |
 | -- | Other cases |
 | Sc+Sm pre-training short sequences (200K steps) | ~~o23489~~, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
+
+### Google Cloud Platform
+
+- Create TPU
+    > gcloud compute tpus execution-groups create --name=tpu1234 --zone=us-central1-a --tf-version=1.15.5  --machine-type=n1-standard-1  --accelerator-type=v3-8
+
+- Run 512 
+    > python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/*.tfrecord --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512  --do_train=True --do_eval=True --bert_config_file=/mnt/disk1/bert_config/s2vocab_uncased.json --train_batch_size=64 --max_seq_length=512 --max_predictions_per_seq=75 --num_train_steps=800000 --num_warmup_steps=100 --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000  --eval_batch_size 64 --init_checkpoint=gs://matscibert/scibert_scivocab_cased/bert_model --tpu_zone=us-central1-a
+
 
 ## Details parameters
 
