@@ -192,7 +192,7 @@ public class MaterialParserTest {
         assertThat(materials.get(0).getFormula().getRawValue(), is("(Sr,K)Fe2As2"));
         assertThat(materials.get(0).getShape(), is("films"));
         assertThat(materials.get(0).getResolvedFormulas(), hasSize(1));
-        assertThat(materials.get(0).getResolvedFormulas().get(0).getRawValue(), is("Sr x K 1-x Fe2As2"));
+        assertThat(materials.get(0).getResolvedFormulas().get(0).getRawValue(), is("Sr 1-x K x Fe2As2"));
 
     }
 

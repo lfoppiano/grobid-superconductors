@@ -31,7 +31,7 @@ public class MaterialTest {
         List<String> outputFormulas = Material.expandFormula("(Sr, Na)Fe 2 As 2");
 
         assertThat(outputFormulas, hasSize(1));
-        assertThat(outputFormulas.get(0), is("Sr x Na 1-x Fe 2 As 2"));
+        assertThat(outputFormulas.get(0), is("Sr 1-x Na x Fe 2 As 2"));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class MaterialTest {
         List<String> expandFormulas = Material.expandFormula(formula);
 
         assertThat(expandFormulas, IsCollectionWithSize.hasSize(1));
-        assertThat(expandFormulas.get(0), is("Sr x K 1-x Fe2As2"));
+        assertThat(expandFormulas.get(0), is("Sr 1-x K x Fe2As2"));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class MaterialTest {
         List<String> expandFormulas = Material.expandFormula(formula);
 
         assertThat(expandFormulas, IsCollectionWithSize.hasSize(1));
-        assertThat(expandFormulas.get(0), is("Sr x K 1-x Fe2As2"));
+        assertThat(expandFormulas.get(0), is("Sr 1-x K x Fe2As2"));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class MaterialTest {
         List<String> expandedFormulas = Material.expandFormula(inputFormula);
 
         assertThat(expandedFormulas, hasSize(1));
-        assertThat(expandedFormulas.get(0), is("Sr x La 1-x Fe 2 O 7"));
+        assertThat(expandedFormulas.get(0), is("Sr 1-x La x Fe 2 O 7"));
 
     }
 
