@@ -6,6 +6,7 @@ on:
     workflows: ["Java CI"]
     types:
       - completed
+  workflow_dispatch:
     
 concurrency:
   group: docker
