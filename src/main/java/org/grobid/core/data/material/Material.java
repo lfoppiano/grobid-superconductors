@@ -603,7 +603,7 @@ public class Material {
     public static Map<String, Object> toNestedAttributes(Map<String, String> attributes) {
         Map<String, Object> nestedAttributes = new LinkedHashMap<>();
         for (Map.Entry<String, String> a : attributes.entrySet()) {
-            List<String> splits = List.of(a.getKey().split("_"));
+            List<String> splits = Arrays.asList(a.getKey().split("_"));
             String value = a.getValue();
 
             nestedAttributes = Material.stringToLinkedHashMap(splits, value, nestedAttributes);
