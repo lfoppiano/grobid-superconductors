@@ -36,6 +36,7 @@ WORKDIR /opt/grobid-source
 RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
 #RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors 
 
+COPY .git/ ./grobid-superconductors
 COPY resources/models/ ./grobid-superconductors/resources/models/
 COPY resources/config/ ./grobid-superconductors/resources/config/
 COPY gradle/ ./grobid-superconductors/gradle/
@@ -43,8 +44,6 @@ COPY src/ ./grobid-superconductors/src/
 COPY build.gradle ./grobid-superconductors/
 COPY settings.gradle ./grobid-superconductors/
 COPY gradlew* ./grobid-superconductors/
-COPY gradle.properties ./grobid-superconductors/
-
 COPY gradle.properties ./grobid-superconductors/
 
 # Adjust config
@@ -59,7 +58,7 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
 RUN ./gradlew installScibert --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
-RUN #./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
+#RUN ./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
 
 
 WORKDIR /opt
