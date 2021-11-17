@@ -161,10 +161,9 @@ run {
 //}
 
 processResources {
-    filesMatching('version.txt') {
-        filter {
-            it.replace('project.version', project.property('version') + gitVersion())
-        }
+    filesMatching(["version.txt", "revision.txt"]) {
+        expand(project_version: project.property('version'),
+            project_revision: gitVersion())
     }
 }
 
@@ -176,8 +175,8 @@ processResources {
 /*** Packaging and distribution ***/
 
 shadowJar {
-    mainClassName = 'org.grobid.service.GrobidSuperconductorsApplication'
-    archiveClassifier = 'onejar'
+    mainClassName = "org.grobid.service.GrobidSuperconductorsApplication"
+    archiveClassifier = "onejar"
     mergeServiceFiles()
     zip64 true
     manifest {

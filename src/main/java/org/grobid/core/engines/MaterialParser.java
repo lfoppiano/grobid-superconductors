@@ -516,7 +516,9 @@ public class MaterialParser extends AbstractParser {
     
     private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VALUES = Arrays.asList(
         Pair.of(" ͑", ""),
-        Pair.of("¼", "")
+        Pair.of("¼", ""),
+        Pair.of("et al", ""),
+        Pair.of("etc\\.?", "")
     );
 
     private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VARIABLES = Arrays.asList(

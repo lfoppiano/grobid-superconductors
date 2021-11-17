@@ -29,8 +29,10 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     // Version
     private static String VERSION = null;
+    private static String REVISION = null;
     private static final String UNKNOWN_VERSION_STR = "unknown";
     private static final String GROBID_VERSION_FILE = "/version.txt";
+    private static final String GROBID_REVISION_FILE = "/revision.txt";
 
     // CORS
     @JsonProperty
@@ -101,16 +103,32 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
         }
         synchronized (GrobidProperties.class) {
             if (VERSION == null) {
-                String grobidVersion = UNKNOWN_VERSION_STR;
-                try (InputStream is = GrobidProperties.class.getResourceAsStream(GROBID_VERSION_FILE)) {
-                    grobidVersion = IOUtils.toString(is, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    LOGGER.error("Cannot read Grobid version from resources", e);
-                }
-                VERSION = grobidVersion;
+                VERSION = readFromFile(GROBID_VERSION_FILE);
             }
         }
         return VERSION;
+    }
+
+    public static String getRevision() {
+        if (REVISION != null) {
+            return REVISION;
+        }
+        synchronized (GrobidProperties.class) {
+            if (REVISION == null) {
+                REVISION = readFromFile(GROBID_REVISION_FILE);
+            }
+        }
+        return REVISION;
+    }
+
+    private static String readFromFile(String filePath) {
+        String grobidVersion = UNKNOWN_VERSION_STR;
+        try (InputStream is = GrobidProperties.class.getResourceAsStream(filePath)) {
+            grobidVersion = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Cannot read the version from resources", e);
+        }
+        return grobidVersion;
     }
 
     public String getCorsAllowedOrigins() {

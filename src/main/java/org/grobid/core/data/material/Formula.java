@@ -33,7 +33,7 @@ public class Formula {
 //        Map<String, String> sorted = formulaComposition.entrySet().stream()
 //            .sorted(Map.Entry.comparingByKey())
 //            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-        if (CollectionUtils.isNotEmpty(formulaComposition.keySet())) {
+        if (formulaComposition != null && CollectionUtils.isNotEmpty(formulaComposition.keySet())) {
             return Joiner.on(",").withKeyValueSeparator("=").join(formulaComposition);
         } else {
             return rawValue;
