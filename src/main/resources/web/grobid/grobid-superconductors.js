@@ -289,7 +289,8 @@ let grobid = (function ($) {
                     "processText": "/service/process/text",
                     "processMaterial": "/service/material/parse",
                     "feedback": "/service/annotations/feedback",
-                    "linkEntities": "/service/linker/link"
+                    "linkEntities": "/service/linker/link",
+                    "version": "/service/version"
                 }
             }
             $('#submitRequestText').bind('click', 'processText', processText);
@@ -335,6 +336,20 @@ let grobid = (function ($) {
 
             //turn to inline mode
             $.fn.editable.defaults.mode = 'inline';
+
+            $.ajax({
+                type: 'GET',
+                url: getUrl("version"),
+                success: function (result) {
+                    let version = result.version;
+                    let revision = result.revision;
+
+                    $("#version").html(version + " " + revision);
+                },
+                error: function (result) {
+                    console.log(result)
+                }
+            });
         });
 
         function onError(message) {
