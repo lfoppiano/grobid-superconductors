@@ -3,7 +3,9 @@ name: Docker Image CI release
 # Only trigger, when the build workflow succeeded
 on:
   push:
-    branches: [ main, master ]
+    branches: 
+      - main
+      - master
     tags:
       - 'v*'
   pull_request:
