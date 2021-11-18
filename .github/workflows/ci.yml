@@ -30,7 +30,6 @@ jobs:
         run: ./gradlew test jacocoTestReport coveralls --no-daemon
   
   docker-build:
-
 #    runs-on: ubuntu-latest
     runs-on: self-hosted
 
