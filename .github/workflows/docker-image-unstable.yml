@@ -1,11 +1,10 @@
 name: Docker Image CI falcon
 
-on: [push]
+on: [push, pull_request, workflow_dispatch]
 #  workflow_run:
 #    workflows: [ "Java CI" ]
 #    types:
 #      - completed
-  workflow_dispatch:
 
 concurrency:
   group: docker
