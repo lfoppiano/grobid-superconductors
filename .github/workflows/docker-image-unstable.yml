@@ -42,6 +42,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: false
+          context: .
           tags: ${{ steps.set_tags.outputs.tags }}
 #      - name: Build the Docker image
 #        run: docker build . --file Dockerfile --tag ${TAGS}
