@@ -1,11 +1,10 @@
 name: Docker Image CI falcon
 
-# Only trigger, when the build workflow succeeded
-on:
-  workflow_run:
-    workflows: [ "Java CI" ]
-    types:
-      - completed
+on: [push]
+#  workflow_run:
+#    workflows: [ "Java CI" ]
+#    types:
+#      - completed
   workflow_dispatch:
 
 concurrency:
