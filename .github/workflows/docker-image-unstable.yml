@@ -1,13 +1,13 @@
 name: Docker Image CI falcon
 
 # Only trigger, when the build workflow succeeded
-on: 
+on:
   workflow_run:
-    workflows: ["Java CI"]
+    workflows: [ "Java CI" ]
     types:
       - completed
   workflow_dispatch:
-    
+
 concurrency:
   group: docker
   cancel-in-progress: true
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
 
-#    runs-on: ubuntu-latest
+    #    runs-on: ubuntu-latest
     runs-on: self-hosted
 
     steps:
@@ -34,8 +34,8 @@ jobs:
           fi
           echo "TAGS=${TAGS}"
           echo ::set-output name=tags::${TAGS}
-    - uses: actions/checkout@v2
-    - name: set up proxy http 
-      run: echo -e "systemProp.http.proxyHost=wwwout.nims.go.jp\nsystemProp.http.proxyPort=8888\nsystemProp.http.nonProxyHosts=*.nims.go.jp,localhost\n\nsystemProp.https.proxyHost=wwwout.nims.go.jp\nsystemProp.https.proxyPort=8888\nsystemProp.https.nonProxyHosts=*.nims.go.jp,localhost" >> gradle.properties
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${TAGS}
+      - uses: actions/checkout@v2
+      - name: set up proxy http
+        run: echo -e "systemProp.http.proxyHost=wwwout.nims.go.jp\nsystemProp.http.proxyPort=8888\nsystemProp.http.nonProxyHosts=*.nims.go.jp,localhost\n\nsystemProp.https.proxyHost=wwwout.nims.go.jp\nsystemProp.https.proxyPort=8888\nsystemProp.https.nonProxyHosts=*.nims.go.jp,localhost" >> gradle.properties
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${TAGS}
