@@ -1,6 +1,5 @@
-name: Docker Image CI release
+name: Build release
 
-# Only trigger, when the build workflow succeeded
 on:
   push:
     branches: 
@@ -32,8 +31,7 @@ jobs:
         run: ./gradlew test jacocoTestReport coveralls --no-daemon
   
   docker-build:
-#    runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Set tags
