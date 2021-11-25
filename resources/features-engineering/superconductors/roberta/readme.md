@@ -27,8 +27,11 @@ In order to process the data with RoBERTa, we preprocessed the data to have an e
       - `795345-636276 = 159069` (`tail -n 159069 split-file-list.txt > split-file-list-test-validation.txt`)
       - `159069/2 = 79534` documents for test (`head -n 79534 split-file-test-validation.txt > split-file-test.txt`)
       - `159069-79534 = 79535` document for validation (`tail -n 79535 split-file-test-validation.txt > split-file-valid.txt`)
-    - aggregated back with one empty line in between each file (``sed -s -e $'$a\\\n' ./*.txt > concat.out`` it works but requires to be launched in the same directory or it will fail with the error )
-    
+    - aggregated back with one empty line in between each file: 
+      - easy one: ``sed -s -e $'$a\\\n' ./*.txt > concat.out`` it works with a limited amount of files 
+      - alternative for large amount of files: ``find . -type f -name '*.txt' -exec sed -s -e $'$a\\\n' >> ../../SuperMat+SciCorpus.RoBERTa.sentences.v2.train.txt {} +``. [Ref](https://unix.stackexchange.com/questions/509749/how-to-deal-with-sed-if-argument-list-too-long). 
+
+
 ### Pre-training
 
 ## Details parameters
