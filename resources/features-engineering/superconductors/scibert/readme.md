@@ -69,7 +69,6 @@ Notes:
 
 Output is [here](./vocab):
 
-
 #### Vocab domain-specific additional terms
 
 ##### Steps
@@ -144,6 +143,10 @@ This final task reduce the domain-specific vocabulary to the only terms that are
 ##### Results
  - ``myvocab-excluding_scibert_terms.100.txt``: vocabulary of the 100 most frequent keyterms that are not already included in the SciBERT vocabulary
  - ``myvocab-excluding_scibert_terms.all.txt``: complete domain-specific vocabulary for material science text excluding terms that are not already included in the SciBERT vocabulary. 
+
+### Intersection between SciCorpus and SuperMat
+This list contains the documents that are in both SciCorpus and SuperMat 
+- `tdm-corpora/aps/2016/10.1103_PhysRevB.94.180509/10.1103_PhysRevB.94.180509_fulltext_20200826.txt:Bulk superconductivity at 84 K in the strongly overdoped regime of cuprates`
 
 ### Pre-training
 

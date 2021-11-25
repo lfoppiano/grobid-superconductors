@@ -959,16 +959,17 @@ let grobid = (function ($) {
 
                                         // span.text == material
                                         // link.targetText == tcValue
+                                        let snippetAnnotations = new Array(span, link_entity);    
                                         let row_id = appendLinkToTable(span, link, addedLinks);
                                         // appendRemoveButton(row_id);
 
                                         if (linkToPressures[link.targetId] !== undefined) {
-                                            $("#" + row_id + " td:eq(6)").text(spansMap[linkToPressures[link.targetId]].text)
+                                            $("#" + row_id + " td:eq(6)").text(spansMap[linkToPressures[link.targetId]].text);
+                                            snippetAnnotations.push(spansMap[linkToPressures[link.targetId]]);
                                             delete globalLinkToPressures[link.targetId]
                                         }
 
-
-                                        let passage_popover = annotateTextAsHtml(passage.text, [span, link_entity]);
+                                        let passage_popover = annotateTextAsHtml(passage.text, snippetAnnotations);
 
                                         $("#" + row_id).popover({
                                             content: function () {
