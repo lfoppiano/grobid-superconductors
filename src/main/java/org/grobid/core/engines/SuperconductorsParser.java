@@ -358,7 +358,10 @@ public class SuperconductorsParser extends AbstractParser {
                 LOGGER.debug("Structures extraction (crystal structure and space groups) disabled. ");
             } else {
                 List<Span> structureSpan = extractSpans(normalisedTokens.get(i), structures.get(i));
-                structureSpan.stream().forEach(s -> s.setLinkable(true));
+                structureSpan.stream().forEach(s -> {
+                    s.setBoundingBoxes(BoundingBoxCalculator.calculate(s.getLayoutTokens()));
+                    s.setLinkable(true);
+                });
                 structuredCumulatedSpans.add(structureSpan);
             }
 
@@ -524,7 +527,7 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setTokenStart(tokenStartPos);
                 superconductor.setTokenEnd(tokenEndPos);
                 superconductor.setFormattedText(getFormattedString(theTokens));
-                
+
                 if (materialParser != null && materialParser.getChemicalMaterialParserClient() != null) {
                     ChemicalComposition chemicalComposition = materialParser.getChemicalMaterialParserClient().convertNameToFormula(clusterContent);
                     if (!chemicalComposition.isEmpty()) {

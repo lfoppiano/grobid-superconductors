@@ -140,34 +140,9 @@ public class GrobidPDFEngine {
 
         }
 
-        // citation processing
-        // consolidation, if selected, is not done individually for each citation but 
-        // in a second stage for all citations which is much faster
+        // citation processing, needed for the fulltext processing
         List<BibDataSet> resCitations = parsers.getCitationParser().
             processingReferenceSection(doc, parsers.getReferenceSegmenterParser(), 0);
-
-        // consolidate the set
-//        if (config.getConsolidateCitations() != 0 && resCitations != null) {
-//            Consolidation consolidator = Consolidation.getInstance();
-//            if (consolidator.getCntManager() == null)
-//                consolidator.setCntManager(Engine.getCntManager());
-//            try {
-//                Map<Integer,BiblioItem> resConsolidation = consolidator.consolidate(resCitations);
-//                for(int i=0; i<resCitations.size(); i++) {
-//                    BiblioItem resCitation = resCitations.get(i).getResBib();
-//                    BiblioItem bibo = resConsolidation.get(i);
-//                    if (bibo != null) {
-//                        if (config.getConsolidateCitations() == 1)
-//                            BiblioItem.correct(resCitation, bibo);
-//                        else if (config.getConsolidateCitations() == 2)
-//                            BiblioItem.injectIdentifiers(resCitation, bibo);
-//                    }
-//                }
-//            } catch(Exception e) {
-//                throw new GrobidException(
-//                    "An exception occured while running consolidation on bibliographical references.", e);
-//            }
-//        }
 
         doc.setBibDataSets(resCitations);
         // we can process all the body, in the future figure and table could be the

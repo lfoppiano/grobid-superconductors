@@ -214,13 +214,13 @@
 }
 
 .area.crystal-structure {
-    background-color: #83a3d9;
+    border-color: #83a3d9;
 }
 
 .area.space-groups {
-    background-color: #102e4b;
+    border-color: #102e4b;
 }
 
 .area.unit-cell-type {
-    background-color: #0776e1;
+    border-color: #0776e1;
 }
