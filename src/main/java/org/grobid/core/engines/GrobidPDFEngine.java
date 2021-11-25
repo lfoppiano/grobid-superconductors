@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
+import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.Figure;
 import org.grobid.core.data.document.BiblioInfo;
@@ -15,6 +16,7 @@ import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
+import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.layout.LayoutTokenization;
@@ -22,6 +24,7 @@ import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
+import org.grobid.core.utilities.Consolidation;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.SentenceUtilities;
 import org.slf4j.Logger;
@@ -137,12 +140,41 @@ public class GrobidPDFEngine {
 
         }
 
+        // citation processing
+        // consolidation, if selected, is not done individually for each citation but 
+        // in a second stage for all citations which is much faster
+        List<BibDataSet> resCitations = parsers.getCitationParser().
+            processingReferenceSection(doc, parsers.getReferenceSegmenterParser(), 0);
 
+        // consolidate the set
+//        if (config.getConsolidateCitations() != 0 && resCitations != null) {
+//            Consolidation consolidator = Consolidation.getInstance();
+//            if (consolidator.getCntManager() == null)
+//                consolidator.setCntManager(Engine.getCntManager());
+//            try {
+//                Map<Integer,BiblioItem> resConsolidation = consolidator.consolidate(resCitations);
+//                for(int i=0; i<resCitations.size(); i++) {
+//                    BiblioItem resCitation = resCitations.get(i).getResBib();
+//                    BiblioItem bibo = resConsolidation.get(i);
+//                    if (bibo != null) {
+//                        if (config.getConsolidateCitations() == 1)
+//                            BiblioItem.correct(resCitation, bibo);
+//                        else if (config.getConsolidateCitations() == 2)
+//                            BiblioItem.injectIdentifiers(resCitation, bibo);
+//                    }
+//                }
+//            } catch(Exception e) {
+//                throw new GrobidException(
+//                    "An exception occured while running consolidation on bibliographical references.", e);
+//            }
+//        }
+
+        doc.setBibDataSets(resCitations);
         // we can process all the body, in the future figure and table could be the
         // object of more refined processing
-        headerDocumentParts = doc.getDocumentPart(SegmentationLabels.BODY);
-        if (headerDocumentParts != null) {
-            Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, headerDocumentParts);
+        SortedSet<DocumentPiece> bodyDocumentParts = doc.getDocumentPart(SegmentationLabels.BODY);
+        if (bodyDocumentParts != null) {
+            Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, bodyDocumentParts);
 
             String fulltextTaggedRawResult = null;
             if (featSeg != null) {
@@ -151,6 +183,7 @@ public class GrobidPDFEngine {
 
                 if (StringUtils.isNotEmpty(featureText)) {
                     fulltextTaggedRawResult = parsers.getFullTextParser().label(featureText);
+//                    postProcessCallout??
                 }
 
                 TaggingTokenClusteror clusteror = new TaggingTokenClusteror(GrobidModels.FULLTEXT, fulltextTaggedRawResult,
@@ -274,10 +307,10 @@ public class GrobidPDFEngine {
             // acknowledgement?
 
             // we can process annexes
-            headerDocumentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
-            if (headerDocumentParts != null) {
+            SortedSet<DocumentPiece> annexDocumentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
+            if (annexDocumentParts != null) {
 
-                List<LayoutToken> tokens = Document.getTokenizationParts(headerDocumentParts, doc.getTokenizations());
+                List<LayoutToken> tokens = Document.getTokenizationParts(annexDocumentParts, doc.getTokenizations());
                 Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShort(tokens, doc);
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
