@@ -82,29 +82,44 @@ models:
       nbMaxIterations: 2000
 
   - name: "quantities"
+#    engine: "delft"
     engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-  
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
   - name: "units"
+#    engine: "delft"
     engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-        
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
   - name: "values"
+#    engine: "delft"
     engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
 server:
   type: custom
   idleTimeout: 120 seconds
