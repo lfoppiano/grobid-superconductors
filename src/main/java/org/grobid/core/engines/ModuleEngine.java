@@ -580,9 +580,9 @@ public class ModuleEngine {
                     if (current.getType().equals(previous.getType())) {
                         // Type is the same, I take the largest one
                         if (StringUtils.length(previous.getText()) > StringUtils.length(current.getText())) {
-                            toBeRemoved.add(previous);
-                        } else if (StringUtils.length(previous.getText()) < StringUtils.length(current.getText())) {
                             toBeRemoved.add(current);
+                        } else if (StringUtils.length(previous.getText()) < StringUtils.length(current.getText())) {
+                            toBeRemoved.add(previous);
                         } else {
                             if (current.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(current.getBoundingBoxes()) && isNotEmpty(previous.getBoundingBoxes())) {

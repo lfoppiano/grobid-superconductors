@@ -25,6 +25,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.InputStream;
+import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -167,5 +168,64 @@ public class ModuleEngineTest {
         String s = ModuleEngine.getFormattedString(layoutTokens);
 
         assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
+    }
+    
+    @Test
+    public void testPruneOverlapping_entitiesPartiallyOverlapping_shouldTakeLargerMatchFromSuperconductors() {
+        
+        List<Span> list = new ArrayList<>();
+        
+        list.add(new Span("4:6 K", "<tcValue>", "superconductors", 42, 47, 22, 28));
+        list.add(new Span("6 K", "<tcValue>", "quantities", 44, 47, 24, 28));
+
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+        
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+    }
+
+    @Test
+    public void testPruneOverlapping_entitiesPartiallyOverlapping_shouldTakeLargerMatchFromQuantities() {
+
+        List<Span> list = new ArrayList<>();
+
+        list.add(new Span("4:6 K", "<tcValue>", "quantities", 42, 47, 22, 28));
+        list.add(new Span("6 K", "<tcValue>", "superconductors", 44, 47, 24, 28));
+
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+    }
+
+    @Test
+    public void testPruneOverlapping_entitiesOverlappingCompletely_shouldTakeFromSuperconductors() {
+
+        List<Span> list = new ArrayList<>();
+
+        list.add(new Span("4:6 K", "<tcValue>", "quantities", 42, 47, 22, 28));
+        list.add(new Span("4:6 K", "<tcValue>", "superconductors", 42, 47, 22, 28));
+
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+        assertThat(output.get(0).getSource(), is("superconductors"));
+    }
+
+    //TODO: verify this assumption
+    @Test
+    public void testPruneOverlapping_entitiesOverlappingCompletely_differentType_shouldTakeShorterMatch() {
+
+        List<Span> list = new ArrayList<>();
+
+        list.add(new Span("44:6 K", "<material>", "superconductors", 41, 47, 22, 28));
+        list.add(new Span("4:6 K", "<tcValue>", "quantities", 42, 47, 22, 28));
+
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+        assertThat(output.get(0).getSource(), is("quantities"));
     }
 }
