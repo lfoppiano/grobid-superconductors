@@ -445,7 +445,7 @@ public class MaterialTest {
         List<SuperconEntry> superconEntries = Material.processAttributes(span, entry);
 
         assertThat(superconEntries, hasSize(1));
-        assertThat(superconEntries.get(0).getClassification(), is("Oxides, Cuprates"));
+        assertThat(superconEntries.get(0).getMaterialClass(), is("Oxides, Cuprates"));
         assertThat(superconEntries.get(0).getFormula(), is("HgBa 2 Ca 2 Cu 3 O 9"));
     }
 
@@ -465,10 +465,10 @@ public class MaterialTest {
         List<SuperconEntry> superconEntries = Material.processAttributes(span, entry);
 
         assertThat(superconEntries, hasSize(2));
-        assertThat(superconEntries.get(0).getClassification(), is("Oxides, Cuprates"));
+        assertThat(superconEntries.get(0).getMaterialClass(), is("Oxides, Cuprates"));
         assertThat(superconEntries.get(0).getFormula(), is("HgBa 2 Ca 2 Cu 3 O 9"));
 
-        assertThat(superconEntries.get(1).getClassification(), is("Iron Based"));
+        assertThat(superconEntries.get(1).getMaterialClass(), is("Iron Based"));
         assertThat(superconEntries.get(1).getFormula(), is("La 1 Fe 2"));
     }
 }

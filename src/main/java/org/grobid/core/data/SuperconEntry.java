@@ -11,21 +11,35 @@ import java.util.Objects;
  **/
 public class SuperconEntry implements Cloneable {
 
-    //"Raw material","Name","Formula","Doping","Shape","Class","Fabrication",
-    // "Substrate","Critical temperature","Tc measurement method", "Applied pressure","Material-tc link type",
+    //"id", "Raw material","rawMaterialId", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication",
+    // "Substrate","variables", "unitCellType", "unitCellTypeId", "spaceGroup", "spaceGroupId", "crystalStructure", "crystalStructureId", 
+    // "Critical temperature", "criticalTemperatureId", "criticalTemperatureMeasurementMethod", "criticalTemperatureMeasurementMethodId", 
+    // "Applied pressure", "Applied pressure id" "Material-tc link type",
     // "Section", "Subsection","Sentence", "type", "path","filename"
 
+    private String id; 
     private String rawMaterial;
+    private String materialId; 
     private String name;
     private String formula;
     private String doping;
     private String shape;
-    private String classification;
+    private String materialClass;
     private String fabrication;
     private String substrate;
+    private String variables;
+    private String unitCellType; 
+    private String unitCellTypeId; 
+    private String spaceGroup;
+    private String spaceGroupId;
+    private String crystalStructure;
+    private String crystalStructureId;
     private String criticalTemperature;
-    private String criticalTemperatureMeasurementMethod; 
+    private String criticalTemperatureId; 
+    private String criticalTemperatureMeasurementMethod;
+    private String criticalTemperatureMeasurementMethodId;
     private String appliedPressure;
+    private String appliedPressureId;
     private String linkType;
     private String section;
     private String subsection;
@@ -35,7 +49,9 @@ public class SuperconEntry implements Cloneable {
     private String hash;
     private String type;
     private Date timestamp;
-    private String variables;
+
+    public SuperconEntry() {
+    }
 
     public String getRawMaterial() {
         return rawMaterial;
@@ -77,12 +93,12 @@ public class SuperconEntry implements Cloneable {
         this.shape = shape;
     }
 
-    public String getClassification() {
-        return classification;
+    public String getMaterialClass() {
+        return materialClass;
     }
 
-    public void setClassification(String classification) {
-        this.classification = classification;
+    public void setMaterialClass(String materialClass) {
+        this.materialClass = materialClass;
     }
 
     public String getFabrication() {
@@ -187,12 +203,12 @@ public class SuperconEntry implements Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SuperconEntry that = (SuperconEntry) o;
-        return Objects.equals(name, that.name) && Objects.equals(variables, that.variables)&& Objects.equals(formula, that.formula) && Objects.equals(doping, that.doping) && Objects.equals(shape, that.shape) && Objects.equals(classification, that.classification) && Objects.equals(fabrication, that.fabrication) && Objects.equals(substrate, that.substrate) && Objects.equals(criticalTemperature, that.criticalTemperature) && Objects.equals(appliedPressure, that.appliedPressure) && Objects.equals(linkType, that.linkType) && Objects.equals(section, that.section) && Objects.equals(subsection, that.subsection) && Objects.equals(sentence, that.sentence) && Objects.equals(hash, that.hash) && Objects.equals(timestamp, that.timestamp);
+        return Objects.equals(name, that.name) && Objects.equals(variables, that.variables)&& Objects.equals(formula, that.formula) && Objects.equals(doping, that.doping) && Objects.equals(shape, that.shape) && Objects.equals(materialClass, that.materialClass) && Objects.equals(fabrication, that.fabrication) && Objects.equals(substrate, that.substrate) && Objects.equals(criticalTemperature, that.criticalTemperature) && Objects.equals(appliedPressure, that.appliedPressure) && Objects.equals(linkType, that.linkType) && Objects.equals(section, that.section) && Objects.equals(subsection, that.subsection) && Objects.equals(sentence, that.sentence) && Objects.equals(hash, that.hash) && Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, formula, doping, variables, shape, classification, fabrication, substrate, criticalTemperature, appliedPressure, linkType, section, subsection, sentence, hash, timestamp);
+        return Objects.hash(name, formula, doping, variables, shape, materialClass, fabrication, substrate, criticalTemperature, appliedPressure, linkType, section, subsection, sentence, hash, timestamp);
     }
 
     @Override
@@ -204,18 +220,26 @@ public class SuperconEntry implements Cloneable {
         List<String> outList = new ArrayList<>();
 
         outList.add(getRawMaterial());
+        outList.add(getMaterialId());
         outList.add(getName());
         outList.add(getFormula());
-        outList.add(getVariables());
         outList.add(getDoping());
         outList.add(getShape());
-        outList.add(getClassification());
+        outList.add(getMaterialClass());
         outList.add(getFabrication());
         outList.add(getSubstrate());
         outList.add(getVariables());
+        outList.add(getUnitCellType());
+        outList.add(getUnitCellTypeId());
+        outList.add(getSpaceGroup());
+        outList.add(getSpaceGroupId());
+        outList.add(getCrystalStructure());
+        outList.add(getCrystalStructureId());
         outList.add(getCriticalTemperature());
         outList.add(getCriticalTemperatureMeasurementMethod());
+        outList.add(getCriticalTemperatureMeasurementMethodId());
         outList.add(getAppliedPressure());
+        outList.add(getAppliedPressureId());
         outList.add(getLinkType());
         outList.add(getSection());
         outList.add(getSubsection());
@@ -247,5 +271,93 @@ public class SuperconEntry implements Cloneable {
 
     public void setCriticalTemperatureMeasurementMethod(String criticalTemperatureMeasurementMethod) {
         this.criticalTemperatureMeasurementMethod = criticalTemperatureMeasurementMethod;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(String materialId) {
+        this.materialId = materialId;
+    }
+
+    public String getCriticalTemperatureId() {
+        return criticalTemperatureId;
+    }
+
+    public void setCriticalTemperatureId(String criticalTemperatureId) {
+        this.criticalTemperatureId = criticalTemperatureId;
+    }
+
+    public String getCriticalTemperatureMeasurementMethodId() {
+        return criticalTemperatureMeasurementMethodId;
+    }
+
+    public void setCriticalTemperatureMeasurementMethodId(String criticalTemperatureMeasurementMethodId) {
+        this.criticalTemperatureMeasurementMethodId = criticalTemperatureMeasurementMethodId;
+    }
+
+    public String getAppliedPressureId() {
+        return appliedPressureId;
+    }
+
+    public void setAppliedPressureId(String appliedPressureId) {
+        this.appliedPressureId = appliedPressureId;
+    }
+
+    public String getSpaceGroup() {
+        return spaceGroup;
+    }
+
+    public void setSpaceGroup(String spaceGroup) {
+        this.spaceGroup = spaceGroup;
+    }
+
+    public String getCrystalStructure() {
+        return crystalStructure;
+    }
+
+    public void setCrystalStructure(String crystalStructure) {
+        this.crystalStructure = crystalStructure;
+    }
+
+    public String getUnitCellType() {
+        return unitCellType;
+    }
+
+    public void setUnitCellType(String unitCellType) {
+        this.unitCellType = unitCellType;
+    }
+
+    public String getUnitCellTypeId() {
+        return unitCellTypeId;
+    }
+
+    public void setUnitCellTypeId(String unitCellTypeId) {
+        this.unitCellTypeId = unitCellTypeId;
+    }
+
+    public String getSpaceGroupId() {
+        return spaceGroupId;
+    }
+
+    public void setSpaceGroupId(String spaceGroupId) {
+        this.spaceGroupId = spaceGroupId;
+    }
+
+    public String getCrystalStructureId() {
+        return crystalStructureId;
+    }
+
+    public void setCrystalStructureId(String crystalStructureId) {
+        this.crystalStructureId = crystalStructureId;
     }
 }
