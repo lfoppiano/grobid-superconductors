@@ -114,7 +114,7 @@ public class GrobidPDFEngine {
             }
 
             // Other bibliographic data
-            if (isNotBlank(resHeader.getAuthors())) {
+            if (isNotEmpty(resHeader.getFullAuthors())) {
                 String authors = resHeader.getFullAuthors().stream()
                     .map(a -> Stream.of(StringUtils.trimToEmpty(a.getFirstName()), StringUtils.trimToEmpty(a.getMiddleName()), StringUtils.trimToEmpty(a.getLastName()))
                         .filter(StringUtils::isNotBlank)
