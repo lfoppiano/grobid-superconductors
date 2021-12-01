@@ -2,6 +2,7 @@ package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
@@ -16,7 +17,6 @@ import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
-import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.layout.LayoutTokenization;
@@ -24,7 +24,6 @@ import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
-import org.grobid.core.utilities.Consolidation;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.SentenceUtilities;
 import org.slf4j.Logger;
@@ -315,8 +314,8 @@ public class GrobidPDFEngine {
                             AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(markerLayoutTokens),
                             AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(markerLayoutTokens)))
                         .collect(Collectors.toList());
-                    
-                    // We need adjust overlapping markers
+
+                    // We need to adjust overlapping markers
                     if (markersExtremitiesAsIndex.size() > 1) {
                         for (int i = 0; i < markersExtremitiesAsIndex.size() - 1; i++) {
                             if (markersExtremitiesAsIndex.get(i).getRight() > markersExtremitiesAsIndex.get(i + 1).getLeft()) {
@@ -343,14 +342,32 @@ public class GrobidPDFEngine {
                     cumulatedIndexes += sentenceTokens.size();
 
                     //We remove the markers from the layout token list 
-                    final List<LayoutToken> newSentenceTokens = new ArrayList<>();
-                    IntStream.range(0, sentenceTokens.size())
-                        .forEach(index -> {
-                            if (!indexesContainingReferenceMarkers.contains(index)) {
-                                newSentenceTokens.add(sentenceTokens.get(index));
-                            }
-                        });
-                    newDocumentBlock.setLayoutTokens(newSentenceTokens);
+                    if (CollectionUtils.isNotEmpty(indexesContainingReferenceMarkers)) {
+                        final List<LayoutToken> newSentenceTokens = new ArrayList<>();
+                        IntStream.range(0, sentenceTokens.size())
+                            .forEach(index -> {
+                                if (!indexesContainingReferenceMarkers.contains(index)) {
+                                    newSentenceTokens.add(sentenceTokens.get(index));
+                                }
+                            });
+
+                        // Correcting offsets after having removed certain tokens
+                        IntStream
+                            .range(1, newSentenceTokens.size())
+                            .forEach(i -> {
+                                int expectedFollowingOffset = newSentenceTokens.get(i - 1).getOffset()
+                                    + StringUtils.length(newSentenceTokens.get(i - 1).getText());
+
+                                if (expectedFollowingOffset != newSentenceTokens.get(i).getOffset()) {
+                                    LOGGER.trace("Correcting offsets " + i + " from " + newSentenceTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
+                                    newSentenceTokens.get(i).setOffset(expectedFollowingOffset);
+                                }
+                            });
+
+                        newDocumentBlock.setLayoutTokens(newSentenceTokens);
+                    } else {
+                        newDocumentBlock.setLayoutTokens(sentenceTokens);
+                    }
                     newDocumentBlock.setSection(section);
                     newDocumentBlock.setSubSection(subSection);
                     documentBlocksBySentences.add(newDocumentBlock);
@@ -532,7 +549,7 @@ public class GrobidPDFEngine {
     }
 
     /**
-     * transform breaklines in spaces and remove duplicated spaces
+     * transform break lines in spaces and remove duplicated spaces
      */
     protected static List<LayoutToken> normaliseAndCleanup(List<LayoutToken> layoutTokens) {
         if (isEmpty(layoutTokens)) {

@@ -159,7 +159,7 @@ public class SuperconductorsParser extends AbstractParser {
 
             entities.addAll(localEntities);
         } catch (Exception e) {
-            throw new GrobidException("An exception occured while running Grobid.", e);
+            throw new GrobidException("An exception occurred while running Grobid.", e);
         }
 
         return entities;
@@ -227,11 +227,6 @@ public class SuperconductorsParser extends AbstractParser {
             }
             tokenId++;
         }
-//        if (tokens.size() > output.size()) {
-//
-//            for (int counter = output.size(); counter < tokens.size(); counter++) {
-//            }
-//        }
 
         output.stream()
             .forEach(s -> {
