@@ -307,14 +307,17 @@ public class GrobidPDFEngine {
                 String subSection = documentBlock.getSubSection();
 
                 if (isNotEmpty(documentBlock.getMarkers())) {
-                    markersExtremitiesAsIndex = documentBlock
-                        .getMarkers()
-                        .stream()
-                        .map(markerLayoutTokens -> AdditionalLayoutTokensUtil.getExtremitiesAsIndex(documentBlock.getLayoutTokens(),
-                            AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(markerLayoutTokens),
-                            AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(markerLayoutTokens)))
-                        .collect(Collectors.toList());
-
+                    try {
+                        markersExtremitiesAsIndex = documentBlock
+                            .getMarkers()
+                            .stream()
+                            .map(markerLayoutTokens -> AdditionalLayoutTokensUtil.getExtremitiesAsIndex(documentBlock.getLayoutTokens(),
+                                AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(markerLayoutTokens),
+                                AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(markerLayoutTokens)))
+                            .collect(Collectors.toList());
+                    } catch (IllegalArgumentException e) {
+                        markersExtremitiesAsIndex = new ArrayList<>();
+                    }
                     // We need to adjust overlapping markers
                     if (markersExtremitiesAsIndex.size() > 1) {
                         for (int i = 0; i < markersExtremitiesAsIndex.size() - 1; i++) {
