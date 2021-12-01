@@ -74,17 +74,17 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
 
         // Enable QoS filter
-//        final FilterRegistration.Dynamic qosPdf = environment.servlets().addFilter("QOS", QoSFilter.class);
-//        qosPdf.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "*/process/pdf", "*/process/text");
-//        qosPdf.setInitParameter("maxRequests", String.valueOf(configuration.getMaxParallelRequests()));
-//        qosPdf.setInitParameter("suspendMs", String.valueOf(0));
-//        qosPdf.setInitParameter("suspendMs", String.valueOf(0));
+        final FilterRegistration.Dynamic qosPdf = environment.servlets().addFilter("QOS", QoSFilter.class);
+        qosPdf.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), true, "*/process/pdf", "*/process/text");
+        qosPdf.setInitParameter("maxRequests", String.valueOf(configuration.getMaxParallelRequests()));
+        qosPdf.setInitParameter("waitMs", String.valueOf(0));
+        qosPdf.setInitParameter("suspendMs", String.valueOf(0));
 
         // Enable DDOS
-        final FilterRegistration.Dynamic ddos =environment.servlets().addFilter("DDOS", DoSFilter.class);
-        ddos.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "*/process/pdf", "*/process/text");
-        ddos.setInitParameter("delayMs", String.valueOf(-1));
-        ddos.setInitParameter("maxRequestsPerSec", String.valueOf(configuration.getMaxParallelRequests()));
+//        final FilterRegistration.Dynamic ddos =environment.servlets().addFilter("DDOS", DoSFilter.class);
+//        ddos.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), true, "*/process/pdf", "*/process/text");
+//        ddos.setInitParameter("delayMs", String.valueOf(5000));
+//        ddos.setInitParameter("maxRequestsPerSec", String.valueOf(configuration.getMaxParallelRequests()));
 
         environment.jersey().setUrlPattern(RESOURCES + "/*");
         environment.jersey().register(new EmptyOptionalNoContentExceptionMapper());
