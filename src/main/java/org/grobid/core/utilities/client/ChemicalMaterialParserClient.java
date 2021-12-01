@@ -65,18 +65,18 @@ public class ChemicalMaterialParserClient {
 
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
-                
+
                 if (statusCode == HttpURLConnection.HTTP_OK) {
                     outputFormula = fromJsonToChemicalComposition(response.getEntity().getContent());
                 } else {
-                    LOGGER.error("Not OK answer. Status code: " + statusCode);
+                    LOGGER.debug("Not OK answer. Input: " + name + ", status code: " + statusCode);
                 }
             }
 
         } catch (UnknownHostException e) {
-            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
+            LOGGER.warn("The service is unreachable. Input: " + name + ". Ignoring it. ", e);
         } catch (IOException e) {
-            LOGGER.error("Something generally bad happened. ", e);
+            LOGGER.error("Something generally bad happened. Input: " + name + ".", e);
         }
 
         return outputFormula;
@@ -98,14 +98,14 @@ public class ChemicalMaterialParserClient {
 
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                    LOGGER.error("Not OK answer. Status code: " + response.getStatusLine().getStatusCode());
+                    LOGGER.debug("Not OK answer. Input: " + formula + ". Status code: " + response.getStatusLine().getStatusCode());
                 } else {
                     outputComposition = fromJsonToChemicalComposition(response.getEntity().getContent());
                 }
             }
 
         } catch (UnknownHostException e) {
-            LOGGER.warn("The service is unreachable. Ignoring it. ", e);
+            LOGGER.warn("The service is unreachable. Input: " + formula + ".  Ignoring it. ", e);
         } catch (IOException e) {
             LOGGER.error("Something generally bad happened. ", e);
         }
