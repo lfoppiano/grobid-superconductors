@@ -314,6 +314,7 @@ public class GrobidPDFEngine {
                             .map(markerLayoutTokens -> AdditionalLayoutTokensUtil.getExtremitiesAsIndex(documentBlock.getLayoutTokens(),
                                 AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(markerLayoutTokens),
                                 AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(markerLayoutTokens)))
+                            .filter(marker -> !(marker.getLeft() == 0 && marker.getRight() == documentBlock.getLayoutTokens().size()))
                             .collect(Collectors.toList());
                     } catch (IllegalArgumentException e) {
                         markersExtremitiesAsIndex = new ArrayList<>();
