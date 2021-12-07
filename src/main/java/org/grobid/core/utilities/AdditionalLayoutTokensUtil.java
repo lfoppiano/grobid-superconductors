@@ -107,15 +107,49 @@ public class AdditionalLayoutTokensUtil {
         return new ImmutablePair<>(start, end);
     }
 
-    public static List<Pair<Integer, Integer>> fromOffsetsToIndexesOfTokensWithoutSpaces(List<OffsetPosition> offsets, List<String> tokensWithoutSpaces) {
-        if (isEmpty(offsets) || offsets.size() == 1) {
-            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size()));
-        }
-
-        int offsetId = 0;
-        OffsetPosition offset = offsets.get(offsetId);
-
-        List<Pair<Integer, Integer>> resultIndexes = new ArrayList<>();
+    
+//    @Deprecated
+//    public static List<Pair<Integer, Integer>> fromOffsetsToIndexesOfTokensWithoutSpaces(List<OffsetPosition> offsets, List<String> tokensWithoutSpaces) {
+//        if (isEmpty(offsets) || offsets.size() == 1) {
+//            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size()));
+//        }
+//
+//        int offsetId = 0;
+//        OffsetPosition offset = offsets.get(offsetId);
+//
+//        List<Pair<Integer, Integer>> resultIndexes = new ArrayList<>();
+//
+//        StringBuilder sb = new StringBuilder();
+//        int idxStart = 0;
+//        int idxEnd = 0;
+//        for (int idx = 0; idx < tokensWithoutSpaces.size(); idx++) {
+//            String token = tokensWithoutSpaces.get(idx);
+//
+//            int offsetStart = offset.start;
+//            int offsetEnd = offset.end;
+//
+//            int tokenCumulatedStart = sb.toString().length();
+//            sb.append(token).append(" ");
+//            int tokenCumulatedEnd = sb.toString().length() + 1;
+//
+//            if (tokenCumulatedStart <= offsetStart) {
+//                idxStart = idx;
+//            } else if (tokenCumulatedEnd <= offsetEnd) {
+//                idxEnd = idx;
+//            } else {
+//                if (offsetId == offsets.size() - 1) {
+//                    resultIndexes.add(Pair.of(idxStart, idx + 1));
+//                } else {
+//                    resultIndexes.add(Pair.of(idxStart, idx + 1));
+//                    offsetId++;
+//                    idxStart = idx + 1;
+//                    offset = offsets.get(offsetId);
+//                }
+//            }
+//        }
+//
+//        return resultIndexes;
+//    }
 
         StringBuilder sb = new StringBuilder();
         int idxStart = 0;
