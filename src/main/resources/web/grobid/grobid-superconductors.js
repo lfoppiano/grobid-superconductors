@@ -361,7 +361,9 @@ let grobid = (function ($) {
                     let split = message.responseJSON['description'].split(type);
                     message = split[split.length - 1]
                 } else if (message) {
-                    if (typeof message !== "string" && !message instanceof String) {
+                    if (typeof message === "string" || message instanceof String) {
+                        message = message;
+                    } else {
                         let type = message.type
                         if (type !== undefined && message.description) {
                             let split = message.description.split(type);
@@ -963,7 +965,7 @@ let grobid = (function ($) {
 
                                         // span.text == material
                                         // link.targetText == tcValue
-                                        let snippetAnnotations = new Array(span, link_entity);    
+                                        let snippetAnnotations = new Array(span, link_entity);
                                         let row_id = appendLinkToTable(span, link, addedLinks);
                                         // appendRemoveButton(row_id);
 
