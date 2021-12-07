@@ -319,8 +319,9 @@ public class GrobidPDFEngine {
                     } catch (IllegalArgumentException e) {
                         markersExtremitiesAsIndex = new ArrayList<>();
                     }
-                    // We need to adjust overlapping markers
                     if (markersExtremitiesAsIndex.size() > 1) {
+                        // We need to adjust overlapping markers. If the greater index of i is > lower index of i+1, 
+                        // we reduce the greater index to do not overlap the following 
                         for (int i = 0; i < markersExtremitiesAsIndex.size() - 1; i++) {
                             if (markersExtremitiesAsIndex.get(i).getRight() > markersExtremitiesAsIndex.get(i + 1).getLeft()) {
                                 markersExtremitiesAsIndex.set(i, Pair.of(markersExtremitiesAsIndex.get(i).getLeft(), markersExtremitiesAsIndex.get(i + 1).getLeft()));
@@ -387,7 +388,7 @@ public class GrobidPDFEngine {
         return biblioInfo;
     }
 
-    private static List<Pair<Integer, Integer>> getSentencesOffsetsAsIndexes(DocumentBlock documentBlock, List<OffsetPosition> markersPositionsAsOffsetsInText) {
+    protected static List<Pair<Integer, Integer>> getSentencesOffsetsAsIndexes(DocumentBlock documentBlock, List<OffsetPosition> markersPositionsAsOffsetsInText) {
         List<String> tokensAsStringList = documentBlock.getLayoutTokens().stream().map(LayoutToken::getText).collect(Collectors.toList());
         String text = String.join("", tokensAsStringList);
         List<OffsetPosition> sentencesPositions = SentenceUtilities.getInstance()
@@ -398,8 +399,9 @@ public class GrobidPDFEngine {
         return indexesPairs;
     }
 
-    private static List<OffsetPosition> getMarkersAsOffsets(DocumentBlock documentBlock, List<Pair<Integer, Integer>> markersExtremitiesAsIndex) {
+    protected static List<OffsetPosition> getMarkersAsOffsets(DocumentBlock documentBlock, List<Pair<Integer, Integer>> markersExtremitiesAsIndex) {
         int lastIndex = 0;
+        int lastOffset = 0;
         List<OffsetPosition> markersPositionsAsOffsetsInText = new ArrayList<>();
 
         for (Pair<Integer, Integer> markersExtremities : markersExtremitiesAsIndex) {
@@ -415,8 +417,10 @@ public class GrobidPDFEngine {
                 .map(LayoutToken::getText)
                 .collect(Collectors.joining(""));
 
-            markersPositionsAsOffsetsInText.add(new OffsetPosition(textBefore.length(), textBefore.length() + textAfter.length()));
+            OffsetPosition currentOffset = new OffsetPosition(lastOffset + textBefore.length(), lastOffset + textBefore.length() + textAfter.length());
+            markersPositionsAsOffsetsInText.add(currentOffset);
             lastIndex = markersExtremities.getRight();
+            lastOffset = currentOffset.end;
         }
         return markersPositionsAsOffsetsInText;
     }

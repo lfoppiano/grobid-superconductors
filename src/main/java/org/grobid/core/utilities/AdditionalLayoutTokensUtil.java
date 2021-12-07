@@ -151,37 +151,11 @@ public class AdditionalLayoutTokensUtil {
 //        return resultIndexes;
 //    }
 
-        StringBuilder sb = new StringBuilder();
-        int idxStart = 0;
-        int idxEnd = 0;
-        for (int idx = 0; idx < tokensWithoutSpaces.size(); idx++) {
-            String token = tokensWithoutSpaces.get(idx);
 
-            int offsetStart = offset.start;
-            int offsetEnd = offset.end;
-
-            int tokenCumulatedStart = sb.toString().length();
-            sb.append(token).append(" ");
-            int tokenCumulatedEnd = sb.toString().length() + 1;
-
-            if (tokenCumulatedEnd <= offsetEnd) {
-                idxEnd = idx;
-            } else {
-                if (offsetId == offsets.size() - 1) {
-                    resultIndexes.add(Pair.of(idxStart, idx + 1));
-                } else {
-                    resultIndexes.add(Pair.of(idxStart, idx + 1));
-                    offsetId++;
-                    idxStart = idx + 1;
-                    offset = offsets.get(offsetId);
-                }
-            }
-        }
-
-        return resultIndexes;
-    }
-
-
+    
+    /**
+     * Transforms the offsets as measured from the text as string to index based (tokens). This version assumes the tokens contains also spaces
+     **/
     public static List<Pair<Integer, Integer>> fromOffsetsToIndexesOfTokensWithSpaces(List<OffsetPosition> offsets, List<String> tokensWithSpaces) {
         if (isEmpty(offsets) || offsets.size() == 1) {
             return Arrays.asList(Pair.of(0, tokensWithSpaces.size()));
@@ -205,7 +179,9 @@ public class AdditionalLayoutTokensUtil {
             sb.append(token);
             int tokenCumulatedEnd = sb.toString().length();
 
-            if (tokenCumulatedEnd <= offsetEnd) {
+            if (tokenCumulatedStart <= offsetStart) {
+                idxStart = idx;
+            } else if (tokenCumulatedEnd <= offsetEnd) {
                 idxEnd = idx;
             } else {
                 if (offsetId == offsets.size() - 1) {
@@ -220,9 +196,9 @@ public class AdditionalLayoutTokensUtil {
         }
 
         if (offsetId == offsets.size() - 1) {
-            Pair<Integer, Integer> lastSentence = resultIndexes.get(resultIndexes.size() - 1);
-            if (!(lastSentence.getLeft() == idxStart || lastSentence.getRight() > idxStart)) {
-                resultIndexes.add(Pair.of(idxStart, idxEnd));
+            Pair<Integer, Integer> lastSentenceAlreadyAdded = resultIndexes.get(resultIndexes.size() - 1);
+            if (!(lastSentenceAlreadyAdded.getLeft() == idxStart || lastSentenceAlreadyAdded.getRight() > idxStart)) {
+                resultIndexes.add(Pair.of(idxStart, idxEnd+1));
             }
         }
 

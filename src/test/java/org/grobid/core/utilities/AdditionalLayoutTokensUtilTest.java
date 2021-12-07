@@ -17,8 +17,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
-public class AdditionalLayoutTokensUtilTest{
-    
+public class AdditionalLayoutTokensUtilTest {
+
     @Test
     public void testGetLayoutTokenListStartEndOffset() throws Exception {
         List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken("This is a short sentence, but I need more information. ");
@@ -188,13 +188,17 @@ public class AdditionalLayoutTokensUtilTest{
 //        assertThat(pairs.get(2).getRight(), Is.is(14));
 //    }
 
-    @Test 
+    @Test
     public void testFromOffsetsToIndexes_withSpaces_realCase() throws Exception {
-        String originalText = "We have fabricated thin films of FeTe 1Àx Se x using a scotch-tape method. The superconductivities of the thin films are different from each other although these films were fabricated from the same bulk sample. The result clearly presents the inhomogeneous superconductivity in FeTe 1Àx Se x . The difference might arise from inhomogeneity due to the excess Fe concentration. The resistivity of a thin film with low excess Fe shows good superconductivity with the sharp superconducting-transition width and more isotropic superconductivity. ";
+        String originalText = "We have fabricated thin films of FeTe 1Àx Se x using a scotch-tape method. " +
+            "The superconductivities of the thin films are different from each other although these films were fabricated from the same bulk sample. " +
+            "The result clearly presents the inhomogeneous superconductivity in FeTe 1Àx Se x . " +
+            "The difference might arise from inhomogeneity due to the excess Fe concentration. " +
+            "The resistivity of a thin film with low excess Fe shows good superconductivity with the sharp superconducting-transition width and more isotropic superconductivity. ";
 
         List<String> tokens = new ArrayList<>(DeepAnalyzer.getInstance()
             .tokenize(originalText));
-        
+
         List<OffsetPosition> sentencePositions = new ArrayList<>();
         sentencePositions.add(new OffsetPosition(0, 74));
         sentencePositions.add(new OffsetPosition(75, 210));
@@ -203,18 +207,29 @@ public class AdditionalLayoutTokensUtilTest{
         sentencePositions.add(new OffsetPosition(376, 540));
 
         List<Pair<Integer, Integer>> pairs = AdditionalLayoutTokensUtil.fromOffsetsToIndexesOfTokensWithSpaces(sentencePositions, tokens);
-        
+
         assertThat(pairs, hasSize(5));
+
+        assertThat(String.join("", tokens.subList(pairs.get(0).getLeft(), pairs.get(0).getRight())), is("We have fabricated thin films of FeTe 1Àx Se x using a scotch-tape method."));
+        assertThat(String.join("", tokens.subList(pairs.get(0).getLeft(), pairs.get(0).getRight())), is(originalText.substring(sentencePositions.get(0).start, sentencePositions.get(0).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(1).getLeft(), pairs.get(1).getRight())), is("The superconductivities of the thin films are different from each other although these films were fabricated from the same bulk sample."));
+        assertThat(String.join("", tokens.subList(pairs.get(1).getLeft(), pairs.get(1).getRight())), is(originalText.substring(sentencePositions.get(1).start, sentencePositions.get(1).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(2).getLeft(), pairs.get(2).getRight())), is("The result clearly presents the inhomogeneous superconductivity in FeTe 1Àx Se x ."));
+        assertThat(String.join("", tokens.subList(pairs.get(2).getLeft(), pairs.get(2).getRight())), is(originalText.substring(sentencePositions.get(2).start, sentencePositions.get(2).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(3).getLeft(), pairs.get(3).getRight())), is("The difference might arise from inhomogeneity due to the excess Fe concentration."));
+        assertThat(String.join("", tokens.subList(pairs.get(3).getLeft(), pairs.get(3).getRight())), is(originalText.substring(sentencePositions.get(3).start, sentencePositions.get(3).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(4).getLeft(), pairs.get(4).getRight())), is("The resistivity of a thin film with low excess Fe shows good superconductivity with the sharp superconducting-transition width and more isotropic superconductivity."));
+        assertThat(String.join("", tokens.subList(pairs.get(4).getLeft(), pairs.get(4).getRight())), is(originalText.substring(sentencePositions.get(4).start, sentencePositions.get(4).end)));
     }
-    
-    
+
+
     @Test
     public void testFromOffsetsToIndexes_WithSpaces() throws Exception {
-        String originalText = "This is one sentence. This is another sentence. And third sentence. ";
+        String originalText = "This is one sentence. This is another sentence. And third sentence.  ";
 
         List<String> tokens = new ArrayList<>(DeepAnalyzer.getInstance()
             .tokenize(originalText));
-        
+
         List<OffsetPosition> offsets = Arrays.asList(
             new OffsetPosition(0, 21),
             new OffsetPosition(22, 47),
@@ -224,14 +239,17 @@ public class AdditionalLayoutTokensUtilTest{
         List<Pair<Integer, Integer>> pairs = AdditionalLayoutTokensUtil.fromOffsetsToIndexesOfTokensWithSpaces(offsets, tokens);
 
         assertThat(pairs, hasSize(3));
+        assertThat(String.join("", tokens.subList(pairs.get(0).getLeft(), pairs.get(0).getRight())), is(originalText.substring(offsets.get(0).start, offsets.get(0).end)));
         assertThat(pairs.get(0).getLeft(), Is.is(0));
         assertThat(pairs.get(0).getRight(), Is.is(8));
 
-        assertThat(pairs.get(1).getLeft(), Is.is(8));
+        assertThat(String.join("", tokens.subList(pairs.get(1).getLeft(), pairs.get(1).getRight())), is(originalText.substring(offsets.get(1).start, offsets.get(1).end)));
+        assertThat(pairs.get(1).getLeft(), Is.is(9));
         assertThat(pairs.get(1).getRight(), Is.is(17));
 
-        assertThat(pairs.get(2).getLeft(), Is.is(17));
-        assertThat(pairs.get(2).getRight(), Is.is(24));
+        assertThat(String.join("", tokens.subList(pairs.get(2).getLeft(), pairs.get(2).getRight())), is(originalText.substring(offsets.get(2).start, offsets.get(2).end)));
+        assertThat(pairs.get(2).getLeft(), Is.is(18));
+        assertThat(pairs.get(2).getRight(), Is.is(25));
     }
 
 }
