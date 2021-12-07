@@ -361,10 +361,14 @@ let grobid = (function ($) {
                     let split = message.responseJSON['description'].split(type);
                     message = split[split.length - 1]
                 } else if (message) {
-                    let type = message.type
-                    if (message.description) {
-                        let split = message.description.split(type);
-                        message = split[split.length - 1]
+                    if (typeof message !== "string" && !message instanceof String) {
+                        let type = message.type
+                        if (type !== undefined && message.description) {
+                            let split = message.description.split(type);
+                            message = split[split.length - 1]
+                        } else {
+                            message = message['message']
+                        }
                     }
                 } else {
                     message = "The Text or the PDF document cannot be processed. Please check the server logs. "
