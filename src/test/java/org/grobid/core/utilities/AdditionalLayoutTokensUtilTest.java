@@ -1,6 +1,5 @@
 package org.grobid.core.utilities;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.analyzers.QuantityAnalyzer;
@@ -251,5 +250,49 @@ public class AdditionalLayoutTokensUtilTest {
         assertThat(pairs.get(2).getLeft(), Is.is(18));
         assertThat(pairs.get(2).getRight(), Is.is(25));
     }
+
+
+    @Test
+    public void testFromOffsetsToIndexes_WithSpaces_errorCase() throws Exception {
+        String originalText = "WHPSHUDWXUH ZKHUH WKHUH LV D PD[LPXP LQ WKH RXWRISKDVH $& PDJQHWLF VXVFHSWLELOLW\\ χ 0 E 7KLV LV WKH QDWXUDO ORJDULWKP RI WKH LQYHUVH RI WKH PDJQHWL]DWLRQ UHOD[DWLRQ FDOFXODWHG IURP WKH IUHTXHQF\\ RI WKH $& PDJQHWLF ILHOG )LJXUH &DSWLRQV )LJXUH 3ORW RI WKH SRWHQWLDO HQHUJ\\ YV PDJQHWL]DWLRQ GLUHFWLRQ IRU D VLQJOHPROHFXOH PDJQHW VKRZLQJ WKH HQHUJ\\ EDUULHU VHSDUDWLQJ WKH VSLQXS DQG VSLQGRZQ RULHQWDWLRQV RI WKH PDJQHWLF YHFWRU DORQJ WKH DQLVRWURS\\ D[LV )LJXUH 'LDJUDP RI WKH OLJDQGV XVHG LQ WKLV ZRUN )LJXUH 257(3 UHSUHVHQWDWLRQ RI WKH FDWLRQ RI FRPSOH[ >0Q KPS %U + 2 @%U + 2 )LJXUH 257(3 UHSUHVHQWDWLRQ RI FRPSOH[ >0Q PHKPS &O @ + 2 )LJXUH 9LHZ RI WKH FU\\VWDO SDFNLQJ RI WKH 0Q PROHFXOHV RI FRPSOH[ 7KH GDUN UHG VSKHUHV DUH WKH EURPLGH FRXQWHULRQV DQG WKH OLJKW UHG VSKHUHV DUH WKH VROYDWH ZDWHU PROHFXOHV )LJXUH 9LHZ RI WKH WZR 0Q PROHFXOHV RI FRPSOH[ LQ WKH XQLW FHOO UHODWHG E\\ D JOLGH SODQH 7KH HDV\\ PROHFXODU D[HV RI WKHVH PROHFXOHV DUH UHODWHG E\\ D FDQWLQJ DQJOH RI ° )LJXUH 9LHZ RI WKH FU\\VWDO SDFNLQJ RI FRPSOH[ 7KH UHG VSKHUHV DUH WKH VROYDWH ZDWHU PROHFXOHV ZLWKLQ WKH XQLW FHOO )LJXUH 3ORW RI 0 7 YV WHPSHUDWXUH IRU D PLFURFU\\VWDOOLQH VDPSOH RI FRPSOH[ UHVWUDLQHG LQ HLFRVDQH 7KH VXVFHSWLELOLW\\ χ 0 ZDV PHDVXUHG XQGHU D N* PDJQHWLF ILHOG ZLWK WKH VDPSOH UHVWUDLQHG LQ HLFRVDQH 7KH VROLG OLQH FRUUHVSRQGV WR WKH ILW RI WKH GDWD DV GHVFULEHG LQ WKH WH[W )LJXUH 'LDJUDP VKRZLQJ WKH WZR GRPLQDQW PDJQHWLF H[FKDQJH SDWKZD\\V EHWZHHQ PHWDO FHQWHUV LQ FRPSOH[ )LJXUH 3ORW RI χ 0 7 YV WHPSHUDWXUH IRU D PLFURFU\\VWDOOLQH VDPSOH RI FRPSOH[ UHVWUDLQHG LQ HLFRVDQH 7KH VXVFHSWLELOLW\\ 0 ZDV PHDVXUHG XQGHU D N* PDJQHWLF ILHOG ZLWK WKH VDPSOH UHVWUDLQHG LQ HLFRVDQH 7KH VROLG OLQH FRUUHVSRQGV WR WKH ILW RI WKH GDWD DV GHVFULEHG LQ WKH WH[W )LJXUH 'LDJUDP VKRZLQJ WKH GRPLQDQW PDJQHWLF H[FKDQJH SDWKZD\\V EHWZHHQ PHWDO FHQWHUV FRPSOH[ 3ORW RI WKH UHGXFHG PDJQHWL]DWRQ 01µ % YV WKH UDWLR RI H[WHUQDO ILHOG DQG WKH DEVROXWH WHPSHUDWXUH >N*.@ 'DWD IRU FRPSOH[ WRS DQG FRPSOH[ ERWWRP ZHUH PHDVXUHG DW s q v DQG w N* LQ WKH . UDQJH 7KH VROLG OLQHV FRUUHVSRQG WR WKH ILW VHH WH[W )LJXUH 3ORW RI WKH HQHUJ\\ YV WKH H[WHUQDO ILHOG + IRU WKH ]HURILHOG VSOLW FRPSRQHQWV RI WKH 6 JURXQG VWDWH DVVXPLQJ 'N % . DQG J 7KH HQHUJ\\ OHYHO VSOLWWLQJ LV IRU D PROHFXOH ZLWK LWV SULQFLSOH PDJQHWLF DOLJQHG DORQJ WKH GLUHFWLRQ RI DSSOLHG PDJQHWLF ILHOG )LJXUH +LJKIUHTXHQF\\ (35 VSHFWUD IRU D RULHQWHG PLFURFU\\VWDOOLQH VDPSOH RI FRPSOH[ FROOHFWHG DW *+] DQG WHPSHUDWXUHV RI DQG . 7KH DVWHULFNV WKH ILQH VWUXFWXUH UHVRQDQFHV GXH WR WKH WUDQVLWLRQV EHWZHHQ 0V OHYHOV RI WKH JURXQG VWDWH +LJKIUHTXHQF\\ (35 VSHFWUD IRU D PLFURFU\\VWDOOLQH VDPSOH RI FRPSOH[ FROOHFWHG DW DQG *+] DQG WHPSHUDWXUH RI . +LJKIUHTXHQF\\ (35 VSHFWUD IRU D PLFURFU\\VWDOOLQH VDPSOH RI FRPSOH[ FROOHFWHG DW DQG *+] DQG WHPSHUDWXUH RI . )LJXUH 3ORWV RI UHVRQDQFH ILHOG YV 0 V QXPEHU IRU WKH +)(35 WUDQVLWLRQV EHWZHHQ WKH 0 V DQG 0 V ]HURILHOG FRPSRQHQWV RI WKH 6 JURXQG VWDWH IRU FRPSOH[ +)(35 GDWD ZHUH PHDVXUHG DW ORZHVW OLQH PLGGOH OLQH DQG KLJKHVW OLQH *+] DW . 7KH VROLG OLQHV UHSUHVHQW D ILW RI WKH GDWD DV GHVFULEHG LQ WKH WH[W )LJXUH +)(35 VSHFWUXP DW *+] DW . WRS DQG VLPXODWLRQ RI WKH VSHFWUXP ERWWRP 6LPXODWLRQ UHVXOWV DUH GHVFULEHG IXOO\\ LQ WKH WH[W )LJXUH 6LPXODWLRQ RI WKH +)(35 VSHFWUD DW DQG *+] IUHTXHQFLHV DW . WH[W IRU GHWDLOV )LJXUH 3ORW RI χ DQG χ YV WHPSHUDWXUH RI WKH $& PDJQHWLF VXVFHSWLELOLW\\ DW WKH LQGLFDWHG LQ WKH . UDQJH )LJXUH 3ORWV RI χ 0 7 WRS DQG 0 ERWWRP YV WHPSHUDWXUH IRU D SRO\\FU\\VWDOOLQH VDPSOH RI FRPSOH[ LQ D * $& ILHOG RVFLOODWLQJ DW WKH LQGLFDWHG IUHTXHQFLHV ZKHUH χ 0 DQG χ 0 DUH WKH LQSKDVH DQG RXWRISKDVH FRPSRQHQWV UHVSHFWLYHO\\ RI WKH $& PDJQHWLF VXVFHSWLELOLW\\ )LJXUH 3ORW RI WKH LQSKDVH WRS DQG RXWRISKDVH ERWWRP FRPSRQHQWV RI WKH $& PDJQHWLF IRU FRPSOH[ LQ WKH . UDQJH LQ D * $& ILHOG RVFLOODWLQJ DW +] )LJXUH 3ORW RI QDWXUDO ORJRULWKP RI WKH PDJQHWL]DWLRQ UHOD[DWLRQ UDWH >OQτ@ YV WKH LQYHUVH RI WKH DEVROXWH WHPSHUDWXUH >. @ 7KH VROLG OLQH UHSUHVHQWV D OHDVWVTXDUHV ILW RI WKH GDWD WR WKH HTXDWLRQ RI WKH FU\\VWDO SDFNLQJ RI WKH 0Q PROHFXOHV RI FRPSOH[ 7KH GDUN UHG DUH WKH EURPLGH FRXQWHULRQV DQG WKH OLJKW UHG VSKHUHV DUH WKH VROYDWH ZDWHU PROHFXOHV )LJXUH 9LHZ RI WKH WZR 0Q PROHFXOHV RI FRPSOH[ LQ WKH XQLW FHOO UHODWHG E\\ D JOLGH SODQH HDV\\ PROHFXODU D[HV RI WKHVH PROHFXOHV DUH UHODWHG E\\ D FDQWLQJ DQJOH RI ° )LJXUH 9LHZ RI WKH FU\\VWDO SDFNLQJ RI FRPSOH[ 7KH UHG VSKHUHV DUH WKH VROYDWH ZDWHU PROHFXOHV ZLWKLQ WKH XQLW FHOO $WRPLF FRRUGLQDWHV [\\] IRU FRPSOH[ DW \" . 0";
+
+        List<String> tokens = new ArrayList<>(DeepAnalyzer.getInstance()
+            .tokenize(originalText));
+
+        List<OffsetPosition> offsets = Arrays.asList(
+            new OffsetPosition(0, 1934),
+            new OffsetPosition(1935, 2015),
+            new OffsetPosition(2016, 2191),
+            new OffsetPosition(2192, 2450),
+            new OffsetPosition(2451, 2664),
+            new OffsetPosition(2665, 2773),
+            new OffsetPosition(2774, 3002),
+            new OffsetPosition(3003, 3105),
+            new OffsetPosition(3106, 3265),
+            new OffsetPosition(3266, 3380),
+            new OffsetPosition(3381, 3748),
+            new OffsetPosition(3749, 4459),
+            new OffsetPosition(4460, 4461)
+        );
+
+        List<Pair<Integer, Integer>> pairs = AdditionalLayoutTokensUtil.fromOffsetsToIndexesOfTokensWithSpaces(offsets, tokens);
+
+        assertThat(pairs, hasSize(offsets.size()));
+        assertThat(String.join("", tokens.subList(pairs.get(0).getLeft(), pairs.get(0).getRight())), is(originalText.substring(offsets.get(0).start, offsets.get(0).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(1).getLeft(), pairs.get(1).getRight())), is(originalText.substring(offsets.get(1).start, offsets.get(1).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(2).getLeft(), pairs.get(2).getRight())), is(originalText.substring(offsets.get(2).start, offsets.get(2).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(3).getLeft(), pairs.get(3).getRight())), is(originalText.substring(offsets.get(3).start, offsets.get(3).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(4).getLeft(), pairs.get(4).getRight())), is(originalText.substring(offsets.get(4).start, offsets.get(4).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(5).getLeft(), pairs.get(5).getRight())), is(originalText.substring(offsets.get(5).start, offsets.get(5).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(6).getLeft(), pairs.get(6).getRight())), is(originalText.substring(offsets.get(6).start, offsets.get(6).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(7).getLeft(), pairs.get(7).getRight())), is(originalText.substring(offsets.get(7).start, offsets.get(7).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(8).getLeft(), pairs.get(8).getRight())), is(originalText.substring(offsets.get(8).start, offsets.get(8).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(9).getLeft(), pairs.get(9).getRight())), is(originalText.substring(offsets.get(9).start, offsets.get(9).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(10).getLeft(), pairs.get(10).getRight())), is(originalText.substring(offsets.get(10).start, offsets.get(10).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(11).getLeft(), pairs.get(11).getRight())), is(originalText.substring(offsets.get(11).start, offsets.get(11).end)));
+        assertThat(String.join("", tokens.subList(pairs.get(12).getLeft(), pairs.get(12).getRight())), is(originalText.substring(offsets.get(12).start, offsets.get(12).end)));
+
+    }
+
 
 }

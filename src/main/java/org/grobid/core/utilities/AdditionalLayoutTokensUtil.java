@@ -152,7 +152,6 @@ public class AdditionalLayoutTokensUtil {
 //    }
 
 
-    
     /**
      * Transforms the offsets as measured from the text as string to index based (tokens). This version assumes the tokens contains also spaces
      **/
@@ -179,7 +178,11 @@ public class AdditionalLayoutTokensUtil {
             sb.append(token);
             int tokenCumulatedEnd = sb.toString().length();
 
-            if (tokenCumulatedStart <= offsetStart) {
+            // If I update the start, and I'm at the end of the token list, I must update the end too or else we will be out of bound 
+            if (tokenCumulatedStart <= offsetStart && idx == tokensWithSpaces.size() - 1) {
+                idxStart = idx;
+                idxEnd = idx;
+            } else if (tokenCumulatedStart <= offsetStart) {
                 idxStart = idx;
             } else if (tokenCumulatedEnd <= offsetEnd) {
                 idxEnd = idx;
@@ -195,10 +198,12 @@ public class AdditionalLayoutTokensUtil {
             }
         }
 
-        if (offsetId == offsets.size() - 1) {
+        if (offsetId == offsets.size() - 1 && resultIndexes.size() < offsets.size()) {
             Pair<Integer, Integer> lastSentenceAlreadyAdded = resultIndexes.get(resultIndexes.size() - 1);
             if (!(lastSentenceAlreadyAdded.getLeft() == idxStart || lastSentenceAlreadyAdded.getRight() > idxStart)) {
-                resultIndexes.add(Pair.of(idxStart, idxEnd+1));
+                if (idxStart <= idxEnd) {
+                    resultIndexes.add(Pair.of(idxStart, idxEnd + 1));
+                }
             }
         }
 
