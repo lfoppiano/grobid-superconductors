@@ -38,6 +38,11 @@ public class DocumentBlock {
         this.layoutTokens = new ArrayList<>(tokens);
     }
 
+//    public DocumentBlock(List<LayoutToken> tokens, String section, String subSection, List<List<LayoutToken>> markers) {
+//        this(tokens, section, subSection);
+//        this.markers = new ArrayList<>(markers);
+//    }
+
     public DocumentBlock(DocumentBlock documentBlock) {
         this(documentBlock.getLayoutTokens(), documentBlock.getSection(), documentBlock.getSubSection(), documentBlock.getSpans(), documentBlock.getMarkers());
     }

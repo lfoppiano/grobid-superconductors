@@ -9,9 +9,9 @@ import org.grobid.core.data.external.chemDataExtractor.ChemicalSpan;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
-import org.grobid.core.utilities.client.ChemDataExtractorClient;
 import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.client.ChemDataExtractorClient;
 import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -185,15 +185,34 @@ public class SuperconductorsParserTest {
     }
 
     @Test
-    public void testExtractSpans() throws Exception {
+    public void testExtractSpans_realExample() throws Exception {
+        String text = "As a final assumption, a one-head description of the individual motor enzymes with M = 2 chemical states is adopted . Exploiting the above mentioned fact that P1 (x, t) + P2 (x, t) is a constant and normalized on [0, L] according to , one can eliminate P2 (x, t) from the master equation , yielding in the steady state (su- perscript st) the ordinary first order equation ẋ supplemented by the periodic boundary condition 22 P st 1 (x + L) = P st 1 (x).";
+        List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+        layoutTokens.stream().forEach(l -> l.setOffset(l.getOffset() + 470134));
+        List<ChemicalSpan> mentions = Arrays.asList(
+            new ChemicalSpan(159, 161, "<space-groups>", "P1")
+        );
+
+        List<Span> spans = target.extractSpans(layoutTokens, mentions);
+
+        assertThat(spans, hasSize(1));
+        assertThat(spans.get(0).getText(), is("P1"));
+        assertThat(spans.get(0).getTokenStart(), is(57));
+        assertThat(spans.get(0).getTokenEnd(), is(59));
+        assertThat(spans.get(0).getOffsetStart(), is(159));
+        assertThat(spans.get(0).getOffsetEnd(), is(161));
+    }
+
+    @Test
+    public void testExtractSpans_realExample2() throws Exception {
         String text = "WB 4.2 crystallizes in the space group P6 3 /mmc (No. 194) and has a crystal structure that is derived from the simple diborides";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         List<ChemicalSpan> mentions = Arrays.asList(
-            new ChemicalSpan(39, 48, "space-group","P6 3 /mmc") 
+            new ChemicalSpan(39, 48, "space-group", "P6 3 /mmc")
         );
-            
+
         List<Span> spans = target.extractSpans(layoutTokens, mentions);
-        
+
         assertThat(spans, hasSize(1));
         assertThat(spans.get(0).getText(), is("P6 3 /mmc"));
         assertThat(spans.get(0).getTokenStart(), is(16));

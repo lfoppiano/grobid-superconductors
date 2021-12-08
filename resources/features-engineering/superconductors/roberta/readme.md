@@ -13,21 +13,25 @@ In order to process the data with RoBERTa, we preprocessed the data to have an e
  - concatenate each document adding an empty line between each other
  - split in sentences (with [this python script](sentence-splitter.py))
  - split 80/10/10 for training/test/validation:
-    - total number of lines: `grep -c "^$" SuperMat+SciCorpus.RoBERTa.sentences.v2.txt`: `795437`
-    - `795437*0.8 = 636349` documents for training
-    - `795437-636349 = 159088`
-    - `159088/2 = 79544` documents for test and validation
-    
+    - total number of lines: `grep -c "^$" SuperMat+SciCorpus.RoBERTa.sentences.v2.txt`: `795437`    
     - split back ``nohup awk -v RS= '{
       f=("split-" NR ".txt") 
       print > f 
       close(f)
       }' ../SuperMat+SciCorpus.RoBERTa.sentences.v2.txt  &``
-      the split resulted in 795345
-    - divide
+      the split resulted in 795345 files
     - cleanup splits from empty lines ``sed -i '/^[[:space:]]*$/d' ${in};``
-    - aggregated back with one empty line in between each file: ``sed -s -e $'$a\\\n' ./*.txt > concat.out``
-    
+    - find empty files `find ./split/ -type f -empty -name '*.txt' > empty_files.txt`
+    - divide using file list (``find -name *.txt > file-list.txt``)
+      - `795345*0.8 = 636276` documents for training (`head -n 636276 split-file-list.txt > split-file-train.txt `)
+      - `795345-636276 = 159069` (`tail -n 159069 split-file-list.txt > split-file-list-test-validation.txt`)
+      - `159069/2 = 79534` documents for test (`head -n 79534 split-file-test-validation.txt > split-file-test.txt`)
+      - `159069-79534 = 79535` document for validation (`tail -n 79535 split-file-test-validation.txt > split-file-valid.txt`)
+    - aggregated back with one empty line in between each file: 
+      - easy one: ``sed -s -e $'$a\\\n' ./*.txt > concat.out`` it works with a limited amount of files 
+      - alternative for large amount of files: ``find . -type f -name '*.txt' -exec sed -s -e $'$a\\\n' >> ../../SuperMat+SciCorpus.RoBERTa.sentences.v2.train.txt {} +``. [Ref](https://unix.stackexchange.com/questions/509749/how-to-deal-with-sed-if-argument-list-too-long). 
+
+
 ### Pre-training
 
 ## Details parameters

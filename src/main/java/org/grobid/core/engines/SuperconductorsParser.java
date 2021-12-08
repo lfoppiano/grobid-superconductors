@@ -159,7 +159,7 @@ public class SuperconductorsParser extends AbstractParser {
 
             entities.addAll(localEntities);
         } catch (Exception e) {
-            throw new GrobidException("An exception occured while running Grobid.", e);
+            throw new GrobidException("An exception occurred while running Grobid.", e);
         }
 
         return entities;
@@ -227,11 +227,6 @@ public class SuperconductorsParser extends AbstractParser {
             }
             tokenId++;
         }
-//        if (tokens.size() > output.size()) {
-//
-//            for (int counter = output.size(); counter < tokens.size(); counter++) {
-//            }
-//        }
 
         output.stream()
             .forEach(s -> {
@@ -358,7 +353,10 @@ public class SuperconductorsParser extends AbstractParser {
                 LOGGER.debug("Structures extraction (crystal structure and space groups) disabled. ");
             } else {
                 List<Span> structureSpan = extractSpans(normalisedTokens.get(i), structures.get(i));
-                structureSpan.stream().forEach(s -> s.setLinkable(true));
+                structureSpan.stream().forEach(s -> {
+                    s.setBoundingBoxes(BoundingBoxCalculator.calculate(s.getLayoutTokens()));
+                    s.setLinkable(true);
+                });
                 structuredCumulatedSpans.add(structureSpan);
             }
 
@@ -524,7 +522,7 @@ public class SuperconductorsParser extends AbstractParser {
                 superconductor.setTokenStart(tokenStartPos);
                 superconductor.setTokenEnd(tokenEndPos);
                 superconductor.setFormattedText(getFormattedString(theTokens));
-                
+
                 if (materialParser != null && materialParser.getChemicalMaterialParserClient() != null) {
                     ChemicalComposition chemicalComposition = materialParser.getChemicalMaterialParserClient().convertNameToFormula(clusterContent);
                     if (!chemicalComposition.isEmpty()) {

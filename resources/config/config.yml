@@ -18,17 +18,16 @@ pythonVirtualEnv:  ${PYTHON_VIRTUALENV:- /Users/lfoppiano/opt/anaconda3/envs/del
 pythonRedirectOutput: true
 
 # The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
-maxParallelRequests: 8
+maxParallelRequests: 0
 
 consolidation:
   # define the bibliographical data consolidation service to be used: 
     # - "crossref" for CrossRef REST API or 
     # - "glutton" for https://github.com/kermitt2/biblio-glutton, and 
     # - empty value will disable the data consolidation
-#  service: "glutton"
-  service: 
+  service: "glutton"
   glutton:
-    url: "http://falcon.nims.go.jp/glutton"
+    url: "http://falcon.nims.go.jp/glutton/lookup"
 
 models:
   - name: "superconductors"
@@ -82,29 +81,44 @@ models:
       nbMaxIterations: 2000
 
   - name: "quantities"
+#    engine: "delft"
     engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-  
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
   - name: "units"
+#    engine: "delft"
     engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-        
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
   - name: "values"
+#    engine: "delft"
     engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
-
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
 server:
   type: custom
   idleTimeout: 120 seconds

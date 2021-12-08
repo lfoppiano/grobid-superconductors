@@ -107,47 +107,54 @@ public class AdditionalLayoutTokensUtil {
         return new ImmutablePair<>(start, end);
     }
 
-    public static List<Pair<Integer, Integer>> fromOffsetsToIndexesOfTokensWithoutSpaces(List<OffsetPosition> offsets, List<String> tokensWithoutSpaces) {
-        if (isEmpty(offsets) || offsets.size() == 1) {
-            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size()));
-        }
+    
+//    @Deprecated
+//    public static List<Pair<Integer, Integer>> fromOffsetsToIndexesOfTokensWithoutSpaces(List<OffsetPosition> offsets, List<String> tokensWithoutSpaces) {
+//        if (isEmpty(offsets) || offsets.size() == 1) {
+//            return Arrays.asList(Pair.of(0, tokensWithoutSpaces.size()));
+//        }
+//
+//        int offsetId = 0;
+//        OffsetPosition offset = offsets.get(offsetId);
+//
+//        List<Pair<Integer, Integer>> resultIndexes = new ArrayList<>();
+//
+//        StringBuilder sb = new StringBuilder();
+//        int idxStart = 0;
+//        int idxEnd = 0;
+//        for (int idx = 0; idx < tokensWithoutSpaces.size(); idx++) {
+//            String token = tokensWithoutSpaces.get(idx);
+//
+//            int offsetStart = offset.start;
+//            int offsetEnd = offset.end;
+//
+//            int tokenCumulatedStart = sb.toString().length();
+//            sb.append(token).append(" ");
+//            int tokenCumulatedEnd = sb.toString().length() + 1;
+//
+//            if (tokenCumulatedStart <= offsetStart) {
+//                idxStart = idx;
+//            } else if (tokenCumulatedEnd <= offsetEnd) {
+//                idxEnd = idx;
+//            } else {
+//                if (offsetId == offsets.size() - 1) {
+//                    resultIndexes.add(Pair.of(idxStart, idx + 1));
+//                } else {
+//                    resultIndexes.add(Pair.of(idxStart, idx + 1));
+//                    offsetId++;
+//                    idxStart = idx + 1;
+//                    offset = offsets.get(offsetId);
+//                }
+//            }
+//        }
+//
+//        return resultIndexes;
+//    }
 
-        int offsetId = 0;
-        OffsetPosition offset = offsets.get(offsetId);
 
-        List<Pair<Integer, Integer>> resultIndexes = new ArrayList<>();
-
-        StringBuilder sb = new StringBuilder();
-        int idxStart = 0;
-        int idxEnd = 0;
-        for (int idx = 0; idx < tokensWithoutSpaces.size(); idx++) {
-            String token = tokensWithoutSpaces.get(idx);
-
-            int offsetStart = offset.start;
-            int offsetEnd = offset.end;
-
-            int tokenCumulatedStart = sb.toString().length();
-            sb.append(token).append(" ");
-            int tokenCumulatedEnd = sb.toString().length() + 1;
-
-            if (tokenCumulatedEnd <= offsetEnd) {
-                idxEnd = idx;
-            } else {
-                if (offsetId == offsets.size() - 1) {
-                    resultIndexes.add(Pair.of(idxStart, idx + 1));
-                } else {
-                    resultIndexes.add(Pair.of(idxStart, idx + 1));
-                    offsetId++;
-                    idxStart = idx + 1;
-                    offset = offsets.get(offsetId);
-                }
-            }
-        }
-
-        return resultIndexes;
-    }
-
-
+    /**
+     * Transforms the offsets as measured from the text as string to index based (tokens). This version assumes the tokens contains also spaces
+     **/
     public static List<Pair<Integer, Integer>> fromOffsetsToIndexesOfTokensWithSpaces(List<OffsetPosition> offsets, List<String> tokensWithSpaces) {
         if (isEmpty(offsets) || offsets.size() == 1) {
             return Arrays.asList(Pair.of(0, tokensWithSpaces.size()));
@@ -171,7 +178,13 @@ public class AdditionalLayoutTokensUtil {
             sb.append(token);
             int tokenCumulatedEnd = sb.toString().length();
 
-            if (tokenCumulatedEnd <= offsetEnd) {
+            // If I update the start, and I'm at the end of the token list, I must update the end too or else we will be out of bound 
+            if (tokenCumulatedStart <= offsetStart && idx == tokensWithSpaces.size() - 1) {
+                idxStart = idx;
+                idxEnd = idx;
+            } else if (tokenCumulatedStart <= offsetStart) {
+                idxStart = idx;
+            } else if (tokenCumulatedEnd <= offsetEnd) {
                 idxEnd = idx;
             } else {
                 if (offsetId == offsets.size() - 1) {
@@ -185,10 +198,12 @@ public class AdditionalLayoutTokensUtil {
             }
         }
 
-        if (offsetId == offsets.size() - 1) {
-            Pair<Integer, Integer> lastSentence = resultIndexes.get(resultIndexes.size() - 1);
-            if (!(lastSentence.getLeft() == idxStart || lastSentence.getRight() > idxStart)) {
-                resultIndexes.add(Pair.of(idxStart, idxEnd));
+        if (offsetId == offsets.size() - 1 && resultIndexes.size() < offsets.size()) {
+            Pair<Integer, Integer> lastSentenceAlreadyAdded = resultIndexes.get(resultIndexes.size() - 1);
+            if (!(lastSentenceAlreadyAdded.getLeft() == idxStart || lastSentenceAlreadyAdded.getRight() > idxStart)) {
+                if (idxStart <= idxEnd) {
+                    resultIndexes.add(Pair.of(idxStart, idxEnd + 1));
+                }
             }
         }
 

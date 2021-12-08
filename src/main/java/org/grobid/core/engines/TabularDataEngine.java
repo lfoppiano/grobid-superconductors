@@ -128,6 +128,7 @@ public class TabularDataEngine {
         List<SuperconEntry> outputCSV = new ArrayList<>();
         for (Span m : materials) {
             SuperconEntry dbEntry = new SuperconEntry();
+            dbEntry.setMaterialId(m.getId());
             dbEntry.setRawMaterial(m.getText());
             dbEntry.setSection(LabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getLeft()));
             dbEntry.setSubsection(LabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getRight()));
@@ -144,70 +145,76 @@ public class TabularDataEngine {
             boolean firstTemp = true;
             for (Map.Entry<String, String> entry : linkTypesGroupedByMaterialId.entrySet()) {
                 Span linkedSpan = spansById.get(entry.getKey());
-                if (linkedSpan.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL)) {
-                    List<SuperconEntry> entriesRelatedToThisTc = new ArrayList<>();
-                    if (firstTemp) {
-                        entriesWithAttachedAttributes.stream()
-                            .forEach(dbE -> {
-                                dbE.setCriticalTemperature(linkedSpan.getText());
-                                entriesRelatedToThisTc.add(dbE);
-                            });
-                        firstTemp = false;
-                    } else {
-                        List<SuperconEntry> newClones = new ArrayList<>();
-                        for (SuperconEntry ewa : entriesWithAttachedAttributes) {
-                            try {
-                                SuperconEntry anotherNewDbEntry = ewa.clone();
-                                anotherNewDbEntry.setCriticalTemperature(linkedSpan.getText());
-                                anotherNewDbEntry.setLinkType(entry.getValue());
-                                newClones.add(anotherNewDbEntry);
-                            } catch (CloneNotSupportedException e) {
-                                LOGGER.error("Cannot clone a supercon object entry: " + ewa.getRawMaterial() + ". ", e);
-                            }
-                        }
-                        entriesRelatedToThisTc.addAll(newClones);
-                    }
-
-                    // Process materials (with links)
-                    String meMethodsLinkedToThisTc = spansById.values().stream()
-                        .filter(span -> span.getType().equals(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL) &&
-                            span.getLinks().stream().anyMatch(a -> a.getTargetId().equals(linkedSpan.getId())))
-                        .map(Span::getText)
-                        .collect(Collectors.joining(", "));
-
-                    entriesRelatedToThisTc.stream()
-                        .forEach(sE -> sE.setCriticalTemperatureMeasurementMethod(meMethodsLinkedToThisTc));
-
-
-                    //Process pressures - only linked to a Tc that is linked to material
-                    List<Span> pressureLinkedToTheCurrentTc = linkedSpan.getLinks().stream()
-                        .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
-                        .map(l -> spansById.get(l.getTargetId()))
-                        .collect(Collectors.toList());
-
-                    if (isNotEmpty(pressureLinkedToTheCurrentTc)) {
-                        boolean first = true;
-                        for (Span pressure : pressureLinkedToTheCurrentTc) {
-                            if (first) {
-                                entriesRelatedToThisTc.stream()
-                                    .forEach(dbE -> dbE.setAppliedPressure(pressure.getText()));
-                                first = false;
-                            } else {
-                                List<SuperconEntry> newClones = new ArrayList<>();
-                                for (SuperconEntry ewa : entriesRelatedToThisTc) {
-                                    try {
-                                        SuperconEntry anotherNewDbEntry = ewa.clone();
-                                        anotherNewDbEntry.setAppliedPressure(pressure.getText());
-                                        newClones.add(anotherNewDbEntry);
-                                    } catch (CloneNotSupportedException e) {
-                                        LOGGER.error("Cannot create a duplicate of the supercon entry: " + ewa.getRawMaterial() + ". ", e);
-                                    }
+                if (linkedSpan != null) {
+                    if (linkedSpan.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL)) {
+                        List<SuperconEntry> entriesRelatedToThisTc = new ArrayList<>();
+                        if (firstTemp) {
+                            entriesWithAttachedAttributes.stream()
+                                .forEach(dbE -> {
+                                    dbE.setCriticalTemperature(linkedSpan.getText());
+                                    dbE.setCriticalTemperatureId(linkedSpan.getId());
+                                    entriesRelatedToThisTc.add(dbE);
+                                });
+                            firstTemp = false;
+                        } else {
+                            List<SuperconEntry> newClones = new ArrayList<>();
+                            for (SuperconEntry ewa : entriesWithAttachedAttributes) {
+                                try {
+                                    SuperconEntry anotherNewDbEntry = ewa.clone();
+                                    anotherNewDbEntry.setCriticalTemperature(linkedSpan.getText());
+                                    anotherNewDbEntry.setCriticalTemperatureId(linkedSpan.getId());
+                                    anotherNewDbEntry.setLinkType(entry.getValue());
+                                    newClones.add(anotherNewDbEntry);
+                                } catch (CloneNotSupportedException e) {
+                                    LOGGER.error("Cannot clone a Supercon object entry: " + ewa.getRawMaterial() + ". ", e);
                                 }
-                                entriesRelatedToThisTc.addAll(newClones);
+                            }
+                            entriesRelatedToThisTc.addAll(newClones);
+                        }
+
+                        // Process materials (with links)
+                        String meMethodsLinkedToThisTc = spansById.values().stream()
+                            .filter(span -> span.getType().equals(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL) &&
+                                span.getLinks().stream().anyMatch(a -> a.getTargetId().equals(linkedSpan.getId())))
+                            .map(Span::getText)
+                            .collect(Collectors.joining(", "));
+
+                        entriesRelatedToThisTc.stream()
+                            .forEach(sE -> sE.setCriticalTemperatureMeasurementMethod(meMethodsLinkedToThisTc));
+
+
+                        //Process pressures - only linked to a Tc that is linked to material
+                        List<Span> pressureLinkedToTheCurrentTc = linkedSpan.getLinks().stream()
+                            .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
+                            .map(l -> spansById.get(l.getTargetId()))
+                            .collect(Collectors.toList());
+
+                        if (isNotEmpty(pressureLinkedToTheCurrentTc)) {
+                            boolean first = true;
+                            for (Span pressure : pressureLinkedToTheCurrentTc) {
+                                if (first) {
+                                    entriesRelatedToThisTc.stream()
+                                        .forEach(dbE -> dbE.setAppliedPressure(pressure.getText()));
+                                    first = false;
+                                } else {
+                                    List<SuperconEntry> newClones = new ArrayList<>();
+                                    for (SuperconEntry ewa : entriesRelatedToThisTc) {
+                                        try {
+                                            SuperconEntry anotherNewDbEntry = ewa.clone();
+                                            anotherNewDbEntry.setAppliedPressure(pressure.getText());
+                                            newClones.add(anotherNewDbEntry);
+                                        } catch (CloneNotSupportedException e) {
+                                            LOGGER.error("Cannot create a duplicate of the Supercon entry: " + ewa.getRawMaterial() + ". ", e);
+                                        }
+                                    }
+                                    entriesRelatedToThisTc.addAll(newClones);
+                                }
                             }
                         }
+                        outputCSV.addAll(entriesRelatedToThisTc);
                     }
-                    outputCSV.addAll(entriesRelatedToThisTc);
+                } else {
+                    LOGGER.debug("A span identified as linked is not found. Probably one of the two entities lack the link to the other. Id: " + entry.getKey());
                 }
             }
 
