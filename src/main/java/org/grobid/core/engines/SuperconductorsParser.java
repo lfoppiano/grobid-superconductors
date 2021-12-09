@@ -13,6 +13,7 @@ import org.grobid.core.data.material.Formula;
 import org.grobid.core.data.material.Material;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.exceptions.GrobidExceptionStatus;
 import org.grobid.core.features.FeaturesVectorSuperconductors;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
@@ -446,6 +447,9 @@ public class SuperconductorsParser extends AbstractParser {
 
     public List<List<Span>> extractParallelResults(List<List<LayoutToken>> tokens, List<String> results) {
         List<List<Span>> spans = new ArrayList<>();
+        if (tokens.size() != results.size()) {
+            throw new GrobidException("The input PDF does not contains valid characters (e.g. all spaces) and therefore cannot be parsed correctly.", GrobidExceptionStatus.BAD_INPUT_DATA);
+        }
         for (int i = 0; i < tokens.size(); i++) {
             spans.add(extractResults(tokens.get(i), results.get(i)));
         }
