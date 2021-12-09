@@ -308,10 +308,15 @@ public class GrobidPDFEngine {
 
                 if (isNotEmpty(documentBlock.getMarkers())) {
                     try {
-                        // There are some cases where the markers are coming off not in order. 
-//                        documentBlock.getMarkers()
-//                            .stream()
-//                            .sorted(Comparator.comparingInt(AdditionalLayoutTokensUtil::getLayoutTokenListStartOffset));
+                        // There are some cases where the markers are coming off not in order. We sort only if they are not sorted.
+                        List<List<LayoutToken>> sortedMarkersListByStartOffsets = documentBlock.getMarkers()
+                            .stream()
+                            .sorted(Comparator.comparingInt(AdditionalLayoutTokensUtil::getLayoutTokenListStartOffset))
+                            .collect(Collectors.toList());
+                        
+                        if (!sortedMarkersListByStartOffsets.equals(documentBlock.getMarkers())) {
+                            documentBlock.setMarkers(sortedMarkersListByStartOffsets);
+                        }
 
                         markersExtremitiesAsIndex = documentBlock
                             .getMarkers()
