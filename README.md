@@ -4,39 +4,44 @@
 [![Docker Hub](https://img.shields.io/docker/pulls/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Docker Pulls")
 [![Coverage Status](https://coveralls.io/repos/github/lfoppiano/grobid-superconductors/badge.svg?branch=master)](https://coveralls.io/github/lfoppiano/grobid-superconductors?branch=master)
 [![CircleCI](https://circleci.com/gh/lfoppiano/grobid-superconductors.svg?style=svg)](https://circleci.com/gh/lfoppiano/grobid-superconductors)
-[![Docker Image CI](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/docker-image.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/docker-image.yml)
-[![Java CI](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/gradle.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/gradle.yml)
+[![Build unstable](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml)
+[![Build release](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-release.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-release.yml)
 
 __Work in progress.__
 
-The goal of this GROBID module is to identify, extract and link entities and their properties as mentioned in superconductors-related scientific literature. 
-In particular, the current goal the tool has been built is to extract superconductors material and their properties, such a Critical Temperature (Tc) and any expression or variation, Critical pressure, material name and class.
+## Introduction
 
-As the others GROBID models, the module relies on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
+The goal of this GROBID module is to identify, extract, and link materials with their properties from scientific literature.
 
-The linking (relation extraction) is implemented as rule based using the SpaCy library and can be found [here](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/linking). 
+In particular, the current goal the tool has been built is to extract superconductors material and their properties, such a Critical Temperature (Tc) and their type (type of measurement technique, or if it's a prediction/calculation) and the applied pressure when available. 
+Furthermore, this tool identifies also space groups, crystal structure when specified. 
 
-The following screenshots show the end to end result: 
+The system is divided into two main steps (Extraction and Linking): 
 
-![GROBID superconductors_screenshot](docs/grobid-superconductors-web-home.png)
+![schema grobid-superconductors](docs/schema-grobid-superconductors.png)
 
-and provides on-pdf annotations: 
+The Extraction step is a Named Entities Recognition (NER) task and is performed using machine learning. 
+As other Grobid modules, it can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF or transformers like BERT or SCIBert (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
 
-![GROBID superconductors_screenshot](docs/grobid-superconductors-web-home-2.png) 
+The Linking is a relation extraction (RE) tasks and is implemented via rule-based using the SpaCy library. The implementation is integrated via microservices and can be found here [here](https://github.com/lfoppiano/grobid-superconductors-tools). 
 
-See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.    
+Grobid-superconductors provides both an API and a User Interface (UI).
 
-The [Grobid Superconductors Tool project](https://github.com/lfoppiano/grobid-superconductors-tools) project contains also other utilities, more particularly all that is implemented in python. 
+The extracted materials and properties are summarised in a table with snippet of the original sentence:
 
-[comment]: <> (### Output databases)
+![screenshot-pdf-annotations](docs/grobid-superconductors-extracted-table.png)
 
-[comment]: <> (The output database can be easily created using the [Extraction process]&#40;./resources/web/process&#41; on a set of PDFs. )
+and each extracted entity is visualised directly on the PDF document:   
 
-[comment]: <> (Example of database output, organised by dates, can be found [here]&#40;./resources/dataset/database&#41;: )
-    
-[comment]: <> ( - [500-papers]&#40;https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/500-papers&#41; is the output from 500 papers from American Institute of Physics &#40;AIP&#41;, American Physical Society &#40;APS&#41; and Institute of Physics &#40;IOP&#41;. They were automatically selected using keywords relative to the superconductors domain such as 'tc', 'superconductivity'. )
-    
-[comment]: <> ( - [IOP-0953-2048]&#40;https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/IOP-0953-2048&#41; contains the output obtained processing the journal ``IOP - Superconductors science and technology`` )
+![screenshot-pdf-annotations](docs/grobid-superconductors-pdf-annotation.png)
+
+As experimental feature, the system provides a summary of all the materials from their composition and the form they appear in the document: 
+
+![screenshot-summary](docs/grobid-superconductors-summary.png)
+
+The response is a JSON representation of the document and it includes the main bibliographic data (title, authors, DOI, publisher and journals) which are extracted via the underline [Grobid library](https://github.com/kermitt2/grobid). 
+
+See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.
 
 ## Getting started
 The quickest way to get started is to use directly docker-compose contained in the project directory.
@@ -47,7 +52,7 @@ Just run the command:
 
 > docker compose up 
 
-Should spawn grobid-superconductors and his microservices. 
+Should spawn grobid-superconductors and its microservices. 
 
 ### Run each individual service manually
 In order to run each service individually, is possible to run them separately: 
@@ -84,7 +89,7 @@ In the following table are listed the models (in `resources/models/` ) that are 
 Below, in the Section [accuracy](#accuracy), we present the accuracies for each model. 
 
 
-## Performances: Speed
+## Performances: Throughput 
 
 Grobid is designed for fast processing using a lightweight and tighly integrated system. 
 Grobid-superconductors contains more moving parts which are separated from the main application. 
@@ -214,7 +219,6 @@ To install the python utilities:
     > cd grobid-superconductors-tools/linking
    
     > pip install -f requirements.linux.txt
-
 
 ## Training and evaluation
 
@@ -385,10 +389,9 @@ tc: 0.7981279136158688
 ```
 </details>
 
-
 ## Acknowledgement 
 
-Our warmest thanks to Patrice Lopez (@kermitt from [Science-miner](http://www.science-miner.com)): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
+Our warmest thanks to [Patrice Lopez](https://github.com/kermitt2) from [Science-miner](http://www.science-miner.com): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
 
 This project has been developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
 
@@ -403,22 +406,36 @@ Contact: Luca Foppiano (FOPPIANO.Luca __AT__ nims.go.jp)
 
 We described the framework around the system in the following articles (the latest on top): 
 
-- [Supermat](http://github.com/lfoppiano/Supermat)
-
-- "Proposal for Automatic Extraction of Superconductors properties from scientific literature": [PDF](http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3)
-```
-@inproceedings{foppiano2019proposal,
-	address = {Tsukuba},
-	title = {Proposal for {Automatic} {Extraction} {Framework} of {Superconductors} {Related} {Information} from {Scientific} {Literature}},
-	volume = {119},
-	copyright = {All rights reserved},
-	abstract = {The automatic collection of materials information from research papers using Natural Language Processing (NLP) is highly required for rapid materials development using big data, namely materials informatics (MI). The difficulty of this automatic collection is mainly caused by the variety of expressions in the papers, a robust system with tolerance to such variety is required to be developed. In this paper, we report an ongoing interdisciplinary work to construct a system for automatic collection of superconductor-related information from scientific literature using text mining techniques. We focused on the identification of superconducting material names and their critical temperature (Tc) key property. We discuss the construction of a prototype for extraction and linking using machine learning (ML) techniques for the physical information collection. From the evaluation using 500 sample documents, we define a baseline and a direction for future improvements.},
-	language = {eng},
-	booktitle = {Letters and {Technology} {News}, vol. 119, no. 66, {SC}2019-1 (no.66)},
-	author = {Foppiano, Luca and Thaer, M. Dieb and Suzuki, Akira and Ishii, Masashi},
-	month = may,
-	year = {2019},
-	note = {ISSN: 2432-6380},
-	pages = {1--5}
-}
-```
+ - [SuperMat](http://github.com/lfoppiano/Supermat): construction of a linked annotated dataset from superconductors-related publications
+      ``` 
+        @article{doi:10.1080/27660400.2021.1918396,
+             author = {Luca Foppiano and Sae Dieb and Akira Suzuki and Pedro Baptista de Castro and Suguru Iwasaki and Azusa Uzuki and Miren Garbine Esparza Echevarria and Yan Meng and Kensei Terashima and Laurent Romary and Yoshihiko Takano and Masashi Ishii},
+             title = {SuperMat: construction of a linked annotated dataset from superconductors-related publications},
+             journal = {Science and Technology of Advanced Materials: Methods},
+             volume = {1},
+             number = {1},
+             pages = {34-44},
+             year  = {2021},
+             publisher = {Taylor & Francis},
+             doi = {10.1080/27660400.2021.1918396},
+             URL = { https://doi.org/10.1080/27660400.2021.1918396 },
+             eprint = { https://doi.org/10.1080/27660400.2021.1918396 }
+             }
+      ```
+ - "Proposal for Automatic Extraction of Superconductors properties from scientific literature": [PDF](http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3)
+      ```
+      @inproceedings{foppiano2019proposal,
+          address = {Tsukuba},
+          title = {Proposal for {Automatic} {Extraction} {Framework} of {Superconductors} {Related} {Information} from {Scientific} {Literature}},
+          volume = {119},
+          copyright = {All rights reserved},
+          abstract = {The automatic collection of materials information from research papers using Natural Language Processing (NLP) is highly required for rapid materials development using big data, namely materials informatics (MI). The difficulty of this automatic collection is mainly caused by the variety of expressions in the papers, a robust system with tolerance to such variety is required to be developed. In this paper, we report an ongoing interdisciplinary work to construct a system for automatic collection of superconductor-related information from scientific literature using text mining techniques. We focused on the identification of superconducting material names and their critical temperature (Tc) key property. We discuss the construction of a prototype for extraction and linking using machine learning (ML) techniques for the physical information collection. From the evaluation using 500 sample documents, we define a baseline and a direction for future improvements.},
+          language = {eng},
+          booktitle = {Letters and {Technology} {News}, vol. 119, no. 66, {SC}2019-1 (no.66)},
+          author = {Foppiano, Luca and Thaer, M. Dieb and Suzuki, Akira and Ishii, Masashi},
+          month = may,
+          year = {2019},
+          note = {ISSN: 2432-6380},
+          pages = {1--5}
+      }
+      ```
