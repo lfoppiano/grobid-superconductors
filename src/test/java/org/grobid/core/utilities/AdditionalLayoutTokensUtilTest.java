@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 public class AdditionalLayoutTokensUtilTest {
@@ -160,7 +161,18 @@ public class AdditionalLayoutTokensUtilTest {
         assertThat(String.join("", stringList), is(" very very long sentence, and"));
     }
 
-//    @Test
+    @Test
+    public void testGetExtremitiesAsIndex_realCase_1() {
+        String originalText = "(29) In Fig. 7 we depicted − |t| −2/3 M/T vs. H c |t| −4/3 for T > T at various applied magnetic The solid line is Eq. (28) in terms of and the dashed one 31) corresponding to the limit (29). Note that Eqs. (26) and (31) fully agree with each other and with that confirm ). In analogy to Fig. 6 we observe that the z → ∞ limiting behavior is well con- firmed, while substantial deviations from a data collapse on a single curve set in for H c |t| −4/3 2 × 10 6 Oe. Here the crossover to 2D-xy behavior sets in and 3D-xy scal- ing fails. Nevertheless, in the limit H c → 0 and reduced temperatures t in the range where 3D-xy fluctuations dominates, the limit H c |t| −4/3 ∝ z → 0 should be at- tainable. It is indicated by the solid line (Eq. (30) in Fig. 7. ";
+        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(originalText); 
+        tokens.forEach(t -> t.setOffset(t.getOffset() + 24147));
+
+        Pair<Integer, Integer> extremitiesAsIndex = AdditionalLayoutTokensUtil.getExtremitiesAsIndex(tokens, 24440, 24442);
+        
+        assertThat(extremitiesAsIndex.getLeft(), is(lessThan(extremitiesAsIndex.getRight())));
+    }
+
+    //    @Test
 //    public void testFromOffsetsToIndexes_withoutSpaces_realCase() throws Exception {
 //        String originalText = "This is one sentence. This is another sentence. And third sentence. ";
 //

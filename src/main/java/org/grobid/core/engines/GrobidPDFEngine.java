@@ -308,6 +308,11 @@ public class GrobidPDFEngine {
 
                 if (isNotEmpty(documentBlock.getMarkers())) {
                     try {
+                        // There are some cases where the markers are coming off not in order. 
+//                        documentBlock.getMarkers()
+//                            .stream()
+//                            .sorted(Comparator.comparingInt(AdditionalLayoutTokensUtil::getLayoutTokenListStartOffset));
+
                         markersExtremitiesAsIndex = documentBlock
                             .getMarkers()
                             .stream()
@@ -577,11 +582,14 @@ public class GrobidPDFEngine {
         //Removing duplicated spaces
         List<LayoutToken> cleanedTokens = IntStream
             .range(0, bodyLayouts.size())
-            .filter(i -> (
-                    (i < bodyLayouts.size() - 1 && (!bodyLayouts.get(i).getText().equals("\n") || !bodyLayouts.get(i).getText().equals(" "))
-                        && !StringUtils.equals(bodyLayouts.get(i).getText(), bodyLayouts.get(i + 1).getText())
-                    ) || i == bodyLayouts.size() - 1
-                )
+            .filter(i -> {
+                    if (i < bodyLayouts.size() - 1) {
+                        if (bodyLayouts.get(i).getText().equals("\n") || bodyLayouts.get(i).getText().equals(" ")) {
+                            return !StringUtils.equals(bodyLayouts.get(i).getText(), bodyLayouts.get(i + 1).getText());
+                        }
+                    }
+                    return true;
+                }
             )
             .mapToObj(bodyLayouts::get)
             .collect(Collectors.toList());

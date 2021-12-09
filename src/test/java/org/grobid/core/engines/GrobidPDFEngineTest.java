@@ -9,12 +9,11 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.OffsetPosition;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -106,7 +105,7 @@ public class GrobidPDFEngineTest {
     }
 
     @Test
-    public void testNormaliseAndCleanup() throws Exception {
+    public void testNormaliseAndCleanup_standardCase() throws Exception {
         String input = "This is a string with   many   double spaces \n\n and double \n which we remove ";
 
         List<LayoutToken> bodyLayouts = GrobidAnalyzer.getInstance().tokenizeWithLayoutToken(input);
@@ -115,10 +114,11 @@ public class GrobidPDFEngineTest {
         assertThat(Iterables.getLast(layoutTokens).getText(), is(" "));
 
         assertThat(layoutTokens, hasSize(26));
+        assertThat(LayoutTokensUtil.toText(layoutTokens), is("This is a string with many double spaces and double which we remove "));
     }
 
     @Test
-    public void testNormaliseAndCleanup2() throws Exception {
+    public void testNormaliseAndCleanup_withEndCommaAndSpace() throws Exception {
         String input = "This is a string with   many   double spaces \n\n and double \n which we remove, ";
 
         List<LayoutToken> bodyLayouts = GrobidAnalyzer.getInstance().tokenizeWithLayoutToken(input);
@@ -127,6 +127,20 @@ public class GrobidPDFEngineTest {
         assertThat(Iterables.getLast(layoutTokens).getText(), is(" "));
 
         assertThat(layoutTokens, hasSize(27));
+        assertThat(LayoutTokensUtil.toText(layoutTokens), is("This is a string with many double spaces and double which we remove, "));
+    }
+
+    @Test
+    public void testNormaliseAndCleanup_withDuplicatedParenthesis() throws Exception {
+        String input = "This is a string with   many   )) double spaces \n\n and double \n which we remove, ";
+
+        List<LayoutToken> bodyLayouts = GrobidAnalyzer.getInstance().tokenizeWithLayoutToken(input);
+        List<LayoutToken> layoutTokens = GrobidPDFEngine.normaliseAndCleanup(bodyLayouts);
+
+        assertThat(Iterables.getLast(layoutTokens).getText(), is(" "));
+
+        assertThat(LayoutTokensUtil.toText(layoutTokens), is("This is a string with many )) double spaces and double which we remove, "));
+        assertThat(layoutTokens, hasSize(30));
     }
 
     @Test
@@ -135,7 +149,7 @@ public class GrobidPDFEngineTest {
         List<LayoutToken> tokens = GrobidAnalyzer.getInstance().tokenizeWithLayoutToken(text);
 
         List<Pair<Integer, Integer>> extremities = Arrays.asList(Pair.of(135, 138), Pair.of(380, 384));
-        extremities.stream().forEach(e -> System.out.println(tokens.subList(e.getLeft(), e.getRight()).stream().map(LayoutToken::getText).collect(Collectors.joining())));
+//        extremities.stream().forEach(e -> System.out.println(tokens.subList(e.getLeft(), e.getRight()).stream().map(LayoutToken::getText).collect(Collectors.joining())));
         DocumentBlock block = new DocumentBlock(tokens, "a", "b");
         List<OffsetPosition> markersAsOffsets = GrobidPDFEngine.getMarkersAsOffsets(block, extremities);
 
@@ -152,7 +166,7 @@ public class GrobidPDFEngineTest {
         List<LayoutToken> tokens = GrobidAnalyzer.getInstance().tokenizeWithLayoutToken(text);
         
         List<Pair<Integer, Integer>> extremities = Arrays.asList(Pair.of(9, 12), Pair.of(27, 30));
-        extremities.stream().forEach(e -> System.out.println(tokens.subList(e.getLeft(), e.getRight()).stream().map(LayoutToken::getText).collect(Collectors.joining())));
+//        extremities.stream().forEach(e -> System.out.println(tokens.subList(e.getLeft(), e.getRight()).stream().map(LayoutToken::getText).collect(Collectors.joining())));
         DocumentBlock block = new DocumentBlock(tokens, "a", "b");
         List<OffsetPosition> markersAsOffsets = GrobidPDFEngine.getMarkersAsOffsets(block, extremities);
 
