@@ -471,4 +471,37 @@ public class MaterialTest {
         assertThat(superconEntries.get(1).getMaterialClass(), is("Iron Based"));
         assertThat(superconEntries.get(1).getFormula(), is("La 1 Fe 2"));
     }
+    
+    @Test
+    public void testFillDbEntryFromAttributes_singleValue() throws Exception {
+        LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> variables = new LinkedHashMap<>();
+        attributes.put("variables", variables);
+        LinkedHashMap<String, Object> value = new LinkedHashMap<>();
+        value.put("0", "0.5");
+        variables.put("x", value);
+
+        SuperconEntry dbEntry = new SuperconEntry();
+        Material.fillDbEntryFromAttributes(attributes, dbEntry);
+
+        assertThat(dbEntry.getVariables(), is("x=0.5"));
+        
+    }
+
+    @Test
+    public void testFillDbEntryFromAttributes_doubleValues() throws Exception {
+        LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> variables = new LinkedHashMap<>();
+        attributes.put("variables", variables);
+        LinkedHashMap<String, Object> value = new LinkedHashMap<>();
+        value.put("0", "0.5");
+        value.put("1", "1.5");
+        variables.put("x", value);
+
+        SuperconEntry dbEntry = new SuperconEntry();
+        Material.fillDbEntryFromAttributes(attributes, dbEntry);
+
+        assertThat(dbEntry.getVariables(), is("x=0.5, 1.5"));
+
+    }
 }
