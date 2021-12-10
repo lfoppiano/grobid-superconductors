@@ -464,7 +464,7 @@ public class Material {
             stringStringMap.put(keyPrefix + "_" + k, stringStringMap.get(k));
             stringStringMap.remove(k);
         }
-        
+
         return stringStringMap;
     }
 
@@ -490,7 +490,7 @@ public class Material {
             if (!result.containsKey(firstKey)) {
                 result.put(firstKey, new LinkedHashMap<String, Object>());
             }
-            
+
             stringToLinkedHashMap(keysMutable, value, (Map<String, Object>) result.get(firstKey));
             return result;
         }
@@ -561,7 +561,15 @@ public class Material {
                     dbEntry.setSubstrate((String) materialObject.get(propertyName));
                     break;
                 case "variables":
-                    dbEntry.setVariables((String) materialObject.get(propertyName));
+                    Map<String, Object> variables = (Map<String, Object>) materialObject.get(propertyName);
+                    String variablesAsString = variables.keySet().stream()
+                        .map(key -> {
+                            LinkedHashMap<String, String> sub = (LinkedHashMap<String, String>) variables.get(key);
+                            String asdasd = sub.keySet().stream().map(k -> sub.get(k)).collect(Collectors.joining(", "));
+                            return key + "=" + asdasd;
+                        })
+                        .collect(Collectors.joining(", "));
+                    dbEntry.setVariables(variablesAsString);
                     break;
             }
         }
