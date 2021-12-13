@@ -545,7 +545,7 @@ public class Material {
                 case "name":
                     dbEntry.setName((String) materialObject.get(propertyName));
                     break;
-                case "clazz":
+                case "class":
                     dbEntry.setMaterialClass((String) materialObject.get(propertyName));
                     break;
                 case "shape":

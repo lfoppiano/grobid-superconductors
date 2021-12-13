@@ -471,6 +471,18 @@ public class MaterialTest {
         assertThat(superconEntries.get(1).getMaterialClass(), is("Iron Based"));
         assertThat(superconEntries.get(1).getFormula(), is("La 1 Fe 2"));
     }
+
+    @Test
+    public void testFillDbEntryFromAttributes_class() throws Exception {
+        LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
+        attributes.put("class", "Alloys");
+
+        SuperconEntry dbEntry = new SuperconEntry();
+        Material.fillDbEntryFromAttributes(attributes, dbEntry);
+
+        assertThat(dbEntry.getMaterialClass(), is("Alloys"));
+
+    }
     
     @Test
     public void testFillDbEntryFromAttributes_singleValue() throws Exception {

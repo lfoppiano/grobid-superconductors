@@ -139,7 +139,7 @@
             }
           ],
           "attributes": {
-            "material0_clazz": "Oxides, Cuprates",
+            "material0_class": "Oxides, Cuprates",
             "material0_resolvedFormulas_0_rawValue": "HgBa 2 Ca 2 Cu 3 O 9",
             "material0_formula_rawValue": "HgBa 2 Ca 2 Cu 3 O 9",
             "material0_rawTaggedValue": "<formula>HgBa 2 Ca 2 Cu 3 O 9</formula> "
