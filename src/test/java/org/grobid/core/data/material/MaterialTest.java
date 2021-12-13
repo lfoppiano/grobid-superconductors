@@ -473,19 +473,31 @@ public class MaterialTest {
     }
 
     @Test
-    public void testFillDbEntryFromAttributes_class() throws Exception {
+    public void testFillDbEntryFromAttributes_singleMaterial() throws Exception {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
         attributes.put("class", "Alloys");
-
+        LinkedHashMap<String, Object> formula = new LinkedHashMap<>();
+        formula.put("rawValue", "HgBa 2 Ca 2 Cu 3 O 9");
+        attributes.put("formula", formula);
+        attributes.put("fabrication", "welding");
+        attributes.put("substrate", "ham");
+        attributes.put("shape", "magic powder");
+        attributes.put("doping", "dopamine");
+        
         SuperconEntry dbEntry = new SuperconEntry();
         Material.fillDbEntryFromAttributes(attributes, dbEntry);
 
         assertThat(dbEntry.getMaterialClass(), is("Alloys"));
+        assertThat(dbEntry.getFormula(), is("HgBa 2 Ca 2 Cu 3 O 9"));
+        assertThat(dbEntry.getFabrication(), is("welding"));
+        assertThat(dbEntry.getSubstrate(), is("ham"));
+        assertThat(dbEntry.getShape(), is("magic powder"));
+        assertThat(dbEntry.getDoping(), is("dopamine"));
 
     }
     
     @Test
-    public void testFillDbEntryFromAttributes_singleValue() throws Exception {
+    public void testFillDbEntryFromAttributes_singleValue_variables() throws Exception {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
         LinkedHashMap<String, Object> variables = new LinkedHashMap<>();
         attributes.put("variables", variables);
@@ -501,7 +513,7 @@ public class MaterialTest {
     }
 
     @Test
-    public void testFillDbEntryFromAttributes_doubleValues() throws Exception {
+    public void testFillDbEntryFromAttributes_doubleValues_variables() throws Exception {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
         LinkedHashMap<String, Object> variables = new LinkedHashMap<>();
         attributes.put("variables", variables);
