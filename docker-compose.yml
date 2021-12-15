@@ -11,7 +11,7 @@ services:
           - "cde.local"
 
   linking_module:
-    image: lfoppiano/linking-module:1.0
+    image: lfoppiano/grobid-superconductors-tools:2.0
     restart: always
     ports:
       - 8090:8080
@@ -27,7 +27,7 @@ services:
 
 
   superconductors:
-    image: lfoppiano/grobid-superconductors:0.3.0
+    image: lfoppiano/grobid-superconductors:0.4u.0
     restart: always
     volumes:
       - /Users/lfoppiano/development/projects/grobid/grobid-superconductors/resources/config/config-docker.yml:/opt/grobid/grobid-superconductors/config.yml:ro
