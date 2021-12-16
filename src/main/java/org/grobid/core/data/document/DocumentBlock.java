@@ -28,6 +28,7 @@ public class DocumentBlock {
 
     private String section;
     private String subSection;
+    private String paragraphId;
     private List<LayoutToken> layoutTokens;
     private List<List<LayoutToken>> markers = new ArrayList<>();
     private List<Span> spans = new ArrayList<>();
@@ -51,6 +52,11 @@ public class DocumentBlock {
         this(layoutTokens, section, subSection);
         this.spans = new ArrayList<>(spanList);
         this.markers = new ArrayList<>(markers);
+    }
+
+    public DocumentBlock(List<LayoutToken> layoutTokens, String section, String subSection, String id, List<Span> spanList, List<List<LayoutToken>> markers) {
+        this(layoutTokens, section, subSection, spanList, markers);
+        this.paragraphId = id;
     }
 
 
@@ -92,5 +98,13 @@ public class DocumentBlock {
 
     public void setMarkers(List<List<LayoutToken>> markers) {
         this.markers = markers;
+    }
+
+    public String getParagraphId() {
+        return paragraphId;
+    }
+
+    public void setParagraphId(String paragraphIdentifier) {
+        this.paragraphId = paragraphIdentifier;
     }
 }
