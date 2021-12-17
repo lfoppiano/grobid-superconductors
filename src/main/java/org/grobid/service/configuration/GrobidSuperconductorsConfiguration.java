@@ -3,6 +3,7 @@ package org.grobid.service.configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import org.apache.commons.io.IOUtils;
+import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GrobidSuperconductorsConfiguration extends Configuration {
 
@@ -22,11 +25,14 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String pythonVirtualEnv;
     private String linkingModuleUrl;
     private String classResolverUrl;
+    private GrobidConfig.ConsolidationParameters consolidation;
 
     // Version
     private static String VERSION = null;
+    private static String REVISION = null;
     private static final String UNKNOWN_VERSION_STR = "unknown";
     private static final String GROBID_VERSION_FILE = "/version.txt";
+    private static final String GROBID_REVISION_FILE = "/revision.txt";
 
     // CORS
     @JsonProperty
@@ -35,6 +41,8 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
     private String corsAllowedMethods = "OPTIONS,GET,PUT,POST,DELETE,HEAD";
     @JsonProperty
     private String corsAllowedHeaders = "X-Requested-With,Content-Type,Accept,Origin";
+
+    private List<GrobidConfig.ModelParameters> models = new ArrayList<>();
 
     // Max requests
     private int maxParallelRequests = 0;
@@ -95,16 +103,32 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
         }
         synchronized (GrobidProperties.class) {
             if (VERSION == null) {
-                String grobidVersion = UNKNOWN_VERSION_STR;
-                try (InputStream is = GrobidProperties.class.getResourceAsStream(GROBID_VERSION_FILE)) {
-                    grobidVersion = IOUtils.toString(is, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    LOGGER.error("Cannot read Grobid version from resources", e);
-                }
-                VERSION = grobidVersion;
+                VERSION = readFromFile(GROBID_VERSION_FILE);
             }
         }
         return VERSION;
+    }
+
+    public static String getRevision() {
+        if (REVISION != null) {
+            return REVISION;
+        }
+        synchronized (GrobidProperties.class) {
+            if (REVISION == null) {
+                REVISION = readFromFile(GROBID_REVISION_FILE);
+            }
+        }
+        return REVISION;
+    }
+
+    private static String readFromFile(String filePath) {
+        String grobidVersion = UNKNOWN_VERSION_STR;
+        try (InputStream is = GrobidProperties.class.getResourceAsStream(filePath)) {
+            grobidVersion = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Cannot read the version from resources", e);
+        }
+        return grobidVersion;
     }
 
     public String getCorsAllowedOrigins() {
@@ -156,5 +180,21 @@ public class GrobidSuperconductorsConfiguration extends Configuration {
 
     public void setMaxParallelRequests(int maxParallelRequests) {
         this.maxParallelRequests = maxParallelRequests;
+    }
+
+    public List<GrobidConfig.ModelParameters> getModels() {
+        return models;
+    }
+
+    public void setModels(List<GrobidConfig.ModelParameters> models) {
+        this.models = models;
+    }
+
+    public GrobidConfig.ConsolidationParameters getConsolidation() {
+        return consolidation;
+    }
+
+    public void setConsolidation(GrobidConfig.ConsolidationParameters consolidation) {
+        this.consolidation = consolidation;
     }
 }

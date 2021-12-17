@@ -3,8 +3,8 @@ package org.grobid.core.engines;
 import com.google.inject.Singleton;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.grobid.core.data.Material;
-import org.grobid.core.utilities.ClassResolverModuleClient;
+import org.grobid.core.data.material.Material;
+import org.grobid.core.utilities.client.ClassResolverModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,20 +36,20 @@ public class MaterialClassResolver {
      **/
     public Material process(Material material) {
         boolean sampling = false;
-        String sampleFormula = material.getFormula();
+        String sampleFormula = material.getFormula() != null ? material.getFormula().getRawValue() : "";
         if (isNotEmpty(material.getResolvedFormulas())) {
             if (material.getResolvedFormulas().size() == 1 && isEmpty(material.getVariables().keySet())) {
                 // if there is one resolved formula and no variables, I might need to sample
                 sampleFormula = createSample(material);
                 if (StringUtils.isEmpty(sampleFormula)) {
                     // no variable in the formula...
-                    sampleFormula = material.getResolvedFormulas().get(0);
+                    sampleFormula = material.getResolvedFormulas().get(0).getRawValue();
                 }
                 sampling = true;
             } else {
-                sampleFormula = material.getResolvedFormulas().get(0);
+                sampleFormula = material.getResolvedFormulas().get(0).getRawValue();
             }
-        } else if (StringUtils.isNotEmpty(material.getFormula())) {
+        } else if (material.getFormula() != null && StringUtils.isNotEmpty(material.getFormula().getRawValue())) {
             sampleFormula = createSample(material);
             sampling = true;
         }
@@ -86,10 +86,10 @@ public class MaterialClassResolver {
         if (resolvedVariables.size() == 1) {
             sampleFormula = resolvedVariables.get(0);
         } else if (resolvedVariables.size() > 1) {
-            LOGGER.warn("Something wrong came out from the material sampling in the class detection. " +
+            LOGGER.debug("Something wrong came out from the material sampling in the class detection. " +
                 "Input formula: " + sampleMaterial.getFormula() + ", resolvedFormula: " + Arrays.toString(resolvedVariables.toArray()));
         } else {
-            LOGGER.warn("No formula came out from the material sampling in the class detection. " +
+            LOGGER.debug("No formula came out from the material sampling in the class detection. " +
                 "Input formula: " + sampleMaterial.getFormula());
         }
         return sampleFormula;

@@ -1,17 +1,21 @@
 package org.grobid.core.engines;
 
 import com.google.inject.Singleton;
-import org.apache.commons.collections4.CollectionUtils;
-import org.grobid.core.data.Span;
-import org.grobid.core.data.TextPassage;
-import org.grobid.core.layout.BoundingBox;
-import org.grobid.core.utilities.LinkingModuleClient;
+import org.grobid.core.data.document.Link;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.data.document.TextPassage;
+import org.grobid.core.utilities.client.LinkingModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Singleton
 public class RuleBasedLinker {
@@ -19,7 +23,6 @@ public class RuleBasedLinker {
 
     private GrobidSuperconductorsConfiguration configuration;
     private final LinkingModuleClient client;
-    private boolean disabled = false;
 
     @Inject
     public RuleBasedLinker(GrobidSuperconductorsConfiguration configuration, LinkingModuleClient client) {
@@ -27,109 +30,110 @@ public class RuleBasedLinker {
         this.client = client;
     }
 
-    public TextPassage markTemperatures(TextPassage paragraph) {
-        List<Span> originalSpans = paragraph.getSpans();
-        if (CollectionUtils.isEmpty(originalSpans) || disabled) {
-            return paragraph;
-        }
+    public List<TextPassage> markTemperatures(List<TextPassage> passages) {
+        List<TextPassage> newObjectList = passages.stream()
+            .map(this::createNewCleanObject)
+            .collect(Collectors.toList());
 
-        //Take out the bounding boxes
-        Map<String, List<BoundingBox>> backupBoundingBoxes = new HashMap<>();
-        originalSpans.forEach(s -> {
-            backupBoundingBoxes.put(String.valueOf(s.getId()), s.getBoundingBoxes());
-            s.setBoundingBoxes(new ArrayList<>());
-        });
+        List<TextPassage> responsePassages = client.markCriticalTemperature(newObjectList);
 
-        //Take out the attributes
-        Map<String, Map<String, String>> backupAttributes = new HashMap<>();
-        originalSpans.forEach(s -> backupAttributes.put(String.valueOf(s.getId()), s.getAttributes()));
+        assert (responsePassages.size() == passages.size());
 
-        TextPassage textPassageWithMarkedTemperatures = this.client.markCriticalTemperature(paragraph);
+        List<TextPassage> outputPassages = new ArrayList<>();
 
-        // put the bounding boxes back where they were
-        List<Span> processedSpans = textPassageWithMarkedTemperatures.getSpans();
-        originalSpans.stream()
-            .forEach(s -> {
-                s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-                s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
-            });
+        for (int i = 0; i < passages.size(); i++) {
+            TextPassage outputPassage = TextPassage.of(passages.get(i));
 
-        //Copy linkability
-        if (originalSpans.size() != processedSpans.size()) {
-            LOGGER.info("The size of the processed spans is different than the original spans. Skipping linking");
-        } else {
-            for (int i = 0; i < originalSpans.size(); i++) {
-                Span processedSpan = processedSpans.get(i);
-                Span originalSpan = originalSpans.get(i);
-                if (processedSpan.getId().equals(originalSpan.getId())) {
-                    originalSpan.setLinkable(processedSpan.isLinkable());
+            //Fetch only what is needed
+            Map<String, Span> spansMap = responsePassages.get(i).getSpans()
+                .stream()
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            //Copy linkability
+            if (responsePassages.get(i).getSpans().size() != outputPassage.getSpans().size()) {
+                LOGGER.warn("The size of the processed spans is different than the original spans. Skipping linking");
+            } else {
+                for (int j = 0; j < outputPassage.getSpans().size(); j++) {
+                    Span processedSpan = responsePassages.get(i).getSpans().get(j);
+                    Span originalSpan = outputPassage.getSpans().get(j);
+                    if (processedSpan.getId().equals(originalSpan.getId())) {
+                        originalSpan.setLinkable(processedSpan.isLinkable());
+                    }
                 }
             }
+
+            outputPassages.add(outputPassage);
         }
-        return paragraph;
+        return outputPassages;
     }
 
 
-    public List<TextPassage> process(TextPassage paragraph) {
-        if (CollectionUtils.isEmpty(paragraph.getSpans()) || disabled) {
-            return Collections.singletonList(paragraph);
-        }
+    public List<TextPassage> process(List<TextPassage> passage) {
+        return process(passage, Arrays.asList(Link.MATERIAL_TCVALUE_TYPE, Link.TCVALUE_PRESSURE_TYPE, Link.TCVALUE_ME_METHOD_TYPE, Link.MATERIAL_CRYSTAL_STRUCTURE, Link.MATERIAL_SPACE_GROUPS), false);
+    }
 
-        //Take out the bounding boxes
-        Map<String, List<BoundingBox>> backupBoundingBoxes = new HashMap<>();
-        paragraph.getSpans().forEach(s -> {
-                backupBoundingBoxes.put(String.valueOf(s.getId()), s.getBoundingBoxes());
-                s.setBoundingBoxes(new ArrayList<>());
-            }
-        );
+    public List<TextPassage> process(List<TextPassage> passage, List<String> linkTypes) {
+        return process(passage, linkTypes, false);
+    }
 
-        //Take out the attributes
-        Map<String, Map<String, String>> backupAttributes = new HashMap<>();
-        paragraph.getSpans().forEach(s -> backupAttributes.put(String.valueOf(s.getId()), s.getAttributes()));
+    /**
+     * Apply the linking to a text passage
+     *
+     * @param passages           the text passage to be processed
+     * @param linkTypes          type of links to be processed
+     * @param skipClassification indicate if to skip the classification of tc
+     * @return
+     */
+    public List<TextPassage> process(List<TextPassage> passages, List<String> linkTypes, boolean skipClassification) {
+        List<TextPassage> newObjectList = passages.stream()
+            .map(this::createNewCleanObject)
+            .collect(Collectors.toList());
 
-        List<TextPassage> textPassages = client.extractLinks(paragraph);
+        List<TextPassage> responsePassages = client.extractLinks(newObjectList, linkTypes, skipClassification);
 
+        assert (responsePassages.size() == passages.size());
 
-        // put the bounding boxes back where they were
-        textPassages.stream()
-            .forEach(p -> p.getSpans().stream()
+        List<TextPassage> outputPassages = new ArrayList<>();
+
+        for (int i = 0; i < passages.size(); i++) {
+            TextPassage outputPassage = TextPassage.of(passages.get(i));
+
+            //Fetch only what is needed
+            Map<String, Span> spansMap = responsePassages.get(i).getSpans()
+                .stream()
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            outputPassage.getSpans()
+                .stream()
                 .forEach(s -> {
-                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-                        s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
+                    if (spansMap.containsKey(s.getId())) {
+                        Span span = spansMap.get(s.getId());
+                        s.getLinks().addAll(span.getLinks());
+                        s.setLinkable(span.isLinkable());
                     }
-                )
-            );
+                });
 
+            outputPassage.setRelationships(responsePassages.get(i).getRelationships());
+            outputPassages.add(outputPassage);
+        }
+        return outputPassages;
+    }
 
-//            Map<String, Span> spans = new HashMap<>();
-//
-//            processedTcPressure.stream()
-//                .forEach(p -> p.getSpans().stream()
-//                    .forEach(s -> {
-//                        s.setBoundingBoxes(backupBoundingBoxes.get(String.valueOf(s.getId())));
-//                        s.setAttributes(backupAttributes.get(String.valueOf(s.getId())));
-//                        spans.put(s.getId(), s);
-//                    }));
-//
-//            processedMaterialTc.stream().forEach(p -> {
-//                p.setSection(paragraph.getSection());
-//                p.setSubSection(paragraph.getSubSection());
-//
-//                String type = processedMaterialTc.size() == 1 ? "paragraph" : "sentence";
-//                p.setType(type);
-//
-//                p.getSpans().stream().forEach(s -> {
-//                    Span correspondingSpan = spans.get(s.getId());
-//                    if (correspondingSpan != null) {
-//                        List<Link> collect = correspondingSpan.getLinks().stream()
-//                            .filter(f -> !f.getType().equals("crf"))
-//                            .collect(Collectors.toList());
-//                        s.addLinks(collect);
-//                    }
-//                });
-//            });
+    private TextPassage createNewCleanObject(TextPassage passage) {
+        TextPassage requestPassage = new TextPassage();
+        List<Span> newSpans = passage.getSpans()
+            .stream()
+            .map(s -> {
+                Span newSpan = new Span(s);
+                newSpan.setBoundingBoxes(new ArrayList<>());
+                newSpan.setLinks(new ArrayList<>());
+                return newSpan;
+            })
+            .collect(Collectors.toList());
 
-        return textPassages;
-
+        requestPassage.setText(passage.getText());
+        requestPassage.setSpans(newSpans);
+        requestPassage.setTokens(new ArrayList<>(passage.getTokens()));
+        return requestPassage;
     }
 }

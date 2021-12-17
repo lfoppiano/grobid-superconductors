@@ -1,5 +1,6 @@
 package org.grobid.service.controller;
 
+import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
@@ -12,6 +13,10 @@ import javax.ws.rs.client.Entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 public class AnnotationControllerTest {
+
+    static {
+        JerseyGuiceUtils.install((s, serviceLocator) -> null);
+    }
 
     @ClassRule
     public static final ResourceTestRule RULE = ResourceTestRule.builder()

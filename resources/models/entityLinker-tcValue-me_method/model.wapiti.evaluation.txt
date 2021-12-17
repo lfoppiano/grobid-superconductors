@@ -1,0 +1,2760 @@
+Recap results for each fold:
+
+
+====================== Fold 0 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_0_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method8138541163336281077.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method12190730680346106879.test
+=== START RAW RESULTS ===
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+quality	quality	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+not	not	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+observably	observably	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+changed	changed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+following	following	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+procedure	procedure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+≈	≈	ALLCAPS	NODIGIT	NOPUNCT	≈	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_right>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_right>	<other>
+44	44	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<link_right>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_right>	<other>
+identified	identified	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_left>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_left>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+see	see	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Supplemental	supplemental	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+Material	material	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+~11	~11	ALLCAPS	CONTAINDIGIT	NOPUNCT	~dd	<tcValue>	I-<link_left>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+obtained	obtained	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+from	from	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+data	data	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+consistent	consistent	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+measured	measured	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+same	same	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Upper	upper	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+inset	inset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+:	:	ALLCAPS	NODIGIT	PUNCT	:	<other>	<other>	<other>
+inverse	inverse	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+/	/	ALLCAPS	NODIGIT	NOPUNCT	/	<other>	<other>	<other>
+χ	χ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+vs	vs	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+H	h	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+100	100	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<other>	<other>	<other>
+Oe	oe	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+fit	fit	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+Curie	curie	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+Weiss	weiss	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+law	law	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+above	above	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+Tc	tc	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+43	43	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+µ	µ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+eff	eff	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+8	8	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+µB	µb	NOCAPS	NODIGIT	NOPUNCT	xX	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+θCW	θcw	NOCAPS	NODIGIT	NOPUNCT	xXX	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+−	−	ALLCAPS	NODIGIT	HYPHEN	−	<other>	<other>	<other>
+27	27	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+At	at	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_right>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_right>	<link_left>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_right>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_right>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_left>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_left>	<other>
+anomalies	anomalies	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+can	can	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+be	be	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+seen	seen	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+ascribed	ascribed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+On	on	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+cooling	cooling	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+we	we	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+see	see	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+signatures	signatures	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+supercon	supercon	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+ductivity	ductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+:	:	ALLCAPS	NODIGIT	PUNCT	:	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+sharp	sharp	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+drop	drop	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+decrease	decrease	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+sus	sus	NOCAPS	NODIGIT	NOPUNCT	xxx	<me_method>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<other>	<other>
+ceptibility	ceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+confirming	confirming	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+203	203	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<tcValue>	I-<link_left>	I-<link_left>
+kelvin	kelvin	NOCAPS	NODIGIT	NOPUNCT	xxxx	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          75           50           20           28.57        5      
+<link_right>         85           0            0            0            3      
+
+all (micro avg.)     80           50           12.5         20           8      
+all (macro avg.)     80           25           10           14.29        8      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          0
+Instance-level recall:      0
+
+
+
+====================== Fold 1 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_1_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method12222125425722001310.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method15739221354969835929.test
+=== START RAW RESULTS ===
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+sharp	sharp	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+drop	drop	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+corresponding	corresponding	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+around	around	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+50	50	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+y	y	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+75	75	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+70	70	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+both	both	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+cooling	cooling	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+ZFC	zfc	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+cooling	cooling	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+FC	fc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+curves	curves	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+In	in	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+addition	addition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+observation	observation	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+large	large	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+associated	associated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Meissner	meissner	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+effect	effect	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+has	has	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+been	been	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+6	6	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_right>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_right>	<link_left>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_right>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_right>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+shows	shows	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+dependence	dependence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_left>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_left>	<other>
+measured	measured	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+powdered	powdered	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+Quantum	quantum	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+Design	design	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+MPMS	mpms	ALLCAPS	NODIGIT	NOPUNCT	XXXX	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+In	in	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+/	/	ALLCAPS	NODIGIT	NOPUNCT	/	<other>	<other>	<other>
+59	59	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+determined	determined	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+NMR	nmr	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+detected	detected	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+clearly	clearly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+approximately	approximately	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+even	even	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+under	under	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+high	high	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+∼7	∼7	ALLCAPS	CONTAINDIGIT	NOPUNCT	∼d	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+consistent	consistent	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+high	high	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+H	h	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+estimated	estimated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+from	from	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	I-<link_right>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+low	low	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+thermodynamic	thermodynamic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+M	m	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	I-<link_right>	I-<link_right>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<me_method>	<link_right>	<link_right>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	<link_right>	<link_right>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<me_method>	<link_right>	<link_right>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+C	c	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<me_method>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<me_method>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Sr	sr	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+9	9	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Gd	gd	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+CuO	cuo	INITCAP	NODIGIT	NOPUNCT	XxX	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+polycrystals	polycrystals	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+indi	indi	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+cate	cate	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+coexistence	coexistence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+SC	sc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+Gd	gd	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+paramagnetism	paramagnetism	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+full	full	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+J	j	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+7	7	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+/	/	ALLCAPS	NODIGIT	NOPUNCT	/	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Hund	hund	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+'	'	ALLCAPS	NODIGIT	QUOTE	'	<other>	<other>	<other>
+s	s	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+rule	rule	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+moment	moment	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+despite	despite	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+close	close	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+proximity	proximity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+Gd	gd	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+atoms	atoms	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+CuO	cuo	INITCAP	NODIGIT	NOPUNCT	XxX	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+planes	planes	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+43	43	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+both	both	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+Sr	sr	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+9	9	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Gd	gd	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+CuO	cuo	INITCAP	NODIGIT	NOPUNCT	XxX	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Sr	sr	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+9	9	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+La	la	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+CuO	cuo	INITCAP	NODIGIT	NOPUNCT	XxX	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+occurs	occurs	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+about	about	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+char	char	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+acterized	acterized	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+through	through	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+dependent	dependent	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+suscept	suscept	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<other>
+ibility	ibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+electrical	electrical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          85.71        50           33.33        40           3      
+<link_right>         80.95        50           25           33.33        4      
+
+all (micro avg.)     83.33        50           28.57        36.36        7      
+all (macro avg.)     83.33        50           29.17        36.67        7      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          1
+Instance-level recall:      20
+
+
+
+====================== Fold 2 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_2_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method12843487805517721082.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method2046533916672803988.test
+=== START RAW RESULTS ===
+Linear	linear	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+dependence	dependence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+electrical	electrical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	I-<link_left>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_left>
+shows	shows	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+up	up	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+between	between	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+35	35	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+emerges	emerges	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<other>
+8	8	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+critical	critical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+LaONiP	laonip	INITCAP	NODIGIT	NOPUNCT	XxXxxX	<other>	<other>	<other>
+estimated	estimated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<me_method>	<link_right>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<me_method>	<link_right>	<other>
+Eliashberg	eliashberg	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	<link_right>	<other>
+model	model	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+$	$	ALLCAPS	NODIGIT	NOPUNCT	$	<other>	<other>	<other>
+26	26	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+agrees	agrees	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+well	well	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+experiment	experiment	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	I-<link_right>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+well	well	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+resistance	resistance	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+indicated	indicated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+30	30	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+achieved	achieved	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Comparison	comparison	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+low	low	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	I-<link_left>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_left>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+high	high	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+pressure	pressure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+oxydized	oxydized	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+HPO	hpo	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+Cu	cu	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+Mo	mo	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+1212	1212	NOCAPS	ALLDIGIT	NOPUNCT	dddd	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+pre	pre	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+vious	vious	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+figure	figure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+black	black	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+dots	dots	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+previously	previously	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+reported	reported	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+data	data	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+over	over	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+doped	doped	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+La	la	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+−	−	ALLCAPS	NODIGIT	HYPHEN	−	<other>	<other>	<other>
+xSrxCuO	xsrxcuo	NOCAPS	NODIGIT	NOPUNCT	xXxXxX	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+259	259	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+Tc	tc	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+6	6	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<link_left>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+blue	blue	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+squares	squares	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+290	290	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+non	non	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+red	red	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+diamonds	diamonds	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+opti	opti	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+mally	mally	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+doped	doped	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+La	la	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+−	−	ALLCAPS	NODIGIT	HYPHEN	−	<other>	<other>	<other>
+xSrxCuO	xsrxcuo	NOCAPS	NODIGIT	NOPUNCT	xXxXxX	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+178	178	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+green	green	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+open	open	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+circles	circles	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+YBa	yba	INITCAP	NODIGIT	NOPUNCT	XXx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Cu	cu	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+O	o	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+7	7	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+−	−	ALLCAPS	NODIGIT	HYPHEN	−	<other>	<other>	<other>
+δ	δ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+δ	δ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+05	05	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+black	black	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+open	open	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+squares	squares	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Magnetic	magnetic	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	I-<link_right>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+measurement	measurement	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+shows	shows	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+about	about	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+shielding	shielding	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+fraction	fraction	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+about	about	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+17	17	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+%	%	ALLCAPS	NODIGIT	NOPUNCT	%	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+8	8	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+see	see	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Part	part	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+A	a	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+Ref	ref	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          78.26        25           33.33        28.57        3      
+<link_right>         86.96        50           33.33        40           3      
+
+all (micro avg.)     82.61        33.33        33.33        33.33        6      
+all (macro avg.)     82.61        37.5         33.33        34.29        6      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          0
+Instance-level recall:      0
+
+
+
+====================== Fold 3 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_3_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method3963262881376227213.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method11669298031072453132.test
+=== START RAW RESULTS ===
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+data	data	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+LiTi	liti	INITCAP	NODIGIT	NOPUNCT	XxXXx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+O	o	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+showed	showed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+~	~	ALLCAPS	NODIGIT	NOPUNCT	~	<other>	<other>	<other>
+10	10	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<tcValue>	<link_left>	<link_left>
+12	12	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+cor	cor	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+rected	rected	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+demagnetization	demagnetization	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+factor	factor	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+using	using	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+ellipsoidal	ellipsoidal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+approximation	approximation	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+decreases	decreases	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+about	about	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+We	we	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+should	should	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+note	note	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+clear	clear	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+dia	dia	NOCAPS	NODIGIT	NOPUNCT	xxx	<me_method>	<other>	I-<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<other>	<link_right>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+15	15	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+−	−	ALLCAPS	NODIGIT	HYPHEN	−	<tcValue>	<other>	<link_left>
+17	17	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+9	9	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+tran	tran	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+sition	sition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+width	width	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+large	large	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+run	run	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+;	;	ALLCAPS	NODIGIT	PUNCT	;	<other>	<other>	<other>
+it	it	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+sharp	sharp	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+run	run	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+using	using	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+different	different	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+part	part	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+same	same	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+As	as	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+evident	evident	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+from	from	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+plots	plots	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+we	we	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+observe	observe	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+clear	clear	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+~	~	ALLCAPS	NODIGIT	NOPUNCT	~	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<link_left>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+consistent	consistent	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+results	results	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+previous	previous	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+studies	studies	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+shows	shows	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+our	our	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+raw	raw	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+data	data	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+plotted	plotted	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+C	c	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+/	/	ALLCAPS	NODIGIT	NOPUNCT	/	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+vs	vs	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Further	further	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+evidence	evidence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+given	given	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+Fig	fig	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+where	where	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+one	one	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+notes	notes	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+characteristic	characteristic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+jump	jump	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+∆C	∆c	ALLCAPS	NODIGIT	NOPUNCT	∆X	<other>	<other>	<other>
+p	p	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	I-<link_right>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+measured	measured	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+same	same	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+powder	powder	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+wih	wih	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+84	84	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+Fig	fig	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+µSR	µsr	NOCAPS	NODIGIT	NOPUNCT	xXX	<other>	<other>	<other>
+results	results	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+be	be	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+discussed	discussed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          88.24        50           100          66.67        2      
+<link_right>         88.24        50           50           50           2      
+
+all (micro avg.)     88.24        50           75           60           4      
+all (macro avg.)     88.24        50           75           58.33        4      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          2
+Instance-level recall:      40
+
+
+
+====================== Fold 4 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_4_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method16748505876170484547.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method11474302597922556387.test
+=== START RAW RESULTS ===
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+anomalously	anomalously	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+lower	lower	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+near	near	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+instead	instead	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+reasonable	reasonable	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+large	large	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+Meissner	meissner	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+reported	reported	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+using	using	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+stationary	stationary	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetometer	magnetometer	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+∼	∼	ALLCAPS	NODIGIT	NOPUNCT	∼	<other>	<other>	<other>
+30	30	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+≤	≤	ALLCAPS	NODIGIT	NOPUNCT	≤	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+G	g	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+applied	applied	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	I-<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<link_right>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<link_right>
+cooled	cooled	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<me_method>	<link_right>	<other>
+ZFC	zfc	ALLCAPS	NODIGIT	NOPUNCT	XXX	<me_method>	<link_right>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<me_method>	<link_right>	<other>
+mode	mode	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+For	for	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+well	well	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+defined	defined	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+anomaly	anomaly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	I-<link_right>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+related	related	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+SC	sc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+32	32	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+confirms	confirms	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+compound	compound	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+It	it	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+reported	reported	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+Cd	cd	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Re	re	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+O	o	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+7	7	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+falls	falls	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+into	into	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+state	state	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+≃	≃	ALLCAPS	NODIGIT	NOPUNCT	≃	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_right>	I-<link_left>
+∼	∼	ALLCAPS	NODIGIT	NOPUNCT	∼	<tcValue>	<link_right>	<link_left>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_right>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_right>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+confirmed	confirmed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+large	large	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+jump	jump	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_left>	I-<link_right>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_left>	<link_right>
+∆C	∆c	ALLCAPS	NODIGIT	NOPUNCT	∆X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+well	well	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+large	large	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+diamagnetism	diamagnetism	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+due	due	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Meissner	meissner	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+effect	effect	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+associated	associated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+occurrence	occurrence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Magnetic	magnetic	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	I-<link_right>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+indicate	indicate	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<link_left>
+7	7	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+magnitude	magnitude	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+cooling	cooling	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+runs	runs	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+are	are	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+comparable	comparable	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+data	data	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+Ref	ref	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Thermoelectric	thermoelectric	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	<other>	I-<link_right>
+power	power	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+S	s	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+max	max	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+exhibit	exhibit	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+S~0	s~0	ALLCAPS	CONTAINDIGIT	NOPUNCT	X~d	<other>	<other>	<other>
+state	state	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+around	around	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+11	11	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+16	16	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+respectively	respectively	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+80	80	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+00	00	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+samples	samples	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+consistent	consistent	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+resistance	resistance	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          85.19        40           66.67        50           3      
+<link_right>         81.48        40           50           44.44        4      
+
+all (micro avg.)     83.33        40           57.14        47.06        7      
+all (macro avg.)     83.33        40           58.33        47.22        7      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          2
+Instance-level recall:      40
+
+
+
+====================== Fold 5 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_5_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method3450473657590361170.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method7093544386500232879.test
+=== START RAW RESULTS ===
+However	however	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+indicate	indicate	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+type	type	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+II	ii	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+SC	sc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+established	established	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+considerably	considerably	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+lower	lower	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<link_left>
+50	50	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+In	in	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+addition	addition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+observation	observation	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+resistive	resistive	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+large	large	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+associated	associated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Meissner	meissner	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+effect	effect	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_right>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_right>	<link_left>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_right>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_right>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+shows	shows	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+dependence	dependence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_left>	I-<link_right>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_left>	<link_right>
+measured	measured	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+powdered	powdered	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+Quantum	quantum	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+Design	design	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+MPMS	mpms	ALLCAPS	NODIGIT	NOPUNCT	XXXX	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+A	a	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+anomaly	anomaly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+appears	appears	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	I-<link_right>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+jump	jump	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+about	about	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+ΔC	δc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+/	/	ALLCAPS	NODIGIT	NOPUNCT	/	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+∼12	∼12	ALLCAPS	CONTAINDIGIT	NOPUNCT	∼dd	<other>	<other>	<other>
+mJ	mj	NOCAPS	NODIGIT	NOPUNCT	xX	<other>	<other>	<other>
+mol	mol	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+−	−	ALLCAPS	NODIGIT	HYPHEN	−	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+−	−	ALLCAPS	NODIGIT	HYPHEN	−	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+As	as	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+shown	shown	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+strong	strong	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+χ	χ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+'	'	ALLCAPS	NODIGIT	QUOTE	'	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+has	has	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+been	been	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<tcValue>	I-<link_left>	I-<link_left>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<link_left>
+06	06	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+corresponds	corresponds	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+end	end	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+point	point	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+electrical	electrical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	I-<link_right>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+measurement	measurement	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+exciting	exciting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+discovery	discovery	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+split	split	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductive	superconductive	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transitions	transitions	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+UPt	upt	INITCAP	NODIGIT	NOPUNCT	XXx	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+530	530	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<tcValue>	I-<link_right>	I-<link_left>
+mK	mk	NOCAPS	NODIGIT	NOPUNCT	xX	<tcValue>	<link_right>	<link_left>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+480	480	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<tcValue>	I-<link_left>	<other>
+mK	mk	NOCAPS	NODIGIT	NOPUNCT	xX	<tcValue>	<link_left>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	I-<link_right>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+has	has	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+led	led	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+an	an	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+enormous	enormous	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+amount	amount	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+experimental	experimental	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+theoretical	theoretical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+work	work	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+UPt	upt	INITCAP	NODIGIT	NOPUNCT	XXx	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          80           25           25           25           4      
+<link_right>         76.67        0            0            0            3      
+
+all (micro avg.)     78.33        12.5         14.29        13.33        7      
+all (macro avg.)     78.33        12.5         12.5         12.5         7      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          0
+Instance-level recall:      0
+
+
+
+====================== Fold 6 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_6_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method2630267693511694649.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method8858980423939496400.test
+=== START RAW RESULTS ===
+Resistivity	resistivity	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	I-<link_right>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+polycrystalline	polycrystalline	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+samples	samples	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+evidence	evidence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+6	6	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<link_left>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+determined	determined	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+dc	dc	NOCAPS	NODIGIT	NOPUNCT	xx	<me_method>	<other>	I-<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<other>	<link_right>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+refer	refer	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+93	93	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+almost	almost	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+highest	highest	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+material	material	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+relevant	relevant	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+energy	energy	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+scale	scale	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+charge	charge	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+degrees	degrees	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+freedom	freedom	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+given	given	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+su	su	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+perconducting	perconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+43	43	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+close	close	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+excess	excess	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Also	also	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+it	it	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+rare	rare	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+oxide	oxide	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductor	superconductor	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+showing	showing	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+sharp	sharp	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+anomaly	anomaly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+C	c	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+contrast	contrast	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+an	an	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+unpronounced	unpronounced	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+one	one	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+polycrystalline	polycrystalline	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+BaPb	bapb	INITCAP	NODIGIT	NOPUNCT	XxXXx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+Bi	bi	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+O	o	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+comparable	comparable	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+~1	~1	ALLCAPS	CONTAINDIGIT	NOPUNCT	~d	<tcValue>	I-<link_left>	I-<link_left>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Superconductivity	superconductivity	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+ma	ma	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+terial	terial	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<link_left>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+unconventional	unconventional	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+evidenced	evidenced	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+power	power	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+law	law	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+behaviors	behaviors	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+its	its	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+thermal	thermal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+conductivity	conductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+spin	spin	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+lattice	lattice	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+relaxation	relaxation	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          87.5         50           100          66.67        2      
+<link_right>         87.5         50           50           50           2      
+
+all (micro avg.)     87.5         50           75           60           4      
+all (macro avg.)     87.5         50           75           58.33        4      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          1
+Instance-level recall:      20
+
+
+
+====================== Fold 7 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_7_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method17167918215689888888.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method16811680668712415511.test
+=== START RAW RESULTS ===
+XRD	xrd	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+patterns	patterns	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+M	m	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	I-<link_right>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	<link_right>	<other>
+curve	curve	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+F	f	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+e	e	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Cu	cu	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Sr	sr	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Y	y	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+Cu	cu	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+O	o	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+7	7	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
++	+	ALLCAPS	NODIGIT	NOPUNCT	+	<other>	<other>	<other>
+δ	δ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+superconductor	superconductor	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+are	are	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+shown	shown	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+about	about	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+77	77	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+nearly	nearly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+single	single	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+phase	phase	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+As	as	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+shown	shown	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+divided	divided	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+suddenly	suddenly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+increases	increases	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+6	6	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<link_left>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+forms	forms	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+broad	broad	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+maximum	maximum	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+around	around	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<link_left>
+8	8	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Solving	solving	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+Eliashberg	eliashberg	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	<other>
+equation	equation	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+l	l	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+ep	ep	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+value	value	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+gives	gives	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+critical	critical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+$	$	ALLCAPS	NODIGIT	NOPUNCT	$	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	I-<link_left>
+:	:	ALLCAPS	NODIGIT	PUNCT	:	<tcValue>	<link_left>	<link_left>
+8	8	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+much	much	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+lower	lower	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+than	than	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+experimental	experimental	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+value	value	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+$	$	ALLCAPS	NODIGIT	NOPUNCT	$	<other>	<other>	<other>
+26	26	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Magnetic	magnetic	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	I-<link_right>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+our	our	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+PLCCO	plcco	ALLCAPS	NODIGIT	NOPUNCT	XXXX	<other>	<other>	<other>
+crystals	crystals	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+show	show	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+SC	sc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+corresponds	corresponds	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+24	24	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+21	21	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+16	16	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+respectively	respectively	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+ρ	ρ	NOCAPS	NODIGIT	NOPUNCT	x	<me_method>	<other>	I-<link_right>
+ab	ab	NOCAPS	NODIGIT	NOPUNCT	xx	<me_method>	<other>	<link_right>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<me_method>	<other>	<link_right>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	<other>	<link_right>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<me_method>	<other>	<link_right>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+also	also	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+measured	measured	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+but	but	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+no	no	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+high	high	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+downturn	downturn	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+62	62	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+optimally	optimally	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+doped	doped	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+Bi	bi	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+2212	2212	NOCAPS	ALLDIGIT	NOPUNCT	dddd	<other>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+found	found	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+35	35	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          89.66        75           60           66.67        5      
+<link_right>         82.76        50           20           28.57        5      
+
+all (micro avg.)     86.21        66.67        40           50           10     
+all (macro avg.)     86.21        62.5         40           47.62        10     
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          1
+Instance-level recall:      20
+
+
+
+====================== Fold 8 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_8_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method10257667008305337890.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method17262234887406285452.test
+=== START RAW RESULTS ===
+Magnetic	magnetic	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	I-<link_right>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+mea	mea	NOCAPS	NODIGIT	NOPUNCT	xxx	<me_method>	<link_right>	<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<link_right>
+surements	surements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+have	have	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+shown	shown	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+drop	drop	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+5	5	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+ascribed	ascribed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+superconduc	superconduc	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+tivity	tivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+although	although	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+estimated	estimated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+volume	volume	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+fraction	fraction	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+only	only	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+order	order	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+10	10	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+%	%	ALLCAPS	NODIGIT	NOPUNCT	%	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+value	value	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+perfect	perfect	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+diamagnetism	diamagnetism	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+In	in	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+way	way	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+current	current	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+effects	effects	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+electrical	electrical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+strongly	strongly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+suggest	suggest	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+anomalous	anomalous	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+behavior	behavior	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+electrical	electrical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<tcValue>	I-<link_left>	<other>
+20	20	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+attributed	attributed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+pressure	pressure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+induced	induced	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+One	one	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+features	features	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+our	our	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sam	sam	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+ple	ple	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+La	la	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+CuO	cuo	INITCAP	NODIGIT	NOPUNCT	XxX	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+11	11	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+absence	absence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+clear	clear	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+contri	contri	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+bution	bution	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+simultaneous	simultaneous	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+ordering	ordering	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+42	42	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<tcValue>	<link_left>	<link_left>
+43	43	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Bulk	bulk	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+SC	sc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+further	further	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+confirmed	confirmed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+characteristic	characteristic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+specific	specific	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<other>
+heat	heat	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+jump	jump	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+[	[	ALLCAPS	NODIGIT	OPENBRACKET	[	<other>	<other>	<other>
+∆	∆	ALLCAPS	NODIGIT	NOPUNCT	∆	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+C	c	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+]	]	ALLCAPS	NODIGIT	ENDBRACKET	]	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<tcValue>	I-<link_left>	I-<link_left>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<link_left>
+8	8	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+real	real	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+part	part	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+ac	ac	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+suscep	suscep	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	I-<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<link_right>
+tibility	tibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+χ	χ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+′	′	ALLCAPS	NODIGIT	NOPUNCT	′	<other>	<other>	<other>
+shows	shows	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+diamagnetism	diamagnetism	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<link_left>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+followed	followed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+broad	broad	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+similar	similar	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+original	original	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+report	report	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          95.24        100          80           88.89        5      
+<link_right>         85.71        100          40           57.14        5      
+
+all (micro avg.)     90.48        100          60           75           10     
+all (macro avg.)     90.48        100          60           73.02        10     
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          2
+Instance-level recall:      40
+
+
+
+====================== Fold 9 ====================== 
+Saving model in /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method_nfold_9_wkpmcxqrqy.wapiti
+Training input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method17978833911249429672.train
+Evaluation input data: /Users/lfoppiano/development/projects/grobid/grobid-superconductors/../grobid-home/tmp/entityLinker-tcValue-me_method14324738342450008300.test
+=== START RAW RESULTS ===
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+application	application	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+pressure	pressure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+on	on	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+EuFe	eufe	INITCAP	NODIGIT	NOPUNCT	XxXXx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+As	as	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+results	results	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+continuous	continuous	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+suppression	suppression	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+SDW	sdw	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+ordering	ordering	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+above	above	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+GPa	gpa	INITCAP	NODIGIT	NOPUNCT	XXx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+sharp	sharp	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+drop	drop	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+electrical	electrical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	I-<link_right>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+ρ	ρ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+indicates	indicates	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+29	29	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Magnetization	magnetization	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	I-<link_right>
+studies	studies	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+revealed	revealed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+nearly	nearly	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+100	100	NOCAPS	ALLDIGIT	NOPUNCT	ddd	<other>	<other>	<other>
+%	%	ALLCAPS	NODIGIT	NOPUNCT	%	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+volume	volume	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+all	all	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+samples	samples	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+43	43	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+SLCO	slco	ALLCAPS	NODIGIT	NOPUNCT	XXXX	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+%	%	ALLCAPS	NODIGIT	NOPUNCT	%	<other>	<other>	<other>
+Zn	zn	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+SLCO	slco	ALLCAPS	NODIGIT	NOPUNCT	XXXX	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+32	32	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+%	%	ALLCAPS	NODIGIT	NOPUNCT	%	<other>	<other>	<other>
+Ni	ni	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+SLCO	slco	ALLCAPS	NODIGIT	NOPUNCT	XXXX	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Bulk	bulk	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+Tc	tc	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+30	30	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+observed	observed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+from	from	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+DC	dc	ALLCAPS	NODIGIT	NOPUNCT	XX	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+super	super	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+conducting	conducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+our	our	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+crystals	crystals	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+was	was	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+single	single	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+stepped	stepped	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+sharp	sharp	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+≃	≃	ALLCAPS	NODIGIT	NOPUNCT	≃	<other>	<other>	<other>
+23	23	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+determined	determined	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+susceptibil	susceptibil	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<other>	<other>
+ity	ity	NOCAPS	NODIGIT	NOPUNCT	xxx	<me_method>	<other>	<other>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+electrical	electrical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+drops	drops	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sharply	sharply	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	I-<link_left>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<link_left>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<link_left>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+shows	shows	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+effectively	effectively	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+resistivity	resistivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<tcValue>	<other>	I-<link_left>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<link_left>
+05	05	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+estimated	estimated	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+be	be	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<tcValue>	<other>	I-<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<tcValue>	<other>	<link_left>
+05	05	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+data	data	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+using	using	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+an	an	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+equal	equal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+area	area	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+entropy	entropy	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+construction	construction	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+solid	solid	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+black	black	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+lines	lines	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+close	close	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+critical	critical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+from	from	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+dependent	dependent	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+measurement	measurement	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+From	from	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+R	r	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	I-<link_right>	I-<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<link_right>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<me_method>	<link_right>	<link_right>
+curve	curve	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+found	found	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+83	83	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+zero	zero	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+63	63	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+ac	ac	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+suscep	suscep	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	I-<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<link_right>
+tibility	tibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+indicate	indicate	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+nonbulk	nonbulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+ambient	ambient	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+pressure	pressure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+but	but	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+*	*	ALLCAPS	NODIGIT	NOPUNCT	*	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+∼	∼	ALLCAPS	NODIGIT	NOPUNCT	∼	<other>	<other>	<other>
+13	13	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+P	p	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+∼	∼	ALLCAPS	NODIGIT	NOPUNCT	∼	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+GPa	gpa	INITCAP	NODIGIT	NOPUNCT	XXx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+20	20	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+[	[	ALLCAPS	NODIGIT	OPENBRACKET	[	<other>	<other>	<other>
+Fig	fig	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+]	]	ALLCAPS	NODIGIT	ENDBRACKET	]	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_right>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+LiFeAs	lifeas	INITCAP	NODIGIT	NOPUNCT	XxXxXx	<other>	<other>	<other>
+crystal	crystal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+shown	shown	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+figure	figure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+b	b	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+suggests	suggests	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+bulk	bulk	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+∼	∼	ALLCAPS	NODIGIT	NOPUNCT	∼	<tcValue>	I-<link_left>	I-<link_left>
+16	16	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+which	which	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+defined	defined	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+by	by	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+bifurcation	bifurcation	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+point	point	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+between	between	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+ZFC	zfc	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+FC	fc	ALLCAPS	NODIGIT	NOPUNCT	XX	<other>	<other>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+consistent	consistent	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transport	transport	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+data	data	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Moreover	moreover	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+AC	ac	ALLCAPS	NODIGIT	NOPUNCT	XX	<me_method>	I-<link_right>	<other>
+magnetic	magnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+susceptibility	susceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+detected	detected	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+below	below	NOCAPS	NODIGIT	NOPUNCT	xxxx	<tcValue>	I-<link_left>	I-<link_left>
+~20	~20	ALLCAPS	CONTAINDIGIT	NOPUNCT	~dd	<tcValue>	<link_left>	<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+9	9	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+12	12	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+GPa	gpa	INITCAP	NODIGIT	NOPUNCT	XXx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+shown	shown	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Magnetiza	magnetiza	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	I-<link_right>	I-<link_right>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<me_method>	<link_right>	<link_right>
+tion	tion	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_right>	<link_right>
+measurements	measurements	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+showed	showed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+single	single	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sharp	sharp	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconduct	superconduct	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+ing	ing	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+≃	≃	ALLCAPS	NODIGIT	NOPUNCT	≃	<other>	<other>	<other>
+43	43	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_left>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_left>	<link_left>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+saturation	saturation	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+sus	sus	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+ceptibility	ceptibility	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+low	low	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+temperatures	temperatures	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+indicating	indicating	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+good	good	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+sam	sam	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+ple	ple	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+quality	quality	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+Simulation	simulation	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+band	band	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+structure	structure	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+properties	properties	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+oxypnictides	oxypnictides	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+1245	1245	NOCAPS	ALLDIGIT	NOPUNCT	dddd	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Band	band	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+calculations	calculations	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<other>
+;	;	ALLCAPS	NODIGIT	PUNCT	;	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Simulation	simulation	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+oxypnictide	oxypnictide	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+properties	properties	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+;	;	ALLCAPS	NODIGIT	PUNCT	;	<other>	<other>	<other>
+4	4	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Theoretical	theoretical	INITCAP	NODIGIT	NOPUNCT	Xxxx	<me_method>	<other>	I-<link_right>
+models	models	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<other>	<link_right>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+oxypnictides	oxypnictides	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+critical	critical	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+$	$	ALLCAPS	NODIGIT	NOPUNCT	$	<other>	<other>	<other>
+56	56	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<link_left>
+detected	detected	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+number	number	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+fluorine	fluorine	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+doped	doped	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+samarium	samarium	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+oxyarsenide	oxyarsenide	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+SmO	smo	INITCAP	NODIGIT	NOPUNCT	XxX	<other>	<other>	<other>
+1	1	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+Àx	àx	INITCAP	NODIGIT	NOPUNCT	Xx	<other>	<other>	<other>
+F	f	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+FeAs	feas	INITCAP	NODIGIT	NOPUNCT	XxXXx	<other>	<other>	<other>
+sam	sam	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+ples	ples	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+belonging	belonging	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+group	group	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+compounds	compounds	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+now	now	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+maximum	maximum	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+shown	shown	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+available	available	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconducting	superconducting	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+systems	systems	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+this	this	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+class	class	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+The	the	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+where	where	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+a	a	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+jump	jump	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+ρ	ρ	NOCAPS	NODIGIT	NOPUNCT	x	<me_method>	<other>	<other>
+ab	ab	NOCAPS	NODIGIT	NOPUNCT	xx	<me_method>	<other>	<other>
+occurs	occurs	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+is	is	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+in	in	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+correspondence	correspondence	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+structural	structural	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+phase	phase	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+between	between	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+OMT	omt	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+TLT	tlt	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+/	/	ALLCAPS	NODIGIT	NOPUNCT	/	<other>	<other>	<other>
+Pccn	pccn	INITCAP	NODIGIT	NOPUNCT	Xxxx	<other>	<other>	<other>
+phases	phases	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+d	d	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+ity	ity	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+,	,	ALLCAPS	NODIGIT	COMMA	,	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+∼	∼	ALLCAPS	NODIGIT	NOPUNCT	∼	<other>	<other>	<other>
+15	15	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	<other>	<other>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+9	9	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+that	that	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+ρ	ρ	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+ab	ab	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+between	between	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+d	d	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+2	2	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+increases	increases	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+increasing	increasing	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+field	field	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+above	above	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+9	9	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+and	and	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+finally	finally	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+exhibits	exhibits	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+an	an	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+insulating	insulating	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+behavior	behavior	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+H	h	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+≥	≥	ALLCAPS	NODIGIT	NOPUNCT	≥	<other>	<other>	<other>
+13	13	NOCAPS	ALLDIGIT	NOPUNCT	dd	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+
+For	for	INITCAP	NODIGIT	NOPUNCT	Xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+HPO	hpo	ALLCAPS	NODIGIT	NOPUNCT	XXX	<other>	<other>	<other>
+-	-	ALLCAPS	NODIGIT	HYPHEN	-	<other>	<other>	<other>
+annealed	annealed	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+samples	samples	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+superconductivity	superconductivity	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+appears	appears	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+with	with	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+transition	transition	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+temperature	temperature	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+T	t	ALLCAPS	NODIGIT	NOPUNCT	X	<other>	<other>	<other>
+c	c	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+up	up	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+to	to	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+40	40	NOCAPS	ALLDIGIT	NOPUNCT	dd	<tcValue>	I-<link_right>	I-<link_left>
+K	k	ALLCAPS	NODIGIT	NOPUNCT	X	<tcValue>	<link_right>	<link_left>
+(	(	ALLCAPS	NODIGIT	OPENBRACKET	(	<other>	<other>	<other>
+as	as	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+determined	determined	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+at	at	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+onset	onset	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+of	of	NOCAPS	NODIGIT	NOPUNCT	xx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+diamagnetic	diamagnetic	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	I-<link_left>	I-<link_right>
+signal	signal	NOCAPS	NODIGIT	NOPUNCT	xxxx	<me_method>	<link_left>	<link_right>
+)	)	ALLCAPS	NODIGIT	ENDBRACKET	)	<other>	<other>	<other>
+for	for	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+the	the	NOCAPS	NODIGIT	NOPUNCT	xxx	<other>	<other>	<other>
+x	x	NOCAPS	NODIGIT	NOPUNCT	x	<other>	<other>	<other>
+=	=	ALLCAPS	NODIGIT	NOPUNCT	=	<other>	<other>	<other>
+0	0	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+3	3	NOCAPS	ALLDIGIT	NOPUNCT	d	<other>	<other>	<other>
+sample	sample	NOCAPS	NODIGIT	NOPUNCT	xxxx	<other>	<other>	<other>
+.	.	ALLCAPS	NODIGIT	DOT	.	<other>	<other>	<other>
+=== END RAw RESULTS ===
+
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          82.46        41.67        62.5         50           8      
+<link_right>         87.72        57.14        50           53.33        8      
+
+all (micro avg.)     85.09        47.37        56.25        51.43        16     
+all (macro avg.)     85.09        49.4         56.25        51.67        16     
+
+===== Instance-level results =====
+
+Total expected instances:   14
+Correct instances:          4
+Instance-level recall:      28.57
+
+
+
+Summary results: 
+Worst fold
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          80           25           25           25           4      
+<link_right>         76.67        0            0            0            3      
+
+all (micro avg.)     78.33        12.5         14.29        13.33        7      
+all (macro avg.)     78.33        12.5         12.5         12.5         7      
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          0
+Instance-level recall:      0
+
+Best fold:
+
+===== Field-level results =====
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          95.24        100          80           88.89        5      
+<link_right>         85.71        100          40           57.14        5      
+
+all (micro avg.)     90.48        100          60           75           10     
+all (macro avg.)     90.48        100          60           73.02        10     
+
+===== Instance-level results =====
+
+Total expected instances:   5
+Correct instances:          2
+Instance-level recall:      40
+
+
+Average over 10 folds: 
+
+label                accuracy     precision    recall       f1           support
+
+<link_left>          84.72        50.67        58.08        51.1         40     
+<link_right>         84.3         44.71        31.83        35.68        39     
+
+all                  84.51        49.99        45.21        44.65  
+
+===== Instance-level results =====
+
+Total expected instances:   5.9
+Correct instances:          1.3
+Instance-level recall:      22.03
+
+
+N-Fold evaluation for org.grobid.core.GrobidModels$1@1213ffbc model is realized in 59431 ms

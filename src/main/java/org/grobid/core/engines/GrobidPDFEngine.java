@@ -2,25 +2,30 @@ package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
-import org.grobid.core.data.BiblioInfo;
+import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
-import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Figure;
+import org.grobid.core.data.document.BiblioInfo;
+import org.grobid.core.data.document.DocumentBlock;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.engines.label.SegmentationLabels;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.engines.label.TaggingLabels;
+import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.layout.LayoutTokenization;
 import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
-import org.grobid.core.utilities.LayoutTokensUtil;
+import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
+import org.grobid.core.utilities.OffsetPosition;
+import org.grobid.core.utilities.SentenceUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +33,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -48,12 +54,24 @@ public class GrobidPDFEngine {
         TaggingLabels.EQUATION_MARKER);
 
     /**
+     * @use processDocument(Document doc, GrobidAnalysisConfig config, Consumer < DocumentBlock > closure) {
+     */
+    @Deprecated
+    public static BiblioInfo processDocument(Document doc, Consumer<DocumentBlock> closure) {
+        GrobidAnalysisConfig config = GrobidAnalysisConfig.builder()
+            .consolidateHeader(1)
+            .withSentenceSegmentation(true)
+            .build();
+        return processDocument(doc, config, closure);
+    }
+
+    /**
      * In the following, we process the relevant textual content of the document
      * for refining the process based on structures, we need to filter
      * segment of interest (e.g. header, body, annex) and possibly apply
      * the corresponding model to further filter by structure types
      */
-    public static BiblioInfo processDocument(Document doc, Consumer<DocumentBlock> closure) {
+    public static BiblioInfo processDocument(Document doc, GrobidAnalysisConfig config, Consumer<DocumentBlock> closure) {
         EngineParsers parsers = new EngineParsers();
 
         List<DocumentBlock> documentBlocks = new ArrayList<>();
@@ -64,15 +82,15 @@ public class GrobidPDFEngine {
         if (headerDocumentParts != null) {
             BiblioItem resHeader = new BiblioItem();
 
-            GrobidAnalysisConfig config = GrobidAnalysisConfig.builder().consolidateHeader(1).build();
+
             parsers.getHeaderParser().processingHeaderSection(config, doc, resHeader, false);
 
             // title
             List<LayoutToken> titleTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_TITLE);
             if (isNotEmpty(titleTokens)) {
-                documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
-                    DocumentBlock.SUB_SECTION_TITLE,
-                    normaliseAndCleanup(titleTokens)));
+                documentBlocks.add(new DocumentBlock(normaliseAndCleanup(titleTokens), DocumentBlock.SECTION_HEADER,
+                    DocumentBlock.SUB_SECTION_TITLE
+                ));
                 biblioInfo.setTitle(resHeader.getTitle());
             }
 
@@ -84,21 +102,23 @@ public class GrobidPDFEngine {
                 List<LayoutToken> restructuredLayoutTokens = abstractTokenPostProcessed.getRight();
 //                    addSpaceAtTheEnd(abstractTokens, restructuredLayoutTokens);
 
-                documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
-                    DocumentBlock.SUB_SECTION_ABSTRACT, normaliseAndCleanup(restructuredLayoutTokens)));
+                documentBlocks.add(new DocumentBlock(normaliseAndCleanup(restructuredLayoutTokens), DocumentBlock.SECTION_HEADER,
+                    DocumentBlock.SUB_SECTION_ABSTRACT));
             }
 
             // keywords
             List<LayoutToken> keywordTokens = resHeader.getLayoutTokens(TaggingLabels.HEADER_KEYWORD);
             if (isNotEmpty(keywordTokens)) {
-                documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_HEADER,
-                    DocumentBlock.SUB_SECTION_KEYWORDS, normaliseAndCleanup(keywordTokens)));
+                documentBlocks.add(new DocumentBlock(normaliseAndCleanup(keywordTokens), DocumentBlock.SECTION_HEADER,
+                    DocumentBlock.SUB_SECTION_KEYWORDS));
             }
 
             // Other bibliographic data
-            if (isNotBlank(resHeader.getAuthors())) {
+            if (isNotEmpty(resHeader.getFullAuthors())) {
                 String authors = resHeader.getFullAuthors().stream()
-                    .map(a -> StringUtils.strip(LayoutTokensUtil.toText(a.getLayoutTokens())))
+                    .map(a -> Stream.of(StringUtils.trimToEmpty(a.getFirstName()), StringUtils.trimToEmpty(a.getMiddleName()), StringUtils.trimToEmpty(a.getLastName()))
+                        .filter(StringUtils::isNotBlank)
+                        .collect(Collectors.joining(" ")))
                     .collect(Collectors.joining(", "));
                 biblioInfo.setAuthors(authors);
             }
@@ -107,7 +127,7 @@ public class GrobidPDFEngine {
             }
             if (resHeader.getNormalizedPublicationDate() != null) {
                 if (resHeader.getNormalizedPublicationDate().getYear() > 0) {
-                    biblioInfo.setYear(String.valueOf(resHeader.getNormalizedPublicationDate().getYear()));
+                    biblioInfo.setYear(resHeader.getNormalizedPublicationDate().getYear());
                 }
             }
             if (isNotBlank(resHeader.getPublisher())) {
@@ -119,12 +139,16 @@ public class GrobidPDFEngine {
 
         }
 
+        // citation processing, needed for the fulltext processing
+        List<BibDataSet> resCitations = parsers.getCitationParser().
+            processingReferenceSection(doc, parsers.getReferenceSegmenterParser(), 0);
 
+        doc.setBibDataSets(resCitations);
         // we can process all the body, in the future figure and table could be the
         // object of more refined processing
-        headerDocumentParts = doc.getDocumentPart(SegmentationLabels.BODY);
-        if (headerDocumentParts != null) {
-            Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, headerDocumentParts);
+        SortedSet<DocumentPiece> bodyDocumentParts = doc.getDocumentPart(SegmentationLabels.BODY);
+        if (bodyDocumentParts != null) {
+            Pair<String, LayoutTokenization> featSeg = parsers.getFullTextParser().getBodyTextFeatured(doc, bodyDocumentParts);
 
             String fulltextTaggedRawResult = null;
             if (featSeg != null) {
@@ -133,6 +157,7 @@ public class GrobidPDFEngine {
 
                 if (StringUtils.isNotEmpty(featureText)) {
                     fulltextTaggedRawResult = parsers.getFullTextParser().label(featureText);
+//                    postProcessCallout??
                 }
 
                 TaggingTokenClusteror clusteror = new TaggingTokenClusteror(GrobidModels.FULLTEXT, fulltextTaggedRawResult,
@@ -141,12 +166,24 @@ public class GrobidPDFEngine {
                 TaggingTokenCluster previousCluster = null;
 
                 List<LayoutToken> outputBodyLayoutTokens = new ArrayList<>();
+                List<List<LayoutToken>> markersLayoutTokens = new ArrayList<>();
 
                 //Iterate and exclude figures, tables, equations and citation markers
                 for (TaggingTokenCluster cluster : clusteror.cluster()) {
                     final List<LabeledTokensContainer> labeledTokensContainers = cluster.getLabeledTokensContainers();
 
+                    //We collect all the markers that will be used as sentence segmentation 
+                    if (MARKER_LABELS.contains(cluster.getTaggingLabel())) {
+                        List<LayoutToken> tokens = cluster.concatTokens();
+                        TaggingLabel label = cluster.getTaggingLabel();
+                        markersLayoutTokens.add(tokens);
+                    }
+
                     if (EXCLUDED_TAGGING_LABELS.contains(cluster.getTaggingLabel())) {
+                        if (MARKER_LABELS.contains(cluster.getTaggingLabel())) {
+                            List<LayoutToken> normalisedLayoutTokens = normaliseAndCleanup(cluster.concatTokens());
+                            outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
+                        }
                         previousCluster = cluster;
                     } else if (cluster.getTaggingLabel().equals(TaggingLabels.FIGURE)) {
                         //apply the figure model to only get the caption
@@ -160,9 +197,10 @@ public class GrobidPDFEngine {
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                             } else {
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY,
-                                        DocumentBlock.SUB_SECTION_FIGURE, normaliseAndCleanup(outputBodyLayoutTokens)));
+                                    documentBlocks.add(new DocumentBlock(normaliseAndCleanup(outputBodyLayoutTokens), DocumentBlock.SECTION_BODY,
+                                        DocumentBlock.SUB_SECTION_FIGURE, new ArrayList<>(), markersLayoutTokens));
                                     outputBodyLayoutTokens = new ArrayList<>();
+                                    markersLayoutTokens = new ArrayList<>();
                                 }
                                 outputBodyLayoutTokens.addAll(normalisedLayoutTokens);
                             }
@@ -210,19 +248,21 @@ public class GrobidPDFEngine {
                                 //Since we merge sections and paragraphs, we avoid adding sections titles if
                                 // there is no text already in the same block
                                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY,
-                                        DocumentBlock.SUB_SECTION_PARAGRAPH, normaliseAndCleanup(outputBodyLayoutTokens)));
+                                    documentBlocks.add(new DocumentBlock(normaliseAndCleanup(outputBodyLayoutTokens), DocumentBlock.SECTION_BODY,
+                                        DocumentBlock.SUB_SECTION_PARAGRAPH, new ArrayList<>(), markersLayoutTokens));
 
                                     outputBodyLayoutTokens = new ArrayList<>();
+                                    markersLayoutTokens = new ArrayList<>();
                                 }
                             } else {
                                 // is new paragraph?
                                 if (isNewParagraph(previousCluster, normalisedLayoutTokens)) {
 
                                     if (isNotEmpty(outputBodyLayoutTokens)) {
-                                        documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY,
-                                            DocumentBlock.SUB_SECTION_PARAGRAPH, normaliseAndCleanup(outputBodyLayoutTokens)));
+                                        documentBlocks.add(new DocumentBlock(normaliseAndCleanup(outputBodyLayoutTokens), DocumentBlock.SECTION_BODY,
+                                            DocumentBlock.SUB_SECTION_PARAGRAPH, new ArrayList<>(), markersLayoutTokens));
                                         outputBodyLayoutTokens = new ArrayList<>();
+                                        markersLayoutTokens = new ArrayList<>();
                                     }
                                 }
 
@@ -231,40 +271,168 @@ public class GrobidPDFEngine {
                             previousCluster = cluster;
                         }
                     }
-
                 }
 
                 if (isNotEmpty(outputBodyLayoutTokens)) {
-                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_BODY, "", normaliseAndCleanup(outputBodyLayoutTokens)));
+                    documentBlocks.add(new DocumentBlock(normaliseAndCleanup(outputBodyLayoutTokens), DocumentBlock.SECTION_BODY, "", new ArrayList<>(), markersLayoutTokens));
                 }
             }
             // we don't process references (although reference titles could be relevant)
             // acknowledgement?
 
             // we can process annexes
-            headerDocumentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
-            if (headerDocumentParts != null) {
+            SortedSet<DocumentPiece> annexDocumentParts = doc.getDocumentPart(SegmentationLabels.ANNEX);
+            if (annexDocumentParts != null) {
 
-                List<LayoutToken> tokens = Document.getTokenizationParts(headerDocumentParts, doc.getTokenizations());
+                List<LayoutToken> tokens = Document.getTokenizationParts(annexDocumentParts, doc.getTokenizations());
                 Pair<String, List<LayoutToken>> annex = parsers.getFullTextParser().processShort(tokens, doc);
                 if (annex != null) {
                     List<LayoutToken> restructuredLayoutTokens = annex.getRight();
 //                    addSpaceAtTheEnd(tokens, restructuredLayoutTokens);
-                    documentBlocks.add(new DocumentBlock(DocumentBlock.SECTION_ANNEX,
-                        DocumentBlock.SUB_SECTION_PARAGRAPH, normaliseAndCleanup(restructuredLayoutTokens)));
+                    documentBlocks.add(new DocumentBlock(normaliseAndCleanup(restructuredLayoutTokens), DocumentBlock.SECTION_ANNEX,
+                        DocumentBlock.SUB_SECTION_PARAGRAPH, new ArrayList<>(), new ArrayList<>()));
                 }
             }
 
+            // Sentence splitting using reference, then remove them from the text
+
+            List<DocumentBlock> documentBlocksBySentences = new ArrayList<>();
+
+            documentBlocks.stream().forEach(documentBlock -> {
+
+                List<Pair<Integer, Integer>> markersExtremitiesAsIndex = new ArrayList<>();
+                List<OffsetPosition> markersPositionsAsOffsetsInText = new ArrayList<>();
+
+                String section = documentBlock.getSection();
+                String subSection = documentBlock.getSubSection();
+
+                if (isNotEmpty(documentBlock.getMarkers())) {
+                    try {
+                        // There are some cases where the markers are coming off not in order. We sort only if they are not sorted.
+                        List<List<LayoutToken>> sortedMarkersListByStartOffsets = documentBlock.getMarkers()
+                            .stream()
+                            .sorted(Comparator.comparingInt(AdditionalLayoutTokensUtil::getLayoutTokenListStartOffset))
+                            .collect(Collectors.toList());
+                        
+                        if (!sortedMarkersListByStartOffsets.equals(documentBlock.getMarkers())) {
+                            documentBlock.setMarkers(sortedMarkersListByStartOffsets);
+                        }
+
+                        markersExtremitiesAsIndex = documentBlock
+                            .getMarkers()
+                            .stream()
+                            .map(markerLayoutTokens -> AdditionalLayoutTokensUtil.getExtremitiesAsIndex(documentBlock.getLayoutTokens(),
+                                AdditionalLayoutTokensUtil.getLayoutTokenListStartOffset(markerLayoutTokens),
+                                AdditionalLayoutTokensUtil.getLayoutTokenListEndOffset(markerLayoutTokens)))
+                            .filter(marker -> !(marker.getLeft() == 0 && marker.getRight() == documentBlock.getLayoutTokens().size()))
+                            .collect(Collectors.toList());
+                    } catch (IllegalArgumentException e) {
+                        markersExtremitiesAsIndex = new ArrayList<>();
+                    }
+                    if (markersExtremitiesAsIndex.size() > 1) {
+                        // We need to adjust overlapping markers. If the greater index of i is > lower index of i+1, 
+                        // we reduce the greater index to do not overlap the following 
+                        for (int i = 0; i < markersExtremitiesAsIndex.size() - 1; i++) {
+                            if (markersExtremitiesAsIndex.get(i).getRight() > markersExtremitiesAsIndex.get(i + 1).getLeft()) {
+                                markersExtremitiesAsIndex.set(i, Pair.of(markersExtremitiesAsIndex.get(i).getLeft(), markersExtremitiesAsIndex.get(i + 1).getLeft()));
+                            }
+                        }
+                    }
+
+                    markersPositionsAsOffsetsInText = getMarkersAsOffsets(documentBlock, markersExtremitiesAsIndex);
+                }
+
+                List<Pair<Integer, Integer>> indexesPairs = getSentencesOffsetsAsIndexes(documentBlock, markersPositionsAsOffsetsInText);
+
+                int cumulatedIndexes = 0;
+                for (Pair<Integer, Integer> pair : indexesPairs) {
+                    DocumentBlock newDocumentBlock = new DocumentBlock(documentBlock);
+                    List<LayoutToken> sentenceTokens = documentBlock.getLayoutTokens().subList(pair.getLeft(), pair.getRight());
+                    final Integer cumulatedIndexes_ = cumulatedIndexes;
+                    List<Integer> indexesContainingReferenceMarkers = markersExtremitiesAsIndex.stream()
+                        .filter(m -> m.getLeft() > cumulatedIndexes_ && m.getRight() <= cumulatedIndexes_ + sentenceTokens.size())
+                        .flatMap(p -> IntStream.range(p.getLeft(), p.getRight()).boxed().collect(Collectors.toList()).stream())
+                        .collect(Collectors.toList());
+
+                    cumulatedIndexes += sentenceTokens.size();
+
+                    //We remove the markers from the layout token list 
+                    if (CollectionUtils.isNotEmpty(indexesContainingReferenceMarkers)) {
+                        final List<LayoutToken> newSentenceTokens = new ArrayList<>();
+                        IntStream.range(0, sentenceTokens.size())
+                            .forEach(index -> {
+                                if (!indexesContainingReferenceMarkers.contains(index)) {
+                                    newSentenceTokens.add(sentenceTokens.get(index));
+                                }
+                            });
+
+                        // Correcting offsets after having removed certain tokens
+                        IntStream
+                            .range(1, newSentenceTokens.size())
+                            .forEach(i -> {
+                                int expectedFollowingOffset = newSentenceTokens.get(i - 1).getOffset()
+                                    + StringUtils.length(newSentenceTokens.get(i - 1).getText());
+
+                                if (expectedFollowingOffset != newSentenceTokens.get(i).getOffset()) {
+                                    LOGGER.trace("Correcting offsets " + i + " from " + newSentenceTokens.get(i).getOffset() + " to " + expectedFollowingOffset);
+                                    newSentenceTokens.get(i).setOffset(expectedFollowingOffset);
+                                }
+                            });
+
+                        newDocumentBlock.setLayoutTokens(newSentenceTokens);
+                    } else {
+                        newDocumentBlock.setLayoutTokens(sentenceTokens);
+                    }
+                    newDocumentBlock.setSection(section);
+                    newDocumentBlock.setSubSection(subSection);
+                    documentBlocksBySentences.add(newDocumentBlock);
+                }
+            });
+
+
             // process
-            IntStream.range(0, documentBlocks.size())
-                .forEach(i -> closure.accept(documentBlocks.get(i)));
+            IntStream.range(0, documentBlocksBySentences.size())
+                .forEach(i -> closure.accept(documentBlocksBySentences.get(i)));
         }
 
         return biblioInfo;
     }
 
-    protected static String getPlainLabelName(String label) {
-        return label.replaceAll("<|>", "");
+    protected static List<Pair<Integer, Integer>> getSentencesOffsetsAsIndexes(DocumentBlock documentBlock, List<OffsetPosition> markersPositionsAsOffsetsInText) {
+        List<String> tokensAsStringList = documentBlock.getLayoutTokens().stream().map(LayoutToken::getText).collect(Collectors.toList());
+        String text = String.join("", tokensAsStringList);
+        List<OffsetPosition> sentencesPositions = SentenceUtilities.getInstance()
+            .runSentenceDetection(text, markersPositionsAsOffsetsInText, documentBlock.getLayoutTokens(), new Language("en"));
+
+        List<Pair<Integer, Integer>> indexesPairs = AdditionalLayoutTokensUtil
+            .fromOffsetsToIndexesOfTokensWithSpaces(sentencesPositions, tokensAsStringList);
+        return indexesPairs;
+    }
+
+    protected static List<OffsetPosition> getMarkersAsOffsets(DocumentBlock documentBlock, List<Pair<Integer, Integer>> markersExtremitiesAsIndex) {
+        int lastIndex = 0;
+        int lastOffset = 0;
+        List<OffsetPosition> markersPositionsAsOffsetsInText = new ArrayList<>();
+
+        for (Pair<Integer, Integer> markersExtremities : markersExtremitiesAsIndex) {
+            List<LayoutToken> layoutTokensFirst = documentBlock.getLayoutTokens().subList(lastIndex, markersExtremities.getLeft());
+            String textBefore = layoutTokensFirst
+                .stream()
+                .map(LayoutToken::getText)
+                .collect(Collectors.joining(""));
+
+            List<LayoutToken> layoutTokensSecond = documentBlock.getLayoutTokens().subList(markersExtremities.getLeft(), markersExtremities.getRight());
+            String textAfter = layoutTokensSecond
+                .stream()
+                .map(LayoutToken::getText)
+                .collect(Collectors.joining(""));
+
+            OffsetPosition currentOffset = new OffsetPosition(lastOffset + textBefore.length(), lastOffset + textBefore.length() + textAfter.length());
+            markersPositionsAsOffsetsInText.add(currentOffset);
+            lastIndex = markersExtremities.getRight();
+            lastOffset = currentOffset.end;
+        }
+        return markersPositionsAsOffsetsInText;
     }
 
     /**
@@ -399,7 +567,7 @@ public class GrobidPDFEngine {
     }
 
     /**
-     * transform breaklines in spaces and remove duplicated spaces
+     * transform break lines in spaces and remove duplicated spaces
      */
     protected static List<LayoutToken> normaliseAndCleanup(List<LayoutToken> layoutTokens) {
         if (isEmpty(layoutTokens)) {
@@ -419,11 +587,14 @@ public class GrobidPDFEngine {
         //Removing duplicated spaces
         List<LayoutToken> cleanedTokens = IntStream
             .range(0, bodyLayouts.size())
-            .filter(i -> (
-                    (i < bodyLayouts.size() - 1 && (!bodyLayouts.get(i).getText().equals("\n") || !bodyLayouts.get(i).getText().equals(" "))
-                        && !StringUtils.equals(bodyLayouts.get(i).getText(), bodyLayouts.get(i + 1).getText())
-                    ) || i == bodyLayouts.size() - 1
-                )
+            .filter(i -> {
+                    if (i < bodyLayouts.size() - 1) {
+                        if (bodyLayouts.get(i).getText().equals("\n") || bodyLayouts.get(i).getText().equals(" ")) {
+                            return !StringUtils.equals(bodyLayouts.get(i).getText(), bodyLayouts.get(i + 1).getText());
+                        }
+                    }
+                    return true;
+                }
             )
             .mapToObj(bodyLayouts::get)
             .collect(Collectors.toList());

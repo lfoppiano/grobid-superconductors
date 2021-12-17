@@ -46,6 +46,18 @@
     background-color: #92d983;
 }
 
+.info-sense-box.crystal-structure {
+    background-color: #83a3d9;
+}
+
+.info-sense-box.space-groups {
+    background-color: #102e4b;
+}
+
+.info-sense-box.unit-cell-type {
+    background-color: #0776e1;
+}
+
 
 .label.abbreviation {
     background-color: #a85855;
@@ -131,6 +143,20 @@
     background-color: #ad7c2a;
 }
 
+.label.crystal-structure {
+    background-color: #83a3d9;
+}
+
+.label.space-groups {
+    background-color: #102e4b;
+}
+
+.label.unit-cell-type {
+    background-color: #0776e1;
+}
+
+
+
 .area.abbreviation {
     border-color: #b92c28 !important;
 }
@@ -187,4 +213,14 @@
     border-color: #92d983 !important;
 }
 
+.area.crystal-structure {
+    border-color: #83a3d9;
+}
 
+.area.space-groups {
+    border-color: #102e4b;
+}
+
+.area.unit-cell-type {
+    border-color: #0776e1;
+}

@@ -1,7 +1,6 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import edu.emory.mathcs.nlp.common.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -12,7 +11,6 @@ import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
 import org.grobid.trainer.stax.handler.MaterialAnnotationStaxHandler;
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
-public class MaterialTrainer extends AbstractTrainer {
+public class MaterialTrainer extends AbstractTrainerNew {
     public static final List<String> TOP_LEVEL_ANNOTATION_DEFAULT_TAGS = Arrays.asList("material");
     public static final List<String> ANNOTATION_DEFAULT_TAGS = Arrays.asList("formula", "variable",
         "value", "name", "shape", "doping", "fabrication", "substrate");
@@ -56,7 +54,7 @@ public class MaterialTrainer extends AbstractTrainer {
     public void createTrainingDataFromSuperconductors(String inputDirectory, String outputDirectory, boolean recursive) {
         Path inputPath = Paths.get(inputDirectory);
 
-        MaterialParser materialParser = MaterialParser.getInstance(null);
+        MaterialParser materialParser = MaterialParser.getInstance(null, null);
 
         int maxDept = recursive ? Integer.MAX_VALUE : 1;
         List<File> refFiles = new ArrayList<>();
@@ -88,7 +86,7 @@ public class MaterialTrainer extends AbstractTrainer {
 
                 AnnotationValuesTEIStaxHandler target = new AnnotationValuesTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS, Collections.singletonList("material"));
 
-                InputStream inputStream = IOUtils.getInputStream(inputFile.getAbsolutePath());
+                InputStream inputStream = new FileInputStream(inputFile.getAbsolutePath());
                 XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputStream);
 
                 StaxUtils.traverse(reader, target);
@@ -236,5 +234,10 @@ public class MaterialTrainer extends AbstractTrainer {
         Trainer trainer = new MaterialTrainer();
 
         AbstractTrainer.runTraining(trainer);
+    }
+
+    @Override
+    public int createCRFPPDataSingle(File inputFile, File outputDirectory) {
+        return 0;
     }
 }

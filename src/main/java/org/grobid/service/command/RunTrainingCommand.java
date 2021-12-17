@@ -4,8 +4,8 @@ import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
-import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SuperconductorsModels;
+import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,10 +58,14 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
         subparser.addArgument("-m", "--model")
             .dest(MODEL_NAME)
             .type(String.class)
-            .required(false)
-            .choices(Arrays.asList("superconductors", "material", "entityLinker-material-tc", "superconductors-no-features",
+            .required(true)
+            .choices(Arrays.asList("superconductors",
+                "material",
+                "entityLinker-" + CRFBasedLinker.MATERIAL_TCVALUE_ID,
+                "entityLinker-" + CRFBasedLinker.TCVALUE_ME_METHOD_ID,
+                "entityLinker-" + CRFBasedLinker.TCVALUE_PRESSURE_ID,
+                "superconductors-no-features",
                 "superconductors-no-features-abstracts"))
-            .setDefault("superconductors")
             .help("Model to train");
 
         subparser.addArgument("-op", "--onlyPrint")
@@ -97,15 +100,9 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
     @Override
     protected void run(Bootstrap bootstrap, Namespace namespace, GrobidSuperconductorsConfiguration configuration) throws Exception {
         try {
-            GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
-            String grobidHome = configuration.getGrobidHome();
-            if (grobidHome != null) {
-                GrobidProperties.setGrobidPropertiesPath(new File(grobidHome, "/config/grobid.properties").getAbsolutePath());
-            }
-
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
-            Engine.getEngine(true);
+            configuration.getModels().stream().forEach(GrobidProperties::addModel);
             LibraryLoader.load();
         } catch (final Exception exp) {
             System.err.println("Grobid initialisation failed, cannot find Grobid Home. Maybe you forget to specify the config.yml in the command launch?");
@@ -128,16 +125,14 @@ public class RunTrainingCommand extends ConfiguredCommand<GrobidSuperconductorsC
             trainer = new SuperconductorsTrainer();
         } else if ("superconductors-no-features".equals(modelName)) {
             trainer = new SuperconductorsNoFeaturesTrainer();
-        } else if ("superconductors-no-features-abstracts".equals(modelName)) {
-            trainer = new SuperconductorsNoFeaturesOnlyAbstractsTrainer();
         } else if (SuperconductorsModels.MATERIAL.getModelName().equals(modelName)) {
             trainer = new MaterialTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC.getModelName().equals(modelName)) {
             trainer = new EntityLinkerMaterialTcTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_PRESSURE.getModelName().equals(modelName)) {
-            trainer = new EntityLinkerTcPressureTrainer();
+            trainer = new EntityLinkerTcValuePressureTrainer();
         } else if (SuperconductorsModels.ENTITY_LINKER_TC_ME_METHOD.getModelName().equals(modelName)) {
-            trainer = new EntityLinkerTcMeMethodTrainer();
+            trainer = new EntityLinkerTcValueMeMethodTrainer();
         } else {
             System.out.println("The model name " + modelName + " does not correspond to any model. ");
             System.out.println(super.getDescription());

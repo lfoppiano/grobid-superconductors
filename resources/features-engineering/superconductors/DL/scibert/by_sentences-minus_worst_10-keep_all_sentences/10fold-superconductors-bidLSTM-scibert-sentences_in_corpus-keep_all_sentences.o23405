@@ -1,0 +1,240 @@
+Using TensorFlow backend.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3deef9aef0>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:From /home/lfoppian0/anaconda3/envs/tensorflow-gpu_env/lib/python3.7/site-packages/tensorflow/python/ops/resource_variable_ops.py:435: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+WARNING:tensorflow:From /lustre/group/tdm/Luca/delft/delft/delft/sequenceLabelling/preprocess.py:882: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.cast instead.
+WARNING:tensorflow:From /lustre/group/tdm/Luca/delft/delft/delft/utilities/bert/modeling.py:358: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+WARNING:tensorflow:From /lustre/group/tdm/Luca/delft/delft/delft/utilities/bert/modeling.py:671: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use keras.layers.dense instead.
+WARNING:tensorflow:From /home/lfoppian0/anaconda3/envs/tensorflow-gpu_env/lib/python3.7/site-packages/tensorflow/contrib/crf/python/ops/crf.py:213: dynamic_rnn (from tensorflow.python.ops.rnn) is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `keras.layers.RNN(cell)`, which is equivalent to this API
+WARNING:tensorflow:From /home/lfoppian0/anaconda3/envs/tensorflow-gpu_env/lib/python3.7/site-packages/tensorflow/python/training/learning_rate_decay_v2.py:321: div (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Deprecated in favor of operator or tf.math.divide.
+/home/lfoppian0/anaconda3/envs/tensorflow-gpu_env/lib/python3.7/site-packages/tensorflow/python/ops/gradients_impl.py:110: UserWarning: Converting sparse IndexedSlices to a dense Tensor of unknown shape. This may consume a large amount of memory.
+  "Converting sparse IndexedSlices to a dense Tensor of unknown shape. "
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d7b378ef0>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d5e886830>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d64ded560>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d5f6e77a0>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d6a9c4680>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d646e9830>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d6a681830>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d64a01830>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d67050830>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d7a2169e0>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:From /home/lfoppian0/anaconda3/envs/tensorflow-gpu_env/lib/python3.7/site-packages/tensorflow/python/data/ops/dataset_ops.py:429: py_func (from tensorflow.python.ops.script_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+tf.py_func is deprecated in TF V2. Instead, use
+    tf.py_function, which takes a python function which manipulates tf eager
+    tensors instead of numpy arrays. It's easy to convert a tf eager tensor to
+    an ndarray (just call tensor.numpy()) but having access to eager tensors
+    means `tf.py_function`s can use accelerators such as GPUs as well as
+    being differentiable using a gradient tape.
+    
+WARNING:tensorflow:From /home/lfoppian0/anaconda3/envs/tensorflow-gpu_env/lib/python3.7/site-packages/tensorflow/python/training/saver.py:1266: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use standard file APIs to check for files with this prefix.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d78a58320>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d781c85f0>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d6a7f1950>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d67fce320>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d5eb47b00>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d40490cb0>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3d088fd7a0>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3cd8e80830>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+WARNING:tensorflow:Estimator's model_fn (<function BERT_Sequence.model_fn_builder.<locals>.model_fn at 0x7f3cf8571680>) includes params argument, but params are not passed to Estimator.
+WARNING:tensorflow:eval_on_tpu ignored because use_tpu is False.
+Loading data...
+17681 train sequences
+1965 validation sequences
+2183 evaluation sequences
+embedding_lmdb_path is not specified in the embeddings registry, so the embeddings will be loaded in memory...
+loading embeddings...
+path: /lustre/group/tdm/Luca/delft/delft/data/embeddings/glove.840B.300d.txt
+embeddings loaded for 2196017 words and 300 dimensions
+
+------------------------ fold 0--------------------------------------
+
+WARNING: The TensorFlow contrib module will not be included in TensorFlow 2.0.
+For more information, please see:
+  * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+  * https://github.com/tensorflow/addons
+If you depend on functionality not listed there, please file an issue.
+
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 1--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 2--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 3--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 4--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 5--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 6--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 7--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 8--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+
+------------------------ fold 9--------------------------------------
+self.max_seq_length:  512
+self.train_batch_size:  6
+model config file saved
+preprocessor saved
+model saved
+training runtime: 52892.688 seconds 
+
+Evaluation:
+
+------------------------ fold 0 --------------------------------------
+number of alignment issues with test set: 2113
+	f1: 79.98
+	precision: 77.36
+	recall: 82.79
+
+------------------------ fold 1 --------------------------------------
+number of alignment issues with test set: 2148
+	f1: 80.06
+	precision: 78.25
+	recall: 81.96
+
+------------------------ fold 2 --------------------------------------
+number of alignment issues with test set: 2136
+	f1: 79.65
+	precision: 77.51
+	recall: 81.90
+
+------------------------ fold 3 --------------------------------------
+number of alignment issues with test set: 2137
+	f1: 79.84
+	precision: 77.37
+	recall: 82.48
+
+------------------------ fold 4 --------------------------------------
+number of alignment issues with test set: 2113
+	f1: 80.49
+	precision: 78.40
+	recall: 82.68
+
+------------------------ fold 5 --------------------------------------
+number of alignment issues with test set: 2178
+	f1: 79.24
+	precision: 76.84
+	recall: 81.80
+
+------------------------ fold 6 --------------------------------------
+number of alignment issues with test set: 2115
+	f1: 79.50
+	precision: 76.73
+	recall: 82.48
+
+------------------------ fold 7 --------------------------------------
+number of alignment issues with test set: 2157
+	f1: 79.56
+	precision: 77.02
+	recall: 82.27
+
+------------------------ fold 8 --------------------------------------
+number of alignment issues with test set: 2173
+	f1: 80.38
+	precision: 78.21
+	recall: 82.68
+
+------------------------ fold 9 --------------------------------------
+number of alignment issues with test set: 2113
+	f1: 80.08
+	precision: 77.91
+	recall: 82.37
+----------------------------------------------------------------------
+
+** Worst ** model scores - run 5
+                  precision    recall  f1-score   support
+
+         <class>     0.6932    0.7625    0.7262       160
+      <material>     0.7803    0.8352    0.8068       880
+     <me_method>     0.7519    0.8230    0.7859       243
+      <pressure>     0.5667    0.6800    0.6182        25
+            <tc>     0.7930    0.8165    0.8046       474
+       <tcValue>     0.7724    0.7943    0.7832       141
+
+all (micro avg.)     0.7684    0.8180    0.7924      1923
+
+
+** Best ** model scores - run 4
+                  precision    recall  f1-score   support
+
+         <class>     0.7267    0.7812    0.7530       160
+      <material>     0.8160    0.8466    0.8310       880
+     <me_method>     0.7279    0.8148    0.7689       243
+      <pressure>     0.5625    0.7200    0.6316        25
+            <tc>     0.7980    0.8333    0.8153       474
+       <tcValue>     0.7569    0.7730    0.7649       141
+
+all (micro avg.)     0.7840    0.8268    0.8049      1923
+
+----------------------------------------------------------------------
+
+Average over 10 folds
+                  precision    recall  f1-score   support
+
+         <class>     0.6942    0.7806    0.7348       160
+      <material>     0.8034    0.8369    0.8198       880
+     <me_method>     0.7488    0.8136    0.7798       243
+      <pressure>     0.5622    0.7160    0.6294        25
+            <tc>     0.7931    0.8348    0.8134       474
+       <tcValue>     0.7404    0.7851    0.7619       141
+
+all (micro avg.)     0.7756    0.8234    0.7988          
+
+model config file saved
+preprocessor saved
+model saved
+
+Leaving TensorFlow...

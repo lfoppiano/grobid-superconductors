@@ -4,11 +4,20 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.easymock.EasyMock;
 import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.*;
+import org.grobid.core.data.document.DocumentResponse;
+import org.grobid.core.data.document.RawPassage;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.data.document.TextPassage;
 import org.grobid.core.engines.label.SuperconductorsTaggingLabels;
+import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnitUtilities;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -16,11 +25,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.Array;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -34,6 +44,14 @@ public class ModuleEngineTest {
     CRFBasedLinker mockCRFBasedLinker;
     QuantityParser mockQuantityParser;
 
+    @BeforeClass
+    public static void before() throws Exception {
+        GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
+        modelParameters.name = "bao";
+        GrobidProperties.addModel(modelParameters);
+    }
+
+
     @Before
     public void setUp() throws Exception {
         PowerMock.mockStatic(Lexicon.class);
@@ -41,7 +59,7 @@ public class ModuleEngineTest {
         mockCRFBasedLinker = EasyMock.createMock(CRFBasedLinker.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
-        target = new ModuleEngine(mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker);
+        target = new ModuleEngine(new GrobidSuperconductorsConfiguration(), mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker);
     }
 
     @Test
@@ -66,13 +84,15 @@ public class ModuleEngineTest {
         quantity.setLayoutTokens(Arrays.asList(tokens.get(13), tokens.get(14)));
         temperature.setAtomicQuantity(quantity);
 
-        EasyMock.expect(mockSuperconductorsParser.process(tokens)).andReturn(Arrays.asList(superconductor));
+        List<List<LayoutToken>> aggregatedTokens = Arrays.asList(tokens);
+
+        EasyMock.expect(mockSuperconductorsParser.process(aggregatedTokens)).andReturn(Arrays.asList(Arrays.asList(superconductor)));
         EasyMock.expect(mockQuantityParser.process(tokens)).andReturn(Arrays.asList(temperature));
 //        EasyMock.expect(mockEntityLinkerParser.process((List<LayoutToken>) EasyMock.anyObject(), EasyMock.anyObject())).andReturn(new ArrayList<>());
 
         EasyMock.replay(mockSuperconductorsParser, mockQuantityParser);
 
-        List<TextPassage> response = target.process(tokens, true);
+        List<TextPassage> response = target.process(Arrays.asList(new RawPassage(tokens)), true);
 
         EasyMock.verify(mockSuperconductorsParser, mockQuantityParser);
 
@@ -149,15 +169,63 @@ public class ModuleEngineTest {
 
         assertThat(s, is("La <sub>x</sub> Fe <sub>1-x</sub>"));
     }
+    
+    @Test
+    public void testPruneOverlapping_entitiesPartiallyOverlapping_shouldTakeLargerMatchFromSuperconductors() {
+        
+        List<Span> list = new ArrayList<>();
+        
+        list.add(new Span("4:6 K", "<tcValue>", "superconductors", 42, 47, 22, 28));
+        list.add(new Span("6 K", "<tcValue>", "quantities", 44, 47, 24, 28));
 
-    // Probably not needed
-    public void testComputeTabularData() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("example_extracted_document.json");
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+        
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+    }
 
-        DocumentResponse documentResponse = DocumentResponse.fromJson(is);
+    @Test
+    public void testPruneOverlapping_entitiesPartiallyOverlapping_shouldTakeLargerMatchFromQuantities() {
 
-        List<SuperconEntry> superconEntries = ModuleEngine.computeTabularData(documentResponse.getParagraphs());
+        List<Span> list = new ArrayList<>();
 
-        assertThat(superconEntries, hasSize(20));
+        list.add(new Span("4:6 K", "<tcValue>", "quantities", 42, 47, 22, 28));
+        list.add(new Span("6 K", "<tcValue>", "superconductors", 44, 47, 24, 28));
+
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+    }
+
+    @Test
+    public void testPruneOverlapping_entitiesOverlappingCompletely_shouldTakeFromSuperconductors() {
+
+        List<Span> list = new ArrayList<>();
+
+        list.add(new Span("4:6 K", "<tcValue>", "quantities", 42, 47, 22, 28));
+        list.add(new Span("4:6 K", "<tcValue>", "superconductors", 42, 47, 22, 28));
+
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+        assertThat(output.get(0).getSource(), is("superconductors"));
+    }
+
+    //TODO: verify this assumption
+    @Test
+    public void testPruneOverlapping_entitiesOverlappingCompletely_differentType_shouldTakeShorterMatch() {
+
+        List<Span> list = new ArrayList<>();
+
+        list.add(new Span("44:6 K", "<material>", "superconductors", 41, 47, 22, 28));
+        list.add(new Span("4:6 K", "<tcValue>", "quantities", 42, 47, 22, 28));
+
+        List<Span> output = ModuleEngine.pruneOverlappingAnnotations(list);
+
+        assertThat(output.size(), is(1));
+        assertThat(output.get(0).getText(), is("4:6 K"));
+        assertThat(output.get(0).getSource(), is("quantities"));
     }
 }

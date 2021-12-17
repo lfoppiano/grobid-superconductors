@@ -1,4 +1,4 @@
-grobidHome: ../grobid-home
+grobidHome: ${GROBID_HOME:- ../grobid-home}
 
 corsAllowedOrigins: "*"
 corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
@@ -14,16 +14,111 @@ linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module.local:8080}
 classResolverUrl: ${CLASS_RESOLVER_URL:- http://class_resolver.local:8080}
 #classResolverUrl: http://localhost:8090
 
-pythonVirtualEnv: /Users/lfoppiano/opt/anaconda3/envs/test
+pythonVirtualEnv:  ${PYTHON_VIRTUALENV:- /Users/lfoppiano/opt/anaconda3/envs/delft_scibert}
 pythonRedirectOutput: true
 
 # The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
 maxParallelRequests: 0
 
-#consolidation:
-#  service: "glutton"
-#  consolidationHost: http://falcon.nims.go.jp/glutton
+consolidation:
+  # define the bibliographical data consolidation service to be used: 
+    # - "crossref" for CrossRef REST API or 
+    # - "glutton" for https://github.com/kermitt2/biblio-glutton, and 
+    # - empty value will disable the data consolidation
+  service: "glutton"
+  glutton:
+    url: "http://falcon.nims.go.jp/glutton/lookup"
 
+models:
+  - name: "superconductors"
+    engine: "wapiti"
+#    engine: "delft"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+    delft:
+      # deep learning parameters
+#      architecture: "BidLSTM_CRF"
+      architecture: "scibert"
+      embeddings_name: "glove-840B"
+      runtime:
+        # parameters used at runtime/prediction
+        max_sequence_length: 3000
+        batch_size: 4
+
+  - name: "material"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "entityLinker-material-tcValue"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "entityLinker-tcValue-pressure"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+      
+  - name: "entityLinker-tcValue-me_method"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "quantities"
+#    engine: "delft"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
+  - name: "units"
+#    engine: "delft"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
+  - name: "values"
+#    engine: "delft"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
+      
 server:
   type: custom
   idleTimeout: 120 seconds
@@ -60,4 +155,5 @@ logging:
       maxFileSize: 50MB
 #Docker-ignore-log-end
 
+version: 2
 timeZone: UTC

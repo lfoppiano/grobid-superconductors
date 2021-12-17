@@ -2,144 +2,223 @@
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Docker Hub](https://img.shields.io/docker/pulls/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Docker Pulls")
+[![Coverage Status](https://coveralls.io/repos/github/lfoppiano/grobid-superconductors/badge.svg?branch=master)](https://coveralls.io/github/lfoppiano/grobid-superconductors?branch=master)
+[![CircleCI](https://circleci.com/gh/lfoppiano/grobid-superconductors.svg?style=svg)](https://circleci.com/gh/lfoppiano/grobid-superconductors)
+[![Build unstable](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml)
+[![Build release](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-release.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-release.yml)
 
 __Work in progress.__
 
-The goal of this GROBID module is to identify and extract and link entities and properties within from superconductors-related scientific literature. 
-In particular, the goal is to extract superconductors material and their properties, such a Critical Temperature (Tc) and any expression or variation, Critical pressure, material name and class.
+## Introduction
 
-As the others GROBID models, the module relies on machine learning and can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF with or without ELMo (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
+The goal of this GROBID module is to identify, extract, and link materials with their properties from scientific literature.
 
-The linking is implemented as Python library, you can find the code in [here](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/linking). 
+In particular, the current goal the tool has been built is to extract superconductors material and their properties, such a Critical Temperature (Tc) and their type (type of measurement technique, or if it's a prediction/calculation) and the applied pressure when available. 
+Furthermore, this tool identifies also space groups, crystal structure when specified. 
 
-The following screenshots show the end to end result, also called [Supercuration](https://github.com/lfoppiano/grobid-superconductors-tools/tree/master/supercuration) (Superconductors Curation) is an advanced interface including the linking module on top of the extrated entities: 
+The system is divided into two main steps (Extraction and Linking): 
 
-![GROBID superconductors_screenshot](https://github.com/lfoppiano/grobid-superconductors-tools/blob/master/supercuration/docs/images/grobid-superconductors-web-home.png)
+![schema grobid-superconductors](docs/schema-grobid-superconductors.png)
 
-and provides on-pdf annotations: 
+The Extraction step is a Named Entities Recognition (NER) task and is performed using machine learning. 
+As other Grobid modules, it can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF or transformers like BERT or SCIBert (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
 
-![GROBID superconductors_screenshot](https://github.com/lfoppiano/grobid-superconductors-tools/blob/master/supercuration/docs/images/grobid-superconductors-web-home-2.png) 
+The Linking is a relation extraction (RE) tasks and is implemented via rule-based using the SpaCy library. The implementation is integrated via microservices and can be found here [here](https://github.com/lfoppiano/grobid-superconductors-tools). 
 
-See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.    
+Grobid-superconductors provides both an API and a User Interface (UI).
 
-The [Grobid Superconductors Tool project](https://github.com/lfoppiano/grobid-superconductors-tools) project contains also other utilities. 
+The extracted materials and properties are summarised in a table with snippet of the original sentence:
 
-### Output databases
+![screenshot-pdf-annotations](docs/grobid-superconductors-extracted-table.png)
 
-The output database can be easily created using the [Extraction process](./resources/web/process) on a set of PDFs. 
+and each extracted entity is visualised directly on the PDF document:   
 
-Example of database output, organised by dates, can be found [here](./resources/dataset/database): 
-    
- - [500-papers](https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/500-papers) is the output from 500 papers from American Institute of Physics (AIP), American Physical Society (APS) and Institute of Physics (IOP). They were automatically selected using keywords relative to the superconductors domain such as 'tc', 'superconductivity'. 
-    
- - [IOP-0953-2048](https://github.com/lfoppiano/grobid-superconductors-data/tree/master/database/IOP-0953-2048) contains the output obtained processing the journal ``IOP - Superconductors science and technology`` 
+![screenshot-pdf-annotations](docs/grobid-superconductors-pdf-annotation.png)
+
+As experimental feature, the system provides a summary of all the materials from their composition and the form they appear in the document: 
+
+![screenshot-summary](docs/grobid-superconductors-summary.png)
+
+The response is a JSON representation of the document and it includes the main bibliographic data (title, authors, DOI, publisher and journals) which are extracted via the underline [Grobid library](https://github.com/kermitt2/grobid). 
+
+See the [References](https://github.com/lfoppiano/grobid-superconductors#references) for more information.
 
 ## Getting started
+The quickest way to get started is to use directly docker-compose contained in the project directory.
 
-This module requires JDK 1.8 or greater.  
+### Docker-compose
+ 
+Just run the command:  
 
-First install and build the latest development version of GROBID as explained by the [documentation](http://grobid.readthedocs.org).
+> docker compose up 
 
-The modules should be installed inside the grobid directory
+Should spawn grobid-superconductors and its microservices. 
 
-> cd grobid 
+### Run each individual service manually
+In order to run each service individually, is possible to run them separately: 
 
-Clone the grobid-superconductor repository inside the grobid directory 
+1. Chem data Extractor
+    > docker run -t --rm --init -p 0876:8080 lfoppiano/chemdataextractor:1.0
 
-> git clone ....
+2. Python service for linking and other functions: 
+    > docker run -t --rm --init -p 8090:8080 lfoppiano/linking-module:1.0
 
-> cd grobid-superconductors 
+3. Grobid superconductors core service
+   - no GPU
+    > docker run -t --rm --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0
+   
+   - GPU
+   > docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid-superconductors/resources/config/config-docker.yml.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0
 
-> git submodule init
+**Note**: the file in `resources/config/config-docker.yml` can be edited and the configurations are applied directly to the docker image. 
+For example is possible to switch between Deep Learning and CRF by just changing the individual models' configuration. 
+Obviously this works only if the model for the requested architecture has been provided. 
 
-> git submodule update 
+### Provided models 
 
-### Build
+In the following table are listed the models (in `resources/models/` ) that are currently provided. 
 
-1. Copy the provided pre-trained model in the standard grobid-home path:
+| Model name   | Description    | Provided architecture  |
+|--------------|----------------|------------------------|
+| superconductors | extract the superconductors materials and properties such as temperature, pressure | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE, scibert |  
+| material | segment the material names | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE |   
+| entityLinking-material-tcValue | links materials and superconducting critical temperature  | CRF |   
+| entityLinking-tcValue-pressure | links superconducting critical temperature and pressure  | CRF |   
+| entityLinking-tcValue-me_methods | superconducting critical temperature and measurement method | CRF|   
 
-    > cd grobid/grobid-superconductors/
-                                                                            
-    > ./gradlew copyModels 
-
-1. Try compiling everything with:
-
-    > ./gradlew clean build 
-
-1. Run some test: 
-
-    > ./gradlew clean test
-
-1. Installing the linking module (in python): 
-    Grobid-superconductors runs python code via the JEP integration library. 
-    This integration is still experimental and is not yet fully consolidated, therefore it may fail at any time.
-    *NOTE*: access to the [tools](http://github.com/lfoppiano/grobid-superconductors-tools) repository is required.   
-
-1. Make sure the grobid directory points to the branch `feature/update_jep`, this branch contains the latest version of jep which is used in this module. 
-
-1.  create a virtual environment (for example with conda, specifying python 3.7): 
-
-    > conda create -name grobidSuperconductors pip python=3.7 
-
-1. activate your environment 
-
-    > conda activate grobidSuperconductors
-
-1. make sure you are using the pip within the conda environment and not the global conda pip: 
-
-    > which pip
-
-    should return you a path that is a subdirectory of your environment, for example `/Users/lfoppiano/opt/anaconda3/envs/test/bin/pip` 
-
-1. install the requirements using pip (feel free to find your way using conda, however it may cause troubles)
-
-    > pip install -f requirements.linux.txt
+Below, in the Section [accuracy](#accuracy), we present the accuracies for each model. 
 
 
-### Run
-To run the service: 
+## Performances: Throughput 
 
-> java -jar build/libs/grobid-superconductor-{version}.onejar.jar server config/config.yml 
+Grobid is designed for fast processing using a lightweight and tighly integrated system. 
+Grobid-superconductors contains more moving parts which are separated from the main application. 
+The linking module, the class classifier and the chem data extractors are provided on different micro-services. 
+To reduce the overhead of the http connection all sentences of a document are bundled together and sent with one http requests.
 
-To run the IAA (Inter Annotators Agreement) measurements: 
+The performance are summarised in the table below (RPS: request per second, FPS: failure per second) 
+The detailed reports and explanation can be found [here](resources/performances/readme.md).
 
-> java -jar build/libs/grobid-superconductor-{version}.onejar.jar iaa -dIn baseDirectory config/config.yml 
+- Pdf processing: 
+  - CRF: 1.2/0.1
+  - BidLSTM_CRF_FEATURE: 1.2/0.1 RPS/FPS (4Gb GPU), 1.1/0.2 RPS/FPS (16Gb GPU)
+  - scibert: 1.0/0.9 RPS/FPS (4Gb GPU), 1.0/0.8 RPS/FPS (16Gb GPU)
 
-for example: 
-> java -jar build/libs/grobid-superconductor-{version}.onejar.jar iaa -dIn baseDirectory resources/dataset/superconductors/guidelines/annotated
+- python services: ~40 RPS
 
-## Accuracy
+## Performances: Accuracy 
 
 ### Extraction (Sequence labelling task)
 
-Evaluation made on the 05/01/2020 using 114 papers.
-The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds). 
-We also indicate the best and worst results over the 10 folds in the complete result page.  
+Evaluation made on the 01/08/2021 using 168 papers.
+The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds).
 
-| Labels       | CRF        |             |               | BidLSTM+CRF|             |               |
-|--------------|------------|-------------|---------------|------------|-------------|---------------|
-| Metrics      | Precision  |  Recall     | F1-Score      | Precision  |  Recall     | F1-Score      | 
-| `<class>`    | 81.66      |   72.36     | 76.64          |  73.75     |  65.42      |  69.29        |    
-| `<material>` | 81.89      |   80.09     | 80.96          |  74.57     |  75.33      |  74.91        |    
-| `<me_method>`| 73.57      |   71.24     | 72.26          |  69.75     |  82.87      |  75.73        |    
-| `<pressure>` | 55.27      |   34.4      | 41.54          |  39.25     |  18.89      |  23.06        |     
-| `<tc>`       | 82.3       |   77.61     | 79.83          |  80.09     |  76.85      |  78.41        |    
-| `<tcValue>`  | 74.64      |   61.8      | 67.56          |  74.85     |  67.24      |  70.68        |  
-| All (micro avg)  | 80.41  |   75.89     | 78.07         |  74.82     |   73.79     |  74.27        |  
+| Labels       | CRF        |          |           | BidLSTM+CRF|         |          | SciBERT    |         |          |
+|--------------|------------|----------|-----------|------------|---------|----------|------------|---------|----------|
+| Metrics      | Precision  |  Recall  | F1-Score  | Precision  |  Recall | F1-Score | Precision  |  Recall | F1-Score | 
+| `<class>`    | 79.69      |   75.54  | 77.55     |  81.84     |  83.96  |  82.85   |  79.58     |  85.79  |  82.56   |    
+| `<material>` | 82.9       |   81.33  | 82.1      |  85.18     |  83.86  |  84.51   |  83.89     |  86.13  |  84.99   |    
+| `<me_method>`| 82.47      |   81.26  | 81.84     |  83.51     |  83.37  |  83.43   |  83.92     |  86.50  |  85.19   |    
+| `<pressure>` | 65.03      |   54.01  | 58.26     |  63.79     |  73.24  |  67.98   |  63.92     |  71.18  |  67.27   |     
+| `<tc>`       | 84.63      |   80.73  | 82.63     |  83.70     |  81.66  |  82.66   |  80.91     |  83.00  |  81.94   |    
+| `<tcValue>`  | 79.3       |   74.95  | 76.97     |  73.23     |  80.73  |  76.76   |  76.74     |  85.00  |  80.65   |  
+| All (micro avg)  | 82.43  |   79.68  | 81.03     |  83.01     |  82.89  |  82.95   |  81.92     |  85.06  | **83.46**|    
 
-All evaluation measures recorded over time, are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
-See [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations. 
+Detailed evaluation measures are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
+See the documentation of [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations.
+
+### Linking (Relation extraction task)
+
+| Name | Method | Task | Description | Precision | Recall  | F1 |
+|------|--------|---------|-----------|---------|---------|--------|
+| rb-supermat-baseline      | Rule-based    | material-tcValue  | eval against SuperMat       | 88      | 74      | 81    | 
+| crf-10fold-baseline       | CRF           | material-tcValue  | 10 fold cross-validation    | 68.52   | 70.11   | 69.16 | 
+| crf-10fold-baseline       | CRF           | tcValue-pressure  | 10 fold cross-validation    | 72.92   | 67.67   | 69.76 | 
+| crf-10fold-baseline       | CRF           | tcValue-me_method | 10 fold cross-validation    | 49.99   | 45.21   | 44.65 | 
+|------|--------|---------|-----------|---------|---------|--------|
+| crf-supermat-baseline     | CRF           | material-tcValue | eval against SuperMat (-)   | 91       | 66       | 77    | 
+
+(-) biased evaluation - for information only - trained and evaluated on the same corpus
 
 ### End to end evaluation (Extraction + Linking)
 
-Corpus of 500 PDF papers from American Institute of Physics (AIP), 
-American Physical Society (APS) and Institute of Physics (IOP). 
-Results are approximate, they are calculated based on manual correction on the output data: 
+**TBU**
+Corpus of 500 PDF papers from American Institute of Physics (AIP),
+American Physical Society (APS) and Institute of Physics (IOP).
+Results are approximate, they are calculated based on manual correction on the output data:
 
+|Total links    | Correct links | Wrong links   | Error rate    | Precision     | Recall    | F1-score  |
+|---------------|---------------|---------------|---------------|---------------|-----------|-----------|
+|597            |	441         |	156         |	26.13       |	73.86       |	66.33   |	69.90   |
 
-Total links|	Correct links|	Wrong links|	Error rate|	Precision|	Recall|	F1-score|
-|---------------|---------------|---------------|---------------|---------------|---------------|---------------|
-597|	441|	156|	26.13|	73.86|	66.33|	69.90|
+## Developer guide  
+
+#### Build locally from scratch 
+The application is composed by three components: 
+ - the grobid-superconductors java web application
+ - the chemdataextraction API - we recommend to run this with docker 
+ - the python utilities (linking, formula classifier, etc.. )
+
+#### Grobid-superconductors
+
+**NOTE**: This module requires 8 < JDK < 11.  
+
+1. Install and build the latest development version of GROBID as explained by the [documentation](http://grobid.readthedocs.org).
+
+2. The modules should be installed inside the grobid directory
+
+    > cd grobid 
+
+3. Clone the grobid-superconductor repository inside the grobid directory 
+
+    > git clone ....
+
+4. Copy the provided pre-trained model in the standard grobid-home path:
+
+    > cd grobid/grobid-superconductors/
+
+    > ./gradlew copyModels 
+
+5. to install SciBERT 
+    > ./gradlew installScibert
+
+6. Try compiling everything with:
+
+    > ./gradlew clean build
+
+7. To run the service:
+
+    > java -jar build/libs/grobid-superconductor-{version}.onejar.jar server config/config.yml
+
+#### Linking module and other python utilities 
+
+The linking module and other python utilities are used as a microservices by the grobid-superconductors java application. 
+The URL can be configured from the configuration file `resources/config/config.yml` or via environment variables. 
+
+To install the python utilities: 
+
+1. create a virtual environment (for example with conda, specifying python 3.7):
+
+    > conda create -name grobidSuperconductors pip python=3.7 
+
+2. activate your environment 
+
+    > conda activate grobidSuperconductors
+
+3. make sure you are using the pip within the conda environment and not the global conda pip: 
+
+    > which pip
+
+    and shall return a path that is a subdirectory of your environment, for example `/Users/lfoppiano/opt/anaconda3/envs/test/bin/pip` 
+
+4. clone grobid-superconductors-toos
+    > git clone https://github.com/lfoppiano/grobid-superconductors-tools 
+   
+
+5. install the requirements using pip (feel free to find your way using conda, however it may cause troubles)
+    > cd grobid-superconductors-tools/linking
+   
+    > pip install -f requirements.linux.txt
 
 ## Training and evaluation
 
@@ -158,8 +237,7 @@ or
 
 > java -jar build/lib/grobid-supercoductors-*onejar.jar training -a train resources/config/config.yml
 
-The training data must be under ```grobid-superconductors/resources/dataset/superconductors/corpus```. 
-
+The training data must be under ```grobid-superconductors/resources/dataset/superconductors/corpus```.
 
 ### Training and evaluating with automatic corpus split 80/20
 
@@ -219,8 +297,6 @@ It's possible also to specify an input directory for the corpus. **NOTE**: the s
 will look for training data in `/b/directory/final`.
 
 ### Inter annotation agreement
-
-*TODO*: add more information
  
 The Inter Annotation Agreement (IIA) should be calculated from directory in the following way: 
 
@@ -237,20 +313,22 @@ The Inter Annotation Agreement (IIA) should be calculated from directory in the 
       
 the filenames `file1`, `file1` names should match. The name will be used to match different annotation of the same original file.
 
+The IIA can be calculated using the following command
+
+> java -Xmx4G -jar build/libs/grobid-superconductor-0.1.onejar.jar iia --input root --verbose --mode {coding, unitizing} --one-vs-all reference_directory --output output_directory] resources/config/config.yml
+
+
 The argument `--one-vs-all reference-folder` allows to perform only IAA between every forlder and the `reference-folder`.  
-
-The IIA can be calculated using the following command 
-
-> java -Xmx4G -jar build/libs/grobid-superconductor-0.1.onejar.jar iia --input input_directory [--verbose] resources/config/config.yml
 
 The result can be structured in four sections:  
  1. the list of "annotators" (in the example before `annotation1`, `annotation2`, `annotation3`) 
  1. the general results (average and by label)
  1. the pairwise comparison between each annotators (when they are more than 2)
  1. the debugging information showing the detailed annotation of each annotators in the text  
- 
- 
-as follow: 
+
+
+<details>
+  <summary>See example of detailed result from the IAA processing</summary>
 
 ```shell
 Calculating IAA between the following directories: 
@@ -309,11 +387,11 @@ tc: 0.7981279136158688
 
 [..]
 ```
-
+</details>
 
 ## Acknowledgement 
 
-Our warmest thanks to @kermitt2 ([Science-miner](http://www.science-miner.com)): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
+Our warmest thanks to [Patrice Lopez](https://github.com/kermitt2) from [Science-miner](http://www.science-miner.com): Author of [Grobid](http://github.com/kermitt2/grobid), [Delft](http://github.com/kermitt2/delft) and tons of other interesting open source projects. 
 
 This project has been developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
 
@@ -328,20 +406,36 @@ Contact: Luca Foppiano (FOPPIANO.Luca __AT__ nims.go.jp)
 
 We described the framework around the system in the following articles (the latest on top): 
 
-- "Proposal for Automatic Extraction of Superconductors properties from scientific literature": [PDF](http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3)
-```
-@inproceedings{foppiano2019proposal,
-	address = {Tsukuba},
-	title = {Proposal for {Automatic} {Extraction} {Framework} of {Superconductors} {Related} {Information} from {Scientific} {Literature}},
-	volume = {119},
-	copyright = {All rights reserved},
-	abstract = {The automatic collection of materials information from research papers using Natural Language Processing (NLP) is highly required for rapid materials development using big data, namely materials informatics (MI). The difficulty of this automatic collection is mainly caused by the variety of expressions in the papers, a robust system with tolerance to such variety is required to be developed. In this paper, we report an ongoing interdisciplinary work to construct a system for automatic collection of superconductor-related information from scientific literature using text mining techniques. We focused on the identification of superconducting material names and their critical temperature (Tc) key property. We discuss the construction of a prototype for extraction and linking using machine learning (ML) techniques for the physical information collection. From the evaluation using 500 sample documents, we define a baseline and a direction for future improvements.},
-	language = {eng},
-	booktitle = {Letters and {Technology} {News}, vol. 119, no. 66, {SC}2019-1 (no.66)},
-	author = {Foppiano, Luca and Thaer, M. Dieb and Suzuki, Akira and Ishii, Masashi},
-	month = may,
-	year = {2019},
-	note = {ISSN: 2432-6380},
-	pages = {1--5}
-}
-```
+ - [SuperMat](http://github.com/lfoppiano/Supermat): construction of a linked annotated dataset from superconductors-related publications
+      ``` 
+        @article{doi:10.1080/27660400.2021.1918396,
+             author = {Luca Foppiano and Sae Dieb and Akira Suzuki and Pedro Baptista de Castro and Suguru Iwasaki and Azusa Uzuki and Miren Garbine Esparza Echevarria and Yan Meng and Kensei Terashima and Laurent Romary and Yoshihiko Takano and Masashi Ishii},
+             title = {SuperMat: construction of a linked annotated dataset from superconductors-related publications},
+             journal = {Science and Technology of Advanced Materials: Methods},
+             volume = {1},
+             number = {1},
+             pages = {34-44},
+             year  = {2021},
+             publisher = {Taylor & Francis},
+             doi = {10.1080/27660400.2021.1918396},
+             URL = { https://doi.org/10.1080/27660400.2021.1918396 },
+             eprint = { https://doi.org/10.1080/27660400.2021.1918396 }
+             }
+      ```
+ - "Proposal for Automatic Extraction of Superconductors properties from scientific literature": [PDF](http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3)
+      ```
+      @inproceedings{foppiano2019proposal,
+          address = {Tsukuba},
+          title = {Proposal for {Automatic} {Extraction} {Framework} of {Superconductors} {Related} {Information} from {Scientific} {Literature}},
+          volume = {119},
+          copyright = {All rights reserved},
+          abstract = {The automatic collection of materials information from research papers using Natural Language Processing (NLP) is highly required for rapid materials development using big data, namely materials informatics (MI). The difficulty of this automatic collection is mainly caused by the variety of expressions in the papers, a robust system with tolerance to such variety is required to be developed. In this paper, we report an ongoing interdisciplinary work to construct a system for automatic collection of superconductor-related information from scientific literature using text mining techniques. We focused on the identification of superconducting material names and their critical temperature (Tc) key property. We discuss the construction of a prototype for extraction and linking using machine learning (ML) techniques for the physical information collection. From the evaluation using 500 sample documents, we define a baseline and a direction for future improvements.},
+          language = {eng},
+          booktitle = {Letters and {Technology} {News}, vol. 119, no. 66, {SC}2019-1 (no.66)},
+          author = {Foppiano, Luca and Thaer, M. Dieb and Suzuki, Akira and Ishii, Masashi},
+          month = may,
+          year = {2019},
+          note = {ISSN: 2432-6380},
+          pages = {1--5}
+      }
+      ```

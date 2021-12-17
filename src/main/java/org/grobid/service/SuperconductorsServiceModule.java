@@ -6,15 +6,10 @@ import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.hubspot.dropwizard.guicier.DropwizardAwareModule;
 import org.grobid.core.engines.*;
-import org.grobid.core.utilities.ChemDataExtractorClient;
-import org.grobid.core.utilities.ChemspotClient;
-import org.grobid.core.utilities.ClassResolverModuleClient;
-import org.grobid.core.utilities.LinkingModuleClient;
+import org.grobid.core.engines.linking.CRFBasedLinker;
+import org.grobid.core.utilities.client.*;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
-import org.grobid.service.controller.AnnotationController;
-import org.grobid.service.controller.HealthCheck;
-import org.grobid.service.controller.LinkerController;
-import org.grobid.service.controller.MaterialController;
+import org.grobid.service.controller.*;
 import org.grobid.service.exceptions.mapper.GrobidExceptionMapper;
 import org.grobid.service.exceptions.mapper.GrobidExceptionsTranslationUtility;
 import org.grobid.service.exceptions.mapper.GrobidServiceExceptionMapper;
@@ -35,9 +30,10 @@ public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSu
         //Core services
         binder.bind(ChemspotClient.class);
         binder.bind(ChemDataExtractorClient.class);
-//        binder.bind(JepEngine.class);
+        binder.bind(StructureIdentificationModuleClient.class);
         binder.bind(ClassResolverModuleClient.class);
         binder.bind(MaterialClassResolver.class);
+        binder.bind(ChemicalMaterialParserClient.class);
         binder.bind(MaterialParser.class);
         binder.bind(LinkingModuleClient.class);
         binder.bind(RuleBasedLinker.class);
@@ -49,6 +45,7 @@ public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSu
         binder.bind(AnnotationController.class);
         binder.bind(MaterialController.class);
         binder.bind(LinkerController.class);
+        binder.bind(ServiceController.class);
 
         //Exception Mappers
         binder.bind(GrobidServiceExceptionMapper.class);

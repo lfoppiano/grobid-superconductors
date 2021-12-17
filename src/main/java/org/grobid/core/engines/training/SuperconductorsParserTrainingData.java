@@ -6,19 +6,20 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.DocumentBlock;
 import org.grobid.core.data.Measurement;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.DocumentBlock;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.*;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.MeasurementUtils;
 import org.grobid.core.utilities.UnitUtilities;
+import org.grobid.core.utilities.client.ChemDataExtractorClient;
+import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +42,12 @@ public class SuperconductorsParserTrainingData {
 
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
+    private StructureIdentificationModuleClient structureIdentificationModuleClient;
     private Map<TrainingOutputFormat, SuperconductorsOutputFormattter> trainingOutputFormatters = new HashMap<>();
 
 
-    public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient) {
-        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance(null)),
+    public SuperconductorsParserTrainingData(ChemDataExtractorClient chemspotClient, StructureIdentificationModuleClient structureIdentificationModuleClient) {
+        this(SuperconductorsParser.getInstance(chemspotClient, MaterialParser.getInstance(null, null), structureIdentificationModuleClient),
             QuantityParser.getInstance(true));
     }
 
@@ -90,11 +92,12 @@ public class SuperconductorsParserTrainingData {
     }
 
     private void createTrainingPDF(File file, String outputDirectory, TrainingOutputFormat outputFormat, int id) {
+        GrobidAnalysisConfig config =
+            new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                .build();
+
         Document document = null;
         try {
-            GrobidAnalysisConfig config =
-                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                    .build();
             document = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
         } catch (Exception e) {
             throw new GrobidException("Cannot create training data because GROBID Fulltext model failed on the PDF: " + file.getPath(), e);
@@ -107,7 +110,7 @@ public class SuperconductorsParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<DocumentBlock> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, documentBlock -> {
+        GrobidPDFEngine.processDocument(document, config, documentBlock -> {
 
             // Re-tokenise now
             final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance()

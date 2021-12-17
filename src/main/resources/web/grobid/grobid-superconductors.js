@@ -215,6 +215,39 @@ let grobid = (function ($) {
             });
         }
 
+        function buildMaterialSummary(aggregatedMaterials, spansList) {
+            let string = "<div  class='px-3'>" +
+                "<p>The following list summarise aggregated formulas appearing in the document/text (parenthesis indicate cardinality):</p>" +
+                "<p><ul>"
+            Object.keys(aggregatedMaterials)
+                .forEach(function (formula) {
+                    string += "<li>"
+                    let spans = aggregatedMaterials[formula];
+                    let out_spans = spans
+                        .map(function (span_id) {
+                            return spansList[span_id].text
+                        })
+                        .reduce(function (acc, curr) {
+                            return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+                        }, {});
+
+                    split_formula = formula.split(",")
+                    split_formula.forEach(function (value) {
+                        let s = value.split("=");
+                        let compound = s[0]
+                        let valence = s[1]
+                        string += "<b>" + compound + "</b>" + "<sub>" + valence + "</sub> "
+                    });
+                    let mentionMap = Object.keys(out_spans).map(function (k) {
+                        return k + " (" + out_spans[k] + ")"
+                    }).join(", ");
+                    string += ": " + mentionMap;
+                    string += "</li>"
+                });
+            string += "</ul></p></div>"
+            return string;
+        }
+
         function downloadCSV() {
             let fileName = "export.csv";
             let a = document.createElement("a");
@@ -256,7 +289,8 @@ let grobid = (function ($) {
                     "processText": "/service/process/text",
                     "processMaterial": "/service/material/parse",
                     "feedback": "/service/annotations/feedback",
-                    "linkEntities": "/service/linker/link"
+                    "linkEntities": "/service/linker/link",
+                    "version": "/service/version"
                 }
             }
             $('#submitRequestText').bind('click', 'processText', processText);
@@ -302,6 +336,20 @@ let grobid = (function ($) {
 
             //turn to inline mode
             $.fn.editable.defaults.mode = 'inline';
+
+            $.ajax({
+                type: 'GET',
+                url: getUrl("version"),
+                success: function (result) {
+                    let version = result.version;
+                    let revision = result.revision;
+
+                    $("#version").html(version + " " + revision);
+                },
+                error: function (result) {
+                    console.log(result)
+                }
+            });
         });
 
         function onError(message) {
@@ -313,14 +361,21 @@ let grobid = (function ($) {
                     let split = message.responseJSON['description'].split(type);
                     message = split[split.length - 1]
                 } else if (message) {
-                    let type = message.type
-                    let split = message.description.split(type);
-                    message = split[split.length - 1]
+                    if (typeof message === "string" || message instanceof String) {
+                        message = message;
+                    } else {
+                        let type = message.type
+                        if (type !== undefined && message.description) {
+                            let split = message.description.split(type);
+                            message = split[split.length - 1]
+                        } else {
+                            message = message['message']
+                        }
+                    }
                 } else {
                     message = "The Text or the PDF document cannot be processed. Please check the server logs. "
                 }
-
-            }   
+            }
 
             $('#infoResultMessage').html("<p class='text-danger'>Error encountered while requesting the server.<br/>" + message + "</p>");
             return true;
@@ -398,11 +453,25 @@ let grobid = (function ($) {
                     cumulativeOutput += "<p>";
                     for (let prop in material) {
                         if (prop === 'rawTaggedValue') {
+                        } else if (prop === 'formula') {
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop]['rawValue'] + " <br>";
                         } else if (prop === 'resolvedFormulas') {
-                            let resolvedFormulas = material[prop].join(", ");
-                            cumulativeOutput += "<strong>" + prop + "</strong>: " + resolvedFormulas + " <br>";
+                            let resolvedFormulasList = material[prop]
+                            let resolvedFormulas = Object.keys(resolvedFormulasList)
+                                .map(function (k) {
+                                    return resolvedFormulasList[k]['rawValue']
+                                })
+                                .join(", ")
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + resolvedFormulas + " <br/>";
+                        } else if (prop === 'variables') {
+                            let variables = material[prop]
+                            let values = Object.keys(variables).map(function (variable_name) {
+                                return "<b>" + variable_name + "</b>=" + variables[variable_name].join(", ")
+                            })
+
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + values.join("\n") + " <br/>";
                         } else {
-                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop] + " <br>";
+                            cumulativeOutput += "<strong>" + prop + "</strong>: " + material[prop] + " <br/>";
                         }
                     }
 
@@ -429,6 +498,7 @@ let grobid = (function ($) {
             $('#infoResultMessage').html('<p class="text-secondary">Requesting server...</p>');
             let formData = new FormData();
             formData.append("text", $('#inputLinkerArea').val());
+            formData.append("type", $("input[name='linkType']:checked").val());
 
             $.ajax({
                 type: 'POST',
@@ -446,11 +516,11 @@ let grobid = (function ($) {
 
             let cumulativeOutput = "";
             if (responseText) {
-                responseText.forEach(function (paragraph, paragraphIdx) {
-                    let text = paragraph.text;
+                responseText.forEach(function (passage, passageIdx) {
+                    let text = passage.text;
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
@@ -460,10 +530,10 @@ let grobid = (function ($) {
 
             //Adding events, unfortunately I need to wait when the HTML tree is updated
             if (responseText) {
-                responseText.forEach(function (paragraph, paragraphIdx) {
+                responseText.forEach(function (passage, paragraphIdx) {
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
 
                     // Adding events
@@ -515,14 +585,15 @@ let grobid = (function ($) {
         function onSuccessText(responseText, statusText) {
             $('#infoResultMessage').html('');
 
-            let paragraphs = responseText.paragraphs;
+            let passages = responseText.passages;
             let cumulativeOutput = "";
-            if (paragraphs) {
-                paragraphs.forEach(function (paragraph, paragraphIdx) {
-                    let text = paragraph.text;
+            let spansList = {}
+            if (passages) {
+                passages.forEach(function (passage, paragraphIdx) {
+                    let text = passage.text;
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
                     cumulativeOutput += annotateTextAsHtml(text, spans);
                 })
@@ -531,11 +602,11 @@ let grobid = (function ($) {
             $('#requestResultTextContent').html(cumulativeOutput);
 
             //Adding events, unfortunately I need to wait when the HTML tree is updated
-            if (paragraphs) {
-                paragraphs.forEach(function (paragraph, paragraphIdx) {
+            if (passages) {
+                passages.forEach(function (passage) {
                     let spans = [];
-                    if (paragraph.spans) {
-                        spans = paragraph.spans;
+                    if (passage.spans) {
+                        spans = passage.spans;
                     }
 
                     // Adding events
@@ -543,6 +614,8 @@ let grobid = (function ($) {
                         let annotationBlock = $('#annot_supercon-' + spans[annotationIdx].id);
                         annotationBlock.bind('hover', spans[annotationIdx], showSpanOnText_event);
                         annotationBlock.bind('click', spans[annotationIdx], showSpanOnText_event);
+
+                        spansList[spans[annotationIdx].id] = spans[annotationIdx];
                     }
                 });
             }
@@ -551,11 +624,23 @@ let grobid = (function ($) {
 
             $('#jsonCode').html(cleanupHtml(testStr));
             window.prettyPrint && prettyPrint();
+
+            let aggregatedMaterials = responseText.aggregatedMaterials;
+            $('#result-document-summary').html('There is no data to compute the summary');
+            if (aggregatedMaterials !== undefined) {
+                let string = buildMaterialSummary(aggregatedMaterials, spansList);
+
+                $('#result-document-summary').html(string)
+            }
+
             hideResultDivs();
             $('#requestResultText').show();
         }
 
         function processPdf(action) {
+            //Need to select the first tab or the boxes will not positioned correctly 
+            $('#result-pdf-annotations-tab').trigger('click')
+
             let resultMessageBlock = $('#infoResultMessage');
             resultMessageBlock.html('<p class="text-secondary">Requesting server...</p>');
             let requestResult = $('#requestResultPdfContent');
@@ -754,7 +839,7 @@ let grobid = (function ($) {
 
             let json = response;
             let pages = json['pages'];
-            let paragraphs = json.paragraphs;
+            let passages = json.passages;
 
             let spanGlobalIndex = 0;
             let copyButtonElement = $('#copy-button');
@@ -769,21 +854,25 @@ let grobid = (function ($) {
             function appendLinkToTable(span, link, addedLinks) {
                 let encodedLinkId = encodeLinkAsString(span, link)
 
-                let classes = Object.keys(span.attributes)
-                    .filter(function (key) {
-                        return key.endsWith("clazz");
-                    })
-                    .map(function (key) {
-                        return span.attributes[key]
-                    }).join(", ");
+                let shapes = {}
+                let classes = {}
+                if (span.attributes) {
+                    classes = Object.keys(span.attributes)
+                        .filter(function (key) {
+                            return key.endsWith("clazz");
+                        })
+                        .map(function (key) {
+                            return span.attributes[key]
+                        }).join(", ");
 
-                let shapes = Object.keys(span.attributes)
-                    .filter(function (key) {
-                        return key.endsWith("shape");
-                    })
-                    .map(function (key) {
-                        return span.attributes[key]
-                    }).join(", ");
+                    shapes = Object.keys(span.attributes)
+                        .filter(function (key) {
+                            return key.endsWith("shape");
+                        })
+                        .map(function (key) {
+                            return span.attributes[key]
+                        }).join(", ");
+                }
 
                 let html_code = createRowHtml(encodedLinkId, span.text, link.targetText, link.type, true, cla = classes, shape = shapes);
                 let {
@@ -816,9 +905,9 @@ let grobid = (function ($) {
             }
 
             let globalLinkToPressures = []
-            paragraphs.forEach(function (paragraph, paragraphIdx) {
+            passages.forEach(function (passage, passageIdx) {
                 let addedLinks = []
-                let spans = paragraph.spans;
+                let spans = passage.spans;
                 let localSpans = []
                 // hey bro, this must be asynchronous to avoid blocking the brothers
 
@@ -876,20 +965,21 @@ let grobid = (function ($) {
 
                                         // span.text == material
                                         // link.targetText == tcValue
+                                        let snippetAnnotations = new Array(span, link_entity);
                                         let row_id = appendLinkToTable(span, link, addedLinks);
                                         // appendRemoveButton(row_id);
 
                                         if (linkToPressures[link.targetId] !== undefined) {
-                                            $("#" + row_id + " td:eq(6)").text(spansMap[linkToPressures[link.targetId]].text)
+                                            $("#" + row_id + " td:eq(6)").text(spansMap[linkToPressures[link.targetId]].text);
+                                            snippetAnnotations.push(spansMap[linkToPressures[link.targetId]]);
                                             delete globalLinkToPressures[link.targetId]
                                         }
 
-
-                                        let paragraph_popover = annotateTextAsHtml(paragraph.text, [span, link_entity]);
+                                        let passage_popover = annotateTextAsHtml(passage.text, snippetAnnotations);
 
                                         $("#" + row_id).popover({
                                             content: function () {
-                                                return paragraph_popover;
+                                                return passage_popover;
                                             },
                                             html: true,
                                             // container: 'body',
@@ -906,7 +996,7 @@ let grobid = (function ($) {
 
             let addedLinks = []
 
-            //Reprocessing the links for which the targetId isn't in the same paragraph
+            //Reprocessing the links for which the targetId isn't in the same passage
             unlinkedElements.forEach(function (span, spanIdx) {
                 if (span.links !== undefined && span.links.length > 0) {
                     span.links.forEach(function (link, linkIdx) {
@@ -937,6 +1027,21 @@ let grobid = (function ($) {
                     });
                 }
             });
+
+
+            let jsonResponse = vkbeautify.json(response);
+
+            $('#jsonCodePdf').html(cleanupHtml(jsonResponse));
+            window.prettyPrint && prettyPrint();
+
+            let aggregatedMaterials = json.aggregatedMaterials;
+            if (aggregatedMaterials !== undefined) {
+                let string = buildMaterialSummary(aggregatedMaterials, spansMap);
+
+                $('#result-pdf-summary').html(string)
+            }
+            // hideResultDivs();
+            // $('#requestResultText').show();
         }
 
         function annotateSpanOnPdf(annotationId, boundingBoxId, boundingBox, type, pageInfo) {
@@ -1018,7 +1123,7 @@ let grobid = (function ($) {
         }
 
         function addRow() {
-            console.log("Adding new row. ");
+            // console.log("Adding new row. ");
 
             let random_number = '_' + Math.random().toString(36).substr(2, 9);
 
@@ -1094,15 +1199,15 @@ let grobid = (function ($) {
             let pos = 0;
 
             annotationList.sort(function (a, b) {
-                let startA = parseInt(a.offsetStart, 10);
-                let startB = parseInt(b.offsetStart, 10);
+                let startA = parseInt(a.offset_start, 10);
+                let startB = parseInt(b.offset_start, 10);
 
                 return startA - startB;
             });
 
             annotationList.forEach(function (annotation, annotationIdx) {
-                let start = parseInt(annotation.offsetStart, 10);
-                let end = parseInt(annotation.offsetEnd, 10);
+                let start = parseInt(annotation.offset_start, 10);
+                let end = parseInt(annotation.offset_end, 10);
 
                 let type = getPlainType(annotation.type);
                 let links = annotation.links
@@ -1125,6 +1230,23 @@ let grobid = (function ($) {
         function getPlainType(type) {
             return type.replace("<", "").replace(">", "");
         }
+
+        var createNestedObject = function (base, names, value) {
+            // If a value is given, remove the last name and keep it for later:
+            var lastName = arguments.length === 3 ? names.pop() : false;
+
+            // Walk the hierarchy, creating new objects where needed.
+            // If the lastName was removed, then the last object is not set yet:
+            for (var i = 0; i < names.length; i++) {
+                base = base[names[i]] = base[names[i]] || {};
+            }
+
+            // If a value was given, set it to the last name:
+            if (lastName) base = base[lastName] = value;
+
+            // Return the last object in the hierarchy:
+            return base;
+        };
 
         // Transformation to HTML
         function spanToHtml(span, topPos) {
@@ -1179,32 +1301,59 @@ let grobid = (function ($) {
 
             if (span.attributes) {
                 let previousPrefix = "";
-                let resolvedFormulas = [];
-                let formula = "";
-                let attributeHtmlString = "<div class='border col-12 p-0'>";
+                let attributeHtmlStringStart = "<div class='border col-12 p-0'>";
+                let attributeHtmlString = ""
+                obj = {}
+
                 Object.keys(span.attributes).sort().forEach(function (key) {
                     let splits = key.split("_");
-                    let prefix = splits[0];
-                    let propertyName = splits[1];
+                    let value = span.attributes[key];
 
-                    if (propertyName === "formula") {
-                        formula = span.attributes[key];
-                        attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
-                    } else if (propertyName === 'rawTaggedValue') {
-                        //Ignoring
-
-                    } else if (propertyName === 'resolvedFormula') {
-                        resolvedFormulas.push(span.attributes[key])
-                    } else {
-                        attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + span.attributes[key] + "</strong></div></row>";
-                    }
-                    previousPrefix = prefix;
+                    createNestedObject(obj, splits, value);
                 });
 
-                if (resolvedFormulas.length > 0 && resolvedFormulas[0] !== formula) {
-                    attributeHtmlString += "<row><div class='col-12'>resolvedFormula: <strong>" + resolvedFormulas.join(", ") + "</strong></div></row>";
-                }
-                attributeHtmlString += "</div>";
+                Object.keys(obj).forEach(function (key) {
+                    attributeHtmlString += attributeHtmlStringStart;
+                    let resolvedFormulas = [];
+                    let formula = "";
+                    let variables = []
+
+                    Object.keys(obj[key]).forEach(function (sub_key) {
+                        propertyName = sub_key
+
+                        if (propertyName === "formula") {
+                            formula = obj[key][sub_key]['rawValue'];
+                            attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + formula + "</strong></div></row>";
+                        } else if (propertyName === 'rawTaggedValue') {
+                            // continue
+                        } else if (propertyName === 'clazz') {
+                            attributeHtmlString += "<row><div class='col-12'>Class: <strong>" + obj[key][sub_key] + "</strong></div></row>";
+                        } else if (propertyName === 'resolvedFormulas') {
+                            let resolvedFormulasList = obj[key][sub_key];
+                            Object.keys(resolvedFormulasList).forEach(function (k) {
+                                resolvedFormulas.push(resolvedFormulasList[k]['rawValue'])
+                            });
+                        } else if (propertyName === 'variables') {
+                            let variableList = obj[key][sub_key]
+                            Object.keys(variableList).forEach(function (variable_name) {
+                                let var_values = variableList[variable_name];
+                                Object.keys(var_values).forEach(function (var_value_index) {
+                                    variables.push(var_values[var_value_index]);
+                                })
+                                attributeHtmlString += "<row><div class='col-12'>" + "variable " + variable_name + ": <strong>" + variables.join(", ") + "</strong></div></row>";
+                            });
+                        } else {
+                            attributeHtmlString += "<row><div class='col-12'>" + propertyName + ": <strong>" + obj[key][sub_key] + "</strong></div></row>";
+                        }
+                        previousPrefix = key;
+
+                    })
+
+                    if (resolvedFormulas.length > 0 && resolvedFormulas[0] !== formula) {
+                        attributeHtmlString += "<row><div class='col-12'>resolvedFormula: <strong>" + resolvedFormulas.join(", ") + "</strong></div></row>";
+                    }
+                    attributeHtmlString += "</div>";
+                })
 
                 string += attributeHtmlString;
             }
@@ -1216,10 +1365,12 @@ let grobid = (function ($) {
         }
 
         let examples_superconductors = [
-            "The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
-            "For intercalated graphite, T c is reported to be 11.4 K for CaC 6 , 4 and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
+            "We are studying the material La 3 A 2 Ge 2 (A = Ir, Rh). The critical temperature T C = 4.7 K discovered for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2.",
+            "For intercalated graphite, T c is reported to be 11.4 K for CaC and for alkalidoped fullerides, T c ¼ 33 K in RbCs 2 C 60 .",
             "In just a few months, the superconducting transition temperature (Tc) was increased to 55 K in the electron-doped system, as well as 25 K in hole-doped La1−x SrxOFeAs compound. Soon after, single crystals of LnFeAs(O1−x Fx) (Ln = Pr, Nd, Sm) were grown successfully by the NaCl/KCl flux method, though the sub-millimeter sizes limit the experimental studies on them. Therefore, FeAs-based single crystals with high crystalline quality, homogeneity and large sizes are highly desired for precise measurements of the properties. Very recently, the BaFe2As2 compound in a tetragonal ThCr2Si2-type structure with infinite Fe–As layers was reported. By replacing the alkaline earth elements (Ba and Sr) with alkali elements (Na, K, and Cs), superconductivity up to 38 K was discovered both in hole-doped and electron-doped samples. Tc leties from 2.7 K in CsFe2As2 to 38 K in A1−xKxFe2As2 (A = Ba, Sr). Meanwhile, superconductivity could also be induced in the parent phase by high pressure or by replacing some of the Fe by Co. More excitingly, large single crystals could be obtained by the Sn flux method in this family to study the rather low melting temperature and the intermetallic characteristics.",
-            "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K ."
+            "The crystal structure of (Sr, Na)Fe 2 As 2 has been refined for polycrystalline samples in the range of 0 ⩽ x ⩽ 0.42 with a maximum T c of 26 K .",
+            "Our single crystal x-ray diffraction characterization shows, in agreement with earlier work, that WB 4.2 crystallizes in the space group P6 3 /mmc (No. 194) and has a crystal structure that is derived from the simple diborides but with a systematic W-deficiency-B 3 substitution-each missing W atom in the 2b position is replaced by three B atoms in the 6h position.",
+            "The compound remains in the cubic Pu2C3-type structure at pressures up to at least 30 GPa. MgB2 are crystallized in the form of either a tetragonal ZrCuSiAs-type or a trigonal NdOZnP-type (space group R3m) structure."
         ]
 
         let examples_materials = [

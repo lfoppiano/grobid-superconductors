@@ -39,7 +39,7 @@ public class LexiconLoader {
             }
         } catch (JsonProcessingException e) {
             throw new
-                    GrobidResourceException("Error when compiling lexicon matcher in vocabulary.", e);
+                GrobidResourceException("Error when compiling lexicon matcher in vocabulary.", e);
         } catch (IOException e) {
             throw new GrobidException("An exception occurred while running GROBID.", e);
         } finally {
@@ -62,7 +62,7 @@ public class LexiconLoader {
             }
         } catch (PatternSyntaxException e) {
             throw new
-                    GrobidResourceException("Error when compiling lexicon matcher in vocabulary.", e);
+                GrobidResourceException("Error when compiling lexicon matcher in vocabulary.", e);
         } catch (IOException e) {
             throw new GrobidException("An exception occurred while running GROBID.", e);
 
@@ -93,23 +93,23 @@ public class LexiconLoader {
         Map<String, List<String>> inflection = new HashedMap<>();
 
         readCsvFile(is, input -> {
-                    String pieces[] = input.split("\t");
-                    if (pieces.length == 2) {
+                String pieces[] = input.split("\t");
+                if (pieces.length == 2) {
 
-                        String name = pieces[0].trim();
-                        String inflections = pieces[1].trim();
-                        List<String> inflectionList = new ArrayList<>();
-                        String[] subInflection = inflections.split(",");
+                    String name = pieces[0].trim();
+                    String inflections = pieces[1].trim();
+                    List<String> inflectionList = new ArrayList<>();
+                    String[] subInflection = inflections.split(",");
 
-                        for (String subFlection : subInflection) {
-                            inflectionList.add(subFlection.trim());
-                        }
+                    for (String subFlection : subInflection) {
+                        inflectionList.add(subFlection.trim());
+                    }
 
-                        if (inflectionList.size() > 0) {
-                            inflection.put(name, inflectionList);
-                        }
+                    if (inflectionList.size() > 0) {
+                        inflection.put(name, inflectionList);
                     }
                 }
+            }
 
         );
 

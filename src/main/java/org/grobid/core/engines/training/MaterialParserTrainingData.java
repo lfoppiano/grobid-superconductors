@@ -5,7 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.GrobidPDFEngine;
 import org.grobid.core.engines.MaterialParser;
@@ -36,7 +36,7 @@ public class MaterialParserTrainingData {
     private MaterialParser materialParser;
 
     public MaterialParserTrainingData() {
-        materialParser = MaterialParser.getInstance(null);
+        materialParser = MaterialParser.getInstance(null, null);
     }
 
     public MaterialParserTrainingData(MaterialParser parser) {
@@ -113,11 +113,11 @@ public class MaterialParserTrainingData {
     }
 
     private void createTrainingFromPDF(File file, String outputDirectory, TrainingOutputFormat outputFormat, int id) {
+        GrobidAnalysisConfig config =
+            new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                .build();
         Document document = null;
         try {
-            GrobidAnalysisConfig config =
-                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                    .build();
             document = GrobidFactory.getInstance().createEngine().fullTextToTEIDoc(file, config);
         } catch (Exception e) {
             throw new GrobidException("Cannot create training data because GROBID Fulltext model failed on the PDF: " + file.getPath(), e);
@@ -130,7 +130,7 @@ public class MaterialParserTrainingData {
         StringBuilder features = new StringBuilder();
         List<Pair<List<Span>, List<LayoutToken>>> labeledTextList = new ArrayList<>();
 
-        GrobidPDFEngine.processDocument(document, (documentBlock) -> {
+        GrobidPDFEngine.processDocument(document, config, (documentBlock) -> {
 
             // Re-tokenise now
             final List<LayoutToken> normalisedLayoutTokens = DeepAnalyzer.getInstance()

@@ -64,7 +64,7 @@ public class InterAnnotationAgreementUnitizingProcessor {
                 LOGGER.warn("The file " + fileNameWithoutInputDirectory + " cannot be found in the " + absolutePath + ". Skipping!");
                 continue;
             }
-            
+
             UnitizedStudyWrapper wrappedStudy = new UnitizedStudyWrapper(files, this.topLevelTags, this.annotationTags);
             studies.add(wrappedStudy);
         }

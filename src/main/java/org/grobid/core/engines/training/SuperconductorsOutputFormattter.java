@@ -1,6 +1,6 @@
 package org.grobid.core.engines.training;
 
-import org.grobid.core.data.DocumentBlock;
+import org.grobid.core.data.document.DocumentBlock;
 
 import java.util.List;
 

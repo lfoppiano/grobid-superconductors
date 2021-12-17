@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tei xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc xml:id="_0">
+      <titleStmt/>
+      <publicationStmt>
+        <publisher>National Institute for Materials Science (NIMS), Tsukuba, Japan</publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+            <p>The Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Licence applies to this document.</p>
+          </licence>
+        </availability>
+      </publicationStmt>
+    </fileDesc>
+    <encodingDesc>
+      <appInfo>
+        <application ident="grobid-superconductors" version="0.2.0-SNAPSHOT">
+          <ref target="https://github.com/lfoppiano/grobid-superconductors">A machine learning software for extracting materials and their properties from scientific literature.</ref>
+        </application>
+      </appInfo>
+    </encodingDesc>
+    <profileDesc>
+      <abstract/>
+    </profileDesc>
+  </teiHeader>
+  <text xml:lang="en">
+    <body>
+        <p><s>AF fluctuations seem to play a key role in <rs type="tc">raising T c</rs> for various <rs type="class">iron-based pnictides</rs>; however, the scenario does not work well for <rs type="material">LaFeAsO 1−x F x</rs> , because for <rs type="material" xml:id="x45">x = 0.14</rs>, <rs type="tc">T c</rs> increases <rs corresp="#x45" type="tcValue" xml:id="x47">up to 40 K</rs> at <rs corresp="#x47" type="pressure">3.0 GPa</rs> with no predom- inant AF fluctuations .</s></p>
+    </body>
+  </text>
+</tei>

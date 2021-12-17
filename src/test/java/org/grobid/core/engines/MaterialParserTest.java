@@ -3,13 +3,15 @@ package org.grobid.core.engines;
 import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Material;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
-import org.grobid.core.main.LibraryLoader;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
 import org.hamcrest.Matcher;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -25,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Lexicon.class)
@@ -33,10 +35,19 @@ public class MaterialParserTest {
 
     private MaterialParser target;
 
+
+    @BeforeClass
+    public static void before() throws Exception {
+        GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
+        modelParameters.name = "bao";
+        GrobidProperties.addModel(modelParameters);
+    }
+    
+    
     @Before
     public void setUp() throws Exception {
         PowerMock.mockStatic(Lexicon.class);
-        target = new MaterialParser(GrobidModels.DUMMY, null);
+        target = new MaterialParser(GrobidModels.DUMMY, null, null);
     }
 
     private List<String> generateFeatures(List<LayoutToken> layoutTokens) {
@@ -66,7 +77,7 @@ public class MaterialParserTest {
 
         assertThat(output, hasSize(1));
         assertThat(output.get(0).getName(), is("LSCO"));
-        assertThat(output.get(0).getFormula(), is("La2−xSrxCuO4"));
+        assertThat(output.get(0).getFormula().getRawValue(), is("La2−xSrxCuO4"));
     }
 
     @Test
@@ -103,7 +114,7 @@ public class MaterialParserTest {
 
         assertThat(output, hasSize(1));
         assertThat(output.get(0).getName(), is(nullValue()));
-        assertThat(output.get(0).getFormula(), is("La 2−x Sr x CuO 4"));
+        assertThat(output.get(0).getFormula().getRawValue(), is("La 2−x Sr x CuO 4"));
         assertThat(output.get(0).getDoping(), is("Under-doped"));
         assertThat(output.get(0).getVariables().get("x"), containsInAnyOrder("0.063 -0.125"));
 
@@ -154,7 +165,7 @@ public class MaterialParserTest {
         List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(1));
-        assertThat(materials.get(0).getFormula(), is("CeM 2 X 2"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("CeM 2 X 2"));
 
         assertThat(materials.get(0).getVariables().keySet(), hasSize(2));
         assertThat(materials.get(0).getVariables().get("X"), containsInAnyOrder("Si", "Ge"));
@@ -178,10 +189,10 @@ public class MaterialParserTest {
         List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(1));
-        assertThat(materials.get(0).getFormula(), is("(Sr,K)Fe2As2"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("(Sr,K)Fe2As2"));
         assertThat(materials.get(0).getShape(), is("films"));
         assertThat(materials.get(0).getResolvedFormulas(), hasSize(1));
-        assertThat(materials.get(0).getResolvedFormulas().get(0), is("Sr x K 1-x Fe2As2"));
+        assertThat(materials.get(0).getResolvedFormulas().get(0).getRawValue(), is("Sr 1-x K x Fe2As2"));
 
     }
 
@@ -206,7 +217,7 @@ public class MaterialParserTest {
         List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(1));
-        assertThat(materials.get(0).getFormula(), is("CeM m In 3+2m"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("CeM m In 3+2m"));
         assertThat(materials.get(0).getVariables().keySet(), hasSize(2));
         assertThat(materials.get(0).getVariables().get("M"), containsInAnyOrder("Ir", "Co"));
         assertThat(materials.get(0).getVariables().get("m"), containsInAnyOrder("0", "1"));
@@ -231,10 +242,10 @@ public class MaterialParserTest {
 
         assertThat(materials, hasSize(2));
         assertThat(materials.get(0).getShape(), is("powder"));
-        assertThat(materials.get(0).getFormula(), is("Bi-2212"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("Bi-2212"));
 
         assertThat(materials.get(1).getShape(), is("powder"));
-        assertThat(materials.get(1).getFormula(), is("Bi-2223"));
+        assertThat(materials.get(1).getFormula().getRawValue(), is("Bi-2223"));
     }
 
     @Test
@@ -255,9 +266,9 @@ public class MaterialParserTest {
         List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(2));
-        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("MgB2"));
         assertThat(materials.get(0).getDoping(), is("Zn"));
-        assertThat(materials.get(1).getFormula(), is("MgB2"));
+        assertThat(materials.get(1).getFormula().getRawValue(), is("MgB2"));
         assertThat(materials.get(1).getDoping(), is("Cu"));
     }
 
@@ -279,7 +290,7 @@ public class MaterialParserTest {
         List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(1));
-        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("MgB2"));
         assertThat(materials.get(0).getShape(), is("polycrystalline, thin film"));
     }
 
@@ -302,9 +313,9 @@ public class MaterialParserTest {
         List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(2));
-        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("MgB2"));
         assertThat(materials.get(0).getShape(), is("polycrystalline, thin film"));
-        assertThat(materials.get(1).getFormula(), is("LaFeO2"));
+        assertThat(materials.get(1).getFormula().getRawValue(), is("LaFeO2"));
         assertThat(materials.get(1).getShape(), is("polycrystalline, thin film"));
     }
 
@@ -329,10 +340,10 @@ public class MaterialParserTest {
         List<Material> materials = target.extractResults(layoutTokens, results);
 
         assertThat(materials, hasSize(2));
-        assertThat(materials.get(0).getFormula(), is("MgB2"));
+        assertThat(materials.get(0).getFormula().getRawValue(), is("MgB2"));
         assertThat(materials.get(0).getShape(), is("polycrystalline, thin film"));
         assertThat(materials.get(0).getSubstrate(), is("StrO3, Al"));
-        assertThat(materials.get(1).getFormula(), is("LaFeO2"));
+        assertThat(materials.get(1).getFormula().getRawValue(), is("LaFeO2"));
         assertThat(materials.get(1).getShape(), is("polycrystalline, thin film"));
         assertThat(materials.get(1).getSubstrate(), is("StrO3, Al"));
     }
@@ -428,7 +439,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_singleLessThan() throws Exception {
         String value = "1 <";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 
@@ -436,7 +447,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_singleGreaterThan() throws Exception {
         String value = "> 2";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 
@@ -444,7 +455,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_list() throws Exception {
         String value = "1,2,3 and 4";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
 
         assertThat(parsedValues, hasSize(4));
         assertThat(parsedValues.get(0), is("1"));
@@ -457,7 +468,7 @@ public class MaterialParserTest {
     public void testExtractVariableValues_interval() throws Exception {
         String value = "<2";
 
-        List<String> parsedValues = target.extractVariableValues(value);
+        List<String> parsedValues = target.extractAndFilterVariableValues(value);
         assertThat(parsedValues, hasSize(1));
     }
 }

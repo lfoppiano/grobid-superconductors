@@ -12,8 +12,9 @@ import org.grobid.core.engines.training.SuperconductorsParserTrainingData;
 import org.grobid.core.engines.training.TrainingOutputFormat;
 import org.grobid.core.main.GrobidHomeFinder;
 import org.grobid.core.main.LibraryLoader;
-import org.grobid.core.utilities.ChemDataExtractorClient;
 import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.client.ChemDataExtractorClient;
+import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +79,9 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
     @Override
     protected void run(Bootstrap bootstrap, Namespace namespace, GrobidSuperconductorsConfiguration configuration) throws Exception {
         try {
-            GrobidProperties.set_GROBID_HOME_PATH(new File(configuration.getGrobidHome()).getAbsolutePath());
-            String grobidHome = configuration.getGrobidHome();
-            if (grobidHome != null) {
-                GrobidProperties.setGrobidPropertiesPath(new File(grobidHome, "/config/grobid.properties").getAbsolutePath());
-            }
-
             GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(configuration.getGrobidHome()));
             GrobidProperties.getInstance(grobidHomeFinder);
+            configuration.getModels().stream().forEach(GrobidProperties::addModel);
             Engine.getEngine(true);
             LibraryLoader.load();
         } catch (final Exception exp) {
@@ -102,9 +98,10 @@ public class TrainingGenerationCommand extends ConfiguredCommand<GrobidSupercond
         Boolean recursive = namespace.get(RECURSIVE);
 
         ChemDataExtractorClient chemspotClient = new ChemDataExtractorClient(configuration);
+        StructureIdentificationModuleClient structureIdentificationModuleClient = new StructureIdentificationModuleClient(configuration);
 
         if (SuperconductorsModels.SUPERCONDUCTORS.getModelName().equals(modelName)) {
-            new SuperconductorsParserTrainingData(chemspotClient).createTrainingBatch(inputDirectory.getAbsolutePath(),
+            new SuperconductorsParserTrainingData(chemspotClient, structureIdentificationModuleClient).createTrainingBatch(inputDirectory.getAbsolutePath(),
                 outputDirectory.getAbsolutePath(),
                 TrainingOutputFormat.valueOf(StringUtils.upperCase(outputFormat)), recursive);
         } else {

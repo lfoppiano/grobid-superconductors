@@ -6,13 +6,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.*;
+import org.grobid.core.data.Measurement;
+import org.grobid.core.data.document.*;
+import org.grobid.core.data.material.Formula;
+import org.grobid.core.data.material.Material;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentSource;
 import org.grobid.core.engines.config.GrobidAnalysisConfig;
+import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.lang.Language;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.*;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,15 +27,17 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.mapping;
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.grobid.core.data.Token.getStyle;
+import static org.grobid.core.data.document.Token.getStyle;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
+import static org.grobid.core.engines.linking.CRFBasedLinker.*;
 
 @Singleton
 public class ModuleEngine {
@@ -39,28 +47,29 @@ public class ModuleEngine {
 
     private SuperconductorsParser superconductorsParser;
     private QuantityParser quantityParser;
-    private SentenceSegmenter sentenceSegmenter;
     private RuleBasedLinker ruleBasedLinker;
-    private CRFBasedLinker CRFBasedLinker;
+    private CRFBasedLinker crfBasedLinker;
+    private GrobidSuperconductorsConfiguration configuration;
 
-    public ModuleEngine(SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
+    ModuleEngine(GrobidSuperconductorsConfiguration configuration, SuperconductorsParser superconductorsParser, QuantityParser quantityParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
         this.superconductorsParser = superconductorsParser;
         this.quantityParser = quantityParser;
-        this.sentenceSegmenter = new SentenceSegmenter();
         this.ruleBasedLinker = ruleBasedLinker;
-        this.CRFBasedLinker = CRFBasedLinker;
-        parsers = new EngineParsers();
+        this.crfBasedLinker = CRFBasedLinker;
+        this.configuration = configuration;
     }
 
     @Inject
-    public ModuleEngine(SuperconductorsParser superconductorsParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
-        this(superconductorsParser, QuantityParser.getInstance(true), ruleBasedLinker, CRFBasedLinker);
+    public ModuleEngine(GrobidSuperconductorsConfiguration configuration, SuperconductorsParser superconductorsParser, RuleBasedLinker ruleBasedLinker, CRFBasedLinker CRFBasedLinker) {
+        this(configuration, superconductorsParser, QuantityParser.getInstance(true), ruleBasedLinker, CRFBasedLinker);
+
+        parsers = new EngineParsers();
     }
 
     @Deprecated
     private Pair<Integer, Integer> getContainedSentenceAsIndex(List<LayoutToken> entityLayoutTokens, List<LayoutToken> tokens) {
 
-        List<List<LayoutToken>> sentences = this.sentenceSegmenter.getSentencesAsLayoutToken(tokens);
+        List<List<LayoutToken>> sentences = new SentenceSegmenter().detectSentencesAsLayoutToken(tokens);
 
         int entityOffsetStart = entityLayoutTokens.get(0).getOffset();
         int entityOffsetEnd = Iterables.getLast(entityLayoutTokens).getOffset();
@@ -92,7 +101,7 @@ public class ModuleEngine {
      **/
     private Pair<Integer, Integer> adjustExtremities(Pair<Integer, Integer> originalExtremities, List<LayoutToken> entityLayoutTokens, List<LayoutToken> tokens) {
 
-        List<List<LayoutToken>> sentences = this.sentenceSegmenter.getSentencesAsLayoutToken(tokens);
+        List<List<LayoutToken>> sentences = new SentenceSegmenter().detectSentencesAsLayoutToken(tokens);
 
         int entityOffsetStart = entityLayoutTokens.get(0).getOffset();
         int entityOffsetEnd = entityLayoutTokens.get(entityLayoutTokens.size() - 1).getOffset();
@@ -178,20 +187,43 @@ public class ModuleEngine {
     }
 
     /**
-     * The text is a paragraph
+     * Process a chunk of text, namely a sentence
+     *
+     * @param text           paragraph or sentence to be processed
+     * @param disableLinking disable the linking
+     * @return
      */
     public DocumentResponse process(String text, boolean disableLinking) {
-        List<LayoutToken> tokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(text);
+        List<OffsetPosition> sentenceOffsets = SentenceUtilities.getInstance()
+            .runSentenceDetection(text, new Language("en"));
 
-        List<TextPassage> textPassage = process(tokens, disableLinking);
+        List<RawPassage> sentencesAsLayoutToken = sentenceOffsets.stream()
+            .map(sentenceOffset -> text.substring(sentenceOffset.start, sentenceOffset.end))
+            .map(sentence -> DeepAnalyzer.getInstance().tokenizeWithLayoutToken(sentence))
+            .map(RawPassage::new)
+            .collect(Collectors.toList());
 
-        return new DocumentResponse(textPassage);
+        List<TextPassage> textPassages = process(sentencesAsLayoutToken, disableLinking);
+
+        DocumentResponse documentResponse = new DocumentResponse(textPassages);
+
+        Map<Formula, List<String>> aggregatedFormulaAtDocumentLevel = processFormulasAtDocumentLevel(documentResponse);
+        documentResponse.setAggregatedMaterials(aggregatedFormulaAtDocumentLevel);
+
+        return documentResponse;
     }
 
     private List<Span> getQuantities(List<LayoutToken> tokens) {
-        List<Measurement> measurements = quantityParser.process(tokens);
-
         List<Span> spans = new ArrayList<>();
+        List<Measurement> measurements = new ArrayList<>();
+
+        //TODO: remove this when quantities will be updated
+        try {
+            measurements = quantityParser.process(tokens);
+        } catch (Exception e) {
+            LOGGER.warn("Error when processing quantities", e);
+            return spans;
+        }
 
         spans.addAll(getTemperatures(measurements).stream()
             .flatMap(p -> Stream.of(MeasurementUtils.toSpan(p, tokens, SUPERCONDUCTORS_TC_VALUE_LABEL)))
@@ -226,18 +258,23 @@ public class ModuleEngine {
 
         Document doc = null;
         File file = null;
+        int consolidateHeader = StringUtils.isNotEmpty(this.configuration.getConsolidation().service) ? 1 : 0;
+
+        GrobidAnalysisConfig config =
+            new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
+                .analyzer(DeepAnalyzer.getInstance())
+                .consolidateHeader(consolidateHeader)
+                .withSentenceSegmentation(true)
+                .build();
 
         try {
             file = IOUtilities.writeInputFile(uploadedInputStream);
-            GrobidAnalysisConfig config =
-                new GrobidAnalysisConfig.GrobidAnalysisConfigBuilder()
-                    .analyzer(DeepAnalyzer.getInstance())
-                    .build();
             DocumentSource documentSource =
                 DocumentSource.fromPdf(file, config.getStartPage(), config.getEndPage());
             doc = parsers.getSegmentationParser().processing(documentSource, config);
 
-            BiblioInfo biblioInfo = GrobidPDFEngine.processDocument(doc, (documentBlock) -> {
+            final List<RawPassage> accumulatedSentences = new ArrayList<>();
+            BiblioInfo biblioInfo = GrobidPDFEngine.processDocument(doc, config, (documentBlock) -> {
                 List<LayoutToken> cleanedLayoutTokens = documentBlock.getLayoutTokens().stream()
                     .map(l -> {
                         LayoutToken newOne = new LayoutToken(l);
@@ -248,9 +285,10 @@ public class ModuleEngine {
                 List<LayoutToken> cleanedLayoutTokensRetokenized = DeepAnalyzer.getInstance()
                     .retokenizeLayoutTokens(cleanedLayoutTokens);
 
-                documentResponse.addParagraphs(process(cleanedLayoutTokensRetokenized, disableLinking,
-                    documentBlock.getSection(), documentBlock.getSubSection()));
+                accumulatedSentences.add(new RawPassage(cleanedLayoutTokensRetokenized, documentBlock.getSection(), documentBlock.getSubSection()));
             });
+
+            documentResponse.addParagraphs(process(accumulatedSentences, disableLinking));
 
             List<Page> pages = doc.getPages().stream().map(p -> new Page(p.getHeight(), p.getWidth())).collect(Collectors.toList());
 
@@ -262,77 +300,134 @@ public class ModuleEngine {
             IOUtilities.removeTempFile(file);
         }
 
+        Map<Formula, List<String>> aggregatedFormulaAtDocumentLevel = processFormulasAtDocumentLevel(documentResponse);
+        documentResponse.setAggregatedMaterials(aggregatedFormulaAtDocumentLevel);
+
+
         return documentResponse;
     }
 
-    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking) {
-        return process(tokens, disableLinking, null, null);
-    }
+    public List<TextPassage> process(List<RawPassage> inputPassage, boolean disableLinking) {
 
-    public List<TextPassage> process(List<LayoutToken> tokens, boolean disableLinking, String section, String subSection) {
-        TextPassage textPassage = new TextPassage();
-
-        textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
-        textPassage.setText(LayoutTokensUtil.toText(tokens));
-        if (section != null) {
-            textPassage.setSection(section);
-            textPassage.setSubSection(subSection);
-        }
-        textPassage.setType("paragraph");
-
-        List<Span> spans = new ArrayList<>();
-        List<Span> superconductorsList = superconductorsParser.process(tokens);
-        // Re-calculate the offsets to be based on the current paragraph - TODO: investigate this mismatch
-        List<Span> correctedSuperconductorsSpans = superconductorsList.stream()
-            .map(s -> {
-                int paragraphOffsetStart = tokens.get(0).getOffset();
-                s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
-                s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
-                return s;
-            })
+        List<List<LayoutToken>> accumulatedLayoutTokens = inputPassage.stream()
+            .map(RawPassage::getLayoutTokens)
             .collect(Collectors.toList());
 
-        List<Span> quantitiesList = getQuantities(tokens).stream()
-            .map(s -> {
-                int paragraphOffsetStart = tokens.get(0).getOffset();
-                s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
-                s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
-                return s;
-            })
-            .collect(Collectors.toList());
+        List<List<Span>> superconductorsList = superconductorsParser.process(accumulatedLayoutTokens);
 
-        spans.addAll(correctedSuperconductorsSpans);
-        spans.addAll(quantitiesList);
+        List<TextPassage> intermediateList = new ArrayList<>();
 
-        List<Span> sortedSpans = spans
-            .stream()
-            .sorted(Comparator.comparingInt(Span::getOffsetStart))
-            .collect(Collectors.toList());
+        for (int index = 0; index < superconductorsList.size(); index++) {
+            List<Span> rawSuperconductorsSpans = superconductorsList.get(index);
+            List<LayoutToken> tokens = accumulatedLayoutTokens.get(index);
 
-        textPassage.setSpans(pruneOverlappingAnnotations(sortedSpans));
+            // Re-calculate the offsets to be based on the current paragraph - TODO: investigate this mismatch
+            List<Span> superconductorsSpans = rawSuperconductorsSpans.stream()
+                .map(s -> {
+                    int paragraphOffsetStart = tokens.get(0).getOffset();
+                    s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
+                    s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
+                    return s;
+                })
+                .collect(Collectors.toList());
 
-        if (disableLinking || CollectionUtils.size(textPassage.getSpans()) <= 1) {
-            return Collections.singletonList(textPassage);
-        }
+            List<Span> quantitiesSpans = getQuantities(tokens).stream()
+                .map(s -> {
+                    int paragraphOffsetStart = tokens.get(0).getOffset();
+                    s.setOffsetStart(s.getOffsetStart() - paragraphOffsetStart);
+                    s.setOffsetEnd(s.getOffsetEnd() - paragraphOffsetStart);
+                    return s;
+                })
+                .collect(Collectors.toList());
 
-        //CRF-based
+            List<Span> aggregatedSpans = new ArrayList<>();
+            aggregatedSpans.addAll(superconductorsSpans);
+            aggregatedSpans.addAll(quantitiesSpans);
 
-        // Set the materials to be linkable
-        for (Span s : textPassage.getSpans()) {
-            if (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL) || s.getType().equals(SUPERCONDUCTORS_PRESSURE_LABEL)) {
-                s.setLinkable(true);
+            TextPassage textPassage = new TextPassage();
+            textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
+            textPassage.setText(LayoutTokensUtil.toText(tokens));
+
+            String section = inputPassage.get(index).getSection();
+            String subSection = inputPassage.get(index).getSubSection();
+
+            if (section != null) {
+                textPassage.setSection(section);
+                textPassage.setSubSection(subSection);
             }
+            textPassage.setType("sentence");
+            textPassage.setSpans(pruneOverlappingAnnotations(aggregatedSpans));
+            intermediateList.add(textPassage);
         }
 
-        /** Modify the objects **/
-        TextPassage newTextPassage = ruleBasedLinker.markTemperatures(textPassage);
-        CRFBasedLinker.process(tokens, newTextPassage.getSpans());
+        if (disableLinking) {
+            return intermediateList;
+        }
 
-        //Rule-based: Because we split into sentences, we may obtain more information
-        List<TextPassage> textPassages = ruleBasedLinker.process(textPassage);
+        List<TextPassage> outputList = new ArrayList<>();
 
-        //TODO: Merge
-        return textPassages;
+        List<TextPassage> textPassagesWithLinks = ruleBasedLinker.process(intermediateList);
+
+        for (int i = 0; i < textPassagesWithLinks.size(); i++) {
+            TextPassage textPassageWithLinks = textPassagesWithLinks.get(i);
+
+            List<Span> spansCopy = intermediateList.get(i).getSpans().stream()
+                .map(Span::new)
+                .collect(Collectors.toList());
+
+            Map<String, Span> mapById = textPassageWithLinks.getSpans().stream()
+                .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            spansCopy.stream()
+                .filter(s -> s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+                .forEach(s -> {
+                    if (mapById.containsKey(s.getId())) {
+                        s.setLinkable(mapById.get(s.getId()).isLinkable());
+                    }
+                });
+
+            List<LayoutToken> tokens = accumulatedLayoutTokens.get(i);
+
+            Map<String, Span> resultMaterialTcValueLinkerCrf = crfBasedLinker.process(tokens, spansCopy, MATERIAL_TCVALUE_ID)
+                .parallelStream()
+                .filter(s -> crfBasedLinker.getLinkingEngines().get(MATERIAL_TCVALUE_ID).getAnnotationsToBeLinked().contains(s.getType()))
+                .filter(s -> isNotEmpty(s.getLinks()))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            Map<String, Span> resultTcValuePressureLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_PRESSURE_ID)
+                .parallelStream()
+                .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_PRESSURE_ID).getAnnotationsToBeLinked().contains(s.getType()))
+                .filter(s -> isNotEmpty(s.getLinks()))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            Map<String, Span> resultTcValueMeMethodLinkerCrf = crfBasedLinker.process(tokens, spansCopy, TCVALUE_ME_METHOD_ID)
+                .parallelStream()
+                .filter(s -> crfBasedLinker.getLinkingEngines().get(TCVALUE_ME_METHOD_ID).getAnnotationsToBeLinked().contains(s.getType()))
+                .filter(s -> isNotEmpty(s.getLinks()))
+                .collect(Collectors.toMap(Span::getId, Function.identity()));
+
+            // Merge
+            textPassageWithLinks.getSpans()
+                .stream()
+                .forEach(s -> {
+                    if (resultMaterialTcValueLinkerCrf.containsKey(s.getId())) {
+                        s.getLinks().addAll(resultMaterialTcValueLinkerCrf.get(s.getId()).getLinks());
+                    }
+
+                    if (resultTcValuePressureLinkerCrf.containsKey(s.getId())) {
+                        s.getLinks().addAll(resultTcValuePressureLinkerCrf.get(s.getId()).getLinks());
+                    }
+
+                    if (resultTcValueMeMethodLinkerCrf.containsKey(s.getId())) {
+                        s.getLinks().addAll(resultTcValueMeMethodLinkerCrf.get(s.getId()).getLinks());
+                    }
+                });
+
+            outputList.add(textPassageWithLinks);
+        }
+
+        return outputList;
     }
 
 
@@ -346,28 +441,28 @@ public class ModuleEngine {
                 sb.append(lt.getText());
             } else {
                 if (currentStyle.equals("baseline")) {
-                    sb.append("</" + previousStyle.substring(0, 3) + ">");
+                    sb.append("</").append(previousStyle, 0, 3).append(">");
                     opened = null;
                     sb.append(lt.getText());
                 } else if (currentStyle.equals("superscript")) {
                     if (previousStyle.equals("baseline")) {
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     } else {
-                        sb.append("</" + previousStyle.substring(0, 3) + ">");
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("</").append(previousStyle, 0, 3).append(">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     }
                 } else if (currentStyle.equals("subscript")) {
                     if (previousStyle.equals("baseline")) {
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     } else {
-                        sb.append("</" + previousStyle.substring(0, 3) + ">");
-                        sb.append("<" + currentStyle.substring(0, 3) + ">");
+                        sb.append("</").append(previousStyle, 0, 3).append(">");
+                        sb.append("<").append(currentStyle, 0, 3).append(">");
                         opened = currentStyle.substring(0, 3);
                         sb.append(lt.getText());
                     }
@@ -376,12 +471,78 @@ public class ModuleEngine {
             previousStyle = currentStyle;
         }
         if (opened != null) {
-            sb.append("</" + opened + ">");
+            sb.append("</").append(opened).append(">");
             opened = null;
         }
         return sb.toString();
     }
 
+    public Map<Formula, List<String>> processFormulasAtDocumentLevel(DocumentResponse document) {
+
+        Map<Formula, List<String>> aggregatedFormulas = document.getPassages().stream().parallel()
+            .filter(p -> isNotEmpty(p.getSpans()))
+            .flatMap(p -> p.getSpans().stream())
+            .filter(s -> (s.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL) || s.getType().equals(SUPERCONDUCTORS_CLASS_LABEL))
+                && s.getAttributes().keySet().stream()
+                .anyMatch(ak -> (ak.contains("_resolvedFormulas") && ak.contains("_formulaComposition")) ||
+                    (!ak.contains("_resolvedFormulas") && ak.contains("_formula_formulaComposition"))))
+            .map(s -> {
+//                Map<String, String> attributesWeCareAbout = s.getAttributes().entrySet().stream()
+//                    .filter(map -> (map.getKey().contains("_resolvedFormulas") && map.getKey().contains("_formulaComposition")) ||
+//                        (!map.getKey().contains("_resolvedFormulas") && map.getKey().contains("_formula_formulaComposition")))
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                Map<String, Object> nestedAttributes = Material.toNestedAttributes(s.getAttributes());
+
+                List<Pair<Span, Formula>> o = new ArrayList<>();
+                for (String materialKey : nestedAttributes.keySet()) {
+                    Map<String, Object> materialAttributes = (Map<String, Object>) nestedAttributes.get(materialKey);
+                    if (materialAttributes == null || !(materialAttributes.containsKey("formula") || materialAttributes.containsKey("resolvedFormulas"))) {
+                        continue;
+                    }
+                    if (materialAttributes.containsKey("resolvedFormulas")) {
+                        Map<String, Object> resolvedFormulas = (Map<String, Object>) materialAttributes.get("resolvedFormulas");
+                        for (String resolvedFormulaKey : resolvedFormulas.keySet()) {
+                            Map<String, Object> resolvedFormula = (Map<String, Object>) resolvedFormulas.get(resolvedFormulaKey);
+                            Formula f = createFormula(resolvedFormula);
+
+                            o.add(Pair.of(s, f));
+                        }
+                    } else {
+                        Map<String, Object> formula = (Map<String, Object>) materialAttributes.get("formula");
+                        Formula f = createFormula(formula);
+
+                        o.add(Pair.of(s, f));
+                    }
+                }
+                return o;
+            }).flatMap(Collection::stream)
+            .collect(Collectors.groupingBy(Pair::getRight, Collectors.mapping(u -> u.getLeft().getId(), Collectors.toList())));
+
+        Map<Formula, List<String>> sortedAggregatedFormulas = aggregatedFormulas.entrySet().stream()
+            .sorted(comparingInt(e -> e.getValue().size()))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (a, b) -> {
+                    throw new AssertionError();
+                },
+                LinkedHashMap::new
+            ));
+        Map<Formula, List<String>> sortedAggregatedFormulasReversed = new LinkedHashMap<>();
+        List<Formula> keys = new LinkedList<>(sortedAggregatedFormulas.keySet());
+        for (int i = keys.size() - 1; i >= 0; i--) {
+            sortedAggregatedFormulasReversed.put(keys.get(i), sortedAggregatedFormulas.get(keys.get(i)));
+        }
+        
+        return sortedAggregatedFormulasReversed;
+    }
+
+    private Formula createFormula(Map<String, Object> formula) {
+        String rawFormula = (String) formula.get("rawValue");
+        Map<String, String> composition = (Map<String, String>) formula.get("formulaComposition");
+        return new Formula(rawFormula, composition);
+    }
 
     /**
      * Remove overlapping annotations
@@ -394,7 +555,7 @@ public class ModuleEngine {
         //Sorting by offsets
         List<Span> sortedEntities = spanList
             .stream()
-            .sorted(Comparator.comparingInt(Span::getOffsetStart))
+            .sorted(comparingInt(Span::getOffsetStart))
             .collect(Collectors.toList());
 
 //                sortedEntities = sortedEntities.stream().distinct().collect(Collectors.toList());
@@ -419,22 +580,22 @@ public class ModuleEngine {
                     if (current.getType().equals(previous.getType())) {
                         // Type is the same, I take the largest one
                         if (StringUtils.length(previous.getText()) > StringUtils.length(current.getText())) {
-                            toBeRemoved.add(previous);
-                        } else if (StringUtils.length(previous.getText()) < StringUtils.length(current.getText())) {
                             toBeRemoved.add(current);
+                        } else if (StringUtils.length(previous.getText()) < StringUtils.length(current.getText())) {
+                            toBeRemoved.add(previous);
                         } else {
-                            if (current.getSource().equals("grobid-superconductors")) {
+                            if (current.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(current.getBoundingBoxes()) && isNotEmpty(previous.getBoundingBoxes())) {
                                     current.setBoundingBoxes(previous.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(previous);
-                            } else if (previous.getSource().equals("grobid-superconductors")) {
+                            } else if (previous.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(previous.getBoundingBoxes()) && isNotEmpty(current.getBoundingBoxes())) {
                                     previous.setBoundingBoxes(current.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(current);
                             } else {
@@ -449,18 +610,18 @@ public class ModuleEngine {
                         } else if (StringUtils.length(previous.getText()) > StringUtils.length(current.getText())) {
                             toBeRemoved.add(previous);
                         } else {
-                            if (current.getSource().equals("grobid-superconductors")) {
+                            if (current.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(current.getBoundingBoxes()) && isNotEmpty(previous.getBoundingBoxes())) {
                                     current.setBoundingBoxes(previous.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(previous);
-                            } else if (previous.getSource().equals("grobid-superconductors")) {
+                            } else if (previous.getSource().equals(SuperconductorsModels.SUPERCONDUCTORS.getModelName())) {
                                 if (isEmpty(previous.getBoundingBoxes()) && isNotEmpty(current.getBoundingBoxes())) {
                                     previous.setBoundingBoxes(current.getBoundingBoxes());
                                 } else if (isEmpty(current.getBoundingBoxes()) && isEmpty(previous.getBoundingBoxes())) {
-                                    LOGGER.warn("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
+                                    LOGGER.debug("Missing bounding boxes for " + current.getText() + " and " + previous.getText());
                                 }
                                 toBeRemoved.add(current);
                             } else {
@@ -475,198 +636,5 @@ public class ModuleEngine {
 
         List<Span> newSortedEntitiers = (List<Span>) CollectionUtils.removeAll(sortedEntities, toBeRemoved);
         return newSortedEntitiers;
-    }
-
-
-    public static List<SuperconEntry> extractEntities(List<TextPassage> paragraphs) {
-        Map<String, Span> spansById = new HashMap<>();
-        Map<String, String> sentenceById = new HashMap<>();
-        Map<String, Pair<String, String>> sectionsById = new HashMap<>();
-        for (TextPassage paragraph : paragraphs) {
-            for (Span span : paragraph.getSpans()) {
-                spansById.put(span.getId(), span);
-                sentenceById.put(span.getId(), paragraph.getText());
-                sectionsById.put(span.getId(), Pair.of(paragraph.getSection(), paragraph.getSubSection()));
-            }
-        }
-        // Materials
-        List<Span> materials = spansById.values().stream()
-            .filter(span -> span.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
-            .collect(Collectors.toList());
-
-        List<SuperconEntry> outputCSV = new ArrayList<>();
-
-        for (Span m : materials) {
-            SuperconEntry dbEntry = new SuperconEntry();
-            dbEntry.setRawMaterial(m.getText());
-            dbEntry.setSection(sectionsById.get(m.getId()).getLeft());
-            dbEntry.setSubsection(sectionsById.get(m.getId()).getRight());
-            dbEntry.setSentence(sentenceById.get(m.getId()));
-
-            for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
-                String[] splits = a.getKey().split("_");
-                String prefix = splits[0];
-                String propertyName = splits[1];
-                String value = a.getValue();
-
-                if (propertyName.equals("formula")) {
-                    dbEntry.setFormula(value);
-                } else if (propertyName.equals("name")) {
-                    dbEntry.setName(value);
-                } else if (propertyName.equals("clazz")) {
-                    dbEntry.setClassification(value);
-                } else if (propertyName.equals("shape")) {
-                    dbEntry.setShape(value);
-                } else if (propertyName.equals("doping")) {
-                    dbEntry.setDoping(value);
-                } else if (propertyName.equals("fabrication")) {
-                    dbEntry.setFabrication(value);
-                } else if (propertyName.equals("substrate")) {
-                    dbEntry.setSubstrate(value);
-                }
-            }
-
-            Map<String, String> linkedToMaterial = m.getLinks().stream()
-                .map(l -> Pair.of(l.getTargetId(), l.getType()))
-                .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
-
-            if (isNotEmpty(linkedToMaterial.entrySet())) {
-                for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
-                    Span tcValue = spansById.get(entry.getKey());
-                    dbEntry.setCriticalTemperature(tcValue.getText());
-                    List<Span> pressures = tcValue.getLinks().stream()
-                        .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
-                        .map(l -> spansById.get(l.getTargetId()))
-                        .collect(Collectors.toList());
-
-                    if (isNotEmpty(pressures)) {
-                        boolean first = true;
-                        for (Span pressure : pressures) {
-                            if (first) {
-                                dbEntry.setAppliedPressure(pressure.getText());
-                                outputCSV.add(dbEntry);
-                                first = false;
-                            } else {
-                                try {
-                                    SuperconEntry newEntry = dbEntry.clone();
-                                    newEntry.setAppliedPressure(pressure.getText());
-                                    newEntry.setLinkType(entry.getValue());
-                                } catch (CloneNotSupportedException e) {
-                                    LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
-                        outputCSV.add(dbEntry);
-                    }
-
-                }
-            } else {
-                outputCSV.add(dbEntry);
-            }
-        }
-        return outputCSV;
-    }
-
-    public static List<SuperconEntry> computeTabularData(List<TextPassage> paragraphs) {
-        Map<String, Span> spansById = new HashMap<>();
-        Map<String, String> sentenceById = new HashMap<>();
-        Map<String, Pair<String, String>> sectionsById = new HashMap<>();
-        for (TextPassage paragraph : paragraphs) {
-            List<Span> linkedSpans = paragraph.getSpans().stream()
-                .filter(s -> s.getLinks().size() > 0)
-                .collect(Collectors.toList());
-
-            for (Span span : linkedSpans) {
-                spansById.put(span.getId(), span);
-                sentenceById.put(span.getId(), paragraph.getText());
-                sectionsById.put(span.getId(), Pair.of(paragraph.getSection(), paragraph.getSubSection()));
-            }
-        }
-
-        // Materials
-        List<Span> materials = spansById.values().stream()
-            .filter(span -> span.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
-            .collect(Collectors.toList());
-
-//        List<Span> tcValues = spansById.entrySet().stream()
-//            .filter(span -> span.getValue().getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
-//            .map(Map.Entry::getValue)
-//            .collect(Collectors.toList());
-//
-//        List<Span> pressures = spansById.entrySet().stream()
-//            .filter(span -> span.getValue().getType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
-//            .map(Map.Entry::getValue)
-//            .collect(Collectors.toList());
-
-        List<SuperconEntry> outputCSV = new ArrayList<>();
-        for (Span m : materials) {
-            SuperconEntry dbEntry = new SuperconEntry();
-            dbEntry.setRawMaterial(m.getText());
-            dbEntry.setSection(sectionsById.get(m.getId()).getLeft());
-            dbEntry.setSubsection(sectionsById.get(m.getId()).getRight());
-            dbEntry.setSentence(sentenceById.get(m.getId()));
-
-            for (Map.Entry<String, String> a : m.getAttributes().entrySet()) {
-                String[] splits = a.getKey().split("_");
-                String prefix = splits[0];
-                String propertyName = splits[1];
-                String value = a.getValue();
-
-                if (propertyName.equals("formula")) {
-                    dbEntry.setFormula(value);
-                } else if (propertyName.equals("name")) {
-                    dbEntry.setName(value);
-                } else if (propertyName.equals("clazz")) {
-                    dbEntry.setClassification(value);
-                } else if (propertyName.equals("shape")) {
-                    dbEntry.setShape(value);
-                } else if (propertyName.equals("doping")) {
-                    dbEntry.setDoping(value);
-                } else if (propertyName.equals("fabrication")) {
-                    dbEntry.setFabrication(value);
-                } else if (propertyName.equals("substrate")) {
-                    dbEntry.setSubstrate(value);
-                }
-            }
-
-            Map<String, String> linkedToMaterial = m.getLinks().stream()
-                .map(l -> Pair.of(l.getTargetId(), l.getType()))
-                .collect(Collectors.groupingBy(Pair::getLeft, mapping(Pair::getRight, joining(", "))));
-
-            for (Map.Entry<String, String> entry : linkedToMaterial.entrySet()) {
-                Span tcValue = spansById.get(entry.getKey());
-                dbEntry.setCriticalTemperature(tcValue.getText());
-                List<Span> pressures = tcValue.getLinks().stream()
-                    .filter(l -> l.getTargetType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
-                    .map(l -> spansById.get(l.getTargetId()))
-                    .collect(Collectors.toList());
-
-                if (isNotEmpty(pressures)) {
-                    boolean first = true;
-                    for (Span pressure : pressures) {
-                        if (first) {
-                            dbEntry.setAppliedPressure(pressure.getText());
-                            outputCSV.add(dbEntry);
-                            first = false;
-                        } else {
-                            try {
-                                SuperconEntry newEntry = dbEntry.clone();
-                                newEntry.setAppliedPressure(pressure.getText());
-                                newEntry.setLinkType(entry.getValue());
-                            } catch (CloneNotSupportedException e) {
-                                LOGGER.error("Cannot create a duplicate of the supercon entry: " + dbEntry.getRawMaterial() + ". ", e);
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    outputCSV.add(dbEntry);
-                }
-
-            }
-        }
-        return outputCSV;
     }
 }

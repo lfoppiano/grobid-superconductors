@@ -3,8 +3,8 @@ package org.grobid.trainer;
 import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.core.data.document.LinkToken;
 import org.grobid.core.engines.SuperconductorsModels;
 import org.grobid.core.engines.tagging.GenericTaggerUtils;
 import org.grobid.core.exceptions.GrobidException;
@@ -12,7 +12,7 @@ import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
-import org.grobid.trainer.stax.handler.EntityLinkerAnnotationStaxHandler;
+import org.grobid.trainer.stax.handler.EntityLinkerAnnotationTEIStaxHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -23,8 +23,9 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEVEL_ANNOTATION_DEFAULT_PATHS;
 
-public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
+public class EntityLinkerMaterialTcTrainer extends AbstractTrainerNew {
 
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
@@ -51,7 +52,8 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath().replaceFirst("entityLinker-material-tc", "superconductors") + File.separator + "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath()
+                .replaceFirst(SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC.getModelName(), "superconductors") + File.separator + "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -95,14 +97,13 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
                 name = theFile.getName();
                 LOGGER.info(name);
 
-                EntityLinkerAnnotationStaxHandler handler = new EntityLinkerAnnotationStaxHandler("p",
-                    SOURCE, DESTINATION);
+                EntityLinkerAnnotationTEIStaxHandler handler =
+                    new EntityLinkerAnnotationTEIStaxHandler(TOP_LEVEL_ANNOTATION_DEFAULT_PATHS,
+                        SOURCE, DESTINATION);
                 XMLStreamReader2 reader = inputFactory.createXMLStreamReader(theFile);
                 StaxUtils.traverse(reader, handler);
 
-                List<Triple<String, String, String>> labeled = handler.getLabeled();
-
-                int q = 0;
+                List<LinkToken> labeled = handler.getLabeled();
 
                 Writer writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                 StringBuilder output = new StringBuilder();
@@ -110,29 +111,29 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
                 int tcValues = 0;
 
                 // we get the label in the labelled data file for the same token
-                for (Triple<String, String, String> labeledToken : labeled) {
-                    String token = labeledToken.getLeft();
-                    String label = labeledToken.getMiddle();
-                    String entity_type = GenericTaggerUtils.getPlainLabel(labeledToken.getRight());
-                    if (entity_type.equals("<" + DESTINATION + ">")) {
+                for (LinkToken labeledToken : labeled) {
+                    String token = labeledToken.getText();
+                    String label = labeledToken.getLinkLabel();
+                    String entity_type = GenericTaggerUtils.getPlainLabel(labeledToken.getEntityLabel());
+                    if (StringUtils.equalsIgnoreCase(entity_type, "<" + DESTINATION + ">")) {
                         materials++;
                     }
 
-                    if (entity_type.equals("<" + SOURCE + ">")) {
+                    if (StringUtils.equalsIgnoreCase(entity_type, "<" + SOURCE + ">")) {
                         tcValues++;
                     }
 
                     if (token.equals("\n")) {
-                        output.append("\n");
-                        output.append("\n");
                         if (materials > 0 && tcValues > 0) {
+                            output.append("\n");
+                            output.append("\n");
                             writer.write(output.toString());
                             writer.flush();
                             writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
-                            materials = 0;
-                            tcValues = 0;
                         }
                         output = new StringBuilder();
+                        materials = 0;
+                        tcValues = 0;
                         continue;
                     }
 
@@ -176,5 +177,10 @@ public class EntityLinkerMaterialTcTrainer extends AbstractTrainer {
         Trainer trainer = new EntityLinkerMaterialTcTrainer();
 
         AbstractTrainer.runTraining(trainer);
+    }
+
+    @Override
+    public int createCRFPPDataSingle(File inputFile, File outputDirectory) {
+        return 0;
     }
 }

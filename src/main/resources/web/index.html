@@ -222,11 +222,11 @@
                            role="tab"
                            aria-controls="process-material" aria-selected="false">Material parser</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="linker-tab" data-toggle="tab" href="#linker"
-                           role="tab"
-                           aria-controls="linker" aria-selected="false">Entities linker</a>
-                    </li>
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" id="linker-tab" data-toggle="tab" href="#linker"-->
+<!--                           role="tab"-->
+<!--                           aria-controls="linker" aria-selected="false">Entities linker</a>-->
+<!--                    </li>-->
                     <li class="nav-item">
                         <a class="nav-link" id="gdpr-tab" data-toggle="tab" href="#gdpr" role="tab"
                            aria-controls="gdpr" aria-selected="false">GDPR policy</a>
@@ -262,7 +262,7 @@
                                         href="https://github.com/lfoppiano/grobid-superconductors-tools">grobid-superconductors-tools</a>.
                                 </p>
                                 <p>Example of database output, organised by dates, can be found in the github
-                                    repository:</p>
+                                    repository (access is private):</p>
                                 <ul>
                                     <li>
                                         <p><a
@@ -283,7 +283,7 @@
                                     </li>
                                 </ul>
 
-                                <h2><a id="user-content-accuracy" class="anchor" aria-hidden="true" href="#accuracy">
+                                <!--<h2><a id="user-content-accuracy" class="anchor" aria-hidden="true" href="#accuracy">
                                 </a>Accuracy
                                 </h2>
                                 <h3><a id="user-content-extraction-sequence-labelling-task" class="anchor"
@@ -384,8 +384,8 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <h3><a id="user-content-end-to-end-evaluation-extraction--linking" class="anchor"
-                                       aria-hidden="true" href="#end-to-end-evaluation-extraction--linking">
+                                <h3><a id="user-content-end-to-end-evaluation-extraction&#45;&#45;linking" class="anchor"
+                                       aria-hidden="true" href="#end-to-end-evaluation-extraction&#45;&#45;linking">
                                 </a>End to end evaluation (Extraction + Linking)
                                 </h3>
                                 <p>Corpus of 500 PDF papers from American Institute of Physics (AIP),
@@ -416,7 +416,7 @@
                                         <td>69.90</td>
                                     </tr>
                                     </tbody>
-                                </table>
+                                </table>-->
 
                                 <h2><a id="user-content-acknowledgement" class="anchor" aria-hidden="true"
                                        href="#acknowledgement">
@@ -523,6 +523,8 @@
                                 <p><a id="example1" href="#">example 2</a></p>
                                 <p><a id="example2" href="#">example 3</a></p>
                                 <p><a id="example3" href="#">example 4</a></p>
+                                <p><a id="example4" href="#">example 5</a></p>
+                                <p><a id="example5" href="#">example 6</a></p>
                             </div>
                         </div>
                         <div class="row m-1 ml-5">
@@ -574,7 +576,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="linker" role="tabpanel"
+<!--                    <div class="tab-pane fade" id="linker" role="tabpanel"
                          aria-labelledby="linker-tab">
                         <div class="row m-3">
                             <div class="col-7">
@@ -585,7 +587,37 @@
                                 <p><a id="exampleLinker1" href="#">example 2</a></p>
                                 <p><a id="exampleLinker2" href="#">example 3</a></p>
                                 <p><a id="exampleLinker3" href="#">example 4</a></p>
-                                <p>This linker works only for the relation material-tcValue.</p>
+
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="linkType" id="exampleRadios1" value="material-tcValue" checked>
+                                    <label class="form-check-label" for="exampleRadios1">
+                                        Material-TcValue
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="linkType" id="exampleRadios2" value="tcValue-pressure">
+                                    <label class="form-check-label" for="exampleRadios2">
+                                        TcValue-Pressure
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="linkType" id="exampleRadios3" value="tcValue-me_method">
+                                    <label class="form-check-label" for="exampleRadios3">
+                                        TcValue-Measurement Method
+                                    </label>
+                                </div>
+&lt;!&ndash;                                <div class="dropdown">&ndash;&gt;
+&lt;!&ndash;                                    <button class="btn btn-secondary dropdown-toggle" type="button" &ndash;&gt;
+&lt;!&ndash;                                            id="linkType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&ndash;&gt;
+&lt;!&ndash;                                        Link type&ndash;&gt;
+&lt;!&ndash;                                    </button>&ndash;&gt;
+&lt;!&ndash;                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">&ndash;&gt;
+&lt;!&ndash;                                        <a class="dropdown-item" href="#">Material-TcValue</a>&ndash;&gt;
+&lt;!&ndash;                                        <a class="dropdown-item" href="#">TcValue-Pressure</a>&ndash;&gt;
+&lt;!&ndash;                                        <a class="dropdown-item" href="#">TcValue-Measurement Method</a>&ndash;&gt;
+&lt;!&ndash;                                    </div>&ndash;&gt;
+&lt;!&ndash;                                </div>&ndash;&gt;
                             </div>
                         </div>
                         <div class="row m-1 ml-5">
@@ -596,7 +628,7 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
             </form>
         </div>
@@ -655,8 +687,45 @@
                     </div>
                 </div>
             </div>
-            <div id="requestResultPdfContent">
+            <div id="requestResultPdfContainer" class="border">
+                <ul class="nav nav-tabs m-2" id="requestResultPdfTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="result-pdf-annotations-tab" data-toggle="tab"
+                           href="#result-pdf-annotations"
+                           role="tab"
+                           aria-controls="result-pdf-annotations" aria-selected="true">Annotations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="result-pdf-response-tab" data-toggle="tab" href="#result-pdf-response"
+                           role="tab"
+                           aria-controls="result-pdf-response" aria-selected="false">Response</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="result-pdf-summary-tab" data-toggle="tab" href="#result-pdf-summary"
+                           role="tab"
+                           aria-controls="result-pdf-summary" aria-selected="false">Summary</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="requestResultPdfTabContent">
+                    <div class="tab-pane fade show active" id="result-pdf-annotations" role="tabpanel"
+                         aria-labelledby="result-annotations">
+                        <div class="row m-3">
+                            <div id="requestResultPdfContent">
 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="result-pdf-response" role="tabpanel" aria-labelledby="result-pdf-response">
+                        <pre class='prettyprint lang-json' id='jsonCodePdf'></pre>
+                    </div>
+
+                    <div class="tab-pane fade" id="result-pdf-summary" role="tabpanel" aria-labelledby="result-pdf-summary">
+                        Document summary goes here.
+                    </div>
+                    
+                </div>
+                
             </div>
         </div>
         <div id="requestResultText" class="border">
@@ -672,6 +741,13 @@
                        role="tab"
                        aria-controls="result-response" aria-selected="false">Response</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="result-document-summary-tab" data-toggle="tab" href="#result-document-summary"
+                       role="tab"
+                       aria-controls="result-document-summary" aria-selected="false">Summary</a>
+                </li>
+                
             </ul>
 
             <div class="tab-content" id="requestResultTextTabContent">
@@ -688,6 +764,11 @@
                 <div class="tab-pane fade" id="result-response" role="tabpanel" aria-labelledby="result-response">
                     <pre class='prettyprint lang-json' id='jsonCode'></pre>
                 </div>
+
+                <div class="tab-pane fade" id="result-document-summary" role="tabpanel" aria-labelledby="result-document-summary">
+                    Document summary goes here.
+                </div>
+
             </div>
         </div>
         <div id="requestResultMaterial" class="border">
@@ -720,7 +801,7 @@
                 </div>
             </div>
         </div>
-        <div id="requestResultLinker" class="border">
+        <!--<div id="requestResultLinker" class="border">
             <ul class="nav nav-tabs m-2" id="requestResultLinkerTab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="result-linker-tab" data-toggle="tab" href="#result-linker"
@@ -748,13 +829,13 @@
                 <div class="tab-pane fade" id="result-linker-response" role="tabpanel"
                      aria-labelledby="result-linker-response">
                     <pre class='prettyprint lang-json' id='jsonCodeLinker'></pre>
-                </div>
+                </div>                
             </div>
-        </div>
+        </div>-->
     </div>
 
     <footer>
-        <p><span style="color:#848484;">&copy; GROBID contributors, 2019 - 2021</span></p>
+        <p><span style="color:#848484;">&copy; GROBID contributors, 2019 - 2021  |</span> <span id="version" style="color:#848484;">unknown version</span></p>
         <p><span><strong>By using the service you agree on the GDPR disclaimer (see GDPR Policy tab)</strong></span></p>
     </footer>
 </div>

@@ -1,0 +1,133 @@
+grobidHome: ${GROBID_HOME:- /opt/grobid/grobid-home}
+
+corsAllowedOrigins: "*"
+corsAllowedMethods: "OPTIONS,GET,PUT,POST,DELETE,HEAD"
+corsAllowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
+
+chemspotUrl: ${CHEMSPOT_URL:- http://chemspot.local}
+#chemDataExtractorUrl: http://falcon.nims.go.jp/cde
+chemDataExtractorUrl: ${CDE_URL:- http://cde:8080}
+
+grobidQuantitiesUrl: ${QUANTITIES_URL:- http://quantities:8080}
+linkingModuleUrl: ${LINKING_MODULE_URL:- http://linking_module:8080}
+#linkingModuleUrl: http://localhost:8090
+classResolverUrl: ${CLASS_RESOLVER_URL:- http://linking_module:8080}
+#classResolverUrl: http://localhost:8090
+
+pythonVirtualEnv: 
+pythonRedirectOutput: true
+
+# The maximum number of parallel requests that can be sent to the server. When 0 it will use the number of CPUs.
+maxParallelRequests: 8
+
+consolidation:
+  # define the bibliographical data consolidation service to be used: 
+    # - "crossref" for CrossRef REST API or 
+    # - "glutton" for https://github.com/kermitt2/biblio-glutton, removing the value
+    # empty value will disable the data consolidation
+  service: "glutton"
+  glutton:
+    url: "http://falcon.nims.go.jp/glutton"
+
+models:
+  - name: "superconductors"
+    engine: "wapiti"
+    #    engine: "delft"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+    delft:
+      # deep learning parameters
+      #      architecture: "BidLSTM_CRF"
+      architecture: "scibert"
+      embeddings_name: "glove-840B"
+      runtime:
+        # parameters used at runtime/prediction
+        max_sequence_length: 3000
+        batch_size: 4
+
+  - name: "material"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "entityLinker-material-tcValue"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "entityLinker-tcValue-pressure"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "entityLinker-tcValue-me_method"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "quantities"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "units"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+  - name: "values"
+    engine: "wapiti"
+    wapiti:
+      # wapiti training parameters, they will be used at training time only
+      epsilon: 0.00001
+      window: 30
+      nbMaxIterations: 2000
+
+server:
+  type: custom
+  idleTimeout: 120 seconds
+  applicationConnectors:
+    - type: http
+      port: 8072
+  adminConnectors:
+    - type: http
+      port: 8073
+  registerDefaultExceptionMappers: false
+
+logging:
+  level: DEBUG
+
+  # Logger-specific levels.
+  loggers:
+    org.grobid.core.data.normalization.QuantityNormalizer: "OFF"
+    org.grobid.core.engines.QuantityParser: "OFF"
+    org.grobid.core.engines.ValueParser: "OFF"
+    org.grobid.core.utilities.WordsToNumber: "OFF"
+
+  appenders:
+    - type: console
+      threshold: INFO
+
+version: 2
+timeZone: UTC

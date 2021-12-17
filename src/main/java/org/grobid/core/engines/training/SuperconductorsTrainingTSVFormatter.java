@@ -1,9 +1,8 @@
 package org.grobid.core.engines.training;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.data.DocumentBlock;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.DocumentBlock;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
 
@@ -67,7 +66,7 @@ public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutpu
             int outputTokenEnd = outputTokenStart + layoutToken.getText().length();
 
             paragraphAccumulator.append(outputTokenStart).append("-")
-                    .append(outputTokenEnd).append("\t");
+                .append(outputTokenEnd).append("\t");
 
             paragraphAccumulator.append(layoutToken.getText()).append("\t");
 
@@ -76,7 +75,7 @@ public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutpu
             } else {
                 String type = substring(superconductorElement.getType(), 1, length(superconductorElement.getType()) - 1);
                 if (layoutTokenStart >= superconductorElement.getOffsetStart()
-                        && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
+                    && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
                     paragraphAccumulator.append(type).append("[").append(annotationId.get()).append("]").append("\t");
                 } else if (layoutTokenStart > superconductorElement.getOffsetEnd()) {
                     if (superconductorIdx < superconductorList.size() - 1) {
@@ -87,7 +86,7 @@ public class SuperconductorsTrainingTSVFormatter implements SuperconductorsOutpu
                         if (layoutTokenEnd < superconductorElement.getOffsetStart()) {
                             paragraphAccumulator.append("_").append("\t");
                         } else if (layoutTokenStart >= superconductorElement.getOffsetStart()
-                                && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
+                            && layoutTokenEnd <= superconductorElement.getOffsetEnd()) {
                             paragraphAccumulator.append(type).append("[").append(annotationId.get()).append("]").append("\t");
                         } else {
                             paragraphAccumulator.append("_").append("\t");

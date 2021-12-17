@@ -3,11 +3,17 @@ package org.grobid.core.engines;
 import org.apache.commons.lang3.tuple.Triple;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.engines.linking.CRFBasedLinker;
+import org.grobid.core.engines.linking.EntityLinker;
+import org.grobid.core.engines.linking.EntityLinker_MaterialTcValue;
 import org.grobid.core.features.FeaturesVectorEntityLinker;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,24 +23,34 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_MATERIAL_LABEL;
-import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.SUPERCONDUCTORS_TC_VALUE_LABEL;
+import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Lexicon.class)
 public class CRFBasedLinkerTest {
     CRFBasedLinker target;
 
+    @BeforeClass
+    public static void before() throws Exception {
+        GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
+        modelParameters.name = "bao";
+        GrobidProperties.addModel(modelParameters);
+    }
+
     @Before
     public void setUp() throws Exception {
-        target = new CRFBasedLinker(GrobidModels.DUMMY, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL));
+        HashMap<String, EntityLinker> linkerImplementations = new HashMap<>();
+        linkerImplementations.put(CRFBasedLinker.MATERIAL_TCVALUE_ID, 
+            new EntityLinker_MaterialTcValue(GrobidModels.DUMMY, Arrays.asList(SUPERCONDUCTORS_MATERIAL_LABEL, SUPERCONDUCTORS_TC_VALUE_LABEL)));
+        target = new CRFBasedLinker(linkerImplementations);
     }
 
     @Test
@@ -764,7 +780,10 @@ public class CRFBasedLinkerTest {
         Span span3 = new Span("19-211", "WB", "<material>", "bao", 941, 943, 404, 405);
         Span span4 = new Span("-1500774536986790910", "WB 4.2", "<material>", "bao", 1812, 1818, 813, 818);
 
-        List<Span> links = target.extractResults(layoutTokens, result, Arrays.asList(span1, span2, span3, span4));
+        List<Span> links = CRFBasedLinker.extractResults(layoutTokens, result, 
+            Arrays.asList(span1, span2, span3, span4), 
+            SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT, 
+            ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT, ENTITY_LINKER_MATERIAL_TC_OTHER);
 
         System.out.println(links);
     }
@@ -797,7 +816,9 @@ public class CRFBasedLinkerTest {
         sup2.setOffsetEnd(146);
         sup2.setLayoutTokens(IntStream.rangeClosed(46, 49).mapToObj(i -> layoutTokens.get(i)).collect(Collectors.toList()));
 
-        List<Span> links = target.extractResults(layoutTokens, result, Arrays.asList(sup1, sup2));
+        List<Span> links = target.extractResults(layoutTokens, result, Arrays.asList(sup1, sup2),
+            SuperconductorsModels.ENTITY_LINKER_MATERIAL_TC, ENTITY_LINKER_MATERIAL_TC_LEFT_ATTACHMENT,
+            ENTITY_LINKER_MATERIAL_TC_RIGHT_ATTACHMENT, ENTITY_LINKER_MATERIAL_TC_OTHER);
 
         assertThat(links, hasSize(2));
         assertThat(links.get(0).getText(), is("MgB 2"));

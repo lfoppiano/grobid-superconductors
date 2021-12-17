@@ -5,8 +5,8 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.data.DocumentBlock;
-import org.grobid.core.data.Span;
+import org.grobid.core.data.document.DocumentBlock;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.document.xml.XmlBuilderUtils;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.LayoutTokensUtil;
@@ -58,7 +58,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                     fileDesc.insertChild(titleStatement, 0);
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_KEYWORDS)) {
                     Element abKeywords = SuperconductorsTeiUtils.getElement(profileDesc, "ab");
-                    if(abKeywords == null) {
+                    if (abKeywords == null) {
                         abKeywords = trainingExtraction(block.getSpans(), block.getLayoutTokens(), "ab", Pair.of("type", "keywords"));
                         profileDesc.appendChild(abKeywords);
                     } else {

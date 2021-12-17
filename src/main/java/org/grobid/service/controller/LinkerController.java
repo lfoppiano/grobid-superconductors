@@ -4,10 +4,11 @@ import com.ctc.wstx.stax.WstxInputFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.grobid.core.data.TextPassage;
-import org.grobid.core.data.Span;
-import org.grobid.core.engines.CRFBasedLinker;
+import org.grobid.core.data.document.Span;
+import org.grobid.core.data.document.TextPassage;
+import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.grobid.service.exceptions.GrobidServiceException;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
 import org.slf4j.Logger;
@@ -20,13 +21,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.length;
 
@@ -35,8 +37,9 @@ import static org.apache.commons.lang3.StringUtils.length;
 public class LinkerController {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkerController.class);
 
-    private WstxInputFactory inputFactory = new WstxInputFactory();
+    private final WstxInputFactory inputFactory = new WstxInputFactory();
     private final GrobidSuperconductorsConfiguration configuration;
+    
     @Inject
     private CRFBasedLinker linker;
 
@@ -45,28 +48,39 @@ public class LinkerController {
         this.configuration = configuration;
     }
 
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Set<String> getLinkEngines() {
+        return linker.getLinkingEngines().keySet();
+    }
+
     @Path("link")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public List<TextPassage> processTextSuperconductorsPost(@FormDataParam("text") String text) {
-        return link(text);
+    public List<TextPassage> processTextSuperconductorsPost(@FormDataParam("text") String text, @FormDataParam("type") String linkerType) {
+        return link(text, linkerType);
     }
 
     @Path("link")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<TextPassage> processTextSuperconductorsGet(@FormDataParam("text") String text) {
-        return link(text);
+    public List<TextPassage> processTextSuperconductorsGet(@FormDataParam("text") String text, @FormDataParam("type") String linkerType) {
+        return link(text, linkerType);
     }
 
-    private List<TextPassage> link(@FormDataParam("text") String text) {
+    private List<TextPassage> link(@FormDataParam("text") String text, @FormDataParam("type") String linkerType) {
+        if (!getLinkEngines().contains(linkerType)) {
+            throw new RuntimeException("The supplied linker type " + linkerType + "does not exists. Please one among " + getLinkEngines());
+        }
+
         List<TextPassage> textPassages = new ArrayList<>();
 
         String textPreprocessed = text.replace("\r\n", "\n");
-        String artificialXml = "<text><p>" + textPreprocessed + "</p></text>";
+        String artificialXml = "<text><p><s>" + textPreprocessed + "</s></p></text>";
 
         InputStream stream = new ByteArrayInputStream(artificialXml.getBytes(StandardCharsets.UTF_8));
-        AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler(Arrays.asList("material", "tcValue"));
+        AnnotationValuesStaxHandler handler = new AnnotationValuesStaxHandler(linker.getLinkingEngines().get(linkerType).getAnnotationsToBeLinked());
         try {
             XMLStreamReader2 reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(stream);
             StaxUtils.traverse(reader, handler);
@@ -108,7 +122,9 @@ public class LinkerController {
                 annotations.add(span);
             }
 
-            linker.process(handler.getGlobalAccumulatedText(), annotations);
+            annotations.stream().forEach(s -> s.setLinkable(true));
+
+            linker.process(handler.getGlobalAccumulatedText(), annotations, linkerType);
 
             TextPassage textPassage = new TextPassage();
             textPassage.setText(handler.getGlobalAccumulatedText());
@@ -116,7 +132,7 @@ public class LinkerController {
 
             textPassages.add(textPassage);
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            throw new GrobidServiceException("Invalid data supplied to the linker", e, Response.Status.BAD_REQUEST);
         }
 
         return textPassages;

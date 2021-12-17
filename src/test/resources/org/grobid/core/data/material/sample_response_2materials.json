@@ -1,0 +1,266 @@
+{
+  "runtime": 19021,
+  "biblio": {
+    "title": "v0f20m2f0m82f02f02f02",
+    "authors": "faj90f2j09f2j092f",
+    "doi": "asdfjklfdsajkl",
+    "year": 1911,
+    "publisher": "f2f22ff2f2",
+    "journal": "0-jf2902f0jf20j92f"
+  },
+  "passages": [
+    {
+      "text": " In fact, apart from the very recent discovery of the occurrence of a superconducting phase at 200 K in sulfur hydride systems under ultrahigh pressures (up to 150 GPa) [3, 4], the highest T c materials found up until now can be grouped into two families: the cuprates, with T c of up to 164 K [5] (in HgBa 2 Ca 2 Cu 3 O 9 at 30 GPa), and Fe-pnictides and -chalcogenides (FPC) with T c of up to 55 K [6].",
+      "spans": [
+        {
+          "id": "1254479808",
+          "text": "200 K",
+          "type": "<tcValue>",
+          "offset_start": 95,
+          "offset_end": 100,
+          "token_start": 18,
+          "token_end": 23,
+          "linkable": false,
+          "links": [
+            {
+              "targetId": "1509071133",
+              "targetText": "150 GPa",
+              "targetType": "<pressure>",
+              "type": "vicinity"
+            }
+          ]
+        },
+        {
+          "id": "594145116",
+          "text": "sulfur hydride",
+          "formattedText": "sulfur hydride ",
+          "type": "<class>",
+          "offset_start": 104,
+          "offset_end": 118,
+          "token_start": 20,
+          "token_end": 34,
+          "linkable": false
+        },
+        {
+          "id": "1509071133",
+          "text": "150 GPa",
+          "type": "<pressure>",
+          "offset_start": 160,
+          "offset_end": 167,
+          "token_start": 28,
+          "token_end": 35,
+          "linkable": true,
+          "links": [
+            {
+              "targetId": "1254479808",
+              "targetText": "200 K",
+              "targetType": "<tcValue>",
+              "type": "vicinity"
+            }
+          ]
+        },
+        {
+          "id": "-2105609319",
+          "text": "highest T c",
+          "type": "<tc>",
+          "offset_start": 181,
+          "offset_end": 192,
+          "token_start": 37,
+          "token_end": 48,
+          "linkable": false
+        },
+        {
+          "id": "2018640866",
+          "text": "cuprates",
+          "formattedText": "cuprates",
+          "type": "<class>",
+          "offset_start": 260,
+          "offset_end": 268,
+          "token_start": 51,
+          "token_end": 59,
+          "linkable": false
+        },
+        {
+          "id": "1153292319",
+          "text": "T c",
+          "type": "<tc>",
+          "offset_start": 275,
+          "offset_end": 278,
+          "token_start": 54,
+          "token_end": 57,
+          "linkable": false
+        },
+        {
+          "id": "-1874404683",
+          "text": "up to 164 K",
+          "type": "<tcValue>",
+          "offset_start": 282,
+          "offset_end": 293,
+          "token_start": 56,
+          "token_end": 67,
+          "linkable": true,
+          "links": [
+            {
+              "targetId": "450101894",
+              "targetText": "HgBa 2 Ca 2 Cu 3 O 9",
+              "targetType": "<material>",
+              "type": "vicinity"
+            },
+            {
+              "targetId": "-137803335",
+              "targetText": "30 GPa",
+              "targetType": "<pressure>",
+              "type": "vicinity"
+            }
+          ]
+        },
+        {
+          "id": "450101894",
+          "text": "HgBa 2 Ca 2 Cu 3 O 9 and La 2 Fe 3",
+          "formattedText": "HgBa <sub>2</sub> Ca <sub>2</sub> Cu <sub>3</sub> O <sub>9</sub> ",
+          "type": "<material>",
+          "offset_start": 302,
+          "offset_end": 322,
+          "token_start": 62,
+          "token_end": 82,
+          "linkable": true,
+          "links": [
+            {
+              "targetId": "837446789",
+              "targetText": "55 K",
+              "targetType": "<tcValue>",
+              "type": "crf"
+            },
+            {
+              "targetId": "-1874404683",
+              "targetText": "up to 164 K",
+              "targetType": "<tcValue>",
+              "type": "vicinity"
+            }
+          ],
+          "attributes": {
+            "material0_class": "Oxides, Cuprates",
+            "material0_resolvedFormulas_0_rawValue": "HgBa 2 Ca 2 Cu 3 O 9",
+            "material0_formula_rawValue": "HgBa 2 Ca 2 Cu 3 O 9",
+            "material0_rawTaggedValue": "<formula>HgBa 2 Ca 2 Cu 3 O 9</formula> ",
+            "material1_class": "Iron Based",
+            "material1_resolvedFormulas_0_rawValue": "La 1 Fe 2",
+            "material1_formula_rawValue": "La 1 Fe 2",
+            "material1_rawTaggedValue": "<formula>La 1 Fe 2</formula> "
+          }
+        },
+        {
+          "id": "-137803335",
+          "text": "30 GPa",
+          "type": "<pressure>",
+          "offset_start": 326,
+          "offset_end": 332,
+          "token_start": 64,
+          "token_end": 70,
+          "linkable": true,
+          "links": [
+            {
+              "targetId": "-1874404683",
+              "targetText": "up to 164 K",
+              "targetType": "<tcValue>",
+              "type": "vicinity"
+            }
+          ]
+        },
+        {
+          "id": "-1696403228",
+          "text": "Fe-pnictides and -chalcogenides",
+          "formattedText": "Fe-pnictides and -chalcogenides ",
+          "type": "<class>",
+          "offset_start": 339,
+          "offset_end": 370,
+          "token_start": 68,
+          "token_end": 99,
+          "linkable": false
+        },
+        {
+          "id": "1359334589",
+          "text": "T c",
+          "type": "<tc>",
+          "offset_start": 382,
+          "offset_end": 385,
+          "token_start": 73,
+          "token_end": 76,
+          "linkable": false
+        },
+        {
+          "id": "837446789",
+          "text": "55 K",
+          "type": "<tcValue>",
+          "offset_start": 395,
+          "offset_end": 399,
+          "token_start": 77,
+          "token_end": 81,
+          "linkable": true,
+          "links": [
+            {
+              "targetId": "450101894",
+              "targetText": "HgBa 2 Ca 2 Cu 3 O 9",
+              "targetType": "<material>",
+              "type": "crf"
+            }
+          ]
+        }
+      ],
+      "relationships": [
+        {
+          "left": {
+            "id": "450101894",
+            "text": "HgBa 2 Ca 2 Cu 3 O 9",
+            "formattedText": "HgBa <sub>2</sub> Ca <sub>2</sub> Cu <sub>3</sub> O <sub>9</sub> ",
+            "type": "<material>",
+            "offset_start": 302,
+            "offset_end": 322,
+            "token_start": 62,
+            "token_end": 82,
+            "linkable": true,
+            "links": [
+              {
+                "targetId": "837446789",
+                "targetText": "55 K",
+                "targetType": "<tcValue>",
+                "type": "crf"
+              },
+              {
+                "targetId": "-1874404683",
+                "targetText": "up to 164 K",
+                "targetType": "<tcValue>",
+                "type": "vicinity"
+              }
+            ]
+          },
+          "right": {
+            "id": "-1874404683",
+            "text": "up to 164 K",
+            "type": "<tcValue>",
+            "offset_start": 282,
+            "offset_end": 293,
+            "token_start": 56,
+            "token_end": 67,
+            "linkable": true,
+            "links": [
+              {
+                "targetId": "450101894",
+                "targetText": "HgBa 2 Ca 2 Cu 3 O 9",
+                "targetType": "<material>",
+                "type": "vicinity"
+              },
+              {
+                "targetId": "-137803335",
+                "targetText": "30 GPa",
+                "targetType": "<pressure>",
+                "type": "vicinity"
+              }
+            ]
+          },
+          "type": "vicinity"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,883 @@
+{
+  "runtime": 1289,
+  "passages": [
+    {
+      "text": "The critical temperature T C = 4.7 K at 4.2 GPa discovered with resistance method for La 3 Ir 2 Ge 2 in this work is by about 1.2 K higher than that found for La 3 Rh 2 Ge 2 .",
+      "type": "sentence",
+      "spans": [
+        {
+          "id": "-549992374",
+          "text": "critical temperature",
+          "type": "<tc>",
+          "linkable": false,
+          "source": "superconductors",
+          "offset_start": 4,
+          "offset_end": 24,
+          "token_start": 2,
+          "token_end": 6
+        },
+        {
+          "id": "173078943",
+          "text": "T C",
+          "type": "<tc>",
+          "linkable": false,
+          "source": "superconductors",
+          "offset_start": 25,
+          "offset_end": 28,
+          "token_start": 6,
+          "token_end": 10
+        },
+        {
+          "id": "-1399809843",
+          "text": "4.7 K",
+          "type": "<tcValue>",
+          "linkable": true,
+          "source": "superconductors",
+          "links": [
+            {
+              "targetId": "1341880574",
+              "targetText": "La 3 Ir 2 Ge 2",
+              "targetType": "<material>",
+              "type": "vicinity"
+            },
+            {
+              "targetId": "-805353850",
+              "targetText": "4.2 GPa",
+              "targetType": "<pressure>",
+              "type": "simple"
+            },
+            {
+              "targetId": "1741904559",
+              "targetText": "resistance",
+              "targetType": "<me_method>",
+              "type": "simple"
+            }
+          ],
+          "offset_start": 31,
+          "offset_end": 36,
+          "token_start": 12,
+          "token_end": 18
+        },
+        {
+          "id": "-805353850",
+          "text": "4.2 GPa",
+          "type": "<pressure>",
+          "linkable": true,
+          "source": "superconductors",
+          "links": [
+            {
+              "targetId": "-1399809843",
+              "targetText": "4.7 K",
+              "targetType": "<tcValue>",
+              "type": "simple"
+            }
+          ],
+          "offset_start": 40,
+          "offset_end": 47,
+          "token_start": 20,
+          "token_end": 26
+        },
+        {
+          "id": "1741904559",
+          "text": "resistance",
+          "type": "<me_method>",
+          "linkable": true,
+          "source": "superconductors",
+          "links": [
+            {
+              "targetId": "-1399809843",
+              "targetText": "4.7 K",
+              "targetType": "<tcValue>",
+              "type": "simple"
+            }
+          ],
+          "offset_start": 64,
+          "offset_end": 74,
+          "token_start": 30,
+          "token_end": 32
+        },
+        {
+          "id": "1341880574",
+          "text": "La 3 Ir 2 Ge 2",
+          "formattedText": "La 3 Ir 2 Ge 2 ",
+          "type": "<material>",
+          "linkable": true,
+          "source": "superconductors",
+          "links": [
+            {
+              "targetId": "-1399809843",
+              "targetText": "4.7 K",
+              "targetType": "<tcValue>",
+              "type": "vicinity"
+            }
+          ],
+          "attributes": {
+            "material0_formula_formulaComposition_Ge": "2",
+            "material0_resolvedFormulas_0_rawValue": "La 3 Ir 2 Ge 2",
+            "material0_rawTaggedValue": "<formula>La 3 Ir 2 Ge 2</formula> ",
+            "material0_resolvedFormulas_0_formulaComposition_La": "3",
+            "material0_formula_rawValue": "La 3 Ir 2 Ge 2",
+            "material0_resolvedFormulas_0_formulaComposition_Ir": "2",
+            "material0_class": "Alloys",
+            "material0_formula_formulaComposition_La": "3",
+            "material0_resolvedFormulas_0_formulaComposition_Ge": "2",
+            "material0_formula_formulaComposition_Ir": "2"
+          },
+          "offset_start": 86,
+          "offset_end": 100,
+          "token_start": 36,
+          "token_end": 48
+        },
+        {
+          "id": "1997509337",
+          "text": "1.2 K",
+          "type": "<tcValue>",
+          "linkable": false,
+          "source": "quantities",
+          "offset_start": 126,
+          "offset_end": 131,
+          "token_start": 60,
+          "token_end": 66
+        },
+        {
+          "id": "-699001705",
+          "text": "La 3 Rh 2 Ge 2",
+          "formattedText": "La 3 Rh 2 Ge 2 ",
+          "type": "<material>",
+          "linkable": true,
+          "source": "superconductors",
+          "attributes": {
+            "material0_formula_formulaComposition_Ge": "2",
+            "material0_resolvedFormulas_0_rawValue": "La 3 Rh 2 Ge 2",
+            "material0_rawTaggedValue": "<formula>La 3 Rh 2 Ge 2</formula> ",
+            "material0_resolvedFormulas_0_formulaComposition_La": "3",
+            "material0_formula_rawValue": "La 3 Rh 2 Ge 2",
+            "material0_resolvedFormulas_0_formulaComposition_Rh": "2",
+            "material0_formula_formulaComposition_Rh": "2",
+            "material0_class": "Alloys",
+            "material0_formula_formulaComposition_La": "3",
+            "material0_resolvedFormulas_0_formulaComposition_Ge": "2"
+          },
+          "offset_start": 159,
+          "offset_end": 173,
+          "token_start": 76,
+          "token_end": 88
+        }
+      ],
+      "tokens": [
+        {
+          "text": "The",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 0,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 3,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "critical",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 4,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 12,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "temperature",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 13,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 24,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "T",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 25,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 26,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "C",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 27,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 28,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "=",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 29,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 30,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "4",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 31,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": ".",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 32,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "7",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 33,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 34,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "K",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 35,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 36,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "at",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 37,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 39,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "4",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 40,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": ".",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 41,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "2",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 42,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 43,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "GPa",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 44,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 47,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "discovered",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 48,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 58,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "with",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 59,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 63,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "resistance",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 64,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 74,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "method",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 75,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 81,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "for",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 82,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 85,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "La",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 86,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 88,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "3",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 89,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 90,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "Ir",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 91,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 93,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "2",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 94,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 95,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "Ge",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 96,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 98,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "2",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 99,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 100,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "in",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 101,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 103,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "this",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 104,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 108,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "work",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 109,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 113,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "is",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 114,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 116,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "by",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 117,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 119,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "about",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 120,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 125,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "1",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 126,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": ".",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 127,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "2",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 128,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 129,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "K",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 130,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 131,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "higher",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 132,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 138,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "than",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 139,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 143,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "that",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 144,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 148,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "found",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 149,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 154,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "for",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 155,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 158,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "La",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 159,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 161,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "3",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 162,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 163,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "Rh",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 164,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 166,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "2",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 167,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 168,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "Ge",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 169,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 171,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": "2",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 172,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": " ",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 173,
+          "italic": false,
+          "bold": false
+        },
+        {
+          "text": ".",
+          "fontSize": 0,
+          "style": "baseline",
+          "offset": 174,
+          "italic": false,
+          "bold": false
+        }
+      ]
+    }
+  ]
+}
