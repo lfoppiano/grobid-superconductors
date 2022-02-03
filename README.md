@@ -78,13 +78,13 @@ Obviously this works only if the model for the requested architecture has been p
 
 In the following table are listed the models (in `resources/models/` ) that are currently provided. 
 
-| Model name   | Description    | Provided architecture  |
-|--------------|----------------|------------------------|
-| superconductors | extract the superconductors materials and properties such as temperature, pressure | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE, scibert |  
-| material | segment the material names | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE |   
-| entityLinking-material-tcValue | links materials and superconducting critical temperature  | CRF |   
-| entityLinking-tcValue-pressure | links superconducting critical temperature and pressure  | CRF |   
-| entityLinking-tcValue-me_methods | superconducting critical temperature and measurement method | CRF|   
+| Model name                       | Description                                                                        | Provided architecture                          |
+|----------------------------------|------------------------------------------------------------------------------------|------------------------------------------------|
+| superconductors                  | extract the superconductors materials and properties such as temperature, pressure | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE, scibert |  
+| material                         | segment the material names                                                         | CRF, BidLSTM_CRF, BidLSTM_CRF_FEATURE          |   
+| entityLinking-material-tcValue   | links materials and superconducting critical temperature                           | CRF                                            |   
+| entityLinking-tcValue-pressure   | links superconducting critical temperature and pressure                            | CRF                                            |   
+| entityLinking-tcValue-me_methods | superconducting critical temperature and measurement method                        | CRF                                            |   
 
 Below, in the Section [accuracy](#accuracy), we present the accuracies for each model. 
 
@@ -113,16 +113,16 @@ The detailed reports and explanation can be found [here](resources/performances/
 Evaluation made on the 01/08/2021 using 168 papers.
 The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds).
 
-| Labels       | CRF        |          |           | BidLSTM+CRF|         |          | SciBERT    |         |          |
-|--------------|------------|----------|-----------|------------|---------|----------|------------|---------|----------|
-| Metrics      | Precision  |  Recall  | F1-Score  | Precision  |  Recall | F1-Score | Precision  |  Recall | F1-Score | 
-| `<class>`    | 79.69      |   75.54  | 77.55     |  81.84     |  83.96  |  82.85   |  79.58     |  85.79  |  82.56   |    
-| `<material>` | 82.9       |   81.33  | 82.1      |  85.18     |  83.86  |  84.51   |  83.89     |  86.13  |  84.99   |    
-| `<me_method>`| 82.47      |   81.26  | 81.84     |  83.51     |  83.37  |  83.43   |  83.92     |  86.50  |  85.19   |    
-| `<pressure>` | 65.03      |   54.01  | 58.26     |  63.79     |  73.24  |  67.98   |  63.92     |  71.18  |  67.27   |     
-| `<tc>`       | 84.63      |   80.73  | 82.63     |  83.70     |  81.66  |  82.66   |  80.91     |  83.00  |  81.94   |    
-| `<tcValue>`  | 79.3       |   74.95  | 76.97     |  73.23     |  80.73  |  76.76   |  76.74     |  85.00  |  80.65   |  
-| All (micro avg)  | 82.43  |   79.68  | 81.03     |  83.01     |  82.89  |  82.95   |  81.92     |  85.06  | **83.46**|    
+| Labels          | CRF         |           |            | BidLSTM+CRF |         |          | SciBERT    |         |          |
+|-----------------|-------------|-----------|------------|-------------|---------|----------|------------|---------|----------|
+| Metrics         | Precision   | Recall    | F1-Score   | Precision   |  Recall | F1-Score | Precision  |  Recall | F1-Score | 
+| `<class>`       | 79.69       | 75.54     | 77.55      | 81.84       |  83.96  |  82.85   |  79.58     |  85.79  |  82.56   |    
+| `<material>`    | 82.9        | 81.33     | 82.1       | 85.18       |  83.86  |  84.51   |  83.89     |  86.13  |  84.99   |    
+| `<me_method>`   | 82.47       | 81.26     | 81.84      | 83.51       |  83.37  |  83.43   |  83.92     |  86.50  |  85.19   |    
+| `<pressure>`    | 65.03       | 54.01     | 58.26      | 63.79       |  73.24  |  67.98   |  63.92     |  71.18  |  67.27   |     
+| `<tc>`          | 84.63       | 80.73     | 82.63      | 83.70       |  81.66  |  82.66   |  80.91     |  83.00  |  81.94   |    
+| `<tcValue>`     | 79.3        | 74.95     | 76.97      | 73.23       |  80.73  |  76.76   |  76.74     |  85.00  |  80.65   |  
+| All (micro avg) | 82.43       | 79.68     | 81.03      | 83.01       |  82.89  |  82.95   |  81.92     |  85.06  | **83.46**|    
 
 Detailed evaluation measures are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
 See the documentation of [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations.
