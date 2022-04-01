@@ -209,7 +209,13 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
     > gcloud compute tpus execution-groups create --name=tpu1234 --zone=us-central1-a --tf-version=1.15.5  --machine-type=n1-standard-1  --accelerator-type=v3-8
 
 - Run 512 
-    > python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/*.tfrecord --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512  --do_train=True --do_eval=True --bert_config_file=/mnt/disk1/bert_config/s2vocab_uncased.json --train_batch_size=64 --max_seq_length=512 --max_predictions_per_seq=75 --num_train_steps=800000 --num_warmup_steps=100 --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000  --eval_batch_size 64 --init_checkpoint=gs://matscibert/scibert_scivocab_cased/bert_model --tpu_zone=us-central1-a
+    > python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded*  --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512  --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1100000 --num_warmup_steps=100 --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000  --eval_batch_size 64 --init_checkpoint=gs://matscibert/scibert_scivocab_cased/bert_model.ckpt --tpu_zone=us-central1-a
+    - 256 batch size
+
+When TPU is preepmpted
+
+export START=167000; 
+nohup python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded* --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512 --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1600000 --num_warmup_steps=${START} --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000 --eval_batch_size 64 --init_checkpoint=gs://matscibert/models/matscibert-myvocab_cased_512/model.ckpt-${START} --tpu_zone=us-central1-a
 
 
 ## Details parameters
@@ -219,8 +225,8 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 ### Steps calculation madness
 
 | Length | nb_steps (relative) | nb_steps (absolute) | batch size |  
-| ---- | --- | --- | --- | 
-| SciBERT original work |
+| ---- | --- | --- | --- |
+| SciBERT original work | 
 | 128 | 500000 | 500000 | 256 | 
 | 512 | 300000 | 800000 | 64 |
 | Adjusted number of steps due to the GPU limitation | 

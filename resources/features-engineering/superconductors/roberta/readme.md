@@ -33,6 +33,34 @@ In order to process the data with RoBERTa, we preprocessed the data to have an e
 
 
 ### Pre-training
+ - Run BPE:
+   ```
+    source activate roberta
+    for SPLIT in train valid test; do \
+    python -m examples.roberta.multiprocessing_bpe_encoder \
+    --encoder-json /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/encoder.json \
+    --vocab-bpe /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/vocab.bpe \
+    --inputs  /lustre/group/tdm/Luca/aggregated/SuperMat+SciCorpus.RoBERTa.sentences.v2.${SPLIT}.txt \
+    --outputs ./SuperMat+SciCorpus.sentences.v2.${SPLIT}.bpe \
+    --keep-empty \
+    --workers 72; \
+    done
+   ```
+   
+ - Run preprocessing:
+    ```
+     source activate roberta
+     for SPLIT in train valid test; do \
+     python -m examples.roberta.multiprocessing_bpe_encoder \
+     --encoder-json /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/encoder.json \
+     --vocab-bpe /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/vocab.bpe \
+     --inputs  /lustre/group/tdm/Luca/aggregated/SuperMat+SciCorpus.RoBERTa.sentences.v2.${SPLIT}.txt \
+     --outputs ./SuperMat+SciCorpus.sentences.v2.${SPLIT}.bpe \
+     --keep-empty \
+     --workers 72; \
+     done
+    ```
+ - Run pre-training
 
 ## Details parameters
 
