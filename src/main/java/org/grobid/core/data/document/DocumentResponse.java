@@ -58,12 +58,12 @@ public class DocumentResponse {
         this.passages = passages;
     }
 
-    public void addParagraphs(List<TextPassage> paragraphs) {
-        paragraphs.forEach(this::addParagraph);
+    public void addParagraphs(List<TextPassage> passages) {
+        passages.forEach(this::addPassage);
     }
 
-    public void addParagraph(TextPassage paragraph) {
-        this.passages.add(paragraph);
+    public void addPassage(TextPassage passage) {
+        this.passages.add(passage);
     }
 
     public long getRuntime() {
