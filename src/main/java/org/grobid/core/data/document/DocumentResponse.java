@@ -89,9 +89,16 @@ public class DocumentResponse {
         StringBuilder out = new StringBuilder();
         try {
             final CSVPrinter printer = CSVFormat.DEFAULT
-                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication", 
-                    "Substrate", "Variables", "Critical temperature", "Tc measurement method", "Applied pressure", 
-                    "Link type", "Section", "Subsection", "Sentence")
+                .withHeader("Raw material", "Raw material ID", "Name", "Formula",
+                    "Doping", "Shape", "Class", "Fabrication", "Substrate", "Variables",
+                    "Unit-cell-type", "Unit-cell-type ID",
+                    "Space Group", "Space Group ID",
+                    "Crystal structure", "Crystal structure ID",
+                    "Critical temperature", "Critical temperature ID",
+                    "Measurement method", "Measurement method ID",
+                    "Applied pressure", "Applied pressure ID",
+                    "Link type", "Section", "Subsection", "Sentence",
+                    "type", "path", "filename")
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.ALL)
                 .print(out);
@@ -114,9 +121,16 @@ public class DocumentResponse {
         StringBuilder out = new StringBuilder();
         try {
             final CSVPrinter printer = CSVFormat.DEFAULT
-                .withHeader("Raw material", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication",
-                    "Substrate", "Variables", "Critical temperature", "Tc measurement method", "Applied pressure",
-                    "Link type", "Section", "Subsection", "Sentence")
+                .withHeader("Raw material", "Raw material ID", "Name", "Formula",
+                    "Doping", "Shape", "Class", "Fabrication", "Substrate", "variables",
+                    "Unit-cell-type", "Unit-cell-type ID",
+                    "Space Group", "Space Group ID",
+                    "Crystal structure", "Crystal structure ID",
+                    "Critical temperature", "Critical temperature ID",
+                    "Measurement method", "Measurement method ID",
+                    "Applied pressure", "Applied pressure ID",
+                    "Link type", "Section", "Subsection", "Sentence",
+                    "type", "path", "filename")
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.ALL)
                 .print(out);

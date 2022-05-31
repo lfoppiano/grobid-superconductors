@@ -14,7 +14,7 @@ public class SuperconEntry implements Cloneable {
     //"id", "Raw material","rawMaterialId", "Name", "Formula", "Doping", "Shape", "Class", "Fabrication",
     // "Substrate","variables", "unitCellType", "unitCellTypeId", "spaceGroup", "spaceGroupId", "crystalStructure", "crystalStructureId", 
     // "Critical temperature", "criticalTemperatureId", "criticalTemperatureMeasurementMethod", "criticalTemperatureMeasurementMethodId", 
-    // "Applied pressure", "Applied pressure id" "Material-tc link type",
+    // "Applied pressure", "Applied pressure id", "Material-tc link type",
     // "Section", "Subsection","Sentence", "type", "path","filename"
 
     private String id; 
@@ -36,8 +36,8 @@ public class SuperconEntry implements Cloneable {
     private String crystalStructureId;
     private String criticalTemperature;
     private String criticalTemperatureId; 
-    private String criticalTemperatureMeasurementMethod;
-    private String criticalTemperatureMeasurementMethodId;
+    private String measurementMethod;
+    private String measurementMethodId;
     private String appliedPressure;
     private String appliedPressureId;
     private String linkType;
@@ -236,8 +236,9 @@ public class SuperconEntry implements Cloneable {
         outList.add(getCrystalStructure());
         outList.add(getCrystalStructureId());
         outList.add(getCriticalTemperature());
-        outList.add(getCriticalTemperatureMeasurementMethod());
-        outList.add(getCriticalTemperatureMeasurementMethodId());
+        outList.add(getCriticalTemperatureId());
+        outList.add(getMeasurementMethod());
+        outList.add(getMeasurementMethodId());
         outList.add(getAppliedPressure());
         outList.add(getAppliedPressureId());
         outList.add(getLinkType());
@@ -245,6 +246,8 @@ public class SuperconEntry implements Cloneable {
         outList.add(getSubsection());
         outList.add(getSentence());
         outList.add(getType());
+        outList.add(getPath());
+        outList.add(getFilename());
 
         return outList;
     }
@@ -265,12 +268,12 @@ public class SuperconEntry implements Cloneable {
         return variables;
     }
 
-    public String getCriticalTemperatureMeasurementMethod() {
-        return criticalTemperatureMeasurementMethod;
+    public String getMeasurementMethod() {
+        return measurementMethod;
     }
 
-    public void setCriticalTemperatureMeasurementMethod(String criticalTemperatureMeasurementMethod) {
-        this.criticalTemperatureMeasurementMethod = criticalTemperatureMeasurementMethod;
+    public void setMeasurementMethod(String measurementMethod) {
+        this.measurementMethod = measurementMethod;
     }
 
     public String getId() {
@@ -297,12 +300,12 @@ public class SuperconEntry implements Cloneable {
         this.criticalTemperatureId = criticalTemperatureId;
     }
 
-    public String getCriticalTemperatureMeasurementMethodId() {
-        return criticalTemperatureMeasurementMethodId;
+    public String getMeasurementMethodId() {
+        return measurementMethodId;
     }
 
-    public void setCriticalTemperatureMeasurementMethodId(String criticalTemperatureMeasurementMethodId) {
-        this.criticalTemperatureMeasurementMethodId = criticalTemperatureMeasurementMethodId;
+    public void setMeasurementMethodId(String measurementMethodId) {
+        this.measurementMethodId = measurementMethodId;
     }
 
     public String getAppliedPressureId() {

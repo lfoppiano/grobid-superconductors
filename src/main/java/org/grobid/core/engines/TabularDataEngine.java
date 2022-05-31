@@ -180,7 +180,7 @@ public class TabularDataEngine {
                             .collect(Collectors.joining(", "));
 
                         entriesRelatedToThisTc.stream()
-                            .forEach(sE -> sE.setCriticalTemperatureMeasurementMethod(meMethodsLinkedToThisTc));
+                            .forEach(sE -> sE.setMeasurementMethod(meMethodsLinkedToThisTc));
 
 
                         //Process pressures - only linked to a Tc that is linked to material
