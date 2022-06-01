@@ -246,8 +246,8 @@ public class SuperconEntry implements Cloneable {
         outList.add(getSubsection());
         outList.add(getSentence());
         outList.add(getType());
-        outList.add(getPath());
-        outList.add(getFilename());
+//        outList.add(getPath());
+//        outList.add(getFilename());
 
         return outList;
     }
