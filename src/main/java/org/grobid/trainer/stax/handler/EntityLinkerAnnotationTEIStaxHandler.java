@@ -4,6 +4,7 @@ package org.grobid.trainer.stax.handler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.analyzers.QuantityAnalyzer;
 import org.grobid.core.data.document.LinkToken;
 import org.grobid.core.exceptions.GrobidException;
@@ -326,7 +327,7 @@ public class EntityLinkerAnnotationTEIStaxHandler implements StaxParserContentHa
         String text = accumulator.toString();
         List<String> tokens = null;
         try {
-            tokens = QuantityAnalyzer.getInstance().tokenize(text);
+            tokens = DeepAnalyzer.getInstance().tokenize(text);
         } catch (Exception e) {
             throw new GrobidException("fail to tokenize: " + text, e);
         }
