@@ -1,19 +1,30 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.internal.bytebuddy.implementation.bind.annotation.Super;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.grobid.core.data.document.Span;
 import org.grobid.core.engines.SuperconductorsModels;
+import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newOutputStream;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -31,9 +43,6 @@ import static org.grobid.service.command.InterAnnotationAgreementCommand.TOP_LEV
 
 
 public class SuperconductorsTrainer extends AbstractTrainerNew {
-    public static final String FOLD_TYPE_PARAGRAPH = "paragraph";
-    public static final String FOLD_TYPE_DOCUMENT = "document";
-
     private WstxInputFactory inputFactory = new WstxInputFactory();
 
     public SuperconductorsTrainer() {
@@ -53,9 +62,9 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
         int totalExamples = 0;
         Writer trainingOutputWriter = null;
         Writer evaluationOutputWriter = null;
+        Writer negativeExamplesTempWriter = null;
 
         try {
-
             Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final");
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
@@ -67,7 +76,7 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
             OutputStream os2 = null;
 
             if (trainingOutputPath != null) {
-                os2 = new FileOutputStream(trainingOutputPath);
+                os2 = newOutputStream(trainingOutputPath.toPath());
                 trainingOutputWriter = new OutputStreamWriter(os2, UTF_8);
             }
 
@@ -75,7 +84,7 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
             OutputStream os3 = null;
 
             if (evalOutputPath != null) {
-                os3 = new FileOutputStream(evalOutputPath);
+                os3 = newOutputStream(evalOutputPath.toPath());
                 evaluationOutputWriter = new OutputStreamWriter(os3, UTF_8);
             }
 
@@ -90,6 +99,9 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
             if (isEmpty(refFiles)) {
                 return 0;
             }
+
+            Path negativeExamplesTempPath = Files.createTempFile(Paths.get(GrobidProperties.getTempPath().getAbsolutePath()), "negative_sampling", "temp");
+            negativeExamplesTempWriter = new OutputStreamWriter(newOutputStream(negativeExamplesTempPath), UTF_8);
 
             LOGGER.info(refFiles.size() + " files");
 
@@ -118,19 +130,19 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                 }
 
                 List<List<String>> featureFile = new ArrayList<>();
-                List<String> paragraphFeatureFile = new ArrayList<>();
+                List<String> sentencesFeatureFile = new ArrayList<>();
                 String line_ = null;
                 boolean end = false;
                 try (BufferedReader bis = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(theRawFile), UTF_8))) {
+                    new InputStreamReader(Files.newInputStream(theRawFile.toPath()), UTF_8))) {
                     while ((line_ = bis.readLine()) != null) {
                         if (StringUtils.isNotBlank(line_)) {
                             if (end) {
-                                featureFile.add(paragraphFeatureFile);
-                                paragraphFeatureFile = new ArrayList<>();
+                                featureFile.add(sentencesFeatureFile);
+                                sentencesFeatureFile = new ArrayList<>();
                                 end = false;
                             }
-                            paragraphFeatureFile.add(line_);
+                            sentencesFeatureFile.add(line_);
                         } else {
                             end = true;
                         }
@@ -138,23 +150,23 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                 }
 
 
-                if (isNotEmpty(paragraphFeatureFile)) {
-                    featureFile.add(paragraphFeatureFile);
+                if (isNotEmpty(sentencesFeatureFile)) {
+                    featureFile.add(sentencesFeatureFile);
                 }
 
                 List<List<Pair<String, String>>> xmlFile = new ArrayList<>();
-                List<Pair<String, String>> paragraphXmlFile = new ArrayList<>();
+                List<Pair<String, String>> sentencesXmlFile = new ArrayList<>();
                 for (int idx = 0; idx < labeled.size(); idx++) {
                     String tag = labeled.get(idx).getRight();
                     if (StringUtils.isEmpty(tag)) {
-                        xmlFile.add(paragraphXmlFile);
-                        paragraphXmlFile = new ArrayList<>();
+                        xmlFile.add(sentencesXmlFile);
+                        sentencesXmlFile = new ArrayList<>();
                     } else {
-                        paragraphXmlFile.add(labeled.get(idx));
+                        sentencesXmlFile.add(labeled.get(idx));
                     }
                 }
-                if (isNotEmpty(paragraphXmlFile)) {
-                    xmlFile.add(paragraphXmlFile);
+                if (isNotEmpty(sentencesXmlFile)) {
+                    xmlFile.add(sentencesXmlFile);
                 }
 
                 List<List<String>> featureFileAligned = new ArrayList<>();
@@ -166,28 +178,28 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                 outer:
                 for (int i = 0; i < featureFile.size(); i++) {
                     final List<String> featureParagraph = featureFile.get(i);
-                    String paragraphBeginning = IntStream.range(0, Math.min(5, featureParagraph.size())).mapToObj(i_ -> featureParagraph.get(i_).split(" ")[0]).collect(Collectors.joining(" "));
+                    String sentenceBeginning = IntStream.range(0, Math.min(5, featureParagraph.size())).mapToObj(i_ -> featureParagraph.get(i_).split(" ")[0]).collect(Collectors.joining(" "));
 
                     for (int j = previousIdx; j < xmlFile.size(); j++) {
                         final List<Pair<String, String>> xmlParagraph = xmlFile.get(j);
-                        String paragraphBeginningXml = IntStream.range(0, Math.min(5, xmlParagraph.size())).mapToObj(j_ -> xmlParagraph.get(j_).getLeft()).collect(Collectors.joining(" "));
-                        if (StringUtils.equals(paragraphBeginning, paragraphBeginningXml)) {
+                        String sentenceBeginningXml = IntStream.range(0, Math.min(5, xmlParagraph.size())).mapToObj(j_ -> xmlParagraph.get(j_).getLeft()).collect(Collectors.joining(" "));
+                        if (StringUtils.equals(sentenceBeginning, sentenceBeginningXml)) {
                             featureFileAligned.add(featureParagraph);
                             xmlFileAligned.add(xmlParagraph);
                             previousIdx = j + 1;
                             continue outer;
                         } else {
-                            LOGGER.warn("Paragraphs " + paragraphBeginning + " not found in the xml " + paragraphBeginningXml);
+                            LOGGER.warn("Sentences " + sentenceBeginning + " not found in the xml " + sentenceBeginningXml);
                         }
                     }
                     LOGGER.error("The feature file (" + theRawFile.getName() + ") and the xml file (" + theFile.getName() + ") have different number of paragraphs and cannot be matched back. Skipping it.");
-                    LOGGER.error("Paragraph beginning: " + paragraphBeginning);
+                    LOGGER.error("Sentence beginning: " + sentenceBeginning);
                     skipFile = true;
                     break;
                 }
 
                 if (xmlFile.size() != featureFile.size()) {
-                    LOGGER.info("Initial paragraphs: XML: " + xmlFile.size() + ", Features: " + featureFile.size()
+                    LOGGER.info("Initial sentences: XML: " + xmlFile.size() + ", Features: " + featureFile.size()
                         + ". Output: " + xmlFileAligned.size());
                 }
 
@@ -198,12 +210,12 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                 // 1. I need just one index counter
                 // 2. I need to find mismatches between tokens
                 for (int i = 0; i < featureFileAligned.size(); i++) {
-                    paragraphFeatureFile = featureFileAligned.get(i);
-                    paragraphXmlFile = xmlFileAligned.get(i);
+                    sentencesFeatureFile = featureFileAligned.get(i);
+                    sentencesXmlFile = xmlFileAligned.get(i);
                     int featureFileIndex = 0;
                     long entityLabels = 0;
                     outer:
-                    for (String line : paragraphFeatureFile) {
+                    for (String line : sentencesFeatureFile) {
                         int secondFeatureTokenIndex = line.indexOf('\t');
                         if (secondFeatureTokenIndex == -1) {
                             secondFeatureTokenIndex = line.indexOf(' ');
@@ -216,9 +228,9 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                             token = UnicodeUtil.normaliseTextAndRemoveSpaces(token);
                         }
                         // we get the label in the labelled data file for the same token
-                        for (int labeledIndex = featureFileIndex; labeledIndex < paragraphXmlFile.size(); labeledIndex++) {
-                            String localToken = paragraphXmlFile.get(labeledIndex).getLeft();
-                            String tag = paragraphXmlFile.get(labeledIndex).getRight();
+                        for (int labeledIndex = featureFileIndex; labeledIndex < sentencesXmlFile.size(); labeledIndex++) {
+                            String localToken = sentencesXmlFile.get(labeledIndex).getLeft();
+                            String tag = sentencesXmlFile.get(labeledIndex).getRight();
 
                             // unicode normalisation of the token - it should not be necessary if the training data
                             // has been generated by a recent version of grobid
@@ -237,8 +249,8 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                             if (labeledIndex - featureFileIndex > 5) {
                                 if (isNotBlank(line)) {
                                     LOGGER.info("Out of sync. Moving to the next paragraph. Faulty paragraph: \n" +
-                                        "\t- XML: " + paragraphXmlFile.stream().map(Pair::getLeft).collect(Collectors.joining(" ")) + "\n" +
-                                        "\t- fea: " + paragraphFeatureFile.stream().map(s -> s.split(" ")[0]).collect(Collectors.joining(" ")));
+                                        "\t- XML: " + sentencesXmlFile.stream().map(Pair::getLeft).collect(Collectors.joining(" ")) + "\n" +
+                                        "\t- fea: " + sentencesFeatureFile.stream().map(s -> s.split(" ")[0]).collect(Collectors.joining(" ")));
 //                                    entityLabels = 0;
 //                                    output = new StringBuilder();
                                     continue outer;
@@ -247,26 +259,232 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                             }
                         }
                     }
-
-                    if (isNotBlank(output.toString()) && entityLabels > 0) {
+                    if (isNotBlank(output.toString())) {
+                        // Positive sampling goes directly in the output, negative sampling goes to a temporary file
+                        // positive sampling
                         output.append("\n");
-                        writer.write(output.toString() + "\n");
-                        writer.flush();
-                        writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                        if (entityLabels > 0) {
+                            totalExamples++;
+                            writer.write(output + "\n");
+                            writer.flush();
+                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
+                        } else {
+                            // random/active negative sampling
+                            negativeExamplesTempWriter.write(output + "\n");
+                            negativeExamplesTempWriter.flush();
+                        }
                     }
                     output = new StringBuilder();
                 }
 
-                writer.write(output.toString() + "\n");
+                writer.write(output + "\n");
                 writer.write("\n");
             }
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         } finally {
-            IOUtils.closeQuietly(evaluationOutputWriter, trainingOutputWriter);
+            IOUtils.closeQuietly(evaluationOutputWriter, trainingOutputWriter, negativeExamplesTempWriter);
         }
         return totalExamples;
     }
+
+
+    /**
+     * Using a set of negative examples, select those which contradicts a given recognition model.
+     * Contradict means that the model predicts incorrectly a software mention and that this
+     * particular negative example is particularly relevant to correct this model.
+     * <p>
+     * Given the max parameter, if the max is not reached, we fill the remaning with random samples.
+     *
+     * @author Patrice Lopez
+     */
+    public int selectNegativeExamples(File negativeCorpusFile, double max, File outputXMLFile) {
+        int totalExamples = 0;
+        Writer writer = null;
+        try {
+            System.out.println("Negative corpus path: " + negativeCorpusFile.getPath());
+            System.out.println("selection corpus path: " + outputXMLFile.getPath());
+
+            // the file for writing the training data
+            writer = new OutputStreamWriter(new FileOutputStream(outputXMLFile), "UTF8");
+
+            SuperconductorsParser parser = SuperconductorsParser.getInstance(null, null, null);
+
+            if (!negativeCorpusFile.exists()) {
+                System.out.println("The XML TEI negative corpus does not exist: " + negativeCorpusFile.getPath());
+            } else {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                String tei = FileUtils.readFileToString(negativeCorpusFile, UTF_8);
+                org.w3c.dom.Document document = builder.parse(new InputSource(new StringReader(tei)));
+
+                int totalAdded = 0;
+
+                // list of index of nodes to remove
+                List<Integer> toAdd = new ArrayList<>();
+
+                NodeList pList = document.getElementsByTagName("p");
+
+                for (int i = 0; i < pList.getLength(); i++) {
+                    Element paragraphElement = (Element) pList.item(i);
+                    String text = ""; //XMLUtilities.getText(paragraphElement);
+                    if (text == null || text.trim().length() == 0) {
+                        continue;
+                    }
+
+                    // run the mention recognizer and check if we have annotations
+                    List<Span> entities = parser.processSingle(text);
+                    if (entities != null && entities.size() > 0) {
+                        toAdd.add(i);
+                        totalAdded++;
+                    }
+                }
+
+                System.out.println("Number of examples based on active sampling: " + totalAdded);
+
+                List<Integer> toRemove = new ArrayList<Integer>();
+                for (int i = 0; i < pList.getLength(); i++) {
+                    Element paragraphElement = (Element) pList.item(i);
+                    if (totalAdded < max) {
+                        toAdd.add(i);
+                        totalAdded++;
+                    } else if (!toAdd.contains(i)) {
+                        toRemove.add(new Integer(i));
+                    }
+                }
+
+                totalExamples = totalAdded;
+
+                for (int j = toRemove.size() - 1; j > 0; j--) {
+                    // remove the specific node
+                    Node element = pList.item(toRemove.get(j));
+                    if (element == null) {
+                        System.out.println("Warning: null element at " + toRemove.get(j));
+                        continue;
+                    }
+                    if (element.getParentNode() != null)
+                        element.getParentNode().removeChild(element);
+                }
+
+//                writer.write(serialize(document, null));
+            }
+        } catch (Exception e) {
+            throw new GrobidException("An exception occurred while selecting negative examples.", e);
+        } finally {
+            try {
+                if (writer != null)
+                    writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return totalExamples;
+    }
+
+
+    /**
+     * Select a given number of negative examples among a given (very large) list, in a random
+     * manner.
+     *
+     * @param max maximum of negative examples to select
+     * @author Patrice Lopez
+     */
+    public int randomNegativeExamples(File negativeCorpusFile, double max, File outputXMLFile) {
+        int totalExamples = 0;
+        Writer writer = null;
+        try {
+            System.out.println("Negative corpus path: " + negativeCorpusFile.getPath());
+            System.out.println("selection corpus path: " + outputXMLFile.getPath());
+
+            // the file for writing the training data
+            writer = new OutputStreamWriter(new FileOutputStream(outputXMLFile), UTF_8);
+
+            if (!negativeCorpusFile.exists()) {
+                System.out.println("The XML TEI negative corpus does not exist: " + negativeCorpusFile.getPath());
+            } else {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                String tei = FileUtils.readFileToString(negativeCorpusFile, UTF_8);
+                org.w3c.dom.Document document = builder.parse(new InputSource(new StringReader(tei)));
+
+                NodeList pList = document.getElementsByTagName("p");
+                int totalMaxExamples = pList.getLength();
+
+                int rate = 0;
+                if (max < totalMaxExamples) {
+                    rate = (int) (totalMaxExamples / max) - 1;
+                } /*else {
+                    max = totalMaxExamples;
+                }*/
+
+                // list of index of nodes to remove
+                List<Integer> toRemove = new ArrayList<Integer>();
+
+                int rank = 0;
+                int totalAdded = 0;
+                for (int i = 0; i < pList.getLength(); i++) {
+                    if (totalAdded >= max) {
+                        toRemove.add(i);
+                        continue;
+                    }
+
+                    // we remove when no text auf jeden falle
+                    Element paragraphElement = (Element) pList.item(i);
+                    String text = ""; //XMLUtilities.getText(paragraphElement);
+                    if (text == null || text.trim().length() == 0) {
+                        toRemove.add(i);
+                        continue;
+                    }
+
+                    // if we want to avoid selecting the same paragraphs as the model-driven selection
+                    // run the mention recognizer and check if we have annotations
+                        /*List<SoftwareEntity> entities = parser.processText(text, false);
+                        if (entities != null && entities.size() > 0) {
+                            toRemove.add(new Integer(i));
+                            pb.step();
+                            continue;
+                        }*/
+
+                    if (rank >= rate) {
+                        rank = 0;
+                        totalAdded++;
+                    } else {
+                        toRemove.add(i);
+                    }
+                    rank++;
+                }
+
+
+                totalExamples = pList.getLength() - toRemove.size();
+
+                for (int j = toRemove.size() - 1; j > 0; j--) {
+                    // remove the specific node
+                    Node element = pList.item(toRemove.get(j));
+                    if (element == null) {
+                        System.out.println("Warning: null element at " + toRemove.get(j));
+                        continue;
+                    }
+                    if (element.getParentNode() != null)
+                        element.getParentNode().removeChild(element);
+                }
+
+//                writer.write(serialize(document, null));
+            }
+        } catch (Exception e) {
+            throw new GrobidException("An exception occured while selecting negative examples.", e);
+        } finally {
+            try {
+                if (writer != null)
+                    writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return totalExamples;
+    }
+
 
     /**
      * Add the selected features to the model training for bio entities
