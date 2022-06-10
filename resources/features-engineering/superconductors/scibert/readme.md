@@ -17,9 +17,9 @@ and [SuperMat](https://github.com/lfoppiano/SuperMat) for superconductors materi
     - SciBERT's'[cheatsheet](https://github.com/allenai/scibert/blob/master/scripts/cheatsheet.txt).
     - [memory consumption](https://github.com/google-research/bert#out-of-memory-issues)
 
-### Preliminary studies
+## Preliminary studies
 
-#### Vocab comparison
+### Vocab comparison
 
 This comparison attempt to figure out roughly how distant the vocabulary of the fine-tuning data (`myvocab`) and the
 original SciBERT dataset (`scivocab`) are.
@@ -148,7 +148,9 @@ This final task reduce the domain-specific vocabulary to the only terms that are
 This list contains the documents that are in both SciCorpus and SuperMat 
 - `tdm-corpora/aps/2016/10.1103_PhysRevB.94.180509/10.1103_PhysRevB.94.180509_fulltext_20200826.txt:Bulk superconductivity at 84 K in the strongly overdoped regime of cuprates`
 
-### Pre-training
+## Pre-training
+
+### Preparation
 
 Starting from a text file containing one paragraph per line, we performed the following operations:
 
@@ -172,9 +174,21 @@ Starting from a text file containing one paragraph per line, we performed the fo
 
 4. Run pre-training ([ref](https://github.com/google-research/bert#pre-training-tips-and-caveats))
 
-## Pre-training execution 
+### Nb steps calculation
 
-### NIMS Analysis cluster 
+| Length | nb_steps (relative) | nb_steps (absolute) | batch size |  
+| ---- | --- | --- | --- |
+| SciBERT original work |
+| 128 | 500000 | 500000 | 256 | 
+| 512 | 300000 | 800000 | 64 |
+| Adjusted number of steps due to the GPU limitation |
+| 128 | 500000*8=4000000 | 4000000 + 800000 = 4800000 | 32 | 
+| 512 | 300000*8=2400000 | 4800000 + 2400000 = 7200000 | 8 |
+
+
+### Pre-training execution 
+
+#### NIMS Analysis cluster 
 
 **NOTE**: The num_train_steps is used as "global max step", therefore when doing incremental training is important to
 consider that as an absolute value. [Ref](https://github.com/google-research/bert/issues/632).
@@ -184,7 +198,7 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 | Baseline short sequences | total = 500000*256=12000000 | 128 | 256 | 500000 |  1000 | 1e-4 | 20 | |
 | Baseline long sequences |total = 300000*64=19000200  | 512 | 64 | 800000 |  100 | 1e-5 | 76 |  |
 
-## Log and results
+##### Log and results
 
 | Name  | Notes | max_sequence_lenght | train_batch_size | num_train_steps | learning_rate | max_prediction_seq | init_checkpoint | Masked accuracy | Masked loss  | Next sentence accuracy | Next sentence loss |
 |--------|--------- |------|---------|----|--------|--------|---- | ---- | ---- | --- | --- |
@@ -203,7 +217,7 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 | -- | Other cases |
 | Sc+Sm pre-training short sequences (200K steps) | ~~o23489~~, 1M train steps |128 | 32 | 1000000 |  1000 | 1e-4 | 20 | 0.7258553 | 1.2150538 | 0.9875 | 0.03644385 |
 
-### Google Cloud Platform
+#### Google Cloud Platform
 
 - Create TPU
     > gcloud compute tpus execution-groups create --name=tpu1234 --zone=us-central1-a --tf-version=1.15.5  --machine-type=n1-standard-1  --accelerator-type=v3-8
@@ -218,20 +232,20 @@ export START=167000;
 nohup python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded* --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512 --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1600000 --num_warmup_steps=${START} --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000 --eval_batch_size 64 --init_checkpoint=gs://matscibert/models/matscibert-myvocab_cased_512/model.ckpt-${START} --tpu_zone=us-central1-a
 
 
-## Details parameters
+##### Log and results
 
-## Additional information
+Average over 10 folds with the TPU trained scibert for 1670000 steps using SciCorpora+SuperMat  split by sentences and withotu any other preprocessing 
 
-### Steps calculation madness
-
-| Length | nb_steps (relative) | nb_steps (absolute) | batch size |  
-| ---- | --- | --- | --- |
-| SciBERT original work | 
-| 128 | 500000 | 500000 | 256 | 
-| 512 | 300000 | 800000 | 64 |
-| Adjusted number of steps due to the GPU limitation | 
-| 128 | 500000*8=4000000 | 4000000 + 800000 = 4800000 | 32 | 
-| 512 | 300000*8=2400000 | 4800000 + 2400000 = 7200000 | 8 | 
+|                  | precision | recall | f1-score | support |
+|------------------|-----------|--------|----------|---------|
+| <class>          | 0.7944    | 0.8707 | 0.8306   | 164     |
+| <material>       | 0.8403    | 0.8565 | 0.8483   | 899     |
+| <me_method>      | 0.8395    | 0.8758 | 0.8573   | 240     |
+| <pressure>       | 0.7297    | 0.7176 | 0.7231   | 34      |
+| <tc>             | 0.8190    | 0.8348 | 0.8268   | 457     |
+| <tcValue>        | 0.7914    | 0.8669 | 0.8273   | 124     |
+|                  |           |        |          |         |
+| all (micro avg.) | 0.8257    | 0.8532 | 0.8392   |         |
 
 # Credits
 
