@@ -1,5 +1,15 @@
 # SciBERT pre-training and fine-tuning experiments
 
+* [Introduction](#introduction)
+* [Preliminary studies](#preliminary-studies)
+* [Pre-training](#pre-training)
+    + [Preparation](#preparation)
+    + [Number of steps calculation](#nb-steps-calculation)
+    + [Pre-training execution](#pre-training-execution)
+      - [Nims analysis cluster](#nims-analysis-cluster)
+      - [Google Cloud Platform](#google-cloud-platform)
+* [Fine-tuning](#fine-tuning)
+
 ## Introduction
 
 This page contains notes and information about the process of pre-training [SciBERT](https://github.com/allenai/scibert) for improving the results in the task
@@ -222,33 +232,41 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 - Create TPU
     > gcloud compute tpus execution-groups create --name=tpu1234 --zone=us-central1-a --tf-version=1.15.5  --machine-type=n1-standard-1  --accelerator-type=v3-8
 
-- Run 512 
-    > python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded*  --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512  --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1100000 --num_warmup_steps=100 --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000  --eval_batch_size 64 --init_checkpoint=gs://matscibert/scibert_scivocab_cased/bert_model.ckpt --tpu_zone=us-central1-a
-    - 256 batch size
+- Run pre-training 
+  - batch size 256
+  - max seq length 512
+  
+  > python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded*  --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512  --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1100000 --num_warmup_steps=100 --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000  --eval_batch_size 64 --init_checkpoint=gs://matscibert/scibert_scivocab_cased/bert_model.ckpt --tpu_zone=us-central1-a
 
-When TPU is preepmpted
+- When TPU is preempted, delete the TPU and re-create... and pray that will not be preempted again
+    ```
+    export START=167000; 
+    nohup python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded* --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512 --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1600000 --num_warmup_steps=${START} --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000 --eval_batch_size 64 --init_checkpoint=gs://matscibert/models/matscibert-myvocab_cased_512/model.ckpt-${START} --tpu_zone=us-central1-a
+    ```
+
+## Fine-tuning
+
+- Mat+SciBERT (TPU): TPU trained of SciBERT for 1600000 steps using SciCorpora+SuperMat split by sentences
+- Mat+RoBERTa: Inria cluster trained RoBERTa from scratch using SciCorpora split by paragraphs
+
+### Superconductors NER
+
+| Run nb. | model             | precision | recall | f1-score | 
+|---------|-------------------|-----------|--------|----------|
+| 24560   | SciBERT           | 0.8219    | 0.8520 | 0.8367   |
+| 24464   | Mat+Scibert (TPU) | 0.8257    | 0.8532 | 0.8392   |
+| 24576   | Mat+Scibert (TPU) | 0.8218    | 0.8518 | 0.8365   |
 
 
-```
-export START=167000; 
-nohup python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded* --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512 --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1600000 --num_warmup_steps=${START} --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000 --eval_batch_size 64 --init_checkpoint=gs://matscibert/models/matscibert-myvocab_cased_512/model.ckpt-${START} --tpu_zone=us-central1-a
-```
 
+### Quantities NER
 
-##### Log and results
-
-Average over 10 folds with the TPU trained scibert for 1670000 steps using SciCorpora+SuperMat  split by sentences and withotu any other preprocessing 
-
-|                  | precision | recall | f1-score | support |
-|------------------|-----------|--------|----------|---------|
-| <class>          | 0.7944    | 0.8707 | 0.8306   | 164     |
-| <material>       | 0.8403    | 0.8565 | 0.8483   | 899     |
-| <me_method>      | 0.8395    | 0.8758 | 0.8573   | 240     |
-| <pressure>       | 0.7297    | 0.7176 | 0.7231   | 34      |
-| <tc>             | 0.8190    | 0.8348 | 0.8268   | 457     |
-| <tcValue>        | 0.7914    | 0.8669 | 0.8273   | 124     |
-|                  |           |        |          |         |
-| all (micro avg.) | 0.8257    | 0.8532 | 0.8392   |         |
+| Run nb. | model             | precision | recall  | f1-score | 
+|---------|-------------------|-----------|---------|----------|
+| 24577   | Mat+Scibert (TPU) | 0.8866    | 0.8670  | 0.8767   |
+| 24545   | Mat+Scibert (TPU) | 0.8857    | 0.8644  | 0.8749   |
+| 24546   | SciBERT           | 0.8893    | 0.8699  | 0.8795   |
+| 24559   | SciBERT           | 0.8873    | 0.8676  | 0.8773   |
 
 # Credits
 
