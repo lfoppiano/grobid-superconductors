@@ -112,7 +112,7 @@ public class CRFBasedLinkerIntegrationTest {
             .filter(l -> l.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) || l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .forEach(l -> l.setLinkable(true));
 
-        List<Span> process = target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
+        List<Span> process = target.process(layoutTokens, annotations, CRFBasedLinker.MATERIAL_TCVALUE_ID);
         List<Span> linkedEntities = process.stream().filter(l -> isNotEmpty(l.getLinks())).collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(2));
 
