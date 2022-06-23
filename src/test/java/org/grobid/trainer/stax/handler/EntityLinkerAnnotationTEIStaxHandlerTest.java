@@ -462,7 +462,7 @@ public class EntityLinkerAnnotationTEIStaxHandlerTest {
 
 //        labeled.stream().map(Pair::toString).forEach(System.out::println);
 
-        assertThat(target.getLabeled(), hasSize(3578);
+        assertThat(target.getLabeled(), hasSize(3578));
 
         List<LinkToken> rightAttachments = labeled
             .stream()
