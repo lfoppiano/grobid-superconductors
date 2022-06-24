@@ -248,6 +248,8 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 
 - Mat+SciBERT (TPU): TPU trained of SciBERT for 1600000 steps using SciCorpora+SuperMat split by sentences
 - Mat+RoBERTa: Inria cluster trained RoBERTa from scratch using SciCorpora split by paragraphs
+- SciBERT: The classical SciBERT from Allen AI
+- matscibert: The material BERT from Gupta et al. (https://huggingface.co/m3rg-iitd/matscibert)
 
 ### Superconductors NER
 
