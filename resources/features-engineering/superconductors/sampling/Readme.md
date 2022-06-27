@@ -1,0 +1,63 @@
+# Sampling experiments 
+
+## Introduction
+
+The dataset for training/evaluation/validation is composed by positive and negative examples. 
+While this terminology could be referring to binary classification, in sequence labelling, we consider a positive example one sentence containing at least one entity. 
+
+(Lopez et al, 2021) discuss in dept this problem in the case where the dataset is strongly unbalanced toward negative examples, e.g. negatives = 100/1000 * positive. 
+In such cases they define two methods: 
+ - random sampling: add randomly X time the positive examples, X = 5, 10, 15, 50 (15 being the best in the Lopez et al. experiments)
+ - active sampling: 
+
+## Evaluation
+
+The holdout set is composed by 10% of the documents (17 papers) randomly selected.
+This leave 90% (147) papers for training for evaluation comparison.
+
+| files | sentences | tokens   | entities | uniq_entities | classes | positive examples | negative examples |
+|-------|-----------|----------|----------|---------------|---------|-------------------|-------------------|
+| 147   | 19162     | 1173529  | 17171    | 7410          | 6       | 9331              | 9620              |
+| 17    | 1879      | 111040   | 1527     |  661          | 6       | 825               | 1031              |
+
+
+
+| set      | `<material>`   | `<tc>`  | `<tcValue>`  | `<class>`   | `<me_method>` | `<pressure>` |
+|----------|----------------|---------|--------------|-------------|---------------|--------------|
+| training | 7881           | 4025    | 1176         | 1759        | 2056          | 274          |
+| holdout  | 711            | 355     | 80           | 158         | 182           | 41           |
+
+
+### ScComics adaptation
+
+- `Elements` -> `<material>`
+- `Main` -> `<material>`
+- `SC` -> `<tc>` 
+- `Property` -> `<me_method>` only if the value contains `resistivity`, `susceptibility`, `specific heat`
+- `Value` -> 
+  - `<pressure>` if ends with `Pa` or `bar`
+  - `<tcValue>` if ends with `K` 
+
+
+## Results
+
+### 90% SuperMat + Holdout
+Train with 90% of the papers in SuperMat and evaluation with 10% of the remaining papers. 
+
+| Training info | Evaluation info | Sampling type     | precision  | recall    | f1-score | 
+|---------------|-----------------|-------------------|------------|-----------|----------|
+| 90% SuperMat  | Holdout         | no sampling       | 0.7474     | 0.8047    | 0.7750   |
+| 90% SuperMat  | Holdout         | positive sampling | 0.6136     | 0.8512    | 0.7131   |
+
+### SuperMat + ScComics
+Train with SuperMat and Evaluation with ScComics adaptation 
+
+| Training info | Evaluation info | Sampling type     | precision | recall | f1-score | 
+|---------------|-----------------|-------------------|-----------|--------|----------|
+| 90% SuperMat  | ScComics        | positive sampling | 0.5501    | 0.3107 | 0.3971   |
+| 90% SuperMat  | ScComics        | no sampling       | 0.5632    | 0.2702 | 0.3652   |
+| 100% SuperMat | ScComics        | positive sampling | 0.5592    | 0.3254 | 0.4114   |
+| 100% SuperMat | ScComics        | no sampling       | 0.5782    | 0.2735 | 0.3713   |
+
+
+
