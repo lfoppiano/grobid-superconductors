@@ -253,17 +253,17 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 
 ### Superconductors NER
 
-| Run nb. | DeLFT | Architecture       | Transformer         | precision | recall    | f1-score | 
-|---------|-------|--------------------|---------------------|-----------|-----------|----------|
-| 24560   | 0.2.8 | scibert            | SciBERT             | 0.8219    | 0.8520    | 0.8367   |
-| 24464   | 0.2.8 | scibert            | Mat+Scibert (TPU)   | 0.8257    | 0.8532    | 0.8392   |
-| 24576   | 0.2.8 | scibert            | Mat+Scibert (TPU)   | 0.8218    | 0.8518    | 0.8365   |
-| 24304   | 0.3.0 | BERT_CRF           | scibert             | 0.8185    | 0.8417    | 0.8299   |
-| 24307   | 0.3.0 | BERT_CRF_FEATURES  | scibert             | 0.8197    | 0.8468    | 0.8331   |
-| 24307   | 0.3.0 | BERT_CRF           | matscibert          | 0.8145    | 0.8436    | 0.8288   |
-| 24578   | 0.3.0 | BERT_CRF           | matscibert          |           |
-| 24575   | 0.3.0 | BERT_CRF           | Mat+Scibert (TPU)   | 0.8211    | 0.8479    | 0.8342   |
-| 24615   | 0.3.0 | BERT_CRF_FEATURES  | Mat+Scibert (TPU)   |           |
+| Run nb. | DeLFT | Architecture       | Transformer         | precision | recall   | f1-score | 
+|---------|-------|--------------------|---------------------|-----------|----------|----------|
+| 24560   | 0.2.8 | scibert            | SciBERT             | 0.8219    | 0.8520   | 0.8367   |
+| 24464   | 0.2.8 | scibert            | Mat+Scibert (TPU)   | 0.8257    | 0.8532   | 0.8392   |
+| 24576   | 0.2.8 | scibert            | Mat+Scibert (TPU)   | 0.8218    | 0.8518   | 0.8365   |
+| 24304   | 0.3.0 | BERT_CRF           | scibert             | 0.8185    | 0.8417   | 0.8299   |
+| 24307   | 0.3.0 | BERT_CRF_FEATURES  | scibert             | 0.8197    | 0.8468   | 0.8331   |
+| 24307   | 0.3.0 | BERT_CRF           | matscibert          | 0.8145    | 0.8436   | 0.8288   |
+| 24578   | 0.3.0 | BERT_CRF           | matscibert          | 0.8172    | 0.8450   | 0.8309   |
+| 24575   | 0.3.0 | BERT_CRF           | Mat+Scibert (TPU)   | 0.8211    | 0.8479   | 0.8342   |
+| 24615   | 0.3.0 | BERT_CRF_FEATURES  | Mat+Scibert (TPU)   | 0.8218    | 0.8482   | 0.8348   |
 
 
 ### Quantities NER
@@ -276,8 +276,8 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 | 24559   | 0.2.8   | scibert           | SciBERT             | 0.8873    | 0.8676 | 0.8773   |
 | 24399   | 0.3.0   | BERT_CRF          | scibert             | 0.8469    | 0.9013 | 0.8733   |
 | 24574   | 0.3.0   | BERT_CRF          | Mat+Scibert (TPU)   | 0.8578    | 0.9052 | 0.8809   |
-| 24613   | 0.3.0   | BERT_CRF_FEATURES | scibert             |           |
-| 24614   | 0.3.0   | BERT_CRF_FEATURES | Mat+Scibert (TPU)   |           |
+| 24613   | 0.3.0   | BERT_CRF_FEATURES | scibert             | 0.8380    | 0.9039 | 0.8697   |
+| 24614   | 0.3.0   | BERT_CRF_FEATURES | Mat+Scibert (TPU)   | 0.8470    | 0.9067 | 0.8758   |          
 
 # Credits
 
