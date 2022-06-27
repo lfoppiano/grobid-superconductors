@@ -70,7 +70,8 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
         Path negativeExamplesTempPath = null;
 
         try {
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final");
+
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath());
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -263,6 +264,7 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                             }
                         }
                     }
+
                     if (isNotBlank(output.toString())) {
                         // Positive sampling goes directly in the output, negative sampling goes to a temporary file
                         // positive sampling
