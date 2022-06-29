@@ -1,39 +1,26 @@
 package org.grobid.trainer;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.grobid.core.data.document.Span;
 import org.grobid.core.engines.SuperconductorsModels;
-import org.grobid.core.engines.SuperconductorsParser;
 import org.grobid.core.engines.label.TaggingLabels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnicodeUtil;
 import org.grobid.trainer.stax.StaxUtils;
 import org.grobid.trainer.stax.handler.AnnotationValuesTEIStaxHandler;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newOutputStream;
@@ -62,16 +49,16 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                                final File evalOutputPath,
                                double splitRatio) {
         int totalExamples = 0;
-        int positiveExamples = 0;
-        int negativeExamples = 0;
         Writer trainingOutputWriter = null;
         Writer evaluationOutputWriter = null;
-        Writer negativeExamplesTempWriter = null;
-        Path negativeExamplesTempPath = null;
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath());
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final");
+            if (!adaptedCorpusDir.toFile().exists()) {
+                adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath());
+            }
+
             LOGGER.info("sourcePathLabel: " + adaptedCorpusDir);
             if (trainingOutputPath != null)
                 LOGGER.info("outputPath for training data: " + trainingOutputPath);
@@ -105,8 +92,6 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
             if (isEmpty(refFiles)) {
                 return 0;
             }
-            negativeExamplesTempPath = Files.createTempFile(Paths.get(GrobidProperties.getTempPath().getAbsolutePath()), "negative_sampling", "temp");
-            negativeExamplesTempWriter = new OutputStreamWriter(newOutputStream(negativeExamplesTempPath), UTF_8);
 
             LOGGER.info(refFiles.size() + " files");
 
@@ -266,206 +251,24 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
                     }
 
                     if (isNotBlank(output.toString())) {
-                        // Positive sampling goes directly in the output, negative sampling goes to a temporary file
-                        // positive sampling
                         output.append("\n");
-                        totalExamples++;
-                        if (entityLabels > 0) {
-                            positiveExamples++;
-                            writer.write(output + "\n");
-                            writer.flush();
-                            writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
-                        } else {
-                            // random/active negative sampling
-                            negativeExamples++;
-                            negativeExamplesTempWriter.write(output + "\n");
-                            negativeExamplesTempWriter.flush();
-                        }
+                        writer.write(output.toString() + "\n");
+                        writer.flush();
+                        writer = dispatchExample(trainingOutputWriter, evaluationOutputWriter, splitRatio);
                     }
                     output = new StringBuilder();
                 }
 
-                writer.write(output + "\n");
+                writer.write(output.toString() + "\n");
                 writer.write("\n");
             }
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         } finally {
-            IOUtils.closeQuietly(evaluationOutputWriter, trainingOutputWriter, negativeExamplesTempWriter);
-        }
-
-        // We apply sampling
-        assignNegativeExamplesRandomly(negativeExamplesTempPath, positiveExamples * 0.15, negativeExamples, trainingOutputPath, evalOutputPath);
-
-
-        return totalExamples;
-    }
-
-
-    /**
-     * Using a set of negative examples, select those which contradicts a given recognition model.
-     * Contradict means that the model predicts incorrectly a software mention and that this
-     * particular negative example is particularly relevant to correct this model.
-     * <p>
-     * Given the max parameter, if the max is not reached, we fill the remaning with random samples.
-     * <p>
-     * Original: https://github.com/ourresearch/software-mentions/blob/master/src/main/java/org/grobid/trainer/SoftwareTrainer.java
-     *
-     * @author Patrice Lopez
-     */
-    public int selectNegativeExamples(File negativeCorpusFile, double max, File outputXMLFile) {
-        int totalExamples = 0;
-        Writer writer = null;
-        try {
-            System.out.println("Negative corpus path: " + negativeCorpusFile.getPath());
-            System.out.println("selection corpus path: " + outputXMLFile.getPath());
-
-            // the file for writing the training data
-            writer = new OutputStreamWriter(new FileOutputStream(outputXMLFile), "UTF8");
-
-            SuperconductorsParser parser = SuperconductorsParser.getInstance(null, null, null);
-
-            if (!negativeCorpusFile.exists()) {
-                System.out.println("The XML TEI negative corpus does not exist: " + negativeCorpusFile.getPath());
-            } else {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                factory.setNamespaceAware(true);
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                String tei = FileUtils.readFileToString(negativeCorpusFile, UTF_8);
-                org.w3c.dom.Document document = builder.parse(new InputSource(new StringReader(tei)));
-
-                int totalAdded = 0;
-
-                // list of index of nodes to remove
-                List<Integer> toAdd = new ArrayList<>();
-
-                NodeList pList = document.getElementsByTagName("p");
-
-                for (int i = 0; i < pList.getLength(); i++) {
-                    Element paragraphElement = (Element) pList.item(i);
-                    String text = ""; //XMLUtilities.getText(paragraphElement);
-                    if (text == null || text.trim().length() == 0) {
-                        continue;
-                    }
-
-                    // run the mention recognizer and check if we have annotations
-                    List<Span> entities = parser.processSingle(text);
-                    if (entities != null && entities.size() > 0) {
-                        toAdd.add(i);
-                        totalAdded++;
-                    }
-                }
-
-                System.out.println("Number of examples based on active sampling: " + totalAdded);
-
-                List<Integer> toRemove = new ArrayList<Integer>();
-                for (int i = 0; i < pList.getLength(); i++) {
-                    Element paragraphElement = (Element) pList.item(i);
-                    if (totalAdded < max) {
-                        toAdd.add(i);
-                        totalAdded++;
-                    } else if (!toAdd.contains(i)) {
-                        toRemove.add(new Integer(i));
-                    }
-                }
-
-                totalExamples = totalAdded;
-
-                for (int j = toRemove.size() - 1; j > 0; j--) {
-                    // remove the specific node
-                    Node element = pList.item(toRemove.get(j));
-                    if (element == null) {
-                        System.out.println("Warning: null element at " + toRemove.get(j));
-                        continue;
-                    }
-                    if (element.getParentNode() != null)
-                        element.getParentNode().removeChild(element);
-                }
-
-//                writer.write(serialize(document, null));
-            }
-        } catch (Exception e) {
-            throw new GrobidException("An exception occurred while selecting negative examples.", e);
-        } finally {
-            try {
-                if (writer != null)
-                    writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            IOUtils.closeQuietly(evaluationOutputWriter, trainingOutputWriter);
         }
         return totalExamples;
     }
-
-
-    /**
-     * Select a given number of negative examples among a given (very large) list, in a random
-     * manner.
-     * <p>
-     * Original: https://github.com/ourresearch/software-mentions/blob/master/src/main/java/org/grobid/trainer/SoftwareTrainer.java
-     *
-     * @author Patrice Lopez
-     */
-    public int assignNegativeExamplesRandomly(Path negativeExamplesTempFile, double numberOfNegativeExamplesToExtract,
-                                              int totalNumberOfNegativeExamplesAvailable, File trainingOutputPath,
-                                              File evalOutputPath) {
-        int totalExamples = 0;
-        Writer writer = null;
-        Writer trainingOutputWriter = null;
-        Writer evaluationOutputWriter = null;
-
-        try {
-            // Reopen the eval / training files
-            OutputStream os2 = null;
-
-            if (trainingOutputPath != null) {
-                os2 = newOutputStream(trainingOutputPath.toPath());
-                trainingOutputWriter = new OutputStreamWriter(os2, UTF_8);
-            }
-
-            // the file for writing the evaluation data
-            OutputStream os3 = null;
-
-            if (evalOutputPath != null) {
-                os3 = newOutputStream(evalOutputPath.toPath());
-                evaluationOutputWriter = new OutputStreamWriter(os3, UTF_8);
-            }
-
-            //Compute the random examples
-//            List<Integer> listNegativeExampleIndex = IntStream.rangeClosed(0, totalNumberOfNegativeExamplesAvailable)
-//                .boxed().collect(Collectors.toList());
-            List<Integer> negativeExamplesList = new ArrayList<>();
-            for (int i =0; i< numberOfNegativeExamplesToExtract; i++){
-                int exampleId = (int) (Math.random() * totalNumberOfNegativeExamplesAvailable);
-                if (!IterableUtils.contains(negativeExamplesList, exampleId)){
-                    negativeExamplesList.add(exampleId);
-                }
-            }
-
-            // Add other examples if they are not enough
-            if (negativeExamplesList.size() < numberOfNegativeExamplesToExtract) {
-                for (int i =0; i< totalNumberOfNegativeExamplesAvailable || negativeExamplesList.size() < numberOfNegativeExamplesToExtract; i++){
-                    if (!IterableUtils.contains(negativeExamplesList, i)){
-                        negativeExamplesList.add(i);
-                    }
-                }
-            }
-
-            // Read the temporary files
-            Stream<String> lines = Files.lines(negativeExamplesTempFile);
-
-
-
-
-        } catch (Exception e) {
-            throw new GrobidException("An exception occurred while selecting negative examples.", e);
-        } finally {
-            IOUtils.closeQuietly(writer);
-        }
-
-        return totalExamples;
-    }
-
 
     /**
      * Add the selected features to the model training for bio entities
