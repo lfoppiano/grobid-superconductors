@@ -29,6 +29,8 @@ In this section we describe the different datasets used in this experiment.
 
 ## Evaluation
 
+### Manually selected 
+
 The holdout set is composed by 10% of the documents (17 papers) randomly selected.
 This leave 90% (147) papers for training for evaluation comparison.
 
@@ -37,13 +39,38 @@ This leave 90% (147) papers for training for evaluation comparison.
 | 147   | 19162     | 1173529  | 17171    | 7410          | 6       | 9331              | 9620              |
 | 17    | 1879      | 111040   | 1527     |  661          | 6       | 825               | 1031              |
 
-
-
 | set      | `<material>`   | `<tc>`  | `<tcValue>`  | `<class>`   | `<me_method>` | `<pressure>` |
 |----------|----------------|---------|--------------|-------------|---------------|--------------|
 | training | 7881           | 4025    | 1176         | 1759        | 2056          | 274          |
 | holdout  | 711            | 355     | 80           | 158         | 182           | 41           |
 
+
+### With stratification and holdout 10%
+
+| files | sentences | tokens   | entities | uniq_entities | classes | positive examples | negative examples |
+|-------|-----------|----------|----------|---------------|---------|-------------------|-------------------|
+| 148   | 18936     | 1174522  | 17018    | 7336          | 6       | 9187              | 9749              | 
+| 16    | 1871      | 110047   | 1680     | 735           | 6       | 969               | 902               |
+
+| set      | `<material>` | `<tc>` | `<tcValue>` | `<class>` | `<me_method>` | `<pressure>` |
+|----------|--------------|--------|-------------|-----------|---------------|--------------|
+| training | 7831         | 3951   | 1137        | 1801      | 2016          | 282          | 
+| holdout  | 761          | 116    | 429         | 119       | 33            | 222          |
+
+['material', 'tc', 'tcValue', 'class', 'me_method', 'pressure']
+[]
+
+### With stratification and holdout 20%
+
+| files | sentences | tokens  | entities | uniq_entities | classes | positive examples | negative examples |
+|-------|-----------|---------|----------|---------------|---------|-------------------|-------------------|
+| 132   | 16857     | 1028446 | 14695    | 6387          | 6       | 8033              | 8824              | 
+| 32    | 3950      | 256123  | 4003     | 1684          | 6       | 2123              | 1827              |
+
+| set      | `<material>` | `<tc>` | `<tcValue>` | `<class>` | `<me_method>` | `<pressure>` |
+|----------|--------------|--------|-------------|-----------|---------------|--------------|
+| training | 6610         | 3527   | 1017        | 1374      | 1903          | 264          |
+| holdout  | 1982         | 853    | 239         | 543       | 335           | 51           |
 
 ### ScComics adaptation
 
