@@ -8,7 +8,24 @@ While this terminology could be referring to binary classification, in sequence 
 (Lopez et al, 2021) discuss in dept this problem in the case where the dataset is strongly unbalanced toward negative examples, e.g. negatives = 100/1000 * positive. 
 In such cases they define two methods: 
  - random sampling: add randomly X time the positive examples, X = 5, 10, 15, 50 (15 being the best in the Lopez et al. experiments)
- - active sampling: 
+ - active sampling: pass the negative examples into a model (trained on positive examples only) and collect all the examples for which the model identify any entities
+
+## Datasets
+
+In this section we describe the different datasets used in this experiment. 
+
+| Filename                                           | Notes                                                     | Type  | Sampling | Coverage (nb/%) | Job nb training BidLSTM_CRF_FEATURES |
+|----------------------------------------------------|-----------------------------------------------------------|-------|----------|-----------------|--------------------------------------|
+| superconductors-210713-positive_sampling-all.train | Training data used most of the time                       | train | positive | 164 (100%)      | N/A                                  |
+| ---                                                |
+| superconductors-220615-positive_sampling-90.train  | Training data with positive sampling on 90% of the papers | train | positive | 147 (90%)       |
+| superconductors-220615-no_sampling-90.train        | Training data on 90% of the papers                        | train | no       | 147 (90%)       |
+| superconductors-220615-no_sampling.test            | Test data on 10% of the papers                            | test  | no       | 17 (10%)        | N/A                                  |
+| ---                                                |
+| superconductors-220629-no_sampling-all.train       | Training data on all SuperMat                             | train | no       | 164 (100%)      | 24630                                |
+| superconductors-220629-positive_sampling-all.train | Training data with positive sampling on all SuperMat      | train | positive | 164 (100%)      | 24632                                | 
+| superconductors-220624-ScComics.test               | Test data on ScComics                                     | test  | N/A      | N/A             | N/A                                  |
+
 
 ## Evaluation
 
@@ -48,6 +65,7 @@ Train with 90% of the papers in SuperMat and evaluation with 10% of the remainin
 |---------------|-----------------|-------------------|------------|-----------|----------|
 | 90% SuperMat  | Holdout         | no sampling       | 0.7474     | 0.8047    | 0.7750   |
 | 90% SuperMat  | Holdout         | positive sampling | 0.6136     | 0.8512    | 0.7131   |
+
 
 ### SuperMat + ScComics
 Train with SuperMat and Evaluation with ScComics adaptation 
