@@ -14,17 +14,18 @@ In such cases they define two methods:
 
 In this section we describe the different datasets used in this experiment. 
 
-| Filename                                           | Notes                                                     | Type  | Sampling | Coverage (nb/%) | Job nb training BidLSTM_CRF_FEATURES |
-|----------------------------------------------------|-----------------------------------------------------------|-------|----------|-----------------|--------------------------------------|
-| superconductors-210713-positive_sampling-all.train | Training data used most of the time                       | train | positive | 164 (100%)      | N/A                                  |
+| Filename                                           | Notes                                                | Type  | Sampling | Coverage (nb/%) | Job nb training BidLSTM_CRF_FEATURES |
+|----------------------------------------------------|------------------------------------------------------|-------|----------|-----------------|--------------------------------------|
+| superconductors-210713-positive_sampling-all.train | Training data used most of the time                  | train | positive | 164 (100%)      | N/A                                  |
 | ---                                                |
-| superconductors-220615-positive_sampling-90.train  | Training data with positive sampling on 90% of the papers | train | positive | 147 (90%)       |
-| superconductors-220615-no_sampling-90.train        | Training data on 90% of the papers                        | train | no       | 147 (90%)       |
-| superconductors-220615-no_sampling.test            | Test data on 10% of the papers                            | test  | no       | 17 (10%)        | N/A                                  |
+| superconductors-220630-positive_sampling.train     | Training data with positive sampling (training set)  | train | positive | 132 (80%)       | 24636                                |
+| superconductors-220630-no_sampling.train           | Training data (training set)                         | train | no       | 132 (80%)       | 24635                                |
+| superconductors-220630-no_sampling.test            | Test data (holdout set)                              | test  | no       | 32 (20%)        | N/A                                  |
 | ---                                                |
-| superconductors-220629-no_sampling-all.train       | Training data on all SuperMat                             | train | no       | 164 (100%)      | 24630                                |
-| superconductors-220629-positive_sampling-all.train | Training data with positive sampling on all SuperMat      | train | positive | 164 (100%)      | 24632                                | 
-| superconductors-220624-ScComics.test               | Test data on ScComics                                     | test  | N/A      | N/A             | N/A                                  |
+| superconductors-220629-no_sampling-all.train       | Training data on all SuperMat                        | train | no       | 164 (100%)      | 24630                                |
+| superconductors-220629-positive_sampling-all.train | Training data with positive sampling on all SuperMat | train | positive | 164 (100%)      | 24632                                |
+| ---                                                |
+| superconductors-220624-ScComics.test               | Test data on ScComics                                | test  | N/A      | N/A             | N/A                                  |
 
 
 ## Evaluation
