@@ -31,34 +31,23 @@ In this section we describe the different datasets used in this experiment.
 
 ### Manually selected 
 
-The holdout set is composed by 10% of the documents (17 papers) randomly selected.
-This leave 90% (147) papers for training for evaluation comparison.
+The holdout set is composed by 20% of the documents (32 papers) randomly selected.
+This leave 80% (132) papers for training for evaluation comparison.
 
-| files | sentences | tokens   | entities | uniq_entities | classes | positive examples | negative examples |
-|-------|-----------|----------|----------|---------------|---------|-------------------|-------------------|
-| 147   | 19162     | 1173529  | 17171    | 7410          | 6       | 9331              | 9620              |
-| 17    | 1879      | 111040   | 1527     |  661          | 6       | 825               | 1031              |
-
-| set      | `<material>`   | `<tc>`  | `<tcValue>`  | `<class>`   | `<me_method>` | `<pressure>` |
-|----------|----------------|---------|--------------|-------------|---------------|--------------|
-| training | 7881           | 4025    | 1176         | 1759        | 2056          | 274          |
-| holdout  | 711            | 355     | 80           | 158         | 182           | 41           |
+|          | files  | sentences  | tokens  | entities  | uniq_entities  | classes  | positive_examples  | negative_examples  |
+|----------|--------|------------|---------|-----------|----------------|----------|--------------------|--------------------|
+| training | 132    | 16902      | 1047574 | 15586     | 6699           | 6        | 8380               | 8522               |
+| holdout  | 32     | 3905       | 236995  | 3112      | 1372           | 6        | 1776               | 2129               |
+| ratio    | 24.24% | 23.10%     | 22.62%  | 19.97%    | 20.48%         | 100.00%  | 21.19%             | 24.98%             |
 
 
-### With stratification and holdout 10%
 
-| files | sentences | tokens   | entities | uniq_entities | classes | positive examples | negative examples |
-|-------|-----------|----------|----------|---------------|---------|-------------------|-------------------|
-| 148   | 18936     | 1174522  | 17018    | 7336          | 6       | 9187              | 9749              | 
-| 16    | 1871      | 110047   | 1680     | 735           | 6       | 969               | 902               |
+|          | tc     | class  | material  | me_method  | tcValue  | pressure  |
+|----------|--------|--------|-----------|------------|----------|-----------|
+| training | 3741   | 1646   | 6943      | 1883       | 1099     | 274       |
+| holdout  | 1649   | 639    | 157       | 271        | 355      | 41        |
+| ratio    | 17.08% | 16.46% | 23.75%    | 18.85%     | 14.29%   | 14.96%    |
 
-| set      | `<material>` | `<tc>` | `<tcValue>` | `<class>` | `<me_method>` | `<pressure>` |
-|----------|--------------|--------|-------------|-----------|---------------|--------------|
-| training | 7831         | 3951   | 1137        | 1801      | 2016          | 282          | 
-| holdout  | 761          | 116    | 429         | 119       | 33            | 222          |
-
-['material', 'tc', 'tcValue', 'class', 'me_method', 'pressure']
-[]
 
 ### With stratification and holdout 20%
 
@@ -71,6 +60,8 @@ This leave 90% (147) papers for training for evaluation comparison.
 |----------|--------------|--------|-------------|-----------|---------------|--------------|
 | training | 6610         | 3527   | 1017        | 1374      | 1903          | 264          |
 | holdout  | 1982         | 853    | 239         | 543       | 335           | 51           |
+| ratio    | 30%          | 24%    | 23%         | 39%       | 17%           | 20%          |
+
 
 ### ScComics adaptation
 
