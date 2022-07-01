@@ -54,7 +54,12 @@ To aggregated files with one empty line in between each file:
    ``
    sed '/^\(figure\)\|\(table\)[0-9]\+$/d' SciCorpus.RoBERTa.txt > SciCorpus.RoBERTa.v2.txt
    ``
-2. Remove non-utf8 characters
+2. Remove paragraphs with 4 or fewer characters
+   ```
+   sed "/^.\{1,4\}$/d" SciCorpus.RoBERTa.v2.txt > SciCorpus.RoBERTa.v3.txt
+   ```
+   
+~~3. Remove non-utf8 characters~~
 
 ## Processes  
 In this section we describe the processes
@@ -83,16 +88,6 @@ In this section we describe the processes
    
  - Run preprocessing:
     ```
-     source activate roberta
-     for SPLIT in train valid test; do \
-     python -m examples.roberta.multiprocessing_bpe_encoder \
-     --encoder-json /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/encoder.json \
-     --vocab-bpe /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/vocab.bpe \
-     --inputs  /lustre/group/tdm/Luca/aggregated/SuperMat+SciCorpus.RoBERTa.sentences.v2.${SPLIT}.txt \
-     --outputs ./SuperMat+SciCorpus.sentences.v2.${SPLIT}.bpe \
-     --keep-empty \
-     --workers 72; \
-     done
     ```
  - Run pre-training
   TBA
@@ -112,8 +107,7 @@ Filter documents by title:
 
 ## Re-process using paragraphs 
 
-Reason: Pedro has a script that can split paragraphs when they are too long 
-
+Reason: Pedro has a script that can split paragraphs when they are too long
 
 ## Credits
 
