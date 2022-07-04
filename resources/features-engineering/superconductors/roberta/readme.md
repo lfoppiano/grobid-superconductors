@@ -67,7 +67,7 @@ In this section we describe the processes
 ### File divided by sentences - no cleanup
 
 - concatenate each document adding an empty line between each other (see [here](#aggregate-file-for-roberta))
-- **Optional** split in sentences (with [this python script](sentence-splitter.py))
+- **Optional** split in sentences (with [this python script](../scibert/sentence-splitter.py))
 - split test/train/valid (see [here](#split-in-texttrainvalid))
 
 
@@ -88,6 +88,8 @@ In this section we describe the processes
    
  - Run preprocessing:
     ```
+   export START=1387000
+   nohup python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded* --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512 --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1600000 --num_warmup_steps=${START} --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000 --eval_batch_size 64 --init_checkpoint=gs://matscibert/models/matscibert-myvocab_cased_512/model.ckpt-${START} --tpu_zone=us-central1-a  &
     ```
  - Run pre-training
   TBA
