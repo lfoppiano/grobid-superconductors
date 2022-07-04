@@ -54,14 +54,14 @@ In this section we describe the different datasets used in this experiment.
 
 ### Random sampling 
 
-| Ratio       | Negatives | Total  | Output                                  | Job nb |
-|-------------|-----------|--------|-----------------------------------------|--------|
-| No sampling | 8522      | 16902  | N/A                                     | N/A    | 
-| 1           | 8380      | 16760  | sampling-random-1.0r-8380p-8380n.train  | 24639  | 
-| 0.75        | 6285      | 14665  | sampling-random-0.75r-8380p-6285n.train | 24640  |   
-| 0.5         | 4190      | 12570  | sampling-random-0.5r-8380p-4190n.train  | 24645  | 
-| 0.25        | 2095      | 10475  | sampling-random-0.25r-8380p-2095n.train | 24642  | 
-| 0.1         | 838       | 9218   | sampling-random-0.1r-8380p-838n.train   | 24643  | 
+| Ratio       | Negatives | Total  | Output                                  | Job nb         |
+|-------------|-----------|--------|-----------------------------------------|----------------|
+| No sampling | 8522      | 16902  | N/A                                     | N/A            | 
+| 1           | 8380      | 16760  | sampling-random-1.0r-8380p-8380n.train  | ~~24639~~24678 | 
+| 0.75        | 6285      | 14665  | sampling-random-0.75r-8380p-6285n.train | ~~24640~~24677 |   
+| 0.5         | 4190      | 12570  | sampling-random-0.5r-8380p-4190n.train  | ~~24645~~24676 | 
+| 0.25        | 2095      | 10475  | sampling-random-0.25r-8380p-2095n.train | ~~24642~~24675 | 
+| 0.1         | 838       | 9218   | sampling-random-0.1r-8380p-838n.train   | ~~24643~~24674 |
 
 
 
@@ -69,14 +69,14 @@ In this section we describe the different datasets used in this experiment.
 
 Using a model trained on positive examples only 
 
-| Ratio       | Negatives | Total  | Output                                  | Job nb |
-|-------------|-----------|--------|-----------------------------------------|--------|
-| No sampling | 8522      | 16902  | N/A                                     | N/A    | 
-| 1           | 8380      | 16760  | sampling-active-1.0r-8380p-8380n.train  | 24649  | 
-| 0.75        | 6285      | 14665  | sampling-active-0.75r-8380p-6285n.train | 24648  |  
-| 0.5         | 4190      | 12570  | sampling-active-0.5r-8380p-4190n.train  | 24647  | 
-| 0.25        | 2095      | 10475  | sampling-active-0.25r-8380p-2095n.train | 24646  | 
-| 0.1         | 838       | 9218   | sampling-active-0.1r-8380p-838n.train   | 24644  | 
+| Ratio       | Negatives | Total  | Output                                  | Job nb         |
+|-------------|-----------|--------|-----------------------------------------|----------------|
+| No sampling | 8522      | 16902  | N/A                                     | N/A            | 
+| 1           | 8380      | 16760  | sampling-active-1.0r-8380p-8380n.train  | ~~24649~~24673 | 
+| 0.75        | 6285      | 14665  | sampling-active-0.75r-8380p-6285n.train | ~~24648~~24672 |  
+| 0.5         | 4190      | 12570  | sampling-active-0.5r-8380p-4190n.train  | ~~24647~~24671 | 
+| 0.25        | 2095      | 10475  | sampling-active-0.25r-8380p-2095n.train | ~~24646~~24670 | 
+| 0.1         | 838       | 9218   | sampling-active-0.1r-8380p-838n.train   | ~~24644~~24669 | 
 
 
 ## Holdout set selection 
@@ -127,10 +127,20 @@ This leave 80% (132) papers for training for evaluation comparison.
 ### 90% SuperMat + Holdout
 Train with 90% of the papers in SuperMat and evaluation with 10% of the remaining papers. 
 
-| Training info | Evaluation info | Sampling type     | precision   | recall | f1-score | 
-|---------------|-----------------|-------------------|-------------|--------|----------|
-| 80% SuperMat  | Holdout         | no sampling       | 0.7324      | 0.7637 | 0.7478   | 
-| 80% SuperMat  | Holdout         | positive sampling | 0.7546      | 0.7837 | 0.7688   |
+| Training info                         | Evaluation info | Sampling type                | precision | recall   | f1-score | 
+|---------------------------------------|-----------------|------------------------------|-----------|----------|----------|
+| 80% SuperMat                          | Holdout         | no sampling                  | 0.7324    | 0.7637   | 0.7478   | 
+| 80% SuperMat                          | Holdout         | positive sampling            | 0.7546    | 0.7837   | 0.7688   |
+| superconductors-random_sampling-0.1r  | Holdout         | random undersampling at 0.1  |    |
+| superconductors-random_sampling-0.25r | Holdout         | random undersampling at 0.25 |    |
+| superconductors-random_sampling-0.50r | Holdout         | random undersampling at 0.5  |           |
+| superconductors-random_sampling-0.75r | Holdout         | random undersampling at 0.75 |           |
+| superconductors-random_sampling-1r    | Holdout         | random undersampling at 1.0  |           |
+| superconductors-active_sampling-0.1r  | Holdout         | active undersampling at 0.1  |           |
+| superconductors-active_sampling-0.25r | Holdout         | active undersampling at 0.25 |           |
+| superconductors-active_sampling-0.50r | Holdout         | active undersampling at 0.5  |           |
+| superconductors-active_sampling-0.75r | Holdout         | active undersampling at 0.75 |           |
+| superconductors-active_sampling-1r    | Holdout         | active undersampling at 1.0  |           |
 
 
 ### SuperMat + ScComics
