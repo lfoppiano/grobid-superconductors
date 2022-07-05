@@ -46,7 +46,7 @@ In this section we describe the different datasets used in this experiment.
 | superconductors-220630-no_sampling.test            | Test data (holdout set)                              | test  | no       | 32 (20%)        | N/A                                  |
 | ---                                                |
 | superconductors-220629-no_sampling-all.train       | Training data on all SuperMat                        | train | no       | 164 (100%)      | 24630                                |
-| superconductors-220629-positive_sampling-all.train | Training data with positive sampling on all SuperMat | train | positive | 164 (100%)      |                                 |
+| superconductors-220629-positive_sampling-all.train | Training data with positive sampling on all SuperMat | train | positive | 164 (100%)      |                                      |
 | ---                                                |
 | superconductors-220624-ScComics.test               | Test data on ScComics                                | test  | N/A      | N/A             | N/A                                  |
 
@@ -54,14 +54,14 @@ In this section we describe the different datasets used in this experiment.
 
 ### Random sampling 
 
-| Ratio       | Negatives | Total  | Output                                  | Job nb         |
-|-------------|-----------|--------|-----------------------------------------|----------------|
-| No sampling | 8522      | 16902  | N/A                                     | N/A            | 
-| 1           | 8380      | 16760  | sampling-random-1.0r-8380p-8380n.train  | ~~24639~~24678 | 
-| 0.75        | 6285      | 14665  | sampling-random-0.75r-8380p-6285n.train | ~~24640~~24677 |   
-| 0.5         | 4190      | 12570  | sampling-random-0.5r-8380p-4190n.train  | ~~24645~~24676 | 
-| 0.25        | 2095      | 10475  | sampling-random-0.25r-8380p-2095n.train | ~~24642~~24675 | 
-| 0.1         | 838       | 9218   | sampling-random-0.1r-8380p-838n.train   | ~~24643~~24674 |
+| Ratio       | Negatives | Total  | Output                                  | Job nb                 |
+|-------------|-----------|--------|-----------------------------------------|------------------------|
+| No sampling | 8522      | 16902  | N/A                                     | N/A                    | 
+| 1           | 8380      | 16760  | sampling-random-1.0r-8380p-8380n.train  | ~~24639~~24678, 24690  | 
+| 0.75        | 6285      | 14665  | sampling-random-0.75r-8380p-6285n.train | ~~24640~~24677, 24689  |   
+| 0.5         | 4190      | 12570  | sampling-random-0.5r-8380p-4190n.train  | ~~24645~~24676, 24688  | 
+| 0.25        | 2095      | 10475  | sampling-random-0.25r-8380p-2095n.train | ~~24642~~24675, 24688  | 
+| 0.1         | 838       | 9218   | sampling-random-0.1r-8380p-838n.train   | ~~24643~~24674, 24686  |
 
 
 
@@ -69,14 +69,14 @@ In this section we describe the different datasets used in this experiment.
 
 Using a model trained on positive examples only 
 
-| Ratio       | Negatives | Total  | Output                                  | Job nb         |
-|-------------|-----------|--------|-----------------------------------------|----------------|
-| No sampling | 8522      | 16902  | N/A                                     | N/A            | 
-| 1           | 8380      | 16760  | sampling-active-1.0r-8380p-8380n.train  | ~~24649~~24673 | 
-| 0.75        | 6285      | 14665  | sampling-active-0.75r-8380p-6285n.train | ~~24648~~24672 |  
-| 0.5         | 4190      | 12570  | sampling-active-0.5r-8380p-4190n.train  | ~~24647~~24671 | 
-| 0.25        | 2095      | 10475  | sampling-active-0.25r-8380p-2095n.train | ~~24646~~24670 | 
-| 0.1         | 838       | 9218   | sampling-active-0.1r-8380p-838n.train   | ~~24644~~24669 | 
+| Ratio       | Negatives | Total  | Output                                  | Job nb                |
+|-------------|-----------|--------|-----------------------------------------|-----------------------|
+| No sampling | 8522      | 16902  | N/A                                     | N/A                   | 
+| 1           | 8380      | 16760  | sampling-active-1.0r-8380p-8380n.train  | ~~24649~~24673, 24685 | 
+| 0.75        | 6285      | 14665  | sampling-active-0.75r-8380p-6285n.train | ~~24648~~24672, 24683 |  
+| 0.5         | 4190      | 12570  | sampling-active-0.5r-8380p-4190n.train  | ~~24647~~24671, 24684 | 
+| 0.25        | 2095      | 10475  | sampling-active-0.25r-8380p-2095n.train | ~~24646~~24670, 24682 | 
+| 0.1         | 838       | 9218   | sampling-active-0.1r-8380p-838n.train   | ~~24644~~24669, 24681 | 
 
 
 ## Holdout set selection 
@@ -127,29 +127,51 @@ This leave 80% (132) papers for training for evaluation comparison.
 ### 90% SuperMat + Holdout
 Train with 90% of the papers in SuperMat and evaluation with 10% of the remaining papers. 
 
-| Training info                         | Evaluation info | Sampling type                | precision | recall   | f1-score | 
-|---------------------------------------|-----------------|------------------------------|-----------|----------|----------|
-| 80% SuperMat                          | Holdout         | no sampling                  | 0.7324    | 0.7637   | 0.7478   | 
-| 80% SuperMat                          | Holdout         | positive sampling            | 0.7546    | 0.7837   | 0.7688   |
-| superconductors-random_sampling-0.1r  | Holdout         | random undersampling at 0.1  |    |
-| superconductors-random_sampling-0.25r | Holdout         | random undersampling at 0.25 |    |
-| superconductors-random_sampling-0.50r | Holdout         | random undersampling at 0.5  |           |
-| superconductors-random_sampling-0.75r | Holdout         | random undersampling at 0.75 |           |
-| superconductors-random_sampling-1r    | Holdout         | random undersampling at 1.0  |           |
-| superconductors-active_sampling-0.1r  | Holdout         | active undersampling at 0.1  |           |
-| superconductors-active_sampling-0.25r | Holdout         | active undersampling at 0.25 |           |
-| superconductors-active_sampling-0.50r | Holdout         | active undersampling at 0.5  |           |
-| superconductors-active_sampling-0.75r | Holdout         | active undersampling at 0.75 |           |
-| superconductors-active_sampling-1r    | Holdout         | active undersampling at 1.0  |           |
+| Training info                                | Evaluation info | Sampling type                | precision | recall | f1-score    | 
+|----------------------------------------------|-----------------|------------------------------|-----------|--------|-------------|
+| superconductors-no_sampling-80supermat       | Holdout         | no sampling                  | 0.7324    | 0.7637 | 0.7478      | 
+| superconductors-positive_sampling-80supermat | Holdout         | positive sampling            | 0.7546    | 0.7837 | 0.7688      |
+| ---                                          |
+| superconductors-random_sampling-0.1r         | Holdout         | random undersampling at 0.1  | 0.7194    | 0.7872 | 0.7518      |
+| superconductors-random_sampling-0.25r        | Holdout         | random undersampling at 0.25 | 0.7221    | 0.7895 | 0.7543      |
+| superconductors-random_sampling-0.50r        | Holdout         | random undersampling at 0.5  | 0.7565    | 0.7859 | **0.7709**  |
+| superconductors-random_sampling-0.75r        | Holdout         | random undersampling at 0.75 | 0.7463    | 0.7743 | 0.7601      |
+| superconductors-random_sampling-1.0r         | Holdout         | random undersampling at 1.0  | 0.7701    | 0.7644 | 0.7672      |
+| ---                                          |
+| superconductors-active_sampling-0.1r         | Holdout         | active undersampling at 0.1  | 0.7274    | 0.7917 | 0.7582      |
+| superconductors-active_sampling-0.25r        | Holdout         | active undersampling at 0.25 | 0.7042    | 0.8075 | 0.7523      |
+| superconductors-active_sampling-0.50r        | Holdout         | active undersampling at 0.5  | 0.7454    | 0.8046 | **0.7738**  |
+| superconductors-active_sampling-0.75r        | Holdout         | active undersampling at 0.75 | 0.7334    | 0.7940 | 0.7625      |
+| superconductors-active_sampling-1.0r         | Holdout         | active undersampling at 1.0  | 0.7442    | 0.7782 | 0.7608      |
 
 
 ### SuperMat + ScComics
 Train with SuperMat and Evaluation with ScComics adaptation 
 
-| Training info | Evaluation info | Sampling type     | precision | recall | f1-score | 
-|---------------|-----------------|-------------------|-----------|--------|----------|
-| 100% SuperMat | ScComics        | positive sampling | 0.5592    | 0.3254 | 0.4114   |
-| 100% SuperMat | ScComics        | no sampling       | 0.5782    | 0.2735 | 0.3713   |
+| Training info                                 | Evaluation info   | Sampling type                | precision | recall | f1-score | 
+|-----------------------------------------------|-------------------|------------------------------|-----------|--------|----------|
+| superconductors-no_sampling-all               | ScComics          | no sampling                  | 0.5782    | 0.2735 | 0.3713   |
+| grobid-superconductors-positive_sampling-all  | ScComics          | positive sampling            | 0.5592    | 0.3254 | 0.4114   |
+| ---                                           |
 
 
+
+Temporary information, will remove after I trained all the models with random and active sampling, using the 100% SuperMat data: 
+
+| Training info                                 | Evaluation info   | Sampling type                | precision | recall | f1-score    | 
+|-----------------------------------------------|-------------------|------------------------------|-----------|--------|-------------|
+| superconductors-no_sampling-80supermat        | ScComics          | no sampling                  | 0.5341    | 0.2413 | 0.3324      |
+| superconductors-positive_sampling-80supermat  | ScComics          | positive sampling            | 0.5633    | 0.2472 | 0.3436      |
+| ---                                           |
+| superconductors-random_sampling-0.1r          | ScComics          | random undersampling at 0.1  | 0.5484    | 0.2543 | **0.3475**  |
+| superconductors-random_sampling-0.25r         | ScComics          | random undersampling at 0.25 | 0.5411    | 0.2517 | 0.3435      |
+| superconductors-random_sampling-0.50r         | ScComics          | random undersampling at 0.5  | 0.5586    | 0.2455 | 0.3411      |
+| superconductors-random_sampling-0.75r         | ScComics          | random undersampling at 0.75 | 0.5525    | 0.2487 | 0.3430      |
+| superconductors-random_sampling-1r            | ScComics          | random undersampling at 1.0  | 0.5697    | 0.2479 | 0.3455      |
+| ---                                           |
+| superconductors-active_sampling-0.1r          | ScComics          | active undersampling at 0.1  | 0.5638    | 0.2619 | **0.3577**  |
+| superconductors-active_sampling-0.25r         | ScComics          | active undersampling at 0.25 | 0.5496    | 0.2649 | 0.3574      |
+| superconductors-active_sampling-0.50r         | ScComics          | active undersampling at 0.5  | 0.5516    | 0.2445 | 0.3388      |
+| superconductors-active_sampling-0.75r         | ScComics          | active undersampling at 0.75 | 0.5516    | 0.2556 | 0.3494      |
+| superconductors-active_sampling-1r            | ScComics          | active undersampling at 1.0  | 0.5516    | 0.2445 | 0.3388      |
 
