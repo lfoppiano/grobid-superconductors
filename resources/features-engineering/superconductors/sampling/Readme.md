@@ -124,37 +124,25 @@ This leave 80% (132) papers for training for evaluation comparison.
 
 ## Results
 
-### 90% SuperMat + Holdout
-Train with 90% of the papers in SuperMat and evaluation with 10% of the remaining papers. 
+### 80% SuperMat + 20% Holdout
+Train with 80% of the papers in SuperMat and evaluation with a fixed corpus comprising the remaining papers. 
 
-| Training info                                                 | Evaluation info | Sampling type                | precision | recall   | f1-score   | 
-|---------------------------------------------------------------|-----------------|------------------------------|-----------|----------|------------|
-| superconductors-no_sampling-80supermat (LOWER BASELINE)       | Holdout         | no sampling                  | 0.7324    | 0.7637   | 0.7478     | 
-| superconductors-positive_sampling-80supermat (UPPER BASELINE) | Holdout         | positive sampling            | 0.7546    | 0.7837   | 0.7688     |
-| **Run 1**                                                     |
-| superconductors-random_sampling-0.1r                          | Holdout         | random undersampling at 0.1  | 0.7194    | 0.7872   | 0.7518     |
-| superconductors-random_sampling-0.25r                         | Holdout         | random undersampling at 0.25 | 0.7221    | 0.7895   | 0.7543     |
-| superconductors-random_sampling-0.50r                         | Holdout         | random undersampling at 0.5  | 0.7565    | 0.7859   | **0.7709** |
-| superconductors-random_sampling-0.75r                         | Holdout         | random undersampling at 0.75 | 0.7463    | 0.7743   | 0.7601     |
-| superconductors-random_sampling-1.0r                          | Holdout         | random undersampling at 1.0  | 0.7701    | 0.7644   | 0.7672     |
-| ---------                                                     |
-| superconductors-active_sampling-0.1r                          | Holdout         | active undersampling at 0.1  | 0.7274    | 0.7917   | 0.7582     |
-| superconductors-active_sampling-0.25r                         | Holdout         | active undersampling at 0.25 | 0.7042    | 0.8075   | 0.7523     |
-| superconductors-active_sampling-0.50r                         | Holdout         | active undersampling at 0.5  | 0.7454    | 0.8046   | **0.7738** |
-| superconductors-active_sampling-0.75r                         | Holdout         | active undersampling at 0.75 | 0.7334    | 0.7940   | 0.7625     |
-| superconductors-active_sampling-1.0r                          | Holdout         | active undersampling at 1.0  | 0.7442    | 0.7782   | 0.7608     |
-| **Run 2**                                                     |
-| superconductors-random_sampling-0.1r                          | Holdout         | random undersampling at 0.1  | 0.7393    | 0.7949   |    0.7661  |
-| superconductors-random_sampling-0.25r                         | Holdout         | random undersampling at 0.25 | 0.7275    | 0.7965   | 0.7605     |
-| superconductors-random_sampling-0.50r                         | Holdout         | random undersampling at 0.5  | 0.7589    | 0.7862   | **0.7723** |
-| superconductors-random_sampling-0.75r                         | Holdout         | random undersampling at 0.75 | 0.7393    | 0.7830   | 0.7605     |
-| superconductors-random_sampling-1.0r                          | Holdout         | random undersampling at 1.0  | 0.7541    | 0.7788   | 0.7663     |
+| Training info                                                 | Evaluation info | Sampling type                | precision     | recall        | f1-score              | Avg F1      |
+|---------------------------------------------------------------|-----------------|------------------------------|---------------|---------------|-----------------------|-------------|
+| superconductors-no_sampling-80supermat (LOWER BASELINE)       | Holdout         | no sampling                  | 0.7324        | 0.7637        | 0.7478                | 
+| superconductors-positive_sampling-80supermat (UPPER BASELINE) | Holdout         | positive sampling            | 0.7546        | 0.7837        | 0.7688                |
+| ---                                                           | 
+| superconductors-random_sampling-0.1r                          | Holdout         | random undersampling at 0.1  | 0.7194/0.7393 | 0.7872/0.7949 | 0.7518/0.7661         | 0.7590      |
+| superconductors-random_sampling-0.25r                         | Holdout         | random undersampling at 0.25 | 0.7221/0.7275 | 0.7895/0.7965 | 0.7543/0.7605         | 0.7574      |
+| superconductors-random_sampling-0.50r                         | Holdout         | random undersampling at 0.5  | 0.7565/0.7589 | 0.7859/0.7862 | **0.7709**/**0.7723** | **0.7716**  |
+| superconductors-random_sampling-0.75r                         | Holdout         | random undersampling at 0.75 | 0.7463/0.7393 | 0.7743/0.7830 | 0.7601/0.7605         | 0.7603      |
+| superconductors-random_sampling-1.0r                          | Holdout         | random undersampling at 1.0  | 0.7701/0.7541 | 0.7644/0.7788 | 0.7672/0.7663         | 0.7668      |
 | ---                                                           |
-| superconductors-active_sampling-0.1r                          | Holdout         | active undersampling at 0.1  | 0.7142    | 0.7985   | 0.7540     |
-| superconductors-active_sampling-0.25r                         | Holdout         | active undersampling at 0.25 | 0.7236    | 0.7917   | 0.7561     |
-| superconductors-active_sampling-0.50r                         | Holdout         | active undersampling at 0.5  | 0.7331    | 0.7991   | 0.7647     |
-| superconductors-active_sampling-0.75r                         | Holdout         | active undersampling at 0.75 | 0.7598    | 0.7756   | 0.7676     |
-| superconductors-active_sampling-1.0r                          | Holdout         | active undersampling at 1.0  | 0.7474    | 0.7959   | **0.7709** |
+| superconductors-active_sampling-0.1r                          | Holdout         | active undersampling at 0.1  | 0.7274/0.7142 | 0.7917/0.7985 | 0.7582/0.7540         | 0.7561      | 
+| superconductors-active_sampling-0.25r                         | Holdout         | active undersampling at 0.25 | 0.7042/0.7236 | 0.8075/0.7917 | 0.7523/0.7561         | 0.7542      |
+| superconductors-active_sampling-0.50r                         | Holdout         | active undersampling at 0.5  | 0.7454/0.7331 | 0.8046/0.7991 | **0.7738**/0.7647     | **0.7692**  |
+| superconductors-active_sampling-0.75r                         | Holdout         | active undersampling at 0.75 | 0.7334/0.7598 | 0.7940/0.7756 | 0.7625/0.7676         | 0.7650      |
+| superconductors-active_sampling-1.0r                          | Holdout         | active undersampling at 1.0  | 0.7442/0.7474 | 0.7782/0.7959 | 0.7608/**0.7709**     | 0.7658      |
 
 ### SuperMat + ScComics
 Train with SuperMat and Evaluation with ScComics adaptation 
