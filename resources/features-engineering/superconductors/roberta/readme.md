@@ -1,5 +1,12 @@
 # RoBERTa pre-training and fine tuning experiments
 
+* [Introduction](#introduction)
+* [Data preparation](#data-preparation)
+* [Processes](#processes)
+* [Additional information](#additional-information)
+* [Re-process using paragraphs](#re-process-using-paragraphs)
+* [Credits](#credits)
+
 ## Introduction
 
 This page contains notes and information about the process of [RoBERTa](https://github.com/facebook/fairseq) for improving the results in the task
@@ -8,28 +15,60 @@ of NER for materials science scientific papers.
 The data used is summarised [here](../scibert/readme.md). 
 The process followed is described [here](https://github.com/pytorch/fairseq/blob/main/examples/roberta/README.pretraining.md).
 
-### Preprocessing
-In order to process the data with RoBERTa, we preprocessed the data to have an empty line as a document separator. 
- - concatenate each document adding an empty line between each other
- - split in sentences (with [this python script](sentence-splitter.py))
- - split 80/10/10 for training/test/validation:
-    - total number of lines: `grep -c "^$" SuperMat+SciCorpus.RoBERTa.sentences.v2.txt`: `795437`    
-    - split back ``nohup awk -v RS= '{
-      f=("split-" NR ".txt") 
-      print > f 
-      close(f)
-      }' ../SuperMat+SciCorpus.RoBERTa.sentences.v2.txt  &``
-      the split resulted in 795345 files
-    - cleanup splits from empty lines ``sed -i '/^[[:space:]]*$/d' ${in};``
-    - find empty files `find ./split/ -type f -empty -name '*.txt' > empty_files.txt`
-    - divide using file list (``find -name *.txt > file-list.txt``)
-      - `795345*0.8 = 636276` documents for training (`head -n 636276 split-file-list.txt > split-file-train.txt `)
-      - `795345-636276 = 159069` (`tail -n 159069 split-file-list.txt > split-file-list-test-validation.txt`)
-      - `159069/2 = 79534` documents for test (`head -n 79534 split-file-test-validation.txt > split-file-test.txt`)
-      - `159069-79534 = 79535` document for validation (`tail -n 79535 split-file-test-validation.txt > split-file-valid.txt`)
-    - aggregated back with one empty line in between each file: 
-      - easy one: ``sed -s -e $'$a\\\n' ./*.txt > concat.out`` it works with a limited amount of files 
-      - alternative for large amount of files: ``find . -type f -name '*.txt' -exec sed -s -e $'$a\\\n' >> ../../SuperMat+SciCorpus.RoBERTa.sentences.v2.train.txt {} +``. [Ref](https://unix.stackexchange.com/questions/509749/how-to-deal-with-sed-if-argument-list-too-long). 
+## Data preparation
+
+### Split in text/train/valid
+To split 80/10/10 for training/test/validation:
+- total number of lines: `grep -c "^$" SuperMat+SciCorpus.RoBERTa.sentences.v2.txt`: `795437`    
+- split back
+    ```
+    nohup awk -v RS= '{
+    f=("split-" NR ".txt")
+    print > f
+    close(f)
+    }' ../SuperMat+SciCorpus.RoBERTa.sentences.v2.txt  &
+    ```
+  
+  alternative: 
+   ```
+  nohup csplit --digits=7 --prefix=split --suffix-format='%07d.txt' ../SciCorpus.RoBERTa.v3.txt '/^$/'+1 '{*}' > ../csplit.log &
+  ```
+  
+ the split resulted in 795345 files
+- cleanup splits from empty lines ``sed -i '/^[[:space:]]*$/d' ${in};``
+- find empty files `find ./split/ -type f -empty -name '*.txt' > empty_files.txt`
+- divide using file list (``find -name *.txt > file-list.txt``)
+- `795345*0.8 = 636276` documents for training (`head -n 636276 split-file-list.txt > split-file-train.txt `)
+- `795345-636276 = 159069` (`tail -n 159069 split-file-list.txt > split-file-list-test-validation.txt`)
+- `159069/2 = 79534` documents for test (`head -n 79534 split-file-test-validation.txt > split-file-test.txt`)
+- `159069-79534 = 79535` document for validation (`tail -n 79535 split-file-test-validation.txt > split-file-valid.txt`)
+
+### Aggregate file for RoBERTa
+
+To aggregated files with one empty line in between each file:
+- easy one: ``sed -s -e $'$a\\\n' ./*.txt > concat.out`` it works with a limited amount of files
+- alternative for large amount of files: ``find . -type f -name '*.txt' -exec sed -s -e $'$a\\\n' >> ../../SuperMat+SciCorpus.RoBERTa.sentences.v2.train.txt {} +``. [Ref](https://unix.stackexchange.com/questions/509749/how-to-deal-with-sed-if-argument-list-too-long).
+
+### Cleanup
+1. Remove tableXYZ or figureXYZ
+   ``
+   sed '/^\(figure\)\|\(table\)[0-9]\+$/d' SciCorpus.RoBERTa.txt > SciCorpus.RoBERTa.v2.txt
+   ``
+2. Remove paragraphs with 4 or fewer characters
+   ```
+   sed "/^.\{1,4\}$/d" SciCorpus.RoBERTa.v2.txt > SciCorpus.RoBERTa.v3.txt
+   ```
+   
+~~3. Remove non-utf8 characters~~
+
+## Processes  
+In this section we describe the processes
+
+### File divided by sentences - no cleanup
+
+- concatenate each document adding an empty line between each other (see [here](#aggregate-file-for-roberta))
+- **Optional** split in sentences (with [this python script](../scibert/sentence-splitter.py))
+- split test/train/valid (see [here](#split-in-texttrainvalid))
 
 
 ### Pre-training
@@ -49,18 +88,11 @@ In order to process the data with RoBERTa, we preprocessed the data to have an e
    
  - Run preprocessing:
     ```
-     source activate roberta
-     for SPLIT in train valid test; do \
-     python -m examples.roberta.multiprocessing_bpe_encoder \
-     --encoder-json /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/encoder.json \
-     --vocab-bpe /lustre/group/tdm/Luca/scibert/fairseq/gpt2_bpe/vocab.bpe \
-     --inputs  /lustre/group/tdm/Luca/aggregated/SuperMat+SciCorpus.RoBERTa.sentences.v2.${SPLIT}.txt \
-     --outputs ./SuperMat+SciCorpus.sentences.v2.${SPLIT}.bpe \
-     --keep-empty \
-     --workers 72; \
-     done
+   export START=1387000
+   nohup python3 run_pretraining.py --input_file=gs://matscibert/pretrained_512.v2/science+supermat.tfrecord_sharded* --output_dir=gs://matscibert/models/matscibert-myvocab_cased_512 --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=78 --num_train_steps=1600000 --num_warmup_steps=${START} --learning_rate=1e-5 --use_tpu=True --tpu_name=tpu1234 --max_eval_steps=2000 --eval_batch_size 64 --init_checkpoint=gs://matscibert/models/matscibert-myvocab_cased_512/model.ckpt-${START} --tpu_zone=us-central1-a  &
     ```
  - Run pre-training
+  TBA
 
 ## Details parameters
 
@@ -74,7 +106,12 @@ Filter documents by title:
 
 ### Steps calculation madness
 
-# Credits
+
+## Re-process using paragraphs 
+
+Reason: Pedro has a script that can split paragraphs when they are too long
+
+## Credits
 
 Various people have helped with small feedback or more useful observations and ideas:
 
