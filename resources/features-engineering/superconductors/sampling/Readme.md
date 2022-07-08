@@ -174,3 +174,25 @@ Temporary information, will remove after I trained all the models with random an
 | superconductors-active_sampling-0.75r         | ScComics          | active undersampling at 0.75 | 0.5516    | 0.2556 | 0.3494      |
 | superconductors-active_sampling-1r            | ScComics          | active undersampling at 1.0  | 0.5516    | 0.2445 | 0.3388      |
 
+
+## Implementation / Test
+
+- random sampling at 0.5 using all the dataset
+  - extracted data at 0.5: `sampling-random-0.5r-10156p-5078n.train`
+  - Results: 
+    - 10fold with BidLSTM_CRF_FEATURES: 24693
+      - 0.8069    0.8125    0.8096
+    - 5fold with BidLSTM_CRF_FEATURES: 24698
+      - 0.8037    0.8141    0.8088
+    - 10fold with BERT_CRF: 24694
+      - 0.7862    0.8356    0.8101
+- active sampling at 0.5 using all the dataset: 
+  - train model with positive sampling: 24692
+  - extracted data at 0.5: `sampling-active-0.5r-10156p-5078n.train`
+  - Results:
+    - 10fold with BidLSTM_CRF_FEATURES: 24695
+      - 0.8081    0.8182    0.8129
+    - 5fold with BidLSTM_CRF_FEATURES: 24697
+      - 0.8041    0.8332    0.8183
+    - 10fold with BERT_CRF: 24696
+      - 0.7821    0.8413    0.8106
