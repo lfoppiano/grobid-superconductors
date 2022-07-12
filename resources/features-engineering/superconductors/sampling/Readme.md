@@ -100,6 +100,8 @@ This leave 80% (132) papers for training for evaluation comparison.
 
 ### With stratification and holdout 20%
 
+The stratification cannot be set by class so we use the manual method
+
 | files | sentences | tokens  | entities | uniq_entities | classes | positive examples | negative examples |
 |-------|-----------|---------|----------|---------------|---------|-------------------|-------------------|
 | 132   | 16857     | 1028446 | 14695    | 6387          | 6       | 8033              | 8824              | 
