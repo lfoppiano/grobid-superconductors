@@ -92,11 +92,26 @@ This leave 80% (132) papers for training for evaluation comparison.
 | holdout  | 32     | 3905       | 236995  | 3112      | 1372           | 6        | 1776               | 2129               |
 | ratio    | 24.24% | 23.10%     | 22.62%  | 19.97%    | 20.48%         | 100.00%  | 21.19%             | 24.98%             |
 
-|          | tc     | class  | material  | me_method  | tcValue  | pressure  |
-|----------|--------|--------|-----------|------------|----------|-----------|
-| training | 3741   | 1646   | 6943      | 1883       | 1099     | 274       |
-| holdout  | 1649   | 639    | 157       | 271        | 355      | 41        |
-| ratio    | 17.08% | 16.46% | 23.75%    | 18.85%     | 14.29%   | 14.96%    |
+| set        | tc     | class  | material  | me_method  | tcValue  | pressure  |
+|------------|--------|--------|-----------|------------|----------|-----------|
+| training   | 3741   | 1646   | 6943      | 1883       | 1099     | 274       |
+| holdout    | 639    | 271    | 1649      | 355        | 157      | 41        |
+| ratio      | 17.08% | 16.46% | 23.75%    | 18.85%     | 14.29%   | 14.96%    |
+
+
+#### Out of domain
+In domain: the entity value is also in the training data, 
+Out domain: the entity value is not in the training data so evaluating it's like processing a sequence never seen before 
+
+| label     | # in domain | # in domain uniques | # out domain | # out domain unique |
+|-----------|-------------|---------------------|--------------|---------------------|
+| tc        | 579         | 50                  | 60           | 54                  |
+| class     | 179         | 26                  | 92           | 61                  |
+| material  | 650         | 126                 | 999          | 587                 |
+| me_method | 337         | 43                  | 18           | 14                  |
+| tcValue   | 98          | 44                  | 59           | 49                  |
+| pressure  | 20          | 10                  | 21           | 5                   |
+
 
 ### With stratification and holdout 20%
 
