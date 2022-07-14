@@ -54,7 +54,7 @@ public class SuperconductorsTrainer extends AbstractTrainerNew {
 
         try {
 
-            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath(), "final");
+            Path adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath());
             if (!adaptedCorpusDir.toFile().exists()) {
                 adaptedCorpusDir = Paths.get(corpusDir.getAbsolutePath());
             }
