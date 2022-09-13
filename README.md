@@ -9,6 +9,19 @@
 
 __Work in progress.__
 
+* [Introduction](#introduction)
+* [Getting started](#getting-started)
+* [Performances](#performances)
+  + [Throughput](#performances-throughput)
+  + [Accuracy](#performances-accuracy)
+* [Developer guide](#developer-guide)
+* [Training and evaluation](#training-and-evaluation)
+* [Training data](#training-data)
+* [Generation of training data](#generation-of-training-data)
+* [Acknowledgment](#acknowledgement)
+* [Licence](#license)
+* [References](#references)
+
 ## Introduction
 
 The goal of this GROBID module is to identify, extract, and link materials with their properties from scientific literature.
@@ -86,10 +99,9 @@ In the following table are listed the models (in `resources/models/` ) that are 
 | entityLinking-tcValue-pressure   | links superconducting critical temperature and pressure                            | CRF                                            |   
 | entityLinking-tcValue-me_methods | superconducting critical temperature and measurement method                        | CRF                                            |   
 
-Below, in the Section [accuracy](#accuracy), we present the accuracies for each model. 
+Below, in the Section [accuracy](#accuracy), we present the accuracies for each model.
 
-
-## Performances: Throughput 
+### Performances: Throughput 
 
 Grobid is designed for fast processing using a lightweight and tighly integrated system. 
 Grobid-superconductors contains more moving parts which are separated from the main application. 
@@ -106,28 +118,29 @@ The detailed reports and explanation can be found [here](resources/performances/
 
 - python services: ~40 RPS
 
-## Performances: Accuracy 
+### Performances: Accuracy 
 
-### Extraction (Sequence labelling task)
+#### Named Entities Recognition (NER)
 
-Evaluation made on the 01/08/2021 using 168 papers.
-The results (Precision, Recall, F-score) for all the models have been obtained using 10-fold cross-validation (average metrics over the 10 folds).
+Evaluation made on the 15/07/2022. 
+The results (Precision, Recall, F-score) have been obtained with train/evaluation using holdout validation of 34 papers.
+The DL results are the average of 5 train/evaluation runs. 
 
-| Labels          | CRF         |           |            | BidLSTM+CRF |         |          | SciBERT    |         |          |
-|-----------------|-------------|-----------|------------|-------------|---------|----------|------------|---------|----------|
-| Metrics         | Precision   | Recall    | F1-Score   | Precision   |  Recall | F1-Score | Precision  |  Recall | F1-Score | 
-| `<class>`       | 79.69       | 75.54     | 77.55      | 81.84       |  83.96  |  82.85   |  79.58     |  85.79  |  82.56   |    
-| `<material>`    | 82.9        | 81.33     | 82.1       | 85.18       |  83.86  |  84.51   |  83.89     |  86.13  |  84.99   |    
-| `<me_method>`   | 82.47       | 81.26     | 81.84      | 83.51       |  83.37  |  83.43   |  83.92     |  86.50  |  85.19   |    
-| `<pressure>`    | 65.03       | 54.01     | 58.26      | 63.79       |  73.24  |  67.98   |  63.92     |  71.18  |  67.27   |     
-| `<tc>`          | 84.63       | 80.73     | 82.63      | 83.70       |  81.66  |  82.66   |  80.91     |  83.00  |  81.94   |    
-| `<tcValue>`     | 79.3        | 74.95     | 76.97      | 73.23       |  80.73  |  76.76   |  76.74     |  85.00  |  80.65   |  
-| All (micro avg) | 82.43       | 79.68     | 81.03      | 83.01       |  82.89  |  82.95   |  81.92     |  85.06  | **83.46**|    
+| Labels          | CRF       |         |           | BidLSTM_CRF |        |          | BidLSTM_CRF_FEATURES |        |          | SciBERT   |            |          |
+|-----------------|-----------|---------|-----------|-------------|--------|----------|----------------------|--------|----------|-----------|------------|----------|
+| Metrics         | Precision | Recall  | F1-Score  | Precision   | Recall | F1-Score | Precision            | Recall | F1-Score | Precision | Recall     | F1-Score | 
+| `<class>`       | 79.74     | 66.79   | 79.01     | 79.01       | 72.62  | 75.66    | 77.84                | 72.40  | 74.97    | 72.95     | 75.28      | 74.09    |    
+| `<material>`    | 79        | 72.15   | 79.25     | 79.25       | 76.94  | 78.06    | 81.07                | 75.10  | 77.94    | 80.15     | 81.42      | 80.77    |    
+| `<me_method>`   | 60.25     | 68.73   | 56.41     | 56.41       | 79.49  | 65.92    | 55.86                | 80.45  | 65.90    | 56.26     | 81.52      | 66.56    |    
+| `<pressure>`    | 46.15     | 29.27   | 49.45     | 49.45       | 58.05  | 52.53    | 50.25                | 60.49  | 54.36    | 41.72     | 52.68      | 46.51    |     
+| `<tc>`          | 84.36     | 83.57   | 83.96     | 78.61       | 82.54  | 80.48    | 79.19                | 82.07  | 80.60    | 74.46     | 82.66      | 78.35    |    
+| `<tcValue>`     | 69.8      | 66.24   | 67.97     | 70.36       | 75.16  | 72.67    | 68.95                | 76.56  | 72.52    | 70.90     | 79.74      | 75.06    |  
+| All (micro avg) | 76.88     | 72.77   | 74.77     | 74.59       | 77.67  | 76.09    | 75.17                | 76.79  | 75.96    | 73.69     | 80.69      | 77.03    |    
 
-Detailed evaluation measures are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).
+~~Detailed evaluation measures are tracked [here](https://github.com/lfoppiano/grobid-superconductors/tree/master/resources/models/superconductors).~~
 See the documentation of [DeLFT](http://github.com/kermitt2/delft) for more details about the models and reproducing all these evaluations.
 
-### Linking (Relation extraction task)
+#### Entity Linking (EL)
 
 | Name | Method | Task | Description | Precision | Recall  | F1 |
 |------|--------|---------|-----------|---------|---------|--------|
@@ -135,21 +148,15 @@ See the documentation of [DeLFT](http://github.com/kermitt2/delft) for more deta
 | crf-10fold-baseline       | CRF           | material-tcValue  | 10 fold cross-validation    | 68.52   | 70.11   | 69.16 | 
 | crf-10fold-baseline       | CRF           | tcValue-pressure  | 10 fold cross-validation    | 72.92   | 67.67   | 69.76 | 
 | crf-10fold-baseline       | CRF           | tcValue-me_method | 10 fold cross-validation    | 49.99   | 45.21   | 44.65 | 
-|------|--------|---------|-----------|---------|---------|--------|
-| crf-supermat-baseline     | CRF           | material-tcValue | eval against SuperMat (-)   | 91       | 66       | 77    | 
 
-(-) biased evaluation - for information only - trained and evaluated on the same corpus
+#### End to end evaluation (NER + EL)
 
-### End to end evaluation (Extraction + Linking)
+Corpus of 500 PDF papers (500-papers) from American Institute of Physics (AIP), American Physical Society (APS) and Institute of Physics (IOP).
+Results are calculated based on manual correction on the output data:
 
-**TBU**
-Corpus of 500 PDF papers from American Institute of Physics (AIP),
-American Physical Society (APS) and Institute of Physics (IOP).
-Results are approximate, they are calculated based on manual correction on the output data:
-
-|Total links    | Correct links | Wrong links   | Error rate    | Precision     | Recall    | F1-score  |
-|---------------|---------------|---------------|---------------|---------------|-----------|-----------|
-|597            |	441         |	156         |	26.13       |	73.86       |	66.33   |	69.90   |
+| Precision | Support |
+|-----------|---------|
+| 	72.60    | 	847    |
 
 ## Developer guide  
 
@@ -265,7 +272,7 @@ For evaluating under the labeled data under ```grobid-astro/resources/dataset/so
 
 ### Evaluation reports
 
-By default the report is written in files placed in the logs directory under `grobid-superconductors`, to disable the writing on the `log` directory, use the option `--onlyPrint`
+By default, the report is written in files placed in the logs directory under `grobid-superconductors`, to disable the writing on the `log` directory, use the option `--onlyPrint`
 
 > java -jar build/libs/grobid-superconductor-0.1.onejar.jar training -a 10fold -m superconductors --onlyPrint config/config.yml
 
