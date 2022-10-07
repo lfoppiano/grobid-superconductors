@@ -1,6 +1,8 @@
 package org.grobid.core.data;
 
 
+import org.grobid.core.data.document.Span;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +46,7 @@ public class SuperconEntry implements Cloneable {
     private String section;
     private String subsection;
     private String sentence;
+    private List<Span> spans = new ArrayList<>();
     private String path;
     private String filename;
     private String hash;
@@ -362,5 +365,17 @@ public class SuperconEntry implements Cloneable {
 
     public void setCrystalStructureId(String crystalStructureId) {
         this.crystalStructureId = crystalStructureId;
+    }
+
+    public List<Span> getSpans() {
+        return spans;
+    }
+
+    public void setSpans(List<Span> spans) {
+        this.spans = spans;
+    }
+
+    public void addSpan(Span span) {
+        this.spans.add(span);
     }
 }
