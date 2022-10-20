@@ -186,14 +186,14 @@ Starting from a text file containing one paragraph per line, we performed the fo
 
 ### Nb steps calculation
 
-| Length | nb_steps (relative) | nb_steps (absolute) | batch size |  
-| ---- | --- | --- | --- |
-| SciBERT original work |
-| 128 | 500000 | 500000 | 256 | 
-| 512 | 300000 | 800000 | 64 |
-| Adjusted number of steps due to the GPU limitation |
-| 128 | 500000*8=4000000 | 4000000 + 800000 = 4800000 | 32 | 
-| 512 | 300000*8=2400000 | 4800000 + 2400000 = 7200000 | 8 |
+| Length                                             | nb_steps (relative) | nb_steps (absolute)           | batch size | total (relative)  |
+|----------------------------------------------------|---------------------|-------------------------------|------------|-------------------| 
+| SciBERT original work                              |                     |                               |            |                   | 
+| 128                                                | 500000              | 500000                        | 256        | 128000000         | 
+| 512                                                | 300000              | 800000                        | 64         | 19200000          |
+| Adjusted number of steps due to the GPU limitation |                     |                               |            |                   |
+| 128                                                | 500000*8=4000000    | 4000000 + 800000 = 4800000    | 32         |                   |
+| 512                                                | 300000*8=2400000    | 4800000 + 2400000 = 7200000   | 8          |                   | 
 
 
 ### Pre-training execution 
@@ -231,6 +231,8 @@ consider that as an absolute value. [Ref](https://github.com/google-research/ber
 
 - Create TPU
     > gcloud compute tpus execution-groups create --name=tpu1234 --zone=us-central1-a --tf-version=1.15.5  --machine-type=n1-standard-1  --accelerator-type=v3-8
+
+ctpu up -name tpu2345 -zone "us-central1-a"  -tpu-size=v3-8 -tpu-only --preemptible -tf-version 1.15.5
 
 - Run pre-training 
   - batch size 256
