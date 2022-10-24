@@ -57,8 +57,11 @@ dependencies {
     testImplementation 'org.powermock:powermock-api-easymock:2.0.9'
 
     //GROBID
-    implementation 'com.github.kermitt2:grobid:0.7.0'
-    implementation 'com.github.kermitt2:grobid-quantities:0.7.0'
+    implementation 'org.grobid:grobid-core:0.7.1u'
+    implementation 'org.grobid:grobid-trainer:0.7.1u'
+    implementation 'org.grobid:grobid-service:0.7.1u'
+//    implementation 'org.grobid:grobid-quantities:0.7.1'
+    implementation 'com.github.kermitt2:grobid-quantities:0.7.1'
 
     //Apache commons
     implementation 'org.apache.commons:commons-collections4:4.4'
