@@ -28,13 +28,13 @@ RUN apt-key del 7fa2af80 && \
 
 RUN git clone --filter=blob:none --branch 0.7.1 --no-checkout https://github.com/kermitt2/grobid.git /opt/grobid-source && \
     cd /opt/grobid-source && \
-    git sparse-checkout set --cone grobid-home \
+    git sparse-checkout set --cone grobid-home 
 
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
 RUN git clone --depth 1 --branch 0.7.1 https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities &&  \
-    cd grobid-quantities \
+    cd grobid-quantities 
 
 WORKDIR /opt/grobid-source/grobid-quantities
 COPY gradle.properties .
@@ -61,6 +61,7 @@ RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-supe
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
 
 WORKDIR /opt/grobid-source/grobid-quantities
+RUN ls -l 
 RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source/grobid-superconductors
