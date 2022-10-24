@@ -49,6 +49,7 @@ COPY resources/models/ ./grobid-superconductors/resources/models/
 COPY resources/config/ ./grobid-superconductors/resources/config/
 COPY gradle/ ./grobid-superconductors/gradle/
 COPY src/ ./grobid-superconductors/src/
+COPY localLibs/ ./grobid-superconductors/localLibs/
 COPY build.gradle ./grobid-superconductors/
 COPY settings.gradle ./grobid-superconductors/
 COPY gradlew* ./grobid-superconductors/
