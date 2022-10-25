@@ -247,16 +247,17 @@ task copyModels(type: Copy) {
     }
 }
 
-task installScibert(dependsOn: copyModels) {
-    doLast {
-        download {
-            src "https://storagescienceminer.s3.eu-central-1.amazonaws.com/NIMS/superconductors-scibert.zip"
-            dest "${rootDir}/../grobid-home/models/superconductors-scibert.zip"
-            overwrite false
-        }
-        ant.unzip(src: "${rootDir}/../grobid-home/models/superconductors-scibert.zip", dest: "${rootDir}/../grobid-home/models/")
-    }
-}
+// Not needed anymore
+//task installScibert(dependsOn: copyModels) {
+//    doLast {
+//        download {
+//            src "https://storagescienceminer.s3.eu-central-1.amazonaws.com/NIMS/superconductors-scibert.zip"
+//            dest "${rootDir}/../grobid-home/models/superconductors-scibert.zip"
+//            overwrite false
+//        }
+//        ant.unzip(src: "${rootDir}/../grobid-home/models/superconductors-scibert.zip", dest: "${rootDir}/../grobid-home/models/")
+//    }
+//}
 
 
 wrapper {

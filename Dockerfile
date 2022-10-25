@@ -20,6 +20,7 @@ FROM openjdk:8u342-jdk as builder
 
 USER root
 
+# Fix apt key and install dependencies
 RUN apt-key del 7fa2af80 && \
     curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb --output /opt/cuda-keyring_1.0-1_all.deb && \
     dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
@@ -62,12 +63,11 @@ RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-supe
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
 
 WORKDIR /opt/grobid-source/grobid-quantities
-RUN ls -l 
 RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
-RUN ./gradlew installScibert --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
+#RUN ./gradlew installScibert --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
 #RUN ./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
 
 
@@ -82,21 +82,17 @@ FROM grobid/grobid:0.7.1 as runtime
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
 
+# Fix apt key
 COPY --from=builder /opt/cuda-keyring_1.0-1_all.deb  /opt
-
-# install JRE 8, python and other dependencies
 RUN apt-key del 7fa2af80 && \
     dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
     rm /opt/cuda-keyring*.deb && \
     rm /etc/apt/sources.list.d/cuda.list && \
     rm /etc/apt/sources.list.d/nvidia-ml.list
 
-# install JRE 8, python and other dependencies
+# Install SO dependencies
 RUN apt-get update && \
     apt-get -y --no-install-recommends install git wget
-#    apt-get -y remove python3.6 && \
-#    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata && \
-#    apt-get -y --no-install-recommends install git python3.7 python3.7-venv python3.7-dev python3.7-distutil
 
 WORKDIR /opt/grobid
 
