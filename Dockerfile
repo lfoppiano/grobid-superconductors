@@ -87,7 +87,9 @@ COPY --from=builder /opt/cuda-keyring_1.0-1_all.deb  /opt
 # install JRE 8, python and other dependencies
 RUN apt-key del 7fa2af80 && \
     dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
-    rm /opt/cuda-keyring*.deb
+    rm /opt/cuda-keyring*.deb && \
+    rm /etc/apt/sources.list.d/cuda.list && \
+    rm /etc/apt/sources.list.d/nvidia-ml.list
 
 # install JRE 8, python and other dependencies
 RUN apt-get update && \
