@@ -48,6 +48,12 @@ public class MaterialParser extends AbstractParser {
     private MaterialClassResolver materialClassResolver;
     private ChemicalMaterialParserClient chemicalMaterialParserClient;
 
+
+    // This regex is to recognise the expressions that are tagged as names, but they are a mixture between
+    // formula and name, but they cannot be resolved with the name2formula
+    // https://github.com/lfoppiano/grobid-superconductors/issues/56
+    private static final Pattern PATTERN_NAMES_TO_AVOID = Pattern.compile("[A-Z][a-z]{1,3}\\d{3,5}");
+
     public static MaterialParser getInstance(MaterialClassResolver materialClassResolver, ChemicalMaterialParserClient chemicalMaterialParserClient) {
         if (instance == null) {
             getNewInstance(materialClassResolver, chemicalMaterialParserClient);
@@ -416,22 +422,25 @@ public class MaterialParser extends AbstractParser {
 
             if ((material.getFormula() == null
                 || StringUtils.isBlank(material.getFormula().getRawValue()))
-                && StringUtils.isNotBlank(material.getName())) {
+                && StringUtils.isNotBlank(material.getName()) &&
+                !PATTERN_NAMES_TO_AVOID.matcher(material.getName()).matches()) {
+
+
                 if (chemicalMaterialParserClient != null) {
                     ChemicalComposition convertedFormula = chemicalMaterialParserClient.convertNameToFormula(material.getName());
                     Formula formula = null;
                     if (isNotBlank(convertedFormula.getFormula())) {
                         formula = new Formula(convertedFormula.getFormula());
                         material.setFormula(formula);
-                    } 
-                    
+                    }
+
                     if (convertedFormula.getComposition().keySet().size() > 0) {
                         if (formula == null) {
                             formula = new Formula();
                         }
                         formula.setFormulaComposition(convertedFormula.getComposition());
                         material.setFormula(formula);
-                    }                     
+                    }
                 }
             }
 
@@ -462,11 +471,11 @@ public class MaterialParser extends AbstractParser {
         //Normalisation
         List<LayoutToken> layoutTokensNormalised = tokens.stream()
             .map(layoutToken -> {
-                layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+                    layoutToken.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
 
-                return layoutToken;
-            }
-        ).collect(Collectors.toList());
+                    return layoutToken;
+                }
+            ).collect(Collectors.toList());
 
         String features = null;
         try {
@@ -513,7 +522,7 @@ public class MaterialParser extends AbstractParser {
         Pair.of("¼", "-"),
         Pair.of(" ͑", "")
     );
-    
+
     private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VALUES = Arrays.asList(
         Pair.of(" ͑", ""),
         Pair.of("¼", ""),
@@ -524,8 +533,7 @@ public class MaterialParser extends AbstractParser {
     private static final List<Pair<String, String>> REPLACEMENT_SYMBOLS_VARIABLES = Arrays.asList(
         Pair.of(" ͑", "")
     );
-    
-    
+
 
     public String postProcessVariable(String variable) {
         String temp = variable;
@@ -534,7 +542,7 @@ public class MaterialParser extends AbstractParser {
         }
         return temp;
     }
-    
+
     public String postProcessValue(String value) {
         String temp = value;
         for (Pair<String, String> replacementSymbol : REPLACEMENT_SYMBOLS_VALUES) {
@@ -542,7 +550,7 @@ public class MaterialParser extends AbstractParser {
         }
         return temp;
     }
-    
+
     public String postProcessFormula(String formula) {
         if (formula == null) {
             return "";
