@@ -1,9 +1,11 @@
 {
-    "use_char_feature": true,
     "padding": true,
-    "return_lengths": true,
+    "return_lengths": false,
+    "return_word_embeddings": false,
     "return_casing": false,
     "return_features": false,
+    "return_chars": false,
+    "return_bert_embeddings": true,
     "vocab_char": {
         "<PAD>": 0,
         "<UNK>": 1,
@@ -260,5 +262,21 @@
         "contains_digit"
     ],
     "max_char_length": 30,
-    "feature_preprocessor": null
+    "feature_preprocessor": null,
+    "indice_tag": {
+        "0": "<PAD>",
+        "1": "B-<class>",
+        "2": "B-<material>",
+        "3": "B-<me_method>",
+        "4": "B-<pressure>",
+        "5": "B-<tc>",
+        "6": "B-<tcValue>",
+        "7": "I-<class>",
+        "8": "I-<material>",
+        "9": "I-<me_method>",
+        "10": "I-<pressure>",
+        "11": "I-<tc>",
+        "12": "I-<tcValue>",
+        "13": "O"
+    }
 }
