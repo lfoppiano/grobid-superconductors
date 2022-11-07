@@ -6,6 +6,9 @@ buildscript {
             url "https://plugins.gradle.org/m2/"
         }
     }
+    dependencies {
+        classpath group: 'org.yaml', name: 'snakeyaml', version: '1.19'
+    }
 }
 
 /** Plugins **/
@@ -225,39 +228,42 @@ publishing {
     }
 }
 
+def conf = new org.yaml.snakeyaml.Yaml().load( new File("resources/config/config.yml").newInputStream() )
+def grobidHome = conf.grobidHome.replace("\$", "").replace('{', "").replace("GROBID_HOME:- ", "").replace("}", "")
+
 /** Model management **/
+
 task copyModels(type: Copy) {
     from "${rootDir}/resources/models"
     include "**/*.wapiti"
     include "**/*.wapiti.gz"
     include "**/config.json"
+    include "**/transformer-config.json"
+    include "**/transformer-tokenizer/**"
     include "**/model_weights.hdf5"
     include "**/preprocessor.json"
-    include "**/checkpoint"
-    include "**/events.out.tfevents.*"
-    include "**/model.ckpt-*"
-    include "**/bert_config.json"
-    include "**/vocab.txt"
     exclude "**/features-engineering/**"
     exclude "**/result-logs/**"
-    into "${rootDir}/../grobid-home/models/"
+    into "${rootDir}/${grobidHome}/models/"
 
     doLast {
-        ant.gunzip(src: "${rootDir}/../grobid-home/models/superconductors/model.wapiti.gz", dest: "${rootDir}/../grobid-home/models/superconductors/")
+        print "Copy models under grobid-home: ${grobidHome}"
+        ant.gunzip(src: "${rootDir}/${grobidHome}/models/superconductors/model.wapiti.gz", dest: "${rootDir}/${grobidHome}/models/superconductors/")
     }
 }
 
-// Not needed anymore
-//task installScibert(dependsOn: copyModels) {
-//    doLast {
-//        download {
-//            src "https://storagescienceminer.s3.eu-central-1.amazonaws.com/NIMS/superconductors-scibert.zip"
-//            dest "${rootDir}/../grobid-home/models/superconductors-scibert.zip"
-//            overwrite false
-//        }
-//        ant.unzip(src: "${rootDir}/../grobid-home/models/superconductors-scibert.zip", dest: "${rootDir}/../grobid-home/models/")
-//    }
-//}
+task downloadTransformers(dependsOn: copyModels) {
+    doLast {
+        download {
+//            src "https://storagescienceminer.s3.eu-central-1.amazonaws.com/NIMS/superconductors-transformers.zip"
+            src "https://kdrive.infomaniak.com/app/share/104844/5f56d631-c058-4b85-8dfd-7fa57851a1ed/146711/download"
+            dest "${rootDir}/${grobidHome}/models/superconductors-transformers.zip"
+            overwrite false
+            print "Download bulky transformers files under grobid-home: ${grobidHome}"
+        }
+        ant.unzip(src: "${rootDir}/${grobidHome}/models/superconductors-transformers.zip", dest: "${rootDir}/${grobidHome}/models/")
+    }
+}
 
 
 wrapper {
