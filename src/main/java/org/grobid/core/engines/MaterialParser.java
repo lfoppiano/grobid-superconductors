@@ -52,7 +52,7 @@ public class MaterialParser extends AbstractParser {
     // This regex is to recognise the expressions that are tagged as names, but they are a mixture between
     // formula and name, but they cannot be resolved with the name2formula
     // https://github.com/lfoppiano/grobid-superconductors/issues/56
-    private static final Pattern PATTERN_NAMES_TO_AVOID = Pattern.compile("[A-Z][a-z]{1,3}\\d{3,5}");
+    private static final Pattern PATTERN_NAMES_TO_AVOID = Pattern.compile("[A-Z][a-z]{1,3}[- ]*\\d{3,5}");
 
     public static MaterialParser getInstance(MaterialClassResolver materialClassResolver, ChemicalMaterialParserClient chemicalMaterialParserClient) {
         if (instance == null) {
@@ -423,7 +423,7 @@ public class MaterialParser extends AbstractParser {
             if ((material.getFormula() == null
                 || StringUtils.isBlank(material.getFormula().getRawValue()))
                 && StringUtils.isNotBlank(material.getName()) &&
-                !PATTERN_NAMES_TO_AVOID.matcher(material.getName()).matches()) {
+                !PATTERN_NAMES_TO_AVOID.matcher(material.getName().replace("  ", " ")).matches()) {
 
 
                 if (chemicalMaterialParserClient != null) {
