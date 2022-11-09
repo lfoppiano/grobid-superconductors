@@ -67,8 +67,8 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
-#RUN ./gradlew installScibert --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
-#RUN ./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
+RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
+RUN #./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
 
 
 WORKDIR /opt
