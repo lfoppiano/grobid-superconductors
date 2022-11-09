@@ -1,9 +1,11 @@
 {
-    "use_char_feature": true,
     "padding": true,
     "return_lengths": true,
+    "return_word_embeddings": true,
     "return_casing": false,
     "return_features": true,
+    "return_chars": true,
+    "return_bert_embeddings": false,
     "vocab_char": {
         "<PAD>": 0,
         "<UNK>": 1,
@@ -194,5 +196,25 @@
                 "QUOTE": 44
             }
         }
+    },
+    "indice_tag": {
+        "0": "<PAD>",
+        "1": "B-<doping>",
+        "2": "B-<fabrication>",
+        "3": "B-<formula>",
+        "4": "B-<name>",
+        "5": "B-<shape>",
+        "6": "B-<substrate>",
+        "7": "B-<value>",
+        "8": "B-<variable>",
+        "9": "I-<doping>",
+        "10": "I-<fabrication>",
+        "11": "I-<formula>",
+        "12": "I-<name>",
+        "13": "I-<shape>",
+        "14": "I-<substrate>",
+        "15": "I-<value>",
+        "16": "I-<variable>",
+        "17": "O"
     }
 }

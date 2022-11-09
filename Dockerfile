@@ -16,18 +16,27 @@
 # build builder image
 # -------------------
 
-FROM openjdk:8u275-jdk as builder
+FROM openjdk:8u342-jdk as builder
 
 USER root
 
-RUN apt-get update && \
+# Fix apt key and install dependencies
+RUN apt-key del 7fa2af80 && \
+    curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb --output /opt/cuda-keyring_1.0-1_all.deb && \
+    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
+    apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git
 
-RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source && cd /opt/grobid-source && git checkout 0.7.0
+RUN git clone --filter=blob:none --branch 0.7.1 --no-checkout https://github.com/kermitt2/grobid.git /opt/grobid-source && \
+    cd /opt/grobid-source && \
+    git sparse-checkout set --cone grobid-home 
+
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
-RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities && cd grobid-quantities && git checkout 0.7.0
+RUN git clone --depth 1 --branch 0.7.1 https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities &&  \
+    cd grobid-quantities 
+
 WORKDIR /opt/grobid-source/grobid-quantities
 COPY gradle.properties .
 
@@ -41,6 +50,7 @@ COPY resources/models/ ./grobid-superconductors/resources/models/
 COPY resources/config/ ./grobid-superconductors/resources/config/
 COPY gradle/ ./grobid-superconductors/gradle/
 COPY src/ ./grobid-superconductors/src/
+COPY localLibs/ ./grobid-superconductors/localLibs/
 COPY build.gradle ./grobid-superconductors/
 COPY settings.gradle ./grobid-superconductors/
 COPY gradlew* ./grobid-superconductors/
@@ -57,8 +67,8 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
-RUN ./gradlew installScibert --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
-#RUN ./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
+RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
+RUN #./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
 
 
 WORKDIR /opt
@@ -67,17 +77,22 @@ WORKDIR /opt
 # build runtime image
 # -------------------
 
-FROM lfoppiano/grobid:0.7.0.gpu
+FROM grobid/grobid:0.7.1 as runtime
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
 
-# install JRE 8, python and other dependencies
+# Fix apt key
+COPY --from=builder /opt/cuda-keyring_1.0-1_all.deb  /opt
+RUN apt-key del 7fa2af80 && \
+    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
+    rm /opt/cuda-keyring*.deb && \
+    rm /etc/apt/sources.list.d/cuda.list && \
+    rm /etc/apt/sources.list.d/nvidia-ml.list
+
+# Install SO dependencies
 RUN apt-get update && \
     apt-get -y --no-install-recommends install git wget
-#    apt-get -y remove python3.6 && \
-#    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata && \
-#    apt-get -y --no-install-recommends install git python3.7 python3.7-venv python3.7-dev python3.7-distutil
 
 WORKDIR /opt/grobid
 
@@ -111,7 +126,7 @@ EXPOSE 8072 8073
 
 #CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 #CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
-CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.4.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.5.0-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
 

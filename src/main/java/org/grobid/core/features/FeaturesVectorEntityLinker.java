@@ -115,7 +115,7 @@ public class FeaturesVectorEntityLinker {
 
         if (featureFactory.test_number(string))
             featuresVector.digit = "ALLDIGIT";
-        else if (FeatureFactory.test_digit(string))
+        else if (featureFactory.test_digit(string))
             featuresVector.digit = "CONTAINDIGIT";
         else
             featuresVector.digit = "NODIGIT";
