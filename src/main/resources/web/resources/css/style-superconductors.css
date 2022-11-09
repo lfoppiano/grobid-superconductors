@@ -61,6 +61,7 @@
 
 .label.material-tc {
     background-color: #50ced2aa;
+    color: #70695C !important;
 }
 
 .label.class {
@@ -82,7 +83,6 @@
 
 .label.tcValue {
     background-color: #356635aa;
-    color: #70695C !important;
 }
 
 .label.temperature-tc {
@@ -128,6 +128,7 @@
 
 .label.crystal-structure {
     background-color: #83a3d9aa;
+    color: #70695C !important;
 }
 
 .label.space-groups {
