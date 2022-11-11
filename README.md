@@ -410,6 +410,22 @@ Contact: Luca Foppiano (FOPPIANO.Luca __AT__ nims.go.jp)
 
 We described the framework around the system in the following articles (the latest on top): 
 
+ - [Automatic Extraction of Materials and Properties from Superconductors Scientific Literature ](https://hal.inria.fr/hal-03776658)
+   ```
+   @unpublished{foppiano:hal-03776658,
+  	TITLE = {{Automatic Extraction of Materials and Properties from Superconductors Scientific Literature}},
+ 	AUTHOR = {Foppiano, Luca and Baptista de Castro, Pedro and Ortiz Suarez, Pedro and Terashima, Kensei and Takano, Yoshihiko and Ishii, Masashi},
+  	URL = {https://hal.inria.fr/hal-03776658},
+  	NOTE = {working paper or preprint},
+  	YEAR = {2022},
+  	MONTH = Sep,
+  	PDF = {https://hal.inria.fr/hal-03776658/file/main.pdf},
+  	HAL_ID = {hal-03776658},
+  	HAL_VERSION = {v1}, 
+   }
+   ```
+
+
  - [SuperMat](http://github.com/lfoppiano/Supermat): construction of a linked annotated dataset from superconductors-related publications
       ``` 
         @article{doi:10.1080/27660400.2021.1918396,
