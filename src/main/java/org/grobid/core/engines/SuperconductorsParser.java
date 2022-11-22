@@ -407,7 +407,13 @@ public class SuperconductorsParser extends AbstractParser {
         return layoutTokens.stream()
             .map(layoutToken -> {
                     LayoutToken newOne = new LayoutToken(layoutToken);
-                    newOne.setText(UnicodeUtil.normaliseText(layoutToken.getText()));
+                String grobidNormalisation = UnicodeUtil.normaliseText(layoutToken.getText());
+                String superconductorsNormalisation = grobidNormalisation
+                    .replaceAll("[^\\x00-\\x7F]", "")
+                    .replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "")
+                    .replaceAll("\\p{C}", "")
+                    .trim();
+                newOne.setText(superconductorsNormalisation);
                     return newOne;
                 }
             ).collect(Collectors.toList());
