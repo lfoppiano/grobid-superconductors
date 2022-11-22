@@ -355,6 +355,7 @@ public class SuperconductorsParser extends AbstractParser {
             } else {
                 List<Span> structureSpan = extractSpans(normalisedTokens.get(i), structures.get(i));
                 structureSpan.stream().forEach(s -> {
+                    s.setSource("structures-identification");
                     s.setBoundingBoxes(BoundingBoxCalculator.calculate(s.getLayoutTokens()));
                     s.setLinkable(true);
                 });
