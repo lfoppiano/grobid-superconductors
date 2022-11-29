@@ -1,5 +1,5 @@
 {
-    "model_name": "superconductors-batteryonlybert-BERT_CRF",
+    "model_name": "superconductors-BERT_CRF",
     "architecture": "BERT_CRF",
     "embeddings_name": null,
     "char_vocab_size": 227,
