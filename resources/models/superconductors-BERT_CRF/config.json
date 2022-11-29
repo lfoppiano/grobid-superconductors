@@ -1,5 +1,5 @@
 {
-    "model_name": "superconductors-BERT_CRF",
+    "model_name": "superconductors-batteryonlybert-BERT_CRF",
     "architecture": "BERT_CRF",
     "embeddings_name": null,
     "char_vocab_size": 227,
@@ -20,8 +20,8 @@
     "use_crf": true,
     "use_chain_crf": false,
     "fold_number": 1,
-    "batch_size": 20,
-    "transformer_name": "allenai/scibert_scivocab_cased/dir",
+    "batch_size": 10,
+    "transformer_name": "batterybert/batteryonlybert-cased",
     "use_ELMo": false,
     "labels": {
         "<PAD>": 0,

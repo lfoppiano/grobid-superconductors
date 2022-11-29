@@ -1,7 +1,11 @@
 {
-  "_name_or_path": "/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased_hf",
+  "_name_or_path": "/lustre/group/tdm/Luca/scibert/pre-trained/batteryonlybert-cased",
+  "architectures": [
+    "BertForMaskedLM"
+  ],
   "attention_probs_dropout_prob": 0.1,
   "classifier_dropout": null,
+  "gradient_checkpointing": false,
   "hidden_act": "gelu",
   "hidden_dropout_prob": 0.1,
   "hidden_size": 768,
@@ -14,8 +18,9 @@
   "num_hidden_layers": 12,
   "pad_token_id": 0,
   "position_embedding_type": "absolute",
+  "torch_dtype": "float32",
   "transformers_version": "4.15.0",
   "type_vocab_size": 2,
   "use_cache": true,
-  "vocab_size": 31116
+  "vocab_size": 28996
 }
