@@ -1,11 +1,11 @@
 {
     "padding": true,
-    "return_lengths": false,
-    "return_word_embeddings": false,
+    "return_lengths": true,
+    "return_word_embeddings": true,
     "return_casing": false,
-    "return_features": false,
-    "return_chars": false,
-    "return_bert_embeddings": true,
+    "return_features": true,
+    "return_chars": true,
+    "return_bert_embeddings": false,
     "vocab_char": {
         "<PAD>": 0,
         "<UNK>": 1,
@@ -162,7 +162,41 @@
         "contains_digit"
     ],
     "max_char_length": 30,
-    "feature_preprocessor": null,
+    "feature_preprocessor": {
+        "features_vocabulary_size": 12,
+        "features_indices": [
+            9,
+            10,
+            11,
+            12
+        ],
+        "features_map_to_index": {
+            "9": {
+                "ALLCAPS": 1,
+                "INITCAP": 2,
+                "NOCAPS": 3
+            },
+            "10": {
+                "ALLDIGIT": 13,
+                "CONTAINDIGIT": 14,
+                "NODIGIT": 15
+            },
+            "11": {
+                "0": 25,
+                "1": 26
+            },
+            "12": {
+                "COMMA": 37,
+                "DOT": 38,
+                "ENDBRACKET": 39,
+                "HYPHEN": 40,
+                "NOPUNCT": 41,
+                "OPENBRACKET": 42,
+                "PUNCT": 43,
+                "QUOTE": 44
+            }
+        }
+    },
     "indice_tag": {
         "0": "<PAD>",
         "1": "B-<doping>",
