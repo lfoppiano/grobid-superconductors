@@ -27,7 +27,7 @@ RUN apt-key del 7fa2af80 && \
     apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git
 
-RUN git clone --filter=blob:none --branch 0.7.1 --no-checkout https://github.com/kermitt2/grobid.git /opt/grobid-source && \
+RUN git clone --filter=blob:none --branch 0.7.2 --no-checkout https://github.com/kermitt2/grobid.git /opt/grobid-source && \
     cd /opt/grobid-source && \
     git sparse-checkout set --cone grobid-home 
 
@@ -77,7 +77,7 @@ WORKDIR /opt
 # build runtime image
 # -------------------
 
-FROM grobid/grobid:0.7.1 as runtime
+FROM grobid/grobid:0.7.2 as runtime
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
