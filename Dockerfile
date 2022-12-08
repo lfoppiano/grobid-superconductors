@@ -21,10 +21,10 @@ FROM openjdk:8u342-jdk as builder
 USER root
 
 # Fix apt key and install dependencies
-RUN apt-key del 7fa2af80 && \
-    curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb --output /opt/cuda-keyring_1.0-1_all.deb && \
-    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
-    apt-get update && \
+#RUN apt-key del 7fa2af80 && \
+#    curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb --output /opt/cuda-keyring_1.0-1_all.deb && \
+#    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
+RUN    apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git
 
 RUN git clone --filter=blob:none --branch 0.7.2 --no-checkout https://github.com/kermitt2/grobid.git /opt/grobid-source && \
@@ -83,12 +83,12 @@ FROM grobid/grobid:0.7.2 as runtime
 ENV LANG C.UTF-8
 
 # Fix apt key
-COPY --from=builder /opt/cuda-keyring_1.0-1_all.deb  /opt
-RUN apt-key del 7fa2af80 && \
-    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
-    rm /opt/cuda-keyring*.deb && \
-    rm /etc/apt/sources.list.d/cuda.list && \
-    rm /etc/apt/sources.list.d/nvidia-ml.list
+#COPY --from=builder /opt/cuda-keyring_1.0-1_all.deb  /opt
+#RUN apt-key del 7fa2af80 && \
+#    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
+#    rm /opt/cuda-keyring*.deb && \
+#    rm /etc/apt/sources.list.d/cuda.list && \
+#    rm /etc/apt/sources.list.d/nvidia-ml.list
 
 # Install SO dependencies
 RUN apt-get update && \
