@@ -2,7 +2,7 @@
 ## Borrowed from https://github.com/kermitt2/grobid/blob/master/Dockerfile.delft
 ## See https://grobid.readthedocs.io/en/latest/Grobid-docker/
 
-## usage example with grobi version 0.6.2-SNAPSHOT: https://github.com/kermitt2/grobid/blob/master/Dockerfile.delft
+## usage example with grobid version 0.6.2-SNAPSHOT: https://github.com/kermitt2/grobid/blob/master/Dockerfile.delft
 
 ## docker build -t lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT --build-arg GROBID_VERSION=0.3.0-SNAPSHOT --file Dockerfile .
 
@@ -20,16 +20,10 @@ FROM openjdk:8u342-jdk as builder
 
 USER root
 
-# Fix apt key and install dependencies
-#RUN apt-key del 7fa2af80 && \
-#    curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb --output /opt/cuda-keyring_1.0-1_all.deb && \
-#    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
-RUN    apt-get update && \
+RUN apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git
 
-RUN git clone --filter=blob:none --branch 0.7.2 --no-checkout https://github.com/kermitt2/grobid.git /opt/grobid-source && \
-    cd /opt/grobid-source && \
-    git sparse-checkout set --cone grobid-home 
+RUN mkdir -p /opt/grobid-source/grobid-home/models
 
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
@@ -43,7 +37,6 @@ COPY gradle.properties .
 WORKDIR /opt/grobid-source
 
 RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
-#RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors 
 
 COPY .git/ ./grobid-superconductors/.git
 COPY resources/models/ ./grobid-superconductors/resources/models/
@@ -68,7 +61,6 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
 RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
-RUN #./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
 
 
 WORKDIR /opt
@@ -81,14 +73,6 @@ FROM grobid/grobid:0.7.2 as runtime
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
-
-# Fix apt key
-#COPY --from=builder /opt/cuda-keyring_1.0-1_all.deb  /opt
-#RUN apt-key del 7fa2af80 && \
-#    dpkg -i /opt/cuda-keyring_1.0-1_all.deb && \
-#    rm /opt/cuda-keyring*.deb && \
-#    rm /etc/apt/sources.list.d/cuda.list && \
-#    rm /etc/apt/sources.list.d/nvidia-ml.list
 
 # Install SO dependencies
 RUN apt-get update && \
@@ -103,7 +87,6 @@ COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/c
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
-# Install requirements
 WORKDIR /opt/grobid
 
 #RUN pip install git+https://github.com/lfoppiano/MaterialParser
@@ -124,11 +107,11 @@ RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:
 EXPOSE 8072 8073
 #EXPOSE 8080 8081
 
+ARG GROBID_VERSION
+
 #CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 #CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
-
-ARG GROBID_VERSION
 
 
 LABEL \
