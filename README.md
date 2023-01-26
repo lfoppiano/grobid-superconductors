@@ -429,17 +429,23 @@ We described the framework around the system in the following articles (the late
 
  - [Automatic Extraction of Materials and Properties from Superconductors Scientific Literature ](https://hal.inria.fr/hal-03776658)
    ```
-   @unpublished{foppiano:hal-03776658,
-  	TITLE = {{Automatic Extraction of Materials and Properties from Superconductors Scientific Literature}},
- 	AUTHOR = {Foppiano, Luca and Baptista de Castro, Pedro and Ortiz Suarez, Pedro and Terashima, Kensei and Takano, Yoshihiko and Ishii, Masashi},
-  	URL = {https://hal.inria.fr/hal-03776658},
-  	NOTE = {working paper or preprint},
-  	YEAR = {2022},
-  	MONTH = Sep,
-  	PDF = {https://hal.inria.fr/hal-03776658/file/main.pdf},
-  	HAL_ID = {hal-03776658},
-  	HAL_VERSION = {v1}, 
-   }
+   @article{doi:10.1080/27660400.2022.2153633,
+	author = {Luca Foppiano and Pedro Baptista Castro and Pedro Ortiz Suarez and Kensei Terashima and Yoshihiko Takano and Masashi Ishii},
+	title = {Automatic extraction of materials and properties from superconductors scientific literature},
+	journal = {Science and Technology of Advanced Materials: Methods},
+	volume = {3},
+	number = {1},
+	pages = {2153633},
+	year  = {2023},
+	publisher = {Taylor & Francis},
+	doi = {10.1080/27660400.2022.2153633},
+	URL = { 
+        	https://doi.org/10.1080/27660400.2022.2153633
+	},
+	eprint = { 
+        https://doi.org/10.1080/27660400.2022.2153633
+	}
+    }
    ```
 
 
