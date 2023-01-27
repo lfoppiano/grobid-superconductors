@@ -28,7 +28,7 @@ RUN mkdir -p /opt/grobid-source/grobid-home/models
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
-RUN git clone --depth 1 --branch 0.7.1 https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities &&  \
+RUN git clone --depth 1 --branch 0.7.2 https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities &&  \
     cd grobid-quantities 
 
 WORKDIR /opt/grobid-source/grobid-quantities

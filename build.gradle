@@ -60,7 +60,7 @@ dependencies {
     testImplementation 'org.powermock:powermock-api-easymock:2.0.9'
 
     //GROBID and grobid-quantities
-    implementation 'com.github.kermitt2:grobid-quantities:0.7.1'
+    implementation 'com.github.kermitt2:grobid-quantities:0.7.2'
     implementation 'org.grobid:grobid-core:0.7.2'
     implementation 'org.grobid:grobid-trainer:0.7.2'
     implementation 'org.grobid:grobid-service:0.7.2'
