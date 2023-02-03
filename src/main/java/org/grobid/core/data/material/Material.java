@@ -539,8 +539,13 @@ public class Material {
         for (String propertyName : materialObject.keySet()) {
             switch (propertyName) {
                 case "formula":
-                    Map<String, Object> formula = (Map<String, Object>) materialObject.get(propertyName);
-                    dbEntry.setFormula((String) formula.get("rawValue"));
+                    Object propertyValue = materialObject.get(propertyName);
+                    if (propertyValue instanceof String) {
+                        dbEntry.setFormula((String) materialObject.get(propertyName));   
+                    } else {
+                        Map<String, Object> formula = (Map<String, Object>) propertyValue;
+                        dbEntry.setFormula((String) formula.get("rawValue"));
+                    }
                     break;
                 case "name":
                     dbEntry.setName((String) materialObject.get(propertyName));
