@@ -28,6 +28,7 @@ public class DocumentBlock {
 
     private String section;
     private String subSection;
+    private String groupId;
     private List<LayoutToken> layoutTokens;
     private List<List<LayoutToken>> markers = new ArrayList<>();
     private List<Span> spans = new ArrayList<>();
@@ -92,5 +93,13 @@ public class DocumentBlock {
 
     public void setMarkers(List<List<LayoutToken>> markers) {
         this.markers = markers;
+    }
+    
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }

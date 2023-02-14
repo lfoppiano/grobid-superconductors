@@ -3,6 +3,7 @@ package org.grobid.core.engines;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.grobid.core.GrobidModels;
@@ -297,8 +298,8 @@ public class GrobidPDFEngine {
             // Sentence splitting using reference, then remove them from the text
 
             List<DocumentBlock> documentBlocksBySentences = new ArrayList<>();
-
             documentBlocks.stream().forEach(documentBlock -> {
+                String paragraphId = RandomStringUtils.random(10, true, true);
 
                 List<Pair<Integer, Integer>> markersExtremitiesAsIndex = new ArrayList<>();
                 List<OffsetPosition> markersPositionsAsOffsetsInText = new ArrayList<>();
@@ -384,6 +385,7 @@ public class GrobidPDFEngine {
                         newDocumentBlock.setLayoutTokens(sentenceTokens);
                     }
                     newDocumentBlock.setSection(section);
+                    newDocumentBlock.setGroupId(paragraphId);
                     newDocumentBlock.setSubSection(subSection);
                     documentBlocksBySentences.add(newDocumentBlock);
                 }
