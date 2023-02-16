@@ -28,6 +28,8 @@ The goal of this GROBID module is to identify, extract, and link materials with 
 In particular, the current goal the tool has been built is to extract superconductors material and their properties, such a Critical Temperature (Tc) and their type (type of measurement technique, or if it's a prediction/calculation) and the applied pressure when available. 
 Furthermore, this tool identifies also space groups, crystal structure when specified. 
 
+A running demo is available at https://lfoppiano-grobid-superconductors.hf.space
+
 The system is divided into two main steps (Extraction and Linking): 
 
 ![schema grobid-superconductors](docs/schema-grobid-superconductors.png)
