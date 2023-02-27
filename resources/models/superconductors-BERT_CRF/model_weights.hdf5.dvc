@@ -1,0 +1,4 @@
+outs:
+- md5: 157583c7628718aef94ed3285c146aa8
+  size: 440070792
+  path: model_weights.hdf5

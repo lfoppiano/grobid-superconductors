@@ -7,7 +7,7 @@
   "mask_token": "[MASK]",
   "max_length": 512,
   "model_max_length": 1000000000000000019884624838656,
-  "name_or_path": "/lustre/group/tdm/Luca/delft/delft/data/embeddings/scibert_scivocab_cased_hf",
+  "name_or_path": "/lustre/group/tdm/Luca/scibert/pre-trained/mattpuscibert-scivocab_mod_cased-initcheckpoint",
   "never_split": null,
   "pad_token": "[PAD]",
   "sep_token": "[SEP]",
