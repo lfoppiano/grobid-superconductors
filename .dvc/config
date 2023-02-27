@@ -1,0 +1,5 @@
+[core]
+    analytics = false
+    remote = aws
+['remote "aws"']
+    url = s3://ml-storage-dvc/grobid-superconductors
