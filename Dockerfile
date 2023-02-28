@@ -113,7 +113,7 @@ RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using scibert as default tran
 EXPOSE 8072 8073
 
 ARG GROBID_VERSION
-ENV GROBID_VERSION=${GROBID_VERSION:-unknown}
+ENV GROBID_VERSION=${GROBID_VERSION:-0.5.2-SNAPSHOT}
 
 #RUN if [ "${!GROBID_VERSION}" = "unknown" ] ; then GROBID_VERSION=`ls grobid-superconductors/grobid-superconductors-*onejar.jar |  grep -oE '[0-9]\.[0-9]\.[0-9](-SNAPSHOT)?' | head -n 1`; fi
 
