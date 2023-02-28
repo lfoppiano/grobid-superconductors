@@ -12,6 +12,10 @@
 ## allocate all available GPUs (only Linux with proper nvidia driver installed on host machine):
 ## docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
+# --build-arg TRANSFORMERS_MODEL=batteryonlybert 
+# --build-arg TRANSFORMERS_MODEL=mattpuscibert 
+
+
 # -------------------
 # build builder image
 # -------------------
@@ -89,9 +93,6 @@ VOLUME ["/opt/grobid/grobid-home/tmp"]
 
 WORKDIR /opt/grobid
 
-#RUN pip install git+https://github.com/lfoppiano/MaterialParser
-#RUN pip install -e /opt/grobid/grobid-superconductors-tools/materialParser
-
 #RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/config.yml
@@ -99,19 +100,23 @@ RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\
 RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 
+## Select transformers model 
+ARG TRANSFORMERS_MODEL
+
+RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using scibert as default transformer model" ; else rm -rf /opt/grobid-source/grobid-home/superconductors-BERT_CRF; mv /opt/grobid-source/grobid-home/superconductors-${TRANSFORMERS_MODEL}-BERT_CRF /opt/grobid-source/grobid-home/superconductors-BERT_CRF; fi
+
 # JProfiler
 #RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
 #  tar -xzf /tmp/jprofiler_linux_12_0_2.tar.gz -C /usr/local &&\
 #  rm /tmp/jprofiler_linux_12_0_2.tar.gz
 
 EXPOSE 8072 8073
-#EXPOSE 8080 8081
 
 ARG GROBID_VERSION
 
 #CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 #CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
-CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+CMD ["sh", "-c", "java -jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar server grobid-superconductors/config.yml"]
 
 
 LABEL \
