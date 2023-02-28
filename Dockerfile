@@ -113,6 +113,7 @@ RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using scibert as default tran
 EXPOSE 8072 8073
 
 ARG GROBID_VERSION
+ENV GROBID_VERSION=${GROBID_VERSION:-unknown}
 
 #CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 #CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
