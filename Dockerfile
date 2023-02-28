@@ -115,6 +115,8 @@ EXPOSE 8072 8073
 ARG GROBID_VERSION
 ENV GROBID_VERSION=${GROBID_VERSION:-unknown}
 
+RUN if [ "${!GROBID_VERSION}" -eq "unknown" ] ; then GROBID_VERSION=`ls grobid-superconductors/grobid-superconductors-*onejar.jar |  grep -oE '[0-9]\.[0-9]\.[0-9](-SNAPSHOT)?' | head -n 1`; fi
+
 #CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 #CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 CMD ["sh", "-c", "java -jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar server grobid-superconductors/config.yml"]
