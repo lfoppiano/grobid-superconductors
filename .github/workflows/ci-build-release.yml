@@ -52,6 +52,8 @@ jobs:
           echo "TAGS=${TAGS}"
           echo ::set-output name=tags::${TAGS}
       - uses: actions/checkout@v2
+      - name: Build data
+        run: echo ${{ steps.set_tags.outputs.tags }}; echo ${{ github.event_name }}
       - name: Build and push
         id: docker_build
         uses: mr-smithers-excellent/docker-build-push@v5
