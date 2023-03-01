@@ -284,6 +284,7 @@ coveralls {
 release {
     failOnUnversionedFiles = false
     failOnCommitNeeded = false
+    tagTemplate = 'v${version}'
     git {
         requireBranch.set('master')
     }
