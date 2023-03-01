@@ -42,7 +42,7 @@ WORKDIR /opt/grobid-source
 
 RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
 
-COPY .git/ ./grobid-superconductors/.git
+COPY ./.git/ ./grobid-superconductors/.git
 COPY resources/models/ ./grobid-superconductors/resources/models/
 COPY resources/config/ ./grobid-superconductors/resources/config/
 COPY gradle/ ./grobid-superconductors/gradle/
