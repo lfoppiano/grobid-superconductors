@@ -71,6 +71,6 @@ jobs:
           registry: docker.io
           pushImage: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.set_tags.outputs.tags }}
-          buildArgs: ['GROBID_VERSION=0.5.2']
+          buildArgs: "GROBID_VERSION=${TAGS}"
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}  
