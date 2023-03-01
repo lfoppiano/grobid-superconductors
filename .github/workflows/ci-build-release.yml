@@ -32,6 +32,7 @@ jobs:
         run: ./gradlew test jacocoTestReport coveralls --no-daemon
   
   docker-build:
+    needs: [build]
     runs-on: ubuntu-latest
 
     steps:
