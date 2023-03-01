@@ -67,8 +67,10 @@ jobs:
         id: docker_build
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          buildArgs: ['GROBID_VERSION=0.5.2']
-          push: ${{ github.event_name != 'pull_request' }}
+          image: lfoppiano/grobid-superconductors
+          registry: docker.io
+          pushImage: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.set_tags.outputs.tags }}
+          buildArgs: ['GROBID_VERSION=0.5.2']
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}  
