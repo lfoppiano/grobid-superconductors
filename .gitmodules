@@ -1,0 +1,4 @@
+[submodule "resources/web"]
+        path = resources/web
+        url = https://github.com/lfoppiano/grobid-superconductors-web.git
+
