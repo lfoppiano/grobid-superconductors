@@ -5,6 +5,7 @@ on:
     branches: 
       - main
       - master
+      - fix-release-docker
     tags:
       - 'v*'
   pull_request:
