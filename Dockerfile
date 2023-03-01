@@ -12,8 +12,9 @@
 ## allocate all available GPUs (only Linux with proper nvidia driver installed on host machine):
 ## docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
-# --build-arg TRANSFORMERS_MODEL=batteryonlybert 
-# --build-arg TRANSFORMERS_MODEL=mattpuscibert 
+## Transformers selection:  
+# --build-arg TRANSFORMERS_MODEL=mattpuscibert
+# --build-arg TRANSFORMERS_MODEL=batteryonlybert (currently disabled) 
 
 
 # -------------------
@@ -42,7 +43,7 @@ WORKDIR /opt/grobid-source
 
 RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
 
-COPY .git/ ./grobid-superconductors/.git
+COPY ./.git/ ./grobid-superconductors/.git
 COPY resources/models/ ./grobid-superconductors/resources/models/
 COPY resources/config/ ./grobid-superconductors/resources/config/
 COPY gradle/ ./grobid-superconductors/gradle/
