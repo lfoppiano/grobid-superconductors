@@ -1,5 +1,5 @@
 {
-    "model_name": "grobid-superconductors-positive_sampling-all-BidLSTM_CRF-with_ELMo",
+    "model_name": "superconductors-positive_sampling-all-BidLSTM_CRF-with_ELMo",
     "architecture": "BidLSTM_CRF",
     "embeddings_name": "glove-840B",
     "char_vocab_size": 227,
