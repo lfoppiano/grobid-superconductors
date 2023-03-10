@@ -92,6 +92,9 @@ COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/c
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
+WORKDIR /opt/delft
+RUN python3 preload_embeddings.py --embedding elmo-en --registry ./resources-registry.json
+
 WORKDIR /opt/grobid
 
 #RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
