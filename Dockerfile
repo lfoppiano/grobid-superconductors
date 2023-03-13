@@ -92,8 +92,7 @@ COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/c
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
-WORKDIR /opt/delft
-RUN python3 preload_embeddings.py --embedding elmo-en --registry ./resources-registry.json
+RUN pip install -U git+https://github.com/kermitt2/delft.git@download_elmo
 
 WORKDIR /opt/grobid
 
@@ -107,7 +106,7 @@ RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:
 ## Select transformers model 
 ARG TRANSFORMERS_MODEL
 
-RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using scibert as default transformer model" ; else rm -rf /opt/grobid/grobid-home/models/superconductors-BERT_CRF; mv /opt/grobid/grobid-home/models/superconductors-${TRANSFORMERS_MODEL}-BERT_CRF /opt/grobid/grobid-home/models/superconductors-BERT_CRF; rm -rf /opt/grobid/grobid-home/models/superconductors-*-BERT_CRF; fi
+RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using Scibert as default transformer model" ; else rm -rf /opt/grobid/grobid-home/models/superconductors-BERT_CRF; mv /opt/grobid/grobid-home/models/superconductors-${TRANSFORMERS_MODEL}-BERT_CRF /opt/grobid/grobid-home/models/superconductors-BERT_CRF; rm -rf /opt/grobid/grobid-home/models/superconductors-*-BERT_CRF; fi
 
 # JProfiler
 #RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
