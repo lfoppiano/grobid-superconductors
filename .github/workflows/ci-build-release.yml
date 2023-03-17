@@ -5,9 +5,7 @@ on:
   push:
     tags:
       - 'v*'
-  pull_request:
-    branches: [ main, master ]
-    
+  
 concurrency:
   group: docker
   cancel-in-progress: true
