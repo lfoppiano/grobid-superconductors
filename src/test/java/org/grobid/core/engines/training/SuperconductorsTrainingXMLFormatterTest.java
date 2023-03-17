@@ -12,9 +12,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.grobid.core.document.xml.XmlBuilderUtils.teiElement;
 import static org.grobid.core.engines.label.SuperconductorsTaggingLabels.*;
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SuperconductorsTrainingXMLFormatterTest {
@@ -206,11 +206,51 @@ public class SuperconductorsTrainingXMLFormatterTest {
         blocks.add(blockParagraph);
 
         // figure caption
-        blocks.add(new DocumentBlock(layoutTokensParagraph, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_FIGURE, spanListParagraph, new ArrayList<>()));
+        blocks.add(new DocumentBlock(layoutTokensParagraph, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_FIGURE, "1", spanListParagraph, new ArrayList<>()));
 
-        blocks.add(new DocumentBlock(layoutTokensParagraph, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_TABLE, spanListParagraph, new ArrayList<>()));
+        blocks.add(new DocumentBlock(layoutTokensParagraph, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_TABLE, "2", spanListParagraph, new ArrayList<>()));
 
         target.format(blocks, 1234);
+    }
+
+    @Test
+    public void testGetParent_previousParentNotNull_sameParagraphId_shouldreturnPreviousParent() throws Exception {
+        Element body = teiElement("body");
+        Element previousParent = teiElement("p");
+        Element parent = target.getParentElement(body, "1234", "1234", previousParent, "ab", null);
+
+        assertThat(parent, is(previousParent));
+    }
+
+    @Test
+    public void testGetParent_previousParentNotNull_differentParagraphId_shouldreturnNewElement() throws Exception {
+        Element body = teiElement("body");
+        Element previousParent = teiElement("p");
+        Element parent = target.getParentElement(body, "1234", "12345", previousParent, "ab", null);
+
+        assertThat(parent, is(not(previousParent)));
+    }
+
+    @Test
+    public void testGetParent_previousParentNull_differentParagraphId_shouldreturnNewElement() throws Exception {
+        Element body = teiElement("body");
+        Element previousParent = null;
+        Element parent = target.getParentElement(body, "1234", "12345", previousParent, "ab", null);
+
+        assertThat(parent, is(not(previousParent)));
+        assertThat(parent.getLocalName(), is("ab"));
+        assertThat(parent.getAttributeCount(), is(0));
+    }
+
+    @Test
+    public void testGetParent_previousParentNull_sameParagraphId_shouldreturnNewElement() throws Exception {
+        Element body = teiElement("body");
+        Element previousParent = null;
+        Element parent = target.getParentElement(body, "1234", "1234", previousParent, "ab", null);
+
+        assertThat(parent, is(not(previousParent)));
+        assertThat(parent.getLocalName(), is("ab"));
+        assertThat(parent.getAttributeCount(), is(0));
     }
 
     @Test
@@ -301,7 +341,7 @@ public class SuperconductorsTrainingXMLFormatterTest {
         spanList.add(span2);
 
         List<DocumentBlock> documentBlocks = new ArrayList<>();
-        documentBlocks.add(new DocumentBlock(layoutTokens, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_PARAGRAPH, spanList, new ArrayList<>()));
+        documentBlocks.add(new DocumentBlock(layoutTokens, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_PARAGRAPH, "1", spanList, new ArrayList<>()));
 
         //This will ensure that next time I modify the principle on which the offsets are calculated, will fail
         int startingOffset = layoutTokens.get(0).getOffset();
@@ -311,7 +351,7 @@ public class SuperconductorsTrainingXMLFormatterTest {
 
         String output = target.format(documentBlocks, 1);
         assertThat(output,
-            endsWith("<text xml:lang=\"en\"><body><p>Specific-Heat Study of Superconducting and Normal States in <rs type=\"material\">FeSe 1-x Te x</rs> (<rs type=\"material\">0.6 ≤ x ≤ 1</rs>) Single Crystals: Strong-Coupling Superconductivity, Strong Electron-Correlation, and Inhomogeneity</p></body></text></tei>"));
+            endsWith("<text xml:lang=\"en\"><body><p><s>Specific-Heat Study of Superconducting and Normal States in <rs type=\"material\">FeSe 1-x Te x</rs> (<rs type=\"material\">0.6 ≤ x ≤ 1</rs>) Single Crystals: Strong-Coupling Superconductivity, Strong Electron-Correlation, and Inhomogeneity</s></p></body></text></tei>"));
     }
 
     @Test
@@ -376,7 +416,7 @@ public class SuperconductorsTrainingXMLFormatterTest {
         spanList.add(Span7);
 
         List<DocumentBlock> documentBlocks = new ArrayList<>();
-        documentBlocks.add(new DocumentBlock(layoutTokens, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_PARAGRAPH, spanList, new ArrayList<>()));
+        documentBlocks.add(new DocumentBlock(layoutTokens, DocumentBlock.SECTION_BODY, DocumentBlock.SUB_SECTION_PARAGRAPH, "1", spanList, new ArrayList<>()));
 
         //This will ensure that next time I modify the principle on which the offsets are calculated, will fail
         int startingOffset = layoutTokens.get(0).getOffset();
@@ -387,11 +427,11 @@ public class SuperconductorsTrainingXMLFormatterTest {
         String output = target.format(documentBlocks, 1);
 
         assertThat(output.substring(output.indexOf("<text xml:lang=\"en\">")),
-            is("<text xml:lang=\"en\"><body><p>The electronic specific heat of as-grown and annealed single-crystals of <rs type=\"material\">FeSe 1-x Te x</rs> (<rs type=\"material\">0.6 ≤ x ≤ 1</rs>) has been investigated. " +
+            is("<text xml:lang=\"en\"><body><p><s>The electronic specific heat of as-grown and annealed single-crystals of <rs type=\"material\">FeSe 1-x Te x</rs> (<rs type=\"material\">0.6 ≤ x ≤ 1</rs>) has been investigated. " +
                 "It has been found that annealed single-crystals with <rs type=\"material\">x = 0.6 -0.9</rs> <rs type=\"tcValue\">exhibit</rs> <rs type=\"tc\">bulk superconductivity</rs> with a clear specific-heat jump at the <rs type=\"tc\">superconducting</rs> (SC) <rs type=\"tc\">transition temperature</rs>, T c . Both 2Δ 0 /k B T c [Δ 0 : the SC gap at 0 K estimated using the single-band BCS s-wave model] and ⊿C/(γ n -γ 0 )T c [⊿C: the specific-heat jump at T c , γ n : the electronic specific-heat coefficient in the normal state, γ 0 : the residual electronic specific-heat coefficient at 0 K in the SC state] are largest in the well-annealed single-crystal with x = 0.7, i.e., 4.29 and 2.76, respectively, indicating that the superconductivity is of the strong coupling. " +
                 "The thermodynamic critical field has also been estimated. " +
                 "γ n has been found to be one order of magnitude larger than those estimated from the band calculations and increases with increasing x at x = 0.6 -0.9, which is surmised to be due to the increase in the electronic effective mass, namely, the enhancement of the electron correlation. " +
-                "It has been found that there remains a finite value of γ 0 in the SC state even in the well-annealed single-crystals with x = 0.8 -0.9, suggesting an inhomogeneous electronic state in real space and/or momentum space.</p></body></text></tei>"));
+                "It has been found that there remains a finite value of γ 0 in the SC state even in the well-annealed single-crystals with x = 0.8 -0.9, suggesting an inhomogeneous electronic state in real space and/or momentum space.</s></p></body></text></tei>"));
     }
 
     @Test(expected = RuntimeException.class)

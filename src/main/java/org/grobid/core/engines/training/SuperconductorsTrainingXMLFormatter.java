@@ -35,20 +35,31 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
 
         Element body = teiElement("body");
 
+//        Map<String, List<DocumentBlock>> byParagraphs = documentBlocks.stream()
+//            .collect(Collectors.groupingBy(DocumentBlock::getParagraphId));
+
+        String previousParagraphId = null;
+        String previousSection = "NO_SECTION";
+        Element previousParent = null;
+        Element parent = null;
         for (DocumentBlock block : documentBlocks) {
+            String paragraphId = block.getGroupId();
             if (block.getSection().equals(DocumentBlock.SECTION_BODY)) {
                 if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_FIGURE)) {
-                    body.appendChild(trainingExtraction(block.getSpans(),
-                        block.getLayoutTokens(), "ab", Pair.of("type", "figureCaption")));
+                    parent = getParentElement(body, previousParagraphId, paragraphId, previousParent, "ab", Pair.of("type", "figureCaption"));
+                    parent.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "s"));
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TABLE)) {
-                    body.appendChild(trainingExtraction(block.getSpans(),
-                        block.getLayoutTokens(), "ab", Pair.of("type", "tableCaption")));
+                    parent = getParentElement(body, previousParagraphId, paragraphId, previousParent, "ab", Pair.of("type", "tableCaption"));
+                    parent.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "s"));
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_PARAGRAPH)) {
-                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                    parent = getParentElement(body, previousParagraphId, paragraphId, previousParent, "p", null);
+                    parent.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "s"));
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE_SECTION)) {
-                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "head"));
+                    parent = getParentElement(body, previousParagraphId, paragraphId, previousParent, "head", null);
+                    parent.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "s"));
                 } else {
-                    body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                    parent = getParentElement(body, previousParagraphId, paragraphId, previousParent, "p", null);
+                    parent.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "s"));
                 }
             } else if (block.getSection().equals(DocumentBlock.SECTION_HEADER)) {
                 if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_TITLE)) {
@@ -65,30 +76,58 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
                         throw new RuntimeException("new keywords, but no space for them... ");
                     }
                 } else if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_ABSTRACT)) {
-
                     Element abstractElement = SuperconductorsTeiUtils.getElement(profileDesc, "abstract");
                     if (abstractElement == null) {
                         abstractElement = teiElement("abstract");
                         profileDesc.appendChild(abstractElement);
                     }
-                    abstractElement.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                    parent = getParentElement(abstractElement, previousParagraphId, paragraphId, previousParent, "p", null);
+                    parent.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens(), "s"));
                 } else {
                     throw new RuntimeException("The section or subsection have the wrong name. " +
                         "This will cause loss of data in the output generated files. Section name: " + block.getSection() +
                         ", " + block.getSubSection());
                 }
             } else if (block.getSection().equals(DocumentBlock.SECTION_ANNEX)) {
-                body.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
+                if (!StringUtils.equals(paragraphId, previousParagraphId)) {
+                    parent = teiElement("p");
+                    body.appendChild(parent);
+                } else {
+                    parent = previousParent;
+                }
+                parent.appendChild(trainingExtraction(block.getSpans(), block.getLayoutTokens()));
             } else {
                 throw new RuntimeException("The section or subsection have the wrong name. " +
                     "This will cause loss of data in the output generated files. Section name: " + block.getSection() +
                     ", " + block.getSubSection());
             }
+            previousParent = parent;
+            previousParagraphId = paragraphId;
         }
 
         textNode.appendChild(body);
         outputDocumentRoot.appendChild(textNode);
         return XmlBuilderUtils.toXml(outputDocumentRoot);
+    }
+
+    /**
+     * Create the parent element or, if under certain conditions, recycle the previous one.
+     */
+    protected Element getParentElement(Element body, String previousParagraphId, String paragraphId, Element previousParent, String parentTagName, Pair<String, String> attributes) {
+        Element parent = null;
+
+        if (previousParent == null || !StringUtils.equals(paragraphId, previousParagraphId)) {
+            parent = teiElement(parentTagName);
+            if (attributes != null) {
+                parent.addAttribute(new Attribute(attributes.getLeft(), attributes.getRight()));
+            }
+            body.appendChild(parent);
+        } else {
+            parent = previousParent;
+        }
+        
+
+        return parent;
     }
 
     protected Element trainingExtraction(List<Span> spanList, List<LayoutToken> tokens) {
