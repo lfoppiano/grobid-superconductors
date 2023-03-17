@@ -124,11 +124,11 @@ public class LinkerController {
 
             annotations.stream().forEach(s -> s.setLinkable(true));
 
-            linker.process(handler.getGlobalAccumulatedText(), annotations, linkerType);
+            List<Span> taggedAnnotations = linker.process(handler.getGlobalAccumulatedText(), annotations, linkerType);
 
             TextPassage textPassage = new TextPassage();
             textPassage.setText(handler.getGlobalAccumulatedText());
-            textPassage.setSpans(annotations);
+            textPassage.setSpans(taggedAnnotations);
 
             textPassages.add(textPassage);
         } catch (XMLStreamException e) {

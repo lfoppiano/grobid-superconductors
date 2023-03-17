@@ -285,7 +285,7 @@ public class ModuleEngine {
                 List<LayoutToken> cleanedLayoutTokensRetokenized = DeepAnalyzer.getInstance()
                     .retokenizeLayoutTokens(cleanedLayoutTokens);
 
-                accumulatedSentences.add(new RawPassage(cleanedLayoutTokensRetokenized, documentBlock.getSection(), documentBlock.getSubSection()));
+                accumulatedSentences.add(new RawPassage(cleanedLayoutTokensRetokenized, documentBlock.getSection(), documentBlock.getSubSection(), documentBlock.getGroupId()));
             });
 
             documentResponse.addParagraphs(process(accumulatedSentences, disableLinking));
@@ -347,6 +347,7 @@ public class ModuleEngine {
             TextPassage textPassage = new TextPassage();
             textPassage.setTokens(tokens.stream().map(Token::of).collect(Collectors.toList()));
             textPassage.setText(LayoutTokensUtil.toText(tokens));
+            textPassage.setGroupId(inputPassage.get(index).getGroupId());
 
             String section = inputPassage.get(index).getSection();
             String subSection = inputPassage.get(index).getSubSection();

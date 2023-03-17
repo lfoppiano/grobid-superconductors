@@ -23,11 +23,13 @@ public class GrobidEngineInitialiser {
         LOGGER.info("Initialising Grobid (GrobidHome=" + configuration.getGrobidHome() + ")");
         GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(ImmutableList.of(configuration.getGrobidHome()));
         GrobidProperties.getInstance(grobidHomeFinder);
+        GrobidProperties.setContextExecutionServer(true);
         configuration.getModels().stream().forEach(GrobidProperties::addModel);
         if (StringUtils.isNotEmpty(configuration.getConsolidation().service)) {
             GrobidProperties.setGluttonUrl(configuration.getConsolidation().glutton.url);
             GrobidProperties.setConsolidationService(configuration.getConsolidation().service);
         }
+
 
         //Set the maximum number of Wapiti threads to the maximum concurrent requests
 

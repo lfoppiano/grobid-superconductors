@@ -6,6 +6,9 @@ buildscript {
             url "https://plugins.gradle.org/m2/"
         }
     }
+    dependencies {
+        classpath group: 'org.yaml', name: 'snakeyaml', version: '1.19'
+    }
 }
 
 /** Plugins **/
@@ -18,7 +21,7 @@ plugins {
     id "de.undercouch.download" version "4.1.1"
     id 'com.github.kt3k.coveralls' version '2.12.0'
     id 'com.palantir.git-version' version '0.12.3'
-    id 'net.researchgate.release' version '2.6.0'
+    id 'net.researchgate.release' version '3.0.2'
 }
 
 
@@ -52,13 +55,23 @@ dependencies {
         because 'allows tests to run from IDEs that bundle older version of launcher'
     }
     testImplementation 'org.easymock:easymock:4.3'
-    testImplementation 'org.hamcrest:hamcrest-library:2.1'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-api-easymock:2.0.9'
 
-    //GROBID
-    implementation 'com.github.kermitt2:grobid:0.7.0'
-    implementation 'com.github.kermitt2:grobid-quantities:0.7.0'
+    //GROBID and grobid-quantities
+    implementation 'com.github.kermitt2:grobid-quantities:0.7.2'
+    implementation 'org.grobid:grobid-core:0.7.2'
+    implementation 'org.grobid:grobid-trainer:0.7.2'
+    implementation 'org.grobid:grobid-service:0.7.2'
+    implementation "xerces:xercesImpl:2.12.0"
+    implementation "net.arnx:jsonic:1.3.10"
+    implementation "net.sf.saxon:Saxon-HE:9.6.0-9"
+    implementation "xom:xom:1.3.2"
+    implementation 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation 'org.apache.opennlp:opennlp-tools:1.9.1'
+    implementation 'black.ninia:jep:4.0.2'
+    implementation "org.apache.lucene:lucene-analyzers-common:4.5.1"
 
     //Apache commons
     implementation 'org.apache.commons:commons-collections4:4.4'
@@ -66,8 +79,8 @@ dependencies {
     implementation 'commons-logging:commons-logging:1.2'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.apache.commons:commons-pool2:2.11.1'
-    implementation 'org.apache.commons:commons-csv:1.8'
-    implementation 'org.apache.commons:commons-text:1.9'
+    implementation 'org.apache.commons:commons-csv:1.9.0'
+    implementation 'org.apache.commons:commons-text:1.10.0'
 
     //Dropwizard
     implementation "io.dropwizard:dropwizard-core:1.3.29"
@@ -82,20 +95,20 @@ dependencies {
     implementation "io.dropwizard.metrics:metrics-servlets:4.0.0"
 
     //Misc
-    implementation 'com.google.guava:guava:31.0.1-jre'
-    implementation 'org.apache.httpcomponents:httpmime:4.5.3'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'org.apache.httpcomponents:httpmime:4.5.13'
     implementation 'javax.activation:activation:1.1.1'
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-    implementation 'com.sun.xml.bind:jaxb-core:3.0.1'
-    implementation 'com.sun.xml.bind:jaxb-impl:3.0.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:1.9.10'
+    implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.13.4'
 
     implementation 'org.dkpro.statistics:dkpro-statistics:2.2.1'
     implementation 'org.dkpro.statistics:dkpro-statistics-agreement:2.2.1'
 
     // XML
     implementation 'org.codehaus.woodstox:stax2-api:4.2.1'
-    implementation 'com.fasterxml.woodstox:woodstox-core:6.2.6'
+    implementation 'com.fasterxml.woodstox:woodstox-core:6.3.1'
 }
 
 
@@ -215,36 +228,39 @@ publishing {
     }
 }
 
+def conf = new org.yaml.snakeyaml.Yaml().load( new File("resources/config/config.yml").newInputStream() )
+def grobidHome = conf.grobidHome.replace("\$", "").replace('{', "").replace("GROBID_HOME:- ", "").replace("}", "")
+
 /** Model management **/
+
 task copyModels(type: Copy) {
     from "${rootDir}/resources/models"
     include "**/*.wapiti"
     include "**/*.wapiti.gz"
     include "**/config.json"
+    include "**/transformer-config.json"
+    include "**/transformer-tokenizer/**"
     include "**/model_weights.hdf5"
     include "**/preprocessor.json"
-    include "**/checkpoint"
-    include "**/events.out.tfevents.*"
-    include "**/model.ckpt-*"
-    include "**/bert_config.json"
-    include "**/vocab.txt"
     exclude "**/features-engineering/**"
     exclude "**/result-logs/**"
-    into "${rootDir}/../grobid-home/models/"
+    into "${rootDir}/${grobidHome}/models/"
 
     doLast {
-        ant.gunzip(src: "${rootDir}/../grobid-home/models/superconductors/model.wapiti.gz", dest: "${rootDir}/../grobid-home/models/superconductors/")
+        print "Copy models under grobid-home: ${grobidHome}"
+        ant.gunzip(src: "${rootDir}/${grobidHome}/models/superconductors/model.wapiti.gz", dest: "${rootDir}/${grobidHome}/models/superconductors/")
     }
 }
 
-task installScibert(dependsOn: copyModels) {
+task downloadTransformers(dependsOn: copyModels) {
     doLast {
         download {
-            src "https://storagescienceminer.s3.eu-central-1.amazonaws.com/NIMS/superconductors-scibert.zip"
-            dest "${rootDir}/../grobid-home/models/superconductors-scibert.zip"
+            src "https://kdrive.infomaniak.com/2/app/104844/share/0f902484-a529-4562-96d7-364959f364dd/files/150668/download"
+            dest "${rootDir}/${grobidHome}/models/superconductors-transformers.zip"
             overwrite false
+            print "Download bulky transformers files under grobid-home: ${grobidHome}"
         }
-        ant.unzip(src: "${rootDir}/../grobid-home/models/superconductors-scibert.zip", dest: "${rootDir}/../grobid-home/models/")
+        ant.unzip(src: "${rootDir}/${grobidHome}/models/superconductors-transformers.zip", dest: "${rootDir}/${grobidHome}/models/")
     }
 }
 
@@ -263,6 +279,15 @@ jacocoTestReport {
 
 coveralls {
     jacocoReportPath 'build/reports/jacoco/test/jacocoTestReport.xml'
+}
+
+release {
+    failOnUnversionedFiles = false
+    failOnCommitNeeded = false
+    tagTemplate = 'v${version}'
+    git {
+        requireBranch.set('master')
+    }
 }
 
 

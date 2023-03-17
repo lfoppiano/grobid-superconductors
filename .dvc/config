@@ -1,0 +1,7 @@
+[core]
+    analytics = false
+    remote = aws
+['remote "aws"']
+    url = s3://ml-storage-dvc/grobid-superconductors/
+    version_aware = true
+    region = eu-central-1

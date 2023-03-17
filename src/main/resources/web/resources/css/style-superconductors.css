@@ -1,226 +1,179 @@
 .info-sense-box.abbreviation {
-    background-color: #b92c28;
+    background-color: #b92c2870;
 }
 
 .info-sense-box.me_method {
-    background-color: #0e90d2;
+    background-color: #0e90d270;
 }
 
 .info-sense-box.material {
-    background-color: #2262d2;
+    background-color: #2262d270;
 }
 
 .info-sense-box.material-tc {
-    background-color: #50ced2;
+    background-color: #50ced270;
 }
 
 .info-sense-box.class {
-    background-color: #d22f09;
+    background-color: #d22f0970;
 }
 
 .info-sense-box.tc {
-    background-color: #ffe294;
+    background-color: #ffe29470;
 }
 
 .info-sense-box.sample {
-    background-color: #5bd2b2;
+    background-color: #5bd2b270;
 }
 
 .info-sense-box.temperature {
-    background-color: #356635;
+    background-color: #35663570;
 }
 
 .info-sense-box.tcValue {
-    background-color: #356635;
+    background-color: #35663570;
 }
 
 .info-sense-box.temperature-tc {
-    background-color: #83ff83;
+    background-color: #83ff8370;
 }
 
 .info-sense-box.magnetisation {
-    background-color: #20bd4e;
+    background-color: #20bd4e70;
 }
 
 .info-sense-box.pressure {
-    background-color: #92d983;
-}
-
-.info-sense-box.crystal-structure {
-    background-color: #83a3d9;
-}
-
-.info-sense-box.space-groups {
-    background-color: #102e4b;
-}
-
-.info-sense-box.unit-cell-type {
-    background-color: #0776e1;
+    background-color: #92d98370;
 }
 
 
 .label.abbreviation {
-    background-color: #a85855;
+    background-color: #b92c2870;
 }
 
 .label.me_method {
-    background-color: #0e90d2;
+    background-color: #0e90d270;
 }
 
 .label.material {
-    background-color: #2262d2;
+    background-color: #2262d270;
 }
 
 .label.material-tc {
-    background-color: #50ced2;
+    background-color: #50ced270;
 }
 
 .label.class {
-    background-color: #d22f09;
+    background-color: #d22f0970;
 }
 
 .label.tc {
-    background-color: #ffc800;
+    background-color: #ffe29470;
 }
 
 .label.sample {
-    background-color: #5bd2b2;
-}
-
-.label.tcValue {
-    background-color: #356635;
-}
-
-.label.measurement {
-    background-color: #356635;
+    background-color: #5bd2b270;
 }
 
 .label.temperature {
-    background-color: #356635;
+    background-color: #35663570;
 }
 
 .label.tcValue {
-    background-color: #356635;
+    background-color: #35663570;
 }
 
 .label.temperature-tc {
-    background-color: #83ff83;
+    background-color: #83ff8370;
 }
 
 .label.magnetisation {
-    background-color: #20bd4e;
+    background-color: #20bd4e70;
 }
 
 .label.pressure {
-    background-color: #92d983;
-}
-
-.label.material.name {
-    background-color: #bd4716;
-}
-
-.label.material.formula {
-    background-color: #504895;
-}
-
-.label.material.doping {
-    background-color: #649c55;
-}
-
-.label.material.shape {
-    background-color: #cd9b32;
-}
-
-.label.material.fabrication {
-    background-color: #afba4a;
+    background-color: #92d98370;
 }
 
 .label.material.variable {
-    background-color: #2f764c;
+    background-color: #2f764caa;
 }
 
 .label.material.value {
-    background-color: #ad7c2a;
+    background-color: #ad7c2aaa;
 }
 
 .label.crystal-structure {
-    background-color: #83a3d9;
+    background-color: #83a3d9aa;
+    color: #70695C !important;
 }
 
 .label.space-groups {
-    background-color: #102e4b;
+    background-color: #102e4baa;
 }
 
 .label.unit-cell-type {
-    background-color: #0776e1;
+    background-color: #0776e1aa;
 }
-
-
 
 .area.abbreviation {
     border-color: #b92c28 !important;
+    z-index: 100;
 }
 
 .area.me_method {
     border-color: #0e90d2 !important;
+    z-index: 100;
 }
 
 .area.material {
     border-color: #2262d2 !important;
+    z-index: 100;
 }
 
 .area.material-tc {
     border-color: #50ced2 !important;
+    z-index: 100;
 }
 
 .area.class {
     border-color: #d22f09 !important;
+    z-index: 100;
 }
 
 .area.tc {
     border-color: #ffe294 !important;
+    z-index: 100;
 }
 
 .area.sample {
     border-color: #5bd2b2 !important;
-}
-
-.area.measurement {
-    border-color: #356635 !important;
-}
-
-.area.tcValue {
-    border-color: #356635 !important;
+    z-index: 100;
 }
 
 .area.temperature {
     border-color: #356635 !important;
+    z-index: 100;
 }
 
 .area.tcValue {
     border-color: #356635 !important;
+    z-index: 100;
 }
 
 .area.temperature-tc {
     border-color: #83ff83 !important;
+    z-index: 100;
 }
 
 .area.magnetisation {
     border-color: #20bd4e !important;
+    z-index: 100;
 }
 
 .area.pressure {
     border-color: #92d983 !important;
+    z-index: 100;
 }
 
-.area.crystal-structure {
-    border-color: #83a3d9;
-}
 
-.area.space-groups {
-    border-color: #102e4b;
-}
-
-.area.unit-cell-type {
-    border-color: #0776e1;
-}

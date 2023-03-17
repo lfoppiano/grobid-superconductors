@@ -1,8 +1,4 @@
-[submodule "resources/dataset"]
-	path = resources/dataset
-	url = https://github.com/lfoppiano/grobid-superconductors-data.git
-
-
 [submodule "resources/web"]
-	path = resources/web
-	url = https://github.com/lfoppiano/grobid-superconductors-web.git
+        path = resources/web
+        url = https://github.com/lfoppiano/grobid-superconductors-web.git
+

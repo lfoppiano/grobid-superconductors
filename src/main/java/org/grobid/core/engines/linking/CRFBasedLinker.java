@@ -258,7 +258,7 @@ public class CRFBasedLinker {
                 
                 if (!insideLink) {
                     if (spansCorrespondingToCurrentLink.size() == 1) {
-                        LOGGER.info("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
+                        LOGGER.debug("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
                         leftSide = spansCorrespondingToCurrentLink.get(0);
                         insideLink = true;
                     } else {
@@ -268,7 +268,7 @@ public class CRFBasedLinker {
                 } else {
                     LOGGER.warn("Something is wrong, there is a link, but this means I should link on the left. Let's ignore the previous stored link and start from scratch. ");
                     if (spansCorrespondingToCurrentLink.size() == 1) {
-                        LOGGER.info("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
+                        LOGGER.debug("Link right -> " + spansCorrespondingToCurrentLink.get(0).getText());
                         leftSide = spansCorrespondingToCurrentLink.get(0);
                         insideLink = true;
                     } else {

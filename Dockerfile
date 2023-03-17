@@ -2,7 +2,7 @@
 ## Borrowed from https://github.com/kermitt2/grobid/blob/master/Dockerfile.delft
 ## See https://grobid.readthedocs.io/en/latest/Grobid-docker/
 
-## usage example with grobi version 0.6.2-SNAPSHOT: https://github.com/kermitt2/grobid/blob/master/Dockerfile.delft
+## usage example with grobid version 0.6.2-SNAPSHOT: https://github.com/kermitt2/grobid/blob/master/Dockerfile.delft
 
 ## docker build -t lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT --build-arg GROBID_VERSION=0.3.0-SNAPSHOT --file Dockerfile .
 
@@ -12,35 +12,43 @@
 ## allocate all available GPUs (only Linux with proper nvidia driver installed on host machine):
 ## docker run --rm --gpus all --init -p 8072:8072 -p 8073:8073 -v grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro  lfoppiano/grobid-superconductors:0.3.0-SNAPSHOT
 
+## Transformers selection:  
+# --build-arg TRANSFORMERS_MODEL=mattpuscibert
+# --build-arg TRANSFORMERS_MODEL=batteryonlybert (currently disabled) 
+
+
 # -------------------
 # build builder image
 # -------------------
 
-FROM openjdk:8u275-jdk as builder
+FROM openjdk:8u342-jdk as builder
 
 USER root
 
 RUN apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git
 
-RUN git clone https://github.com/kermitt2/grobid.git /opt/grobid-source && cd /opt/grobid-source && git checkout 0.7.0
+RUN mkdir -p /opt/grobid-source/grobid-home/models
+
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
-RUN git clone https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities && cd grobid-quantities && git checkout 0.7.0
+RUN git clone --depth 1 --branch 0.7.2 https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities &&  \
+    cd grobid-quantities 
+
 WORKDIR /opt/grobid-source/grobid-quantities
 COPY gradle.properties .
 
 WORKDIR /opt/grobid-source
 
 RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
-#RUN git clone https://github.com/lfoppiano/grobid-superconductors.git ./grobid-superconductors 
 
-COPY .git/ ./grobid-superconductors/.git
+COPY ./.git/ ./grobid-superconductors/.git
 COPY resources/models/ ./grobid-superconductors/resources/models/
 COPY resources/config/ ./grobid-superconductors/resources/config/
 COPY gradle/ ./grobid-superconductors/gradle/
 COPY src/ ./grobid-superconductors/src/
+COPY localLibs/ ./grobid-superconductors/localLibs/
 COPY build.gradle ./grobid-superconductors/
 COPY settings.gradle ./grobid-superconductors/
 COPY gradlew* ./grobid-superconductors/
@@ -57,8 +65,7 @@ RUN ./gradlew copyModels --no-daemon --info --stacktrace
 
 WORKDIR /opt/grobid-source/grobid-superconductors
 RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
-RUN ./gradlew installScibert --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
-#RUN ./gradlew copyModels --no-daemon --info --stacktrace && true && rm -f /opt/grobid-source/grobid-home/models/*.tar.gz
+RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
 
 
 WORKDIR /opt
@@ -67,17 +74,14 @@ WORKDIR /opt
 # build runtime image
 # -------------------
 
-FROM lfoppiano/grobid:0.7.0.gpu
+FROM grobid/grobid:0.7.2 as runtime
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
 
-# install JRE 8, python and other dependencies
+# Install SO dependencies
 RUN apt-get update && \
     apt-get -y --no-install-recommends install git wget
-#    apt-get -y remove python3.6 && \
-#    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata && \
-#    apt-get -y --no-install-recommends install git python3.7 python3.7-venv python3.7-dev python3.7-distutil
 
 WORKDIR /opt/grobid
 
@@ -88,11 +92,9 @@ COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/c
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
-# Install requirements
-WORKDIR /opt/grobid
+RUN pip install -U git+https://github.com/kermitt2/delft.git
 
-#RUN pip install git+https://github.com/lfoppiano/MaterialParser
-#RUN pip install -e /opt/grobid/grobid-superconductors-tools/materialParser
+WORKDIR /opt/grobid
 
 #RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/config.yml
@@ -101,19 +103,28 @@ RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\
 RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/config.yml
 
+## Select transformers model 
+ARG TRANSFORMERS_MODEL
+
+RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using Scibert as default transformer model" ; else rm -rf /opt/grobid/grobid-home/models/superconductors-BERT_CRF; mv /opt/grobid/grobid-home/models/superconductors-${TRANSFORMERS_MODEL}-BERT_CRF /opt/grobid/grobid-home/models/superconductors-BERT_CRF; rm -rf /opt/grobid/grobid-home/models/superconductors-*-BERT_CRF; fi
+
 # JProfiler
 #RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
 #  tar -xzf /tmp/jprofiler_linux_12_0_2.tar.gz -C /usr/local &&\
 #  rm /tmp/jprofiler_linux_12_0_2.tar.gz
 
 EXPOSE 8072 8073
-#EXPOSE 8080 8081
-
-#CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
-#CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
-CMD ["java", "-jar", "grobid-superconductors/grobid-superconductors-0.4.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 
 ARG GROBID_VERSION
+ENV GROBID_VERSION=${GROBID_VERSION:-latest}
+
+RUN if [ ! -f "grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar" ]; then mv grobid-superconductors/grobid-superconductors-*-onejar.jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar; fi  
+
+#RUN if [ "${!GROBID_VERSION}" = "unknown" ] ; then GROBID_VERSION=`ls grobid-superconductors/grobid-superconductors-*onejar.jar |  grep -oE '[0-9]\.[0-9]\.[0-9](-SNAPSHOT)?' | head -n 1`; fi
+
+#CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+#CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
+CMD ["sh", "-c", "java -jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar server grobid-superconductors/config.yml"]
 
 
 LABEL \

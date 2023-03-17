@@ -129,6 +129,7 @@ public class TabularDataEngine {
         for (Span m : materials) {
             SuperconEntry dbEntry = new SuperconEntry();
             dbEntry.setMaterialId(m.getId());
+            dbEntry.addSpan(getMinimalSpan(spansById.get(m.getId())));
             dbEntry.setRawMaterial(m.getText());
             dbEntry.setSection(LabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getLeft()));
             dbEntry.setSubsection(LabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getRight()));
@@ -153,6 +154,7 @@ public class TabularDataEngine {
                                 .forEach(dbE -> {
                                     dbE.setCriticalTemperature(linkedSpan.getText());
                                     dbE.setCriticalTemperatureId(linkedSpan.getId());
+                                    dbE.addSpan(getMinimalSpan(spansById.get(linkedSpan.getId())));
                                     entriesRelatedToThisTc.add(dbE);
                                 });
                             firstTemp = false;
@@ -164,23 +166,44 @@ public class TabularDataEngine {
                                     anotherNewDbEntry.setCriticalTemperature(linkedSpan.getText());
                                     anotherNewDbEntry.setCriticalTemperatureId(linkedSpan.getId());
                                     anotherNewDbEntry.setLinkType(entry.getValue());
+                                    anotherNewDbEntry.setSpans(
+                                        anotherNewDbEntry.getSpans()
+                                            .stream().filter(s -> !s.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL))
+                                            .map(TabularDataEngine::getMinimalSpan)
+                                            .collect(Collectors.toList())
+                                    );
+                                    anotherNewDbEntry.addSpan(getMinimalSpan(spansById.get(linkedSpan.getId())));
                                     newClones.add(anotherNewDbEntry);
                                 } catch (CloneNotSupportedException e) {
-                                    LOGGER.error("Cannot clone a Supercon object entry: " + ewa.getRawMaterial() + ". ", e);
+                                    LOGGER.error("Cannot clone a SuperCon object entry: " + ewa.getRawMaterial() + ". ", e);
                                 }
                             }
                             entriesRelatedToThisTc.addAll(newClones);
                         }
 
-                        // Process materials (with links)
-                        String meMethodsLinkedToThisTc = spansById.values().stream()
+                        // Process measurement methods (with links)
+                        List<Span> meMethodsLinkedToThisTc = spansById.values().stream()
                             .filter(span -> span.getType().equals(SUPERCONDUCTORS_MEASUREMENT_METHOD_LABEL) &&
                                 span.getLinks().stream().anyMatch(a -> a.getTargetId().equals(linkedSpan.getId())))
+                            .collect(Collectors.toList());
+                        String meMethodsLinkedAsString = meMethodsLinkedToThisTc.stream()
                             .map(Span::getText)
                             .collect(Collectors.joining(", "));
 
+                        String meMethodsLinkedIdAsString = meMethodsLinkedToThisTc.stream()
+                            .map(Span::getId)
+                            .collect(Collectors.joining(", "));
+
                         entriesRelatedToThisTc.stream()
-                            .forEach(sE -> sE.setCriticalTemperatureMeasurementMethod(meMethodsLinkedToThisTc));
+                            .forEach(sE -> {
+                                sE.setMeasurementMethod(meMethodsLinkedAsString);
+                                sE.setMeasurementMethodId(meMethodsLinkedIdAsString);
+                                sE.getSpans().addAll(
+                                    meMethodsLinkedToThisTc.stream()
+                                        .map(TabularDataEngine::getMinimalSpan)
+                                        .collect(Collectors.toList())
+                                );
+                            });
 
 
                         //Process pressures - only linked to a Tc that is linked to material
@@ -194,7 +217,11 @@ public class TabularDataEngine {
                             for (Span pressure : pressureLinkedToTheCurrentTc) {
                                 if (first) {
                                     entriesRelatedToThisTc.stream()
-                                        .forEach(dbE -> dbE.setAppliedPressure(pressure.getText()));
+                                        .forEach(dbE -> {
+                                            dbE.setAppliedPressure(pressure.getText());
+                                            dbE.setAppliedPressureId(pressure.getId());
+                                            dbE.addSpan(getMinimalSpan(spansById.get(pressure.getId())));
+                                        });
                                     first = false;
                                 } else {
                                     List<SuperconEntry> newClones = new ArrayList<>();
@@ -202,6 +229,15 @@ public class TabularDataEngine {
                                         try {
                                             SuperconEntry anotherNewDbEntry = ewa.clone();
                                             anotherNewDbEntry.setAppliedPressure(pressure.getText());
+                                            anotherNewDbEntry.setAppliedPressureId(pressure.getId());
+                                            anotherNewDbEntry.setSpans(
+                                                anotherNewDbEntry.getSpans()
+                                                    .stream()
+                                                    .filter(s -> !s.getType().equals(SUPERCONDUCTORS_PRESSURE_LABEL))
+                                                    .map(TabularDataEngine::getMinimalSpan)
+                                                    .collect(Collectors.toList())
+                                            );
+                                            anotherNewDbEntry.addSpan(getMinimalSpan(spansById.get(pressure.getId())));
                                             newClones.add(anotherNewDbEntry);
                                         } catch (CloneNotSupportedException e) {
                                             LOGGER.error("Cannot create a duplicate of the Supercon entry: " + ewa.getRawMaterial() + ". ", e);
@@ -220,5 +256,13 @@ public class TabularDataEngine {
 
         }
         return outputCSV;
+    }
+
+    private static Span getMinimalSpan(Span span) {
+        Span newSpan = new Span(span.getId(), span.getText(), span.getType());
+        newSpan.setOffsetStart(span.getOffsetStart());
+        newSpan.setOffsetEnd(span.getOffsetEnd());
+
+        return newSpan;
     }
 }

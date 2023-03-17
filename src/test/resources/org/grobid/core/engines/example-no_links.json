@@ -1,0 +1,86 @@
+{
+  "runtime": 19021,
+  "biblio": {
+    "title": "v0f20m2f0m82f02f02f02",
+    "authors": "faj90f2j09f2j092f",
+    "doi": "asdfjklfdsajkl",
+    "year": 1911,
+    "publisher": "f2f22ff2f2",
+    "journal": "0-jf2902f0jf20j92f"
+  },
+  "passages": [
+    {
+      "text": "Superconductivity in interacting interfaces of cuprate-based heterostructures ",
+      "type": "paragraph",
+      "section": "<header>",
+      "subSection": "<title>",
+      "spans": [
+        {
+          "id": "-1959951523",
+          "text": "cuprate-based",
+          "formattedText": "cuprate-based ",
+          "type": "<class>",
+          "offset_start": 47,
+          "offset_end": 60,
+          "token_start": 10,
+          "token_end": 14,
+          "linkable": false,
+          "source": "superconductors"
+        }
+      ]
+    },
+    {
+      "text": "Low dimensional superconducting systems have been the subject of numerous studies in the recent past, with the aim of achieving a higher and higher critical temperature (T c ).",
+      "spans": [
+        {
+          "id": "-272753076",
+          "text": "critical temperature",
+          "type": "<tc>",
+          "offset_start": 148,
+          "offset_end": 168,
+          "token_start": 25,
+          "token_end": 27,
+          "linkable": false,
+          "source": "superconductors"
+        },
+        {
+          "id": "951110925",
+          "text": "T c",
+          "type": "<tc>",
+          "offset_start": 170,
+          "offset_end": 173,
+          "token_start": 28,
+          "token_end": 30,
+          "linkable": false,
+          "source": "superconductors"
+        }
+      ]
+    },
+    {
+      "text": " The recent improvement in film deposition techniques has allowed the realization of artificial heterostructures, with atomically flat surfaces and interfaces, where novel properties appear that are not present in the single constituent.",
+      "type": "paragraph",
+      "section": "<header>",
+      "subSection": "<abstract>"
+    },
+    {
+      "text": " For instance, quasi-2D superconductivity was found at the interface between different oxides.",
+      "type": "paragraph",
+      "section": "<header>",
+      "subSection": "<abstract>",
+      "spans": [
+        {
+          "id": "-173770097",
+          "text": "oxides",
+          "formattedText": "oxides",
+          "type": "<class>",
+          "offset_start": 87,
+          "offset_end": 93,
+          "token_start": 27,
+          "token_end": 28,
+          "linkable": false,
+          "source": "superconductors"
+        }
+      ]
+    }
+  ]
+}

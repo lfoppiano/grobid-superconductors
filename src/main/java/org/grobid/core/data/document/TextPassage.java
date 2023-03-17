@@ -21,6 +21,8 @@ public class TextPassage {
 
     // identify the subsection within the `section` models
     private String subSection;
+    
+    private String groupId;
 
     private List<Span> spans = new ArrayList<>();
 
@@ -32,6 +34,7 @@ public class TextPassage {
         TextPassage textPassage = new TextPassage();
         textPassage.setText(other.getText());
         textPassage.setType(other.getType());
+        textPassage.setGroupId(other.getGroupId());
         textPassage.setSection(other.getSection());
         textPassage.setSubSection(other.getSubSection());
         textPassage.setSpans(other.getSpans().stream().map(Span::new).collect(Collectors.toList()));
@@ -95,5 +98,13 @@ public class TextPassage {
 
     public void setSubSection(String subSection) {
         this.subSection = subSection;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }

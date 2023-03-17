@@ -41,7 +41,7 @@ models:
     delft:
       # deep learning parameters
 #      architecture: "BidLSTM_CRF"
-      architecture: "scibert"
+      architecture: "BERT_CRF"
       embeddings_name: "glove-840B"
       runtime:
         # parameters used at runtime/prediction

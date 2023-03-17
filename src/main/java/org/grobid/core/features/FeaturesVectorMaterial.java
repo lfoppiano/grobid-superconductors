@@ -145,7 +145,7 @@ public class FeaturesVectorMaterial {
 
         if (featureFactory.test_number(text))
             featuresVector.digit = "ALLDIGIT";
-        else if (FeatureFactory.test_digit(text))
+        else if (featureFactory.test_digit(text))
             featuresVector.digit = "CONTAINDIGIT";
         else
             featuresVector.digit = "NODIGIT";
