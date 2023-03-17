@@ -92,7 +92,7 @@ COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/c
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
-RUN pip install -U git+https://github.com/kermitt2/delft.git@download_elmo
+RUN pip install -U git+https://github.com/kermitt2/delft.git
 
 WORKDIR /opt/grobid
 
