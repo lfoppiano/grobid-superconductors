@@ -303,7 +303,7 @@ public class GrobidPDFEngine {
             List<DocumentBlock> documentBlocksBySentences = new ArrayList<>();
             documentBlocks.stream().forEach(documentBlock -> {
 
-              String paragraphMd5 = Md5Crypt.md5Crypt(LayoutTokensUtil.toText(documentBlock.getLayoutTokens()).getBytes(StandardCharsets.UTF_8)).substring(0, 10);
+//              String paragraphMd5 = Md5Crypt.md5Crypt(LayoutTokensUtil.toText(documentBlock.getLayoutTokens()).getBytes(StandardCharsets.UTF_8)).substring(0, 10);
 
               String paragraphId = RandomStringUtils.random(10, true, true);
 
@@ -393,7 +393,6 @@ public class GrobidPDFEngine {
                     newDocumentBlock.setSection(section);
                     newDocumentBlock.setGroupId(paragraphId);
                     newDocumentBlock.setSubSection(subSection);
-                    newDocumentBlock.setParagraphId(paragraphMd5);
                     documentBlocksBySentences.add(newDocumentBlock);
                 }
             });

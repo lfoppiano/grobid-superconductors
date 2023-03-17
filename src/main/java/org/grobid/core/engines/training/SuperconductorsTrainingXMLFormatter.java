@@ -43,7 +43,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
         Element previousParent = null;
         Element parent = null;
         for (DocumentBlock block : documentBlocks) {
-            String paragraphId = block.getParagraphId();
+            String paragraphId = block.getGroupId();
             if (block.getSection().equals(DocumentBlock.SECTION_BODY)) {
                 if (block.getSubSection().equals(DocumentBlock.SUB_SECTION_FIGURE)) {
                     parent = getParentElement(body, previousParagraphId, paragraphId, previousParent, "ab", Pair.of("type", "figureCaption"));
