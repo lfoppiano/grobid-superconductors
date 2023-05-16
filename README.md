@@ -6,8 +6,6 @@
 [![CircleCI](https://circleci.com/gh/lfoppiano/grobid-superconductors.svg?style=svg)](https://circleci.com/gh/lfoppiano/grobid-superconductors)
 [![Build unstable](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml)
 
-__Work in progress.__
-
 * [Introduction](#introduction)
 * [Getting started](#getting-started)
 * [Performances](#performances)
