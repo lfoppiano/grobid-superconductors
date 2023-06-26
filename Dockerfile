@@ -48,9 +48,6 @@ COPY settings.gradle ./grobid-superconductors_source/
 COPY gradlew* ./grobid-superconductors_source/
 COPY gradle.properties ./grobid-superconductors_source/
 
-# Adjust config
-RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors_source/resources/config/config-docker.yml
-
 # Preparing models
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
 WORKDIR /opt/grobid-source/grobid-superconductors_source
@@ -73,6 +70,7 @@ FROM lfoppiano/grobid-quantities:0.7.3 as runtime
 ENV LANG C.UTF-8
 
 WORKDIR /opt/grobid
+RUN rm -rf /opt/grobid/grobid-quantities
 
 RUN mkdir -p /opt/grobid/grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-home/models ./grobid-home/models
@@ -84,6 +82,8 @@ VOLUME ["/opt/grobid/grobid-home/tmp"]
 WORKDIR /opt/grobid
 
 #RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
+# Adjust config
+RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  grobid-superconductors/resources/config/config.yml
 RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/resources/config/config.yml
 RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/resources/config/config.yml
 RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde.local:8080}/g' grobid-superconductors/resources/config/config.yml
