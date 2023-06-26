@@ -107,7 +107,7 @@ ENV GROBID_SUPERCONDUCTORS_OPTS "-Djava.library.path=/opt/grobid/grobid-home/lib
 
 EXPOSE 8072 8073
 
-RUN if [ ! -f "grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar" ]; then mv grobid-superconductors/grobid-superconductors-*-onejar.jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar; fi  
+# RUN if [ ! -f "grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar" ]; then mv grobid-superconductors/grobid-superconductors-*-onejar.jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar; fi  
 
 #RUN if [ "${!GROBID_VERSION}" = "unknown" ] ; then GROBID_VERSION=`ls grobid-superconductors/grobid-superconductors-*onejar.jar |  grep -oE '[0-9]\.[0-9]\.[0-9](-SNAPSHOT)?' | head -n 1`; fi
 
