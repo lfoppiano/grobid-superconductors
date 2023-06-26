@@ -82,15 +82,6 @@ VOLUME ["/opt/grobid/grobid-home/tmp"]
 
 WORKDIR /opt/grobid
 
-#RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: \/opt\/grobid\/venv/g' grobid-superconductors/config.yml
-# Adjust config
-RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  grobid-superconductors/resources/config/config.yml
-RUN sed -i 's/pythonVirtualEnv:.*/pythonVirtualEnv: /g' grobid-superconductors/resources/config/config.yml
-RUN sed -i 's/grobidHome:.*/grobidHome: grobid-home/g' grobid-superconductors/resources/config/config.yml
-RUN sed -i 's/chemDataExtractorUrl:.*/chemDataExtractorUrl: ${CDE_URL:- http:\/\/cde.local:8080}/g' grobid-superconductors/resources/config/config.yml
-RUN sed -i 's/linkingModuleUrl:.*/linkingModuleUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/resources/config/config.yml
-RUN sed -i 's/classResolverUrl:.*/classResolverUrl: ${LINKING_MODULE_URL:- http:\/\/linking_module.local:8080}/g' grobid-superconductors/resources/config/config.yml
-
 ## Select transformers model 
 ARG TRANSFORMERS_MODEL
 
@@ -105,6 +96,8 @@ WORKDIR /opt/grobid/grobid-superconductors
 ARG GROBID_VERSION
 ENV GROBID_VERSION=${GROBID_VERSION:-latest}
 ENV GROBID_SUPERCONDUCTORS_OPTS "-Djava.library.path=/opt/grobid/grobid-home/lib/lin-64 --add-opens java.base/java.lang=ALL-UNNAMED"
+ENV LINKING_MODULE_URL "http://linking_module.local:8080"
+ENV CDE_URL "http://cde.local:8080"
 
 EXPOSE 8072 8073
 
