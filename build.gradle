@@ -284,7 +284,7 @@ shadowJar {
 }
 
 jar {
-    enabled false
+    enabled true
 }
 
 artifacts {
