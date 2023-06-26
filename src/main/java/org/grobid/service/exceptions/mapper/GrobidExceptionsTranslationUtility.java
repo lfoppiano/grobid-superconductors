@@ -8,9 +8,9 @@ import org.grobid.core.exceptions.GrobidExceptionStatus;
 import org.slf4j.MDC;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

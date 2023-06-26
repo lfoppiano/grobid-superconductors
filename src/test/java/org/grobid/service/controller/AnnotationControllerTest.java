@@ -8,7 +8,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import javax.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Entity;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
