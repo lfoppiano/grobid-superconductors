@@ -71,11 +71,12 @@ ENV LANG C.UTF-8
 
 WORKDIR /opt/grobid
 RUN rm -rf /opt/grobid/grobid-quantities
+RUN rm /opt/grobid/resources
 
 RUN mkdir -p /opt/grobid/grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-home/models ./grobid-home/models
 COPY --from=builder /opt/grobid-source/grobid-superconductors ./grobid-superconductors/
-COPY --from=builder /opt/grobid-source/grobid-superconductors_source/resources/config/config.yml ./grobid-superconductors/resources/config/
+COPY --from=builder /opt/grobid-source/grobid-superconductors_source/resources/config/config-docker:.yml ./grobid-superconductors/resources/config/
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
