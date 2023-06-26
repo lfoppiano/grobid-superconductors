@@ -92,7 +92,7 @@ RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using Scibert as default tran
 #  tar -xzf /tmp/jprofiler_linux_12_0_2.tar.gz -C /usr/local &&\
 #  rm /tmp/jprofiler_linux_12_0_2.tar.gz
 
-WORKDIR /opt/grobid/grobid-superconductors
+WORKDIR /opt/grobid
 ARG GROBID_VERSION
 ENV GROBID_VERSION=${GROBID_VERSION:-latest}
 ENV GROBID_SUPERCONDUCTORS_OPTS "-Djava.library.path=/opt/grobid/grobid-home/lib/lin-64:/usr/local/lib/python3.8/dist-packages/jep --add-opens java.base/java.lang=ALL-UNNAMED"
@@ -109,7 +109,7 @@ EXPOSE 8072 8073
 #CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 #CMD ["sh", "-c", "java -jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar server grobid-superconductors/config.yml"]
 
-CMD ["bin/grobid-superconductors", "server", "resources/config/config.yml"]
+CMD ["./grobid-superconductors/bin/grobid-superconductors", "server", "grobid-superconductors/resources/config/config.yml"]
 
 
 LABEL \
