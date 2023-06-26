@@ -21,52 +21,45 @@
 # build builder image
 # -------------------
 
-FROM openjdk:8u342-jdk as builder
+FROM openjdk:17-jdk-slim as builder
 
 USER root
 
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install apt-utils libxml2 git
+    apt-get -y --no-install-recommends install apt-utils libxml2 git unzip 
 
 RUN mkdir -p /opt/grobid-source/grobid-home/models
 
 WORKDIR /opt/grobid-source
 COPY gradle.properties .
 
-RUN git clone --depth 1 --branch 0.7.2 https://github.com/kermitt2/grobid-quantities.git ./grobid-quantities &&  \
-    cd grobid-quantities 
-
-WORKDIR /opt/grobid-source/grobid-quantities
-COPY gradle.properties .
-
 WORKDIR /opt/grobid-source
 
-RUN mkdir -p grobid-superconductors/resources/config grobid-superconductors/resources/models grobid-superconductors/gradle grobid-superconductors/localLibs grobid-superconductors/resources/web grobid-superconductors/src
+RUN mkdir -p grobid-superconductors_source/resources/config grobid-superconductors_source/resources/models grobid-superconductors_source/gradle grobid-superconductors_source/localLibs grobid-superconductors_source/resources/web grobid-superconductors_source/src
 
-COPY ./.git/ ./grobid-superconductors/.git
-COPY resources/models/ ./grobid-superconductors/resources/models/
-COPY resources/config/ ./grobid-superconductors/resources/config/
-COPY gradle/ ./grobid-superconductors/gradle/
-COPY src/ ./grobid-superconductors/src/
-COPY localLibs/ ./grobid-superconductors/localLibs/
-COPY build.gradle ./grobid-superconductors/
-COPY settings.gradle ./grobid-superconductors/
-COPY gradlew* ./grobid-superconductors/
-COPY gradle.properties ./grobid-superconductors/
+COPY ./.git/ ./grobid-superconductors_source/.git
+COPY resources/models/ ./grobid-superconductors_source/resources/models/
+COPY resources/config/ ./grobid-superconductors_source/resources/config/
+COPY gradle/ ./grobid-superconductors_source/gradle/
+COPY src/ ./grobid-superconductors_source/src/
+COPY localLibs/ ./grobid-superconductors_source/localLibs/
+COPY build.gradle ./grobid-superconductors_source/
+COPY settings.gradle ./grobid-superconductors_source/
+COPY gradlew* ./grobid-superconductors_source/
+COPY gradle.properties ./grobid-superconductors_source/
 
 # Adjust config
-RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors/resources/config/config-docker.yml
+RUN sed -i '/#Docker-ignore-log-start/,/#Docker-ignore-log-end/d'  ./grobid-superconductors_source/resources/config/config-docker.yml
 
 # Preparing models
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
-
-WORKDIR /opt/grobid-source/grobid-quantities
-RUN ./gradlew copyModels --no-daemon --info --stacktrace
-
-WORKDIR /opt/grobid-source/grobid-superconductors
-RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
+WORKDIR /opt/grobid-source/grobid-superconductors_source
+RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info
 RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
 
+# Preparing distribution
+WORKDIR /opt/grobid-source
+RUN unzip -o /opt/grobid-source/grobid-superconductors_source/build/distributions/grobid-superconductors-*.zip -d grobid-superconductors_distribution && mv grobid-superconductors_distribution/grobid-superconductors-* grobid-superconductors
 
 WORKDIR /opt
 
@@ -74,25 +67,19 @@ WORKDIR /opt
 # build runtime image
 # -------------------
 
-FROM grobid/grobid:0.7.2 as runtime
+FROM lfoppiano/grobid-quantities:0.7.3 as runtime
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
-
-# Install SO dependencies
-RUN apt-get update && \
-    apt-get -y --no-install-recommends install git wget
 
 WORKDIR /opt/grobid
 
 RUN mkdir -p /opt/grobid/grobid-superconductors
 COPY --from=builder /opt/grobid-source/grobid-home/models ./grobid-home/models
-COPY --from=builder /opt/grobid-source/grobid-superconductors/build/libs/* ./grobid-superconductors/
-COPY --from=builder /opt/grobid-source/grobid-superconductors/resources/config/config.yml ./grobid-superconductors/
+COPY --from=builder /opt/grobid-source/grobid-superconductors ./grobid-superconductors/
+COPY --from=builder /opt/grobid-source/grobid-superconductors_source/resources/config/config.yml ./grobid-superconductors/resources/config/
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
-
-RUN pip install -U git+https://github.com/kermitt2/delft.git
 
 WORKDIR /opt/grobid
 
@@ -113,10 +100,12 @@ RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using Scibert as default tran
 #  tar -xzf /tmp/jprofiler_linux_12_0_2.tar.gz -C /usr/local &&\
 #  rm /tmp/jprofiler_linux_12_0_2.tar.gz
 
-EXPOSE 8072 8073
-
+WORKDIR /opt/grobid/grobid-superconductors
 ARG GROBID_VERSION
 ENV GROBID_VERSION=${GROBID_VERSION:-latest}
+ENV GROBID_SUPERCONDUCTORS_OPTS "-Djava.library.path=/opt/grobid/grobid-home/lib/lin-64 --add-opens java.base/java.lang=ALL-UNNAMED"
+
+EXPOSE 8072 8073
 
 RUN if [ ! -f "grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar" ]; then mv grobid-superconductors/grobid-superconductors-*-onejar.jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar; fi  
 
@@ -124,7 +113,9 @@ RUN if [ ! -f "grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-o
 
 #CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "grobid-superconductors/grobid-superconductors-0.5.2-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
 #CMD ["java", "-agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849", "-jar", "grobid-superconductors/grobid-superconductors-0.2.1-SNAPSHOT-onejar.jar", "server", "grobid-superconductors/config.yml"]
-CMD ["sh", "-c", "java -jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar server grobid-superconductors/config.yml"]
+#CMD ["sh", "-c", "java -jar grobid-superconductors/grobid-superconductors-${GROBID_VERSION}-onejar.jar server grobid-superconductors/config.yml"]
+
+CMD ["bin/grobid-superconductors", "server", "resources/config/config.yml"]
 
 
 LABEL \
