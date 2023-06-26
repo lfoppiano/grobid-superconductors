@@ -17,11 +17,13 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
+    id 'jacoco'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id "de.undercouch.download" version "4.1.1"
-    id 'com.github.kt3k.coveralls' version '2.12.0'
+    id 'com.github.kt3k.coveralls' version '2.12.2'
     id 'com.palantir.git-version' version '0.12.3'
     id 'net.researchgate.release' version '3.0.2'
+    id "org.jetbrains.kotlin.jvm" version "1.8.21"
 }
 
 
@@ -58,12 +60,13 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-api-easymock:2.0.9'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
 
     //GROBID and grobid-quantities
-    implementation 'com.github.kermitt2:grobid-quantities:0.7.2'
-    implementation 'org.grobid:grobid-core:0.7.2'
-    implementation 'org.grobid:grobid-trainer:0.7.2'
-    implementation 'org.grobid:grobid-service:0.7.2'
+    implementation 'com.github.kermitt2:grobid-quantities:0.7.3'
+    implementation 'org.grobid:grobid-core:0.7.3'
+    implementation 'org.grobid:grobid-trainer:0.7.3'
+    implementation 'org.grobid:grobid-service:0.7.3'
     implementation "xerces:xercesImpl:2.12.0"
     implementation "net.arnx:jsonic:1.3.10"
     implementation "net.sf.saxon:Saxon-HE:9.6.0-9"
@@ -125,9 +128,6 @@ configurations.all {
 }
 
 /** Other configuration **/
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     //    options.compilerArgs << "-Xlint:deprecation"
@@ -266,7 +266,7 @@ task downloadTransformers(dependsOn: copyModels) {
 
 
 wrapper {
-    gradleVersion "7.1.1"
+    gradleVersion "7.2"
 }
 
 jacocoTestReport {
