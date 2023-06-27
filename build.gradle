@@ -99,13 +99,23 @@ dependencies {
     implementation "io.dropwizard.metrics:metrics-servlets:4.0.0"
 
     //Misc
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'org.apache.httpcomponents:httpmime:4.5.13'
     implementation 'javax.activation:activation:1.1.1'
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
     implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
     implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.13.4'
+    
+    //Grobid-quantities
+    implementation 'tech.units:indriya:2.1.3'
+    implementation group: 'si.uom', name: 'si-units', version: '2.1'
+    implementation group: 'si.uom', name: 'si-quantity', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-quantity', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-common', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-unicode', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-ucum', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-unicode', version: '2.1'
 
     implementation 'org.dkpro.statistics:dkpro-statistics:2.2.1'
     implementation 'org.dkpro.statistics:dkpro-statistics-agreement:2.2.1'
