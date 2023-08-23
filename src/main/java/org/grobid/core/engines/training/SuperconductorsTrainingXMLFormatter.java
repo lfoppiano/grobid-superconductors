@@ -125,7 +125,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
         } else {
             parent = previousParent;
         }
-        
+
 
         return parent;
     }
@@ -164,7 +164,7 @@ public class SuperconductorsTrainingXMLFormatter implements SuperconductorsOutpu
             p.appendChild(entityElement);
 
             // We stop the process if something doesn't match
-            int accumulatedOffset = startPosition + length(contentBefore) + length(name);
+            int accumulatedOffset = startPosition + length(contentBefore) + LayoutTokensUtil.toText(superconductor.getLayoutTokens()).stripTrailing().length();
             if (end != accumulatedOffset) {
                 throw new RuntimeException("Wrong synchronisation between entities and layout tokens. End entity offset: " + end
                     + " different from the expected offset: " + accumulatedOffset);
