@@ -3,7 +3,7 @@
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Docker Hub](https://img.shields.io/docker/pulls/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Docker Pulls")
 [![Coverage Status](https://coveralls.io/repos/github/lfoppiano/grobid-superconductors/badge.svg?branch=master)](https://coveralls.io/github/lfoppiano/grobid-superconductors?branch=master)
-[![CircleCI](https://circleci.com/gh/lfoppiano/grobid-superconductors.svg?style=svg)](https://circleci.com/gh/lfoppiano/grobid-superconductors)
+[![Demo grobid-superconductors](https://img.shields.io/website-up-down-green-red/https/lfoppiano-grobid-superconductors.hf.space.svg)](https://lfoppiano-grobid-superconductors.hf.space)
 [![Build](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml)
 [![Open in Spaces](https://huggingface.co/datasets/huggingface/badges/raw/main/open-in-hf-spaces-sm.svg)](https://lfoppiano-grobid-superconductors.hf.space/)
 
