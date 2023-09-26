@@ -418,6 +418,8 @@ Our warmest thanks to [Patrice Lopez](https://github.com/kermitt2) from [Science
 
 This project has been developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
 
+Developed using ![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
+
 ## License
 
 GROBID and grobid-superconductors are distributed under [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
