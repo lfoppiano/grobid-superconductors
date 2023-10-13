@@ -29,11 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -90,8 +90,39 @@ public class MaterialParser extends AbstractParser {
     }
 
     public List<List<Material>> processParallel(List<String> texts) {
-        List<List<LayoutToken>> asLayoutTokens = texts.stream().map(SuperconductorsParser::textToLayoutTokens).collect(Collectors.toList());
-        return processParallelLT(asLayoutTokens);
+
+        List<Integer> emptyIndices = IntStream.range(0, texts.size())
+            .filter(i -> StringUtils.isBlank(texts.get(i)))
+            .boxed()
+            .toList();
+
+        Set<Integer> emptyIndicesSet = new HashSet<>(emptyIndices);
+        List<String> textsCopy = new ArrayList<>();
+
+        for (int is = 0; is < texts.size(); is++) {
+            if (!emptyIndices.contains(is)) {
+                textsCopy.add(texts.get(is));
+            }
+        }
+
+        List<List<LayoutToken>> asLayoutTokens = textsCopy.stream()
+            .map(SuperconductorsParser::textToLayoutTokens)
+            .collect(Collectors.toList());
+
+        List<List<Material>> processed = processParallelLT(asLayoutTokens);
+
+        emptyIndices.forEach(i -> processed.add(i, new ArrayList<>()));
+
+        List<List<Material>> output = new ArrayList<>();
+        for (int is = 0; is < texts.size(); is++) {
+            if (!emptyIndices.contains(is)) {
+                output.add(processed.get(is));
+            } else {
+                output.add(new ArrayList<>());
+            }
+        }
+
+        return output;
     }
 
     public List<List<Material>> processParallelLT(List<List<LayoutToken>> layoutTokensBatch) {
