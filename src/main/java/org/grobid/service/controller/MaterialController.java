@@ -44,14 +44,14 @@ public class MaterialController {
     }
 
 
-    @Path("parse2")
+    @Path("multiparse")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public List<List<Material>> processTextSuperconductorsPost2(@FormDataParam("texts") String texts) {
         return parseMaterials(texts);
     }
 
-    @Path("parse2")
+    @Path("multiparse")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public List<List<Material>> processTextSuperconductorsGet2(@FormDataParam("texts") String texts) {
