@@ -53,6 +53,8 @@ jobs:
           fi
           echo "TAGS=${TAGS}"
           echo ::set-output name=tags::${TAGS}
+      - name: Create more disk space
+        run: sudo rm -rf /usr/share/dotnet && sudo rm -rf /opt/ghc && sudo rm -rf "/usr/local/share/boost" && sudo rm -rf "$AGENT_TOOLSDIRECTORY"
       - uses: actions/checkout@v2
       - name: Build and push
         id: docker_build
