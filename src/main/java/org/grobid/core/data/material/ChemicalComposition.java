@@ -12,6 +12,10 @@ public class ChemicalComposition {
     private String formula;
 
     private String name;
+    
+    private Integer code;
+    
+    private String message;
 
     public String getFormula() {
         return formula;
@@ -38,7 +42,7 @@ public class ChemicalComposition {
     }
 
     public boolean isEmpty() {
-        return StringUtils.isBlank(formula) && StringUtils.isBlank(name) && composition.keySet().size() == 0;
+        return StringUtils.isBlank(formula) && StringUtils.isBlank(name) && composition.keySet().isEmpty();
     }
 
     @Override
@@ -61,5 +65,21 @@ public class ChemicalComposition {
     @Override
     public int hashCode() {
         return Objects.hash(composition, formula, name);
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -66,10 +66,16 @@ public class ChemicalMaterialParserClient {
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
 
-                if (statusCode == HttpURLConnection.HTTP_OK) {
-                    outputFormula = fromJsonToChemicalComposition(response.getEntity().getContent());
+                if (statusCode != HttpURLConnection.HTTP_OK) {
+                    LOGGER.debug("Not OK answer. Input: " + name + ". Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    LOGGER.debug("Not OK answer. Input: " + name + ", status code: " + statusCode);
+                    outputFormula = fromJsonToChemicalComposition(response.getEntity().getContent());
+                    if (outputFormula != null && outputFormula.getCode() != HttpURLConnection.HTTP_OK) {
+                        LOGGER.debug("Not OK answer. Input: " + name + ". " +
+                            "Status code: " + outputFormula.getCode() +
+                            "Message: " + outputFormula.getMessage());
+                        outputFormula = new ChemicalComposition();
+                    }
                 }
             }
 
@@ -101,6 +107,11 @@ public class ChemicalMaterialParserClient {
                     LOGGER.debug("Not OK answer. Input: " + formula + ". Status code: " + response.getStatusLine().getStatusCode());
                 } else {
                     outputComposition = fromJsonToChemicalComposition(response.getEntity().getContent());
+                    if (outputComposition != null && outputComposition.getCode() != HttpURLConnection.HTTP_OK) {
+                        LOGGER.debug("Not OK answer. Input: " + formula + ". Status code: " + outputComposition.getCode() +
+                            "Message: " + outputComposition.getMessage());
+                        outputComposition = new ChemicalComposition();
+                    }
                 }
             }
 
