@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.Arrays;
 import java.util.List;
 
 @Singleton
@@ -42,10 +43,32 @@ public class MaterialController {
         return parseMaterial(text);
     }
 
+
+    @Path("multiparse")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public List<List<Material>> processTextSuperconductorsPost2(@FormDataParam("texts") String texts) {
+        return parseMaterials(texts);
+    }
+
+    @Path("multiparse")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<List<Material>> processTextSuperconductorsGet2(@FormDataParam("texts") String texts) {
+        return parseMaterials(texts);
+    }
+
     private List<Material> parseMaterial(@FormDataParam("text") String text) {
         String textPreprocessed = text.replace("\r\n", "\n");
 
         return materialParser.process(textPreprocessed);
+    }
+
+    private List<List<Material>> parseMaterials(@FormDataParam("text") String text) {
+        String textPreprocessed = text.replace("\r\n", "\n");
+
+        List<String> list = Arrays.asList(textPreprocessed.split("\n"));
+        return materialParser.processParallel(list);
     }
 
 }
