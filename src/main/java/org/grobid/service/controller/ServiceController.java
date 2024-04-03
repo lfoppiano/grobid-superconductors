@@ -1,10 +1,10 @@
 package org.grobid.service.controller;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.grobid.core.data.ServiceInfo;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

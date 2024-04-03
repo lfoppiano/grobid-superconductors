@@ -1,6 +1,8 @@
 package org.grobid.service.controller;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -14,8 +16,6 @@ import org.grobid.trainer.stax.handler.AnnotationValuesStaxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

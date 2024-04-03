@@ -1,5 +1,7 @@
 package org.grobid.service.controller;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -10,8 +12,6 @@ import org.grobid.core.data.material.Material;
 import org.grobid.core.engines.MaterialParser;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.List;
 
