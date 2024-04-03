@@ -70,7 +70,8 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation "io.mockk:mockk:1.13.9"
 
-    //GROBID
+    //GROBID and grobid-quantities
+    implementation 'org.grobid:grobid-quantities:0.8.0'
     implementation 'org.grobid:grobid-core:0.8.0'
     implementation 'org.grobid:grobid-trainer:0.8.0'
     implementation 'org.grobid:grobid-service:0.8.0'
