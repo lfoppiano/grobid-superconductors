@@ -4,12 +4,13 @@ import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("health")
 @Singleton
