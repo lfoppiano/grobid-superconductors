@@ -365,7 +365,7 @@ task downloadTransformersQuantities(dependsOn: copyModels) {
     }
 }
 
-task downloadTransformers(dependsOn: downloadTransformersQuantities) {
+task downloadTransformers(dependsOn: copyModels) {
     doLast {
         download {
             src "https://transformers-data.s3.eu-central-1.amazonaws.com/superconductors-transformers-230222.zip"
