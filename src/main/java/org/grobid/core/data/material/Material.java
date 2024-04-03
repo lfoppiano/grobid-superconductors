@@ -182,7 +182,7 @@ public class Material {
 //        }
 
         try {
-            generatePermutations(mapOfContainedVariables, new ArrayList(containedVariables), outputFormulasString, Pair.of(0, 0), material.getFormula().getRawValue());
+            generatePermutations(mapOfContainedVariables, new ArrayList<>(containedVariables), outputFormulasString, Pair.of(0, 0), material.getFormula().getRawValue());
         } catch (NumberFormatException e) {
 
             Map<String, List<String>> cleanedMapOfContainedVariables = new HashMap<>();
@@ -194,7 +194,7 @@ public class Material {
             });
 
             try {
-                generatePermutations(cleanedMapOfContainedVariables, new ArrayList(containedVariables), outputFormulasString, Pair.of(0, 0), material.getFormula().getRawValue());
+                generatePermutations(cleanedMapOfContainedVariables, new ArrayList<>(containedVariables), outputFormulasString, Pair.of(0, 0), material.getFormula().getRawValue());
             } catch (NumberFormatException e2) {
                 LOGGER.debug("Cannot replace variables " + Arrays.toString(variables.toArray()));
             }
