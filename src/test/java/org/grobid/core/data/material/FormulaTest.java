@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 class FormulaTest {
 
     @Test
@@ -45,7 +43,7 @@ class FormulaTest {
         Formula formula2 = new Formula();
         formula2.setFormulaComposition(Map.of("La", "3", "Fe", "3"));
 
-        Assertions.assertEquals(formula1, formula2);
+        Assertions.assertNotEquals(formula1, formula2);
 
     }
 }
