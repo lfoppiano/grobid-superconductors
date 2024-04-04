@@ -55,12 +55,13 @@ RUN rm -f /opt/grobid-source/grobid-home/models/*.zip \
     && rm -rf /opt/grobid-source/grobid-home/models/*with_ELMo \
     && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
     && rm -rf superconductors-mattpuscibert-BERT_CRF \
-    && rm ./grobid-superconductors_source/.git
+    && rm -rf ./grobid-superconductors_source/.git
 
 # Preparing distribution
 WORKDIR /opt/grobid-source
 RUN unzip -o /opt/grobid-source/grobid-superconductors_source/build/distributions/grobid-superconductors-*.zip -d grobid-superconductors_distribution \
-    && mv grobid-superconductors_distribution/grobid-superconductors-* grobid-superconductors
+    && mv grobid-superconductors_distribution/grobid-superconductors-* grobid-superconductors \
+    && rm -rf grobid-superconductors_distribution/grobid-superconductors-*
 
 WORKDIR /opt
 
