@@ -31,9 +31,6 @@ RUN apt-get update && \
 RUN mkdir -p /opt/grobid-source/grobid-home/models
 
 WORKDIR /opt/grobid-source
-COPY gradle.properties .
-
-WORKDIR /opt/grobid-source
 
 RUN mkdir -p grobid-superconductors_source/resources/config grobid-superconductors_source/resources/models grobid-superconductors_source/gradle grobid-superconductors_source/localLibs grobid-superconductors_source/resources/web grobid-superconductors_source/src
 
@@ -51,17 +48,19 @@ COPY gradle.properties ./grobid-superconductors_source/
 # Preparing models
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
 WORKDIR /opt/grobid-source/grobid-superconductors_source
-RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info
-RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace
+RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
+    && ./gradlew downloadTransformers --no-daemon --info --stacktrace
 
 RUN rm -f /opt/grobid-source/grobid-home/models/*.zip \
     && rm -rf /opt/grobid-source/grobid-home/models/*with_ELMo \
     && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
-    && rm -rf superconductors-mattpuscibert-BERT_CRF
+    && rm -rf superconductors-mattpuscibert-BERT_CRF \
+    && rm ./grobid-superconductors_source/.git
 
 # Preparing distribution
 WORKDIR /opt/grobid-source
-RUN unzip -o /opt/grobid-source/grobid-superconductors_source/build/distributions/grobid-superconductors-*.zip -d grobid-superconductors_distribution && mv grobid-superconductors_distribution/grobid-superconductors-* grobid-superconductors
+RUN unzip -o /opt/grobid-source/grobid-superconductors_source/build/distributions/grobid-superconductors-*.zip -d grobid-superconductors_distribution \
+    && mv grobid-superconductors_distribution/grobid-superconductors-* grobid-superconductors
 
 WORKDIR /opt
 
