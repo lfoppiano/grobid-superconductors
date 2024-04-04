@@ -52,7 +52,7 @@ RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
     && ./gradlew downloadTransformers --no-daemon --info --stacktrace
 
 RUN rm -f /opt/grobid-source/grobid-home/models/*.zip \
-    && rm -rf /opt/grobid-source/grobid-home/models/*with_ELMo \
+    && rm -rf /opt/grobid-source/grobid-home/models/*-with_ELMo \
     && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
     && rm -rf superconductors-mattpuscibert-BERT_CRF \
     && rm -rf ./grobid-superconductors_source/.git
@@ -77,8 +77,10 @@ ENV LANG C.UTF-8
 WORKDIR /opt/grobid
 
 RUN rm -rf /opt/grobid/grobid-quantities \
-    && rm -rf /opt/grobid/resources/* \
-    && mkdir -p /opt/grobid/grobid-superconductors
+    && rm /opt/grobid/resources \
+    && mkdir -p /opt/grobid/grobid-superconductors \
+    && rm -rf /opt/grobid/grobid-home/models/*.-with_ELMo \
+    && rm -rf /opt/grobid/grobid-service
 
 COPY --from=builder /opt/grobid-source/grobid-home/models ./grobid-home/models
 COPY --from=builder /opt/grobid-source/grobid-superconductors ./grobid-superconductors/
