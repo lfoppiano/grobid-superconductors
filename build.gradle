@@ -369,11 +369,11 @@ task downloadTransformers(dependsOn: copyModels) {
     doLast {
         download {
             src "https://transformers-data.s3.eu-central-1.amazonaws.com/superconductors-transformers-230222.zip"
-            dest "${rootDir}/${grobidHome}/models/superconductors-transformers.zip"
+            dest "${grobidHome}/models/superconductors-transformers.zip"
             overwrite false
             print "Download bulky transformers files under grobid-home: ${grobidHome}"
         }
-        ant.unzip(src: "${rootDir}/${grobidHome}/models/superconductors-transformers.zip", dest: "${rootDir}/${grobidHome}/models/")
+        ant.unzip(src: "${grobidHome}/models/superconductors-transformers.zip", dest: "${grobidHome}/models/")
     }
 }
 
