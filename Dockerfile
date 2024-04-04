@@ -28,11 +28,10 @@ USER root
 RUN apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git unzip 
 
-RUN mkdir -p /opt/grobid-source/grobid-home/models
-
 WORKDIR /opt/grobid-source
 
-RUN mkdir -p grobid-superconductors_source/resources/config grobid-superconductors_source/resources/models grobid-superconductors_source/gradle grobid-superconductors_source/localLibs grobid-superconductors_source/resources/web grobid-superconductors_source/src
+RUN mkdir -p grobid-home/models \
+    && mkdir -p grobid-superconductors_source/resources/config grobid-superconductors_source/resources/models grobid-superconductors_source/gradle grobid-superconductors_source/localLibs grobid-superconductors_source/resources/web grobid-superconductors_source/src
 
 COPY ./.git/ ./grobid-superconductors_source/.git
 COPY resources/models/ ./grobid-superconductors_source/resources/models/
@@ -40,19 +39,15 @@ COPY resources/config/ ./grobid-superconductors_source/resources/config/
 COPY gradle/ ./grobid-superconductors_source/gradle/
 COPY src/ ./grobid-superconductors_source/src/
 COPY localLibs/ ./grobid-superconductors_source/localLibs/
-COPY build.gradle ./grobid-superconductors_source/
-COPY settings.gradle ./grobid-superconductors_source/
-COPY gradlew* ./grobid-superconductors_source/
-COPY gradle.properties ./grobid-superconductors_source/
+COPY ["gradlew*", "build.gradle", "settings.gradle", "gradle.properties", "./grobid-superconductors_source/"]
 
 # Preparing models
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
 WORKDIR /opt/grobid-source/grobid-superconductors_source
 RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
-    && ./gradlew downloadTransformers --no-daemon --info --stacktrace
-
-RUN rm -f /opt/grobid-source/grobid-home/models/*.zip \
-    && rm -rf /opt/grobid-source/grobid-home/models/*-with_ELMo \
+    && ./gradlew downloadTransformers --no-daemon --info --stacktrace \
+    && rm -f /opt/grobid-source/grobid-home/models/*.zip \
+    && rm -rf /opt/grobid-source/grobid-home/models/*.-with_ELMo \
     && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
     && rm -rf /opt/grobid-source/grobid-home/models/superconductors-mattpuscibert-BERT_CRF \
     && rm -rf ./grobid-superconductors_source/.git
