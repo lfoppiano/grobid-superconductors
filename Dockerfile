@@ -52,7 +52,7 @@ COPY gradle.properties ./grobid-superconductors_source/
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
 WORKDIR /opt/grobid-source/grobid-superconductors_source
 RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info
-RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace \
+RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace
 
 RUN rm -f /opt/grobid-source/grobid-home/models/*.zip \
     && rm -rf /opt/grobid-source/grobid-home/models/*with_ELMo \
@@ -77,8 +77,8 @@ ENV LANG C.UTF-8
 WORKDIR /opt/grobid
 
 RUN rm -rf /opt/grobid/grobid-quantities \
-    && rm /opt/grobid/resources \
-    && mkdir -p /opt/grobid/grobid-superconductors \
+    && rm -rf /opt/grobid/resources/* \
+    && mkdir -p /opt/grobid/grobid-superconductors
 
 COPY --from=builder /opt/grobid-source/grobid-home/models ./grobid-home/models
 COPY --from=builder /opt/grobid-source/grobid-superconductors ./grobid-superconductors/
