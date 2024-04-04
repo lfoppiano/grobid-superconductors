@@ -55,9 +55,9 @@ RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info
 RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace \
 
 RUN rm -f /opt/grobid-source/grobid-home/models/*.zip \
-    && RUN rm -rf /opt/grobid-source/grobid-home/models/*with_ELMo \
-    && RUN rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
-    && RUN rm -rf superconductors-mattpuscibert-BERT_CRF
+    && rm -rf /opt/grobid-source/grobid-home/models/*with_ELMo \
+    && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
+    && rm -rf superconductors-mattpuscibert-BERT_CRF
 
 # Preparing distribution
 WORKDIR /opt/grobid-source
