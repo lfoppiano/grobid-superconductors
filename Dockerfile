@@ -55,12 +55,6 @@ RUN git remote prune origin && git repack && git prune-packed && git reflog expi
     && rm -rf /opt/grobid-source/grobid-superconductors_source/.git
 
 
-# Preparing distribution
-WORKDIR /opt/grobid-source/grobid-superconductors_source
-
-
-WORKDIR /opt
-
 # -------------------
 # build runtime image
 # -------------------
