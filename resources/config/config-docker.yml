@@ -124,17 +124,17 @@ models:
 
 server:
   type: custom
-  idleTimeout: 120 seconds
   applicationConnectors:
     - type: http
       port: 8072
+      idleTimeout: 120 seconds
   adminConnectors:
     - type: http
       port: 8073
   registerDefaultExceptionMappers: false
 
 logging:
-  level: DEBUG
+  level: WARN
 
   # Logger-specific levels.
   loggers:
@@ -146,6 +146,4 @@ logging:
   appenders:
     - type: console
       threshold: INFO
-
-version: 2
-timeZone: UTC
+      timeZone: UTC

@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v4
       with:
-        java-version: 1.17
+        java-version: '17.0.10+7'
+        distribution: 'temurin'
+        cache: 'gradle'
     - name: Build with Gradle
       run: ./gradlew build -x test
 
@@ -31,19 +33,28 @@ jobs:
 
 
   docker-build:
-    needs: [build]
-
-    runs-on: self-hosted
+    needs: [ build ]
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Create more disk space
+        run: |
+            sudo rm -rf /usr/share/dotnet 
+            sudo rm -rf /opt/ghc 
+            sudo rm -rf "/usr/local/share/boost" 
+            sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+            sudo rm -rf /opt/hostedtoolcache
+      - uses: actions/checkout@v4
+      - name: Build and push
+        id: docker_build
+        uses: mr-smithers-excellent/docker-build-push@v6
         with:
-          submodules: false
-      - name: set up proxy http
-        run: echo -e "systemProp.http.proxyHost=wwwout.nims.go.jp\nsystemProp.http.proxyPort=8888\nsystemProp.http.nonProxyHosts=*.nims.go.jp,localhost\n\nsystemProp.https.proxyHost=wwwout.nims.go.jp\nsystemProp.https.proxyPort=8888\nsystemProp.https.nonProxyHosts=*.nims.go.jp,localhost" >> gradle.properties
-      - name: check result proxy
-        run: cat gradle.properties
-      - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag lfoppiano/grobid-superconductors:latest
-      - name: Cleanup older than 24h images and containers
-        run: docker system prune --filter "until=24h" --force
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          image: lfoppiano/grobid-superconductors
+          registry: docker.io
+          pushImage: ${{ github.event_name != 'pull_request' }}
+          tags: latest-develop
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

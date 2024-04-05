@@ -2,12 +2,12 @@ package org.grobid.core.engines;
 
 
 import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.grobid.core.GrobidModel;
 import org.grobid.core.analyzers.DeepAnalyzer;
-import org.grobid.core.data.document.Span;
 import org.grobid.core.data.material.ChemicalComposition;
 import org.grobid.core.data.material.Formula;
 import org.grobid.core.data.material.Material;
@@ -28,9 +28,7 @@ import org.grobid.core.utilities.client.ChemicalMaterialParserClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
