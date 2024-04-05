@@ -52,7 +52,7 @@ RUN git remote prune origin && git repack && git prune-packed && git reflog expi
     && unzip -o build/distributions/grobid-superconductors-*.zip -d ../grobid-superconductors_distribution \
     && mv ../grobid-superconductors_distribution/grobid-superconductors-* ../grobid-superconductors \
     && rm -rf ../grobid-superconductors_distribution \
-    && rm -rf /opt/grobid-source/grobid-superconductors_source/.git \
+    && rm -rf /opt/grobid-source/grobid-superconductors_source/.git
 
 
 # Preparing distribution
