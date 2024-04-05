@@ -381,9 +381,6 @@ wrapper {
     gradleVersion "7.2"
 }
 
-test {
-    useJUnitPlatform()
-}
 
 jacocoTestReport {
     reports {

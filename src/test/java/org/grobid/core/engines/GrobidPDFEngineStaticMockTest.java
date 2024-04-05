@@ -33,7 +33,6 @@ public class GrobidPDFEngineStaticMockTest {
 
     @BeforeClass
     public static void before() throws Exception {
-        initEngineForTests();
         GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
         modelParameters.name = "bao";
         GrobidProperties.addModel(modelParameters);
