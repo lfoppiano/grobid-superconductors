@@ -31,8 +31,8 @@ consolidation:
 
 models:
   - name: "superconductors"
-    engine: "wapiti"
-#    engine: "delft"
+#    engine: "wapiti"
+    engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
@@ -49,12 +49,14 @@ models:
         batch_size: 4
 
   - name: "material"
-    engine: "wapiti"
+    engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
+    delft:
+      architecture: "BERT_CRF"
 
   - name: "entityLinker-material-tcValue"
     engine: "wapiti"
@@ -121,10 +123,10 @@ models:
       
 server:
   type: custom
-  idleTimeout: 120 seconds
   applicationConnectors:
     - type: http
       port: 8072
+      idleTimeout: 120 seconds
   adminConnectors:
     - type: http
       port: 8073
@@ -143,6 +145,7 @@ logging:
   appenders:
     - type: console
       threshold: INFO
+      timeZone: UTC
 # The following line is used to remove the logger in the docker image, please don't modify it
 #Docker-ignore-log-start
     - type: file
@@ -154,6 +157,3 @@ logging:
       timeZone: UTC
       maxFileSize: 50MB
 #Docker-ignore-log-end
-
-version: 2
-timeZone: UTC

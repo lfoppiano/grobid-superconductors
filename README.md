@@ -1,12 +1,11 @@
-# Grobid superconductors module
+# Grobid superconductors
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Docker Hub](https://img.shields.io/docker/pulls/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Docker Pulls")
 [![Coverage Status](https://coveralls.io/repos/github/lfoppiano/grobid-superconductors/badge.svg?branch=master)](https://coveralls.io/github/lfoppiano/grobid-superconductors?branch=master)
-[![CircleCI](https://circleci.com/gh/lfoppiano/grobid-superconductors.svg?style=svg)](https://circleci.com/gh/lfoppiano/grobid-superconductors)
-[![Build unstable](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml)
-
-__Work in progress.__
+[![Demo grobid-superconductors](https://img.shields.io/website-up-down-green-red/https/lfoppiano-grobid-superconductors.hf.space.svg)](https://lfoppiano-grobid-superconductors.hf.space)
+[![Build](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml/badge.svg)](https://github.com/lfoppiano/grobid-superconductors/actions/workflows/ci-build-unstable.yml)
+[![Open in Spaces](https://huggingface.co/datasets/huggingface/badges/raw/main/open-in-hf-spaces-sm.svg)](https://lfoppiano-grobid-superconductors.hf.space/)
 
 * [Introduction](#introduction)
 * [Getting started](#getting-started)
@@ -419,6 +418,8 @@ Our warmest thanks to [Patrice Lopez](https://github.com/kermitt2) from [Science
 
 This project has been developed at the [National Institute for Materials Science](http://www.nims.go.jp), in [Tsukuba](https://en.wikipedia.org/wiki/Tsukuba,_Ibaraki), Japan.  
 
+Developed using ![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
+
 ## License
 
 GROBID and grobid-superconductors are distributed under [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
@@ -432,56 +433,56 @@ We described the framework around the system in the following articles (the late
 
  - [Automatic Extraction of Materials and Properties from Superconductors Scientific Literature ](https://hal.inria.fr/hal-03776658)
    ```
-   @article{doi:10.1080/27660400.2022.2153633,
-	author = {Luca Foppiano and Pedro Baptista Castro and Pedro Ortiz Suarez and Kensei Terashima and Yoshihiko Takano and Masashi Ishii},
-	title = {Automatic extraction of materials and properties from superconductors scientific literature},
-	journal = {Science and Technology of Advanced Materials: Methods},
-	volume = {3},
-	number = {1},
-	pages = {2153633},
-	year  = {2023},
-	publisher = {Taylor & Francis},
-	doi = {10.1080/27660400.2022.2153633},
-	URL = { 
-        	https://doi.org/10.1080/27660400.2022.2153633
-	},
-	eprint = { 
-        https://doi.org/10.1080/27660400.2022.2153633
+	@article{doi:10.1080/27660400.2022.2153633,
+		author = {Luca Foppiano and Pedro Baptista Castro and Pedro Ortiz Suarez and Kensei Terashima and Yoshihiko Takano and Masashi Ishii},
+		title = {Automatic extraction of materials and properties from superconductors scientific literature},
+		journal = {Science and Technology of Advanced Materials: Methods},
+		volume = {3},
+		number = {1},
+		pages = {2153633},
+		year  = {2023},
+		publisher = {Taylor & Francis},
+		doi = {10.1080/27660400.2022.2153633},
+		URL = { 
+			https://doi.org/10.1080/27660400.2022.2153633
+		},
+		eprint = { 
+		https://doi.org/10.1080/27660400.2022.2153633
+		}
 	}
-    }
    ```
 
 
  - [SuperMat](http://github.com/lfoppiano/Supermat): construction of a linked annotated dataset from superconductors-related publications
       ``` 
-        @article{doi:10.1080/27660400.2021.1918396,
-             author = {Luca Foppiano and Sae Dieb and Akira Suzuki and Pedro Baptista de Castro and Suguru Iwasaki and Azusa Uzuki and Miren Garbine Esparza Echevarria and Yan Meng and Kensei Terashima and Laurent Romary and Yoshihiko Takano and Masashi Ishii},
-             title = {SuperMat: construction of a linked annotated dataset from superconductors-related publications},
-             journal = {Science and Technology of Advanced Materials: Methods},
-             volume = {1},
-             number = {1},
-             pages = {34-44},
-             year  = {2021},
-             publisher = {Taylor & Francis},
-             doi = {10.1080/27660400.2021.1918396},
-             URL = { https://doi.org/10.1080/27660400.2021.1918396 },
-             eprint = { https://doi.org/10.1080/27660400.2021.1918396 }
-             }
+	@article{doi:10.1080/27660400.2021.1918396,
+		author = {Luca Foppiano and Sae Dieb and Akira Suzuki and Pedro Baptista de Castro and Suguru Iwasaki and Azusa Uzuki and Miren Garbine Esparza Echevarria and Yan Meng and Kensei Terashima and Laurent Romary and Yoshihiko Takano and Masashi Ishii},
+		title = {SuperMat: construction of a linked annotated dataset from superconductors-related publications},
+		journal = {Science and Technology of Advanced Materials: Methods},
+		volume = {1},
+		number = {1},
+		pages = {34-44},
+		year  = {2021},
+		publisher = {Taylor & Francis},
+		doi = {10.1080/27660400.2021.1918396},
+		URL = { https://doi.org/10.1080/27660400.2021.1918396 },
+		eprint = { https://doi.org/10.1080/27660400.2021.1918396 }
+	}
       ```
  - "Proposal for Automatic Extraction of Superconductors properties from scientific literature": [PDF](http://pubman.nims.go.jp/pubman/faces/viewItemOverviewPage.jsp?itemId=escidoc:1890245:3)
       ```
-      @inproceedings{foppiano2019proposal,
-          address = {Tsukuba},
-          title = {Proposal for {Automatic} {Extraction} {Framework} of {Superconductors} {Related} {Information} from {Scientific} {Literature}},
-          volume = {119},
-          copyright = {All rights reserved},
-          abstract = {The automatic collection of materials information from research papers using Natural Language Processing (NLP) is highly required for rapid materials development using big data, namely materials informatics (MI). The difficulty of this automatic collection is mainly caused by the variety of expressions in the papers, a robust system with tolerance to such variety is required to be developed. In this paper, we report an ongoing interdisciplinary work to construct a system for automatic collection of superconductor-related information from scientific literature using text mining techniques. We focused on the identification of superconducting material names and their critical temperature (Tc) key property. We discuss the construction of a prototype for extraction and linking using machine learning (ML) techniques for the physical information collection. From the evaluation using 500 sample documents, we define a baseline and a direction for future improvements.},
-          language = {eng},
-          booktitle = {Letters and {Technology} {News}, vol. 119, no. 66, {SC}2019-1 (no.66)},
-          author = {Foppiano, Luca and Thaer, M. Dieb and Suzuki, Akira and Ishii, Masashi},
-          month = may,
-          year = {2019},
-          note = {ISSN: 2432-6380},
-          pages = {1--5}
-      }
+	@inproceedings{foppiano2019proposal,
+		address = {Tsukuba},
+		title = {Proposal for {Automatic} {Extraction} {Framework} of {Superconductors} {Related} {Information} from {Scientific} {Literature}},
+		volume = {119},
+		copyright = {All rights reserved},
+		abstract = {The automatic collection of materials information from research papers using Natural Language Processing (NLP) is highly required for rapid materials development using big data, namely materials informatics (MI). The difficulty of this automatic collection is mainly caused by the variety of expressions in the papers, a robust system with tolerance to such variety is required to be developed. In this paper, we report an ongoing interdisciplinary work to construct a system for automatic collection of superconductor-related information from scientific literature using text mining techniques. We focused on the identification of superconducting material names and their critical temperature (Tc) key property. We discuss the construction of a prototype for extraction and linking using machine learning (ML) techniques for the physical information collection. From the evaluation using 500 sample documents, we define a baseline and a direction for future improvements.},
+		language = {eng},
+		booktitle = {Letters and {Technology} {News}, vol. 119, no. 66, {SC}2019-1 (no.66)},
+		author = {Foppiano, Luca and Thaer, M. Dieb and Suzuki, Akira and Ishii, Masashi},
+		month = may,
+		year = {2019},
+		note = {ISSN: 2432-6380},
+		pages = {1--5}
+	}
       ```

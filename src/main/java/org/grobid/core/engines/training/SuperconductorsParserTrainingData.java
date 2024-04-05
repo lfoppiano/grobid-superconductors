@@ -166,6 +166,7 @@ public class SuperconductorsParserTrainingData {
             DocumentBlock newDocumentBlock = new DocumentBlock(documentBlock);
             newDocumentBlock.setLayoutTokens(normalisedLayoutTokens);
             newDocumentBlock.setSpans(sortedEntities);
+            newDocumentBlock.setGroupId(documentBlock.getGroupId());
 
             labeledTextList.add(newDocumentBlock);
 

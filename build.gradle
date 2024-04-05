@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 buildscript {
     repositories {
         mavenLocal()
@@ -19,9 +21,10 @@ plugins {
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id "de.undercouch.download" version "4.1.1"
-    id 'com.github.kt3k.coveralls' version '2.12.0'
+    id 'com.github.kt3k.coveralls' version '2.12.2'
     id 'com.palantir.git-version' version '0.12.3'
     id 'net.researchgate.release' version '3.0.2'
+    id "org.jetbrains.kotlin.jvm" version "1.8.21"
 }
 
 
@@ -44,9 +47,12 @@ description = """Grobid module for extraction of superconductor information from
 
 dependencies {
     //Tests
-    testImplementation(platform('org.junit:junit-bom:5.8.1'))
+    testImplementation(platform('org.junit:junit-bom:5.10.2'))
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher") {
+        because("Only needed to run tests in a version of IntelliJ IDEA that bundles older versions")
+    }
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation('org.junit.jupiter:junit-jupiter')
-    testImplementation("junit:junit:4.13.2")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine") {
         because 'allows JUnit 3 and JUnit 4 tests to run'
     }
@@ -54,16 +60,19 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") {
         because 'allows tests to run from IDEs that bundle older version of launcher'
     }
-    testImplementation 'org.easymock:easymock:4.3'
+    testImplementation 'org.easymock:easymock:5.2.0'
+    testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-api-easymock:2.0.9'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation "io.mockk:mockk:1.13.9"
 
     //GROBID and grobid-quantities
-    implementation 'com.github.kermitt2:grobid-quantities:0.7.2'
-    implementation 'org.grobid:grobid-core:0.7.2'
-    implementation 'org.grobid:grobid-trainer:0.7.2'
-    implementation 'org.grobid:grobid-service:0.7.2'
+    implementation 'org.grobid:grobid-quantities:0.8.0'
+    implementation 'org.grobid:grobid-core:0.8.0'
+    implementation 'org.grobid:grobid-trainer:0.8.0'
+    implementation 'org.grobid:grobid-service:0.8.0'
     implementation "xerces:xercesImpl:2.12.0"
     implementation "net.arnx:jsonic:1.3.10"
     implementation "net.sf.saxon:Saxon-HE:9.6.0-9"
@@ -83,25 +92,36 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.10.0'
 
     //Dropwizard
-    implementation "io.dropwizard:dropwizard-core:1.3.29"
-    implementation 'io.dropwizard:dropwizard-jersey:1.3.29'
-    implementation "io.dropwizard:dropwizard-assets:1.3.29"
-    implementation "com.hubspot.dropwizard:dropwizard-guicier:1.3.5.2"
-    implementation "io.dropwizard:dropwizard-testing:1.3.29"
-    implementation "io.dropwizard:dropwizard-forms:1.3.29"
-    implementation "io.dropwizard:dropwizard-client:1.3.29"
-    implementation "io.dropwizard:dropwizard-auth:1.3.29"
-    implementation "io.dropwizard.metrics:metrics-core:4.0.0"
-    implementation "io.dropwizard.metrics:metrics-servlets:4.0.0"
+    implementation 'ru.vyarus:dropwizard-guicey:7.0.0'
+
+    implementation 'io.dropwizard:dropwizard-bom:4.0.0'
+    implementation 'io.dropwizard:dropwizard-core:4.0.0'
+    implementation 'io.dropwizard:dropwizard-assets:4.0.0'
+    implementation 'io.dropwizard:dropwizard-testing:4.0.0'
+    implementation 'io.dropwizard:dropwizard-forms:4.0.0'
+    implementation 'io.dropwizard:dropwizard-client:4.0.0'
+    implementation 'io.dropwizard:dropwizard-auth:4.0.0'
+    implementation 'io.dropwizard.metrics:metrics-core:4.2.22'
+    implementation 'io.dropwizard.metrics:metrics-servlets:4.2.22'
 
     //Misc
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'org.apache.httpcomponents:httpmime:4.5.13'
     implementation 'javax.activation:activation:1.1.1'
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
     implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
     implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.13.4'
+    
+    //Grobid-quantities
+    implementation 'tech.units:indriya:2.1.3'
+    implementation group: 'si.uom', name: 'si-units', version: '2.1'
+    implementation group: 'si.uom', name: 'si-quantity', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-quantity', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-common', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-unicode', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-ucum', version: '2.1'
+    implementation group: 'systems.uom', name: 'systems-unicode', version: '2.1'
 
     implementation 'org.dkpro.statistics:dkpro-statistics:2.2.1'
     implementation 'org.dkpro.statistics:dkpro-statistics-agreement:2.2.1'
@@ -125,9 +145,6 @@ configurations.all {
 }
 
 /** Other configuration **/
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     //    options.compilerArgs << "-Xlint:deprecation"
@@ -137,9 +154,40 @@ tasks.withType(JavaCompile) {
 sourceSets.main.resources {
     srcDirs = ["src/main/resources", "resources/config"]
 }
+sourceSets.test.resources {
+    srcDirs = ["src/test/resources"]
+}
 
 test {
     exclude '**/**IntegrationTest**'
+    useJUnitPlatform()
+    maxHeapSize = "1024m"
+
+    def libraries = ""
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        if (Os.isArch("aarch64")) {
+            libraries = "${file("./grobid-home/lib/mac_arm-64").absolutePath}"
+        } else {
+            libraries = "${file("./grobid-home/lib/mac-64").absolutePath}"
+        }
+    } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+        def jepDir = rootProject.rootDir.getAbsolutePath() + "/grobid-home/lib/lin-64/jep"
+        libraries = jepDir
+        jepDir = rootProject.rootDir.getAbsolutePath() + "/grobid-home/lib/lin-64"
+        libraries += ":" + jepDir
+    } else {
+        throw new RuntimeException("Unsupported platform!")
+    }
+
+    if (JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0) {
+        jvmArgs "--add-opens", "java.base/java.util.stream=ALL-UNNAMED",
+            "--add-opens", "java.base/java.io=ALL-UNNAMED",
+            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+            "--add-opens", "java.base/java.util.regex=ALL-UNNAMED",
+            "--add-opens", "java.base/java.math=ALL-UNNAMED",
+            "--add-opens", "java.base/java.text=ALL-UNNAMED"
+    }
+    systemProperty "java.library.path", "${System.getProperty('java.library.path')}:" + libraries
 }
 
 tasks.run.workingDir = rootProject.rootDir
@@ -148,6 +196,60 @@ mainClassName = 'org.grobid.service.GrobidSuperconductorsApplication'
 
 run {
     args = ['server', 'resources/config/config.yml']
+
+    def libraries = ""
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        if (Os.isArch("aarch64")) {
+            libraries = "${file("../grobid-home/lib/mac_arm-64").absolutePath}"
+        } else {
+            libraries = "${file("../grobid-home/lib/mac-64").absolutePath}"
+        }
+    } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+        libraries = "${file("../grobid-home/lib/lin-64/jep").absolutePath}:" +
+            "${file("../grobid-home/lib/lin-64").absolutePath}:"
+    } else {
+        throw new RuntimeException("Unsupported platform!")
+    }
+
+    if (JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0) {
+        jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
+    }
+    workingDir = rootProject.rootDir
+    def javaLibraryPath = "${System.getProperty('java.library.path')}:" + libraries
+
+    systemProperty "java.library.path", javaLibraryPath
+}
+
+task integration(type: Test) {
+    include '**'
+
+    maxHeapSize = "1024m"
+
+    def libraries = ""
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        if (Os.isArch("aarch64")) {
+            libraries = "${file("./grobid-home/lib/mac_arm-64").absolutePath}"
+        } else {
+            libraries = "${file("./grobid-home/lib/mac-64").absolutePath}"
+        }
+    } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+        def jepDir = rootProject.rootDir.getAbsolutePath() + "/grobid-home/lib/lin-64/jep"
+        libraries = jepDir
+        jepDir = rootProject.rootDir.getAbsolutePath() + "/grobid-home/lib/lin-64"
+        libraries += ":" + jepDir
+    } else {
+        throw new RuntimeException("Unsupported platform!")
+    }
+
+    if (JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0) {
+        jvmArgs "--add-opens", "java.base/java.util.stream=ALL-UNNAMED",
+            "--add-opens", "java.base/java.io=ALL-UNNAMED",
+            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+            "--add-opens", "java.base/java.util.regex=ALL-UNNAMED",
+            "--add-opens", "java.base/java.math=ALL-UNNAMED",
+            "--add-opens", "java.base/java.text=ALL-UNNAMED"
+    }
+    systemProperty "java.library.path", "${System.getProperty('java.library.path')}:" + libraries
 }
 
 
@@ -201,18 +303,14 @@ shadowJar {
 }
 
 jar {
-    enabled false
+    enabled true
 }
 
 artifacts {
     archives shadowJar
-//    archives jar
 }
 
-//distZip.archiveClassifier = 'application'
-//distTar.archiveClassifier = 'application'
-
-distZip.enabled = false
+distZip.enabled = true
 distTar.enabled = false
 shadowDistZip.enabled = false
 shadowDistTar.enabled = false
@@ -230,6 +328,9 @@ publishing {
 
 def conf = new org.yaml.snakeyaml.Yaml().load( new File("resources/config/config.yml").newInputStream() )
 def grobidHome = conf.grobidHome.replace("\$", "").replace('{', "").replace("GROBID_HOME:- ", "").replace("}", "")
+if (grobidHome.startsWith("../")) {
+    grobidHome = "${rootProject.rootDir}/${grobidHome}"
+}
 
 /** Model management **/
 
@@ -244,29 +345,44 @@ task copyModels(type: Copy) {
     include "**/preprocessor.json"
     exclude "**/features-engineering/**"
     exclude "**/result-logs/**"
-    into "${rootDir}/${grobidHome}/models/"
+    into "${grobidHome}/models/"
 
     doLast {
         print "Copy models under grobid-home: ${grobidHome}"
-        ant.gunzip(src: "${rootDir}/${grobidHome}/models/superconductors/model.wapiti.gz", dest: "${rootDir}/${grobidHome}/models/superconductors/")
+        ant.gunzip(src: "${grobidHome}/models/superconductors/model.wapiti.gz", dest: "${grobidHome}/models/superconductors/")
+    }
+}
+
+task downloadTransformersQuantities(dependsOn: copyModels) {
+    doLast {
+        download {
+            src "https://transformers-data.s3.eu-central-1.amazonaws.com/quantities-transformers-240226.zip"
+            dest "${grobidHome}/models/quantities-transformers.zip"
+            overwrite false
+            print "Download bulky transformers files under grobid-home: ${grobidHome}"
+        }
+        ant.unzip(src: "${grobidHome}/models/quantities-transformers.zip", dest: "${grobidHome}/models/")
     }
 }
 
 task downloadTransformers(dependsOn: copyModels) {
     doLast {
         download {
-            src "https://kdrive.infomaniak.com/2/app/104844/share/0f902484-a529-4562-96d7-364959f364dd/files/150668/download"
-            dest "${rootDir}/${grobidHome}/models/superconductors-transformers.zip"
+            src "https://transformers-data.s3.eu-central-1.amazonaws.com/superconductors-transformers-230222.zip"
+            dest "${grobidHome}/models/superconductors-transformers.zip"
             overwrite false
             print "Download bulky transformers files under grobid-home: ${grobidHome}"
         }
-        ant.unzip(src: "${rootDir}/${grobidHome}/models/superconductors-transformers.zip", dest: "${rootDir}/${grobidHome}/models/")
+        ant.unzip(src: "${grobidHome}/models/superconductors-transformers.zip", dest: "${grobidHome}/models/")
     }
 }
 
-
 wrapper {
-    gradleVersion "7.1.1"
+    gradleVersion "7.2"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jacocoTestReport {
@@ -289,5 +405,3 @@ release {
         requireBranch.set('master')
     }
 }
-
-
