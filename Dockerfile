@@ -42,19 +42,18 @@ COPY ["gradlew*", "build.gradle", "settings.gradle", "gradle.properties", "./gro
 COPY .git/ ./grobid-superconductors_source/.git/
 
 # Preparing models
-RUN rm -rf /opt/grobid-source/grobid-home/models/*
 WORKDIR /opt/grobid-source/grobid-superconductors_source
 RUN git remote prune origin && git repack && git prune-packed && git reflog expire --expire=1.day.ago && git gc --aggressive \
     && ./gradlew downloadTransformers --no-daemon --info --stacktrace \
     && rm -f /opt/grobid-source/grobid-home/models/*.zip \
+    && rm -rf /opt/grobid-source/grobid-home/models/*.-with_ELMo \
+    && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
     && ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
     && unzip -o build/distributions/grobid-superconductors-*.zip -d ../grobid-superconductors_distribution \
     && mv ../grobid-superconductors_distribution/grobid-superconductors-* ../grobid-superconductors \
     && rm -rf ../grobid-superconductors_distribution \
-    && rm -rf .git \
-    && rm -rf /opt/grobid-source/grobid-home/models/*.-with_ELMo \
-    && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
-    && rm -rf /opt/grobid-source/grobid-home/models/superconductors-mattpuscibert-BERT_CRF
+    && rm -rf /opt/grobid-source/grobid-superconductors_source/.git \
+
 
 # Preparing distribution
 WORKDIR /opt/grobid-source/grobid-superconductors_source
