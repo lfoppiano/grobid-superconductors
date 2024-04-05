@@ -5,34 +5,35 @@ on:
   push:
     tags:
       - 'v*'
-  
+
 concurrency:
   group: docker
   cancel-in-progress: true
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17.0.10+7'
-          distribution: 'temurin'
-          cache: 'gradle'
-      - name: Build with Gradle
-        run: ./gradlew build -x test
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17.0.10+7'
+        distribution: 'temurin'
+        cache: 'gradle'
+    - name: Build with Gradle
+      run: ./gradlew build -x test
 
-      - name: Test with Gradle Jacoco and Coveralls
-        run: ./gradlew test jacocoTestReport coveralls --no-daemon
-  
-      - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          format: jacoco
+    - name: Test with Gradle Jacoco and Coveralls
+      run: ./gradlew test jacocoTestReport coveralls --no-daemon
+
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        format: jacoco
         
         
   docker-build:
@@ -40,6 +41,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Create more disk space
+        run: sudo rm -rf /usr/share/dotnet && sudo rm -rf /opt/ghc && sudo rm -rf "/usr/local/share/boost" && sudo rm -rf "$AGENT_TOOLSDIRECTORY"
       - name: Set tags
         id: set_tags
         run: |
@@ -55,19 +58,17 @@ jobs:
           fi
           echo "TAGS=${TAGS}"
           echo ::set-output name=tags::${TAGS}
-      - name: Create more disk space
-        run: sudo rm -rf /usr/share/dotnet && sudo rm -rf /opt/ghc && sudo rm -rf "/usr/local/share/boost" && sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build and push
         id: docker_build
-        uses: mr-smithers-excellent/docker-build-push@v5
+        uses: mr-smithers-excellent/docker-build-push@v6
         with:
+          dockerfile: Dockerfile
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           image: lfoppiano/grobid-superconductors
           registry: docker.io
           pushImage: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.set_tags.outputs.tags }}
-#          buildArgs: "GROBID_VERSION=${VERSION}"
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}  
