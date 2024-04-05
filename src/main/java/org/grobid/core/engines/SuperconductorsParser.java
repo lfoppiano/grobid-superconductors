@@ -1,6 +1,8 @@
 package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,8 +29,6 @@ import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 

@@ -1,5 +1,6 @@
 package org.grobid.core.engines;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,7 +10,6 @@ import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
