@@ -2,6 +2,7 @@ package org.grobid.core.engines;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,11 +26,13 @@ import org.grobid.core.tokenization.LabeledTokensContainer;
 import org.grobid.core.tokenization.TaggingTokenCluster;
 import org.grobid.core.tokenization.TaggingTokenClusteror;
 import org.grobid.core.utilities.AdditionalLayoutTokensUtil;
+import org.grobid.core.utilities.LayoutTokensUtil;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.SentenceUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -299,7 +302,10 @@ public class GrobidPDFEngine {
 
             List<DocumentBlock> documentBlocksBySentences = new ArrayList<>();
             documentBlocks.stream().forEach(documentBlock -> {
-                String paragraphId = RandomStringUtils.random(10, true, true);
+
+//              String paragraphMd5 = Md5Crypt.md5Crypt(LayoutTokensUtil.toText(documentBlock.getLayoutTokens()).getBytes(StandardCharsets.UTF_8)).substring(0, 10);
+
+              String paragraphId = RandomStringUtils.random(10, true, true);
 
                 List<Pair<Integer, Integer>> markersExtremitiesAsIndex = new ArrayList<>();
                 List<OffsetPosition> markersPositionsAsOffsetsInText = new ArrayList<>();
@@ -314,7 +320,7 @@ public class GrobidPDFEngine {
                             .stream()
                             .sorted(Comparator.comparingInt(AdditionalLayoutTokensUtil::getLayoutTokenListStartOffset))
                             .collect(Collectors.toList());
-                        
+
                         if (!sortedMarkersListByStartOffsets.equals(documentBlock.getMarkers())) {
                             documentBlock.setMarkers(sortedMarkersListByStartOffsets);
                         }

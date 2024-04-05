@@ -1,12 +1,12 @@
 package org.grobid.service.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.Configuration;
+import io.dropwizard.core.Configuration;
 import org.apache.commons.io.IOUtils;
-import org.grobid.core.utilities.GrobidConfig;
-import org.grobid.core.utilities.GrobidProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.grobid.core.utilities.GrobidConfig;
+import org.grobid.core.utilities.GrobidProperties;
 
 import java.io.IOException;
 import java.io.InputStream;

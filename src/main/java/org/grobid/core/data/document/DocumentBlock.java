@@ -54,6 +54,11 @@ public class DocumentBlock {
         this.markers = new ArrayList<>(markers);
     }
 
+    public DocumentBlock(List<LayoutToken> layoutTokens, String section, String subSection, String groupId, List<Span> spanList, List<List<LayoutToken>> markers) {
+        this(layoutTokens, section, subSection, spanList, markers);
+        this.groupId = groupId;
+    }
+
 
     public String getSubSection() {
         return subSection;

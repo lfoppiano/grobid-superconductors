@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -18,8 +20,6 @@ import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Singleton
 public class ChemicalMaterialParserClient {
@@ -66,10 +66,16 @@ public class ChemicalMaterialParserClient {
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
 
-                if (statusCode == HttpURLConnection.HTTP_OK) {
-                    outputFormula = fromJsonToChemicalComposition(response.getEntity().getContent());
+                if (statusCode != HttpURLConnection.HTTP_OK) {
+                    LOGGER.debug("Not OK answer. Input: " + name + ". Status code: " + response.getStatusLine().getStatusCode());
                 } else {
-                    LOGGER.debug("Not OK answer. Input: " + name + ", status code: " + statusCode);
+                    outputFormula = fromJsonToChemicalComposition(response.getEntity().getContent());
+                    if (outputFormula != null && outputFormula.getCode() != HttpURLConnection.HTTP_OK) {
+                        LOGGER.debug("Not OK answer. Input: " + name + ". " +
+                            "Status code: " + outputFormula.getCode() +
+                            "Message: " + outputFormula.getMessage());
+                        outputFormula = new ChemicalComposition();
+                    }
                 }
             }
 
@@ -101,6 +107,11 @@ public class ChemicalMaterialParserClient {
                     LOGGER.debug("Not OK answer. Input: " + formula + ". Status code: " + response.getStatusLine().getStatusCode());
                 } else {
                     outputComposition = fromJsonToChemicalComposition(response.getEntity().getContent());
+                    if (outputComposition != null && outputComposition.getCode() != HttpURLConnection.HTTP_OK) {
+                        LOGGER.debug("Not OK answer. Input: " + formula + ". Status code: " + outputComposition.getCode() +
+                            "Message: " + outputComposition.getMessage());
+                        outputComposition = new ChemicalComposition();
+                    }
                 }
             }
 
