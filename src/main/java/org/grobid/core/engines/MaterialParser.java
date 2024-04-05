@@ -2,6 +2,7 @@ package org.grobid.core.engines;
 
 
 import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -12,6 +13,7 @@ import org.grobid.core.data.material.Formula;
 import org.grobid.core.data.material.Material;
 import org.grobid.core.engines.label.TaggingLabel;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.exceptions.GrobidExceptionStatus;
 import org.grobid.core.features.FeaturesVectorMaterial;
 import org.grobid.core.layout.BoundingBox;
 import org.grobid.core.layout.LayoutToken;
@@ -26,12 +28,10 @@ import org.grobid.core.utilities.client.ChemicalMaterialParserClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -85,6 +85,84 @@ public class MaterialParser extends AbstractParser {
 
     public List<Material> process(String text) {
         return process(SuperconductorsParser.textToLayoutTokens(text));
+    }
+
+    public List<List<Material>> processParallel(List<String> texts) {
+
+        List<Integer> emptyIndices = IntStream.range(0, texts.size())
+            .filter(i -> StringUtils.isBlank(texts.get(i)))
+            .boxed()
+            .toList();
+
+        Set<Integer> emptyIndicesSet = new HashSet<>(emptyIndices);
+        List<String> textsCopy = new ArrayList<>();
+
+        for (int is = 0; is < texts.size(); is++) {
+            if (!emptyIndices.contains(is)) {
+                textsCopy.add(texts.get(is));
+            }
+        }
+
+        List<List<LayoutToken>> asLayoutTokens = textsCopy.stream()
+            .map(SuperconductorsParser::textToLayoutTokens)
+            .collect(Collectors.toList());
+
+        List<List<Material>> processed = processParallelLT(asLayoutTokens);
+
+        emptyIndices.forEach(i -> processed.add(i, new ArrayList<>()));
+
+        List<List<Material>> output = new ArrayList<>();
+        for (int is = 0; is < texts.size(); is++) {
+            if (!emptyIndices.contains(is)) {
+                output.add(processed.get(is));
+            } else {
+                output.add(new ArrayList<>());
+            }
+        }
+
+        return output;
+    }
+
+    public List<List<Material>> processParallelLT(List<List<LayoutToken>> layoutTokensBatch) {
+
+        List<List<Material>> entities = new ArrayList<>();
+
+        //Normalisation
+        List<List<LayoutToken>> normalisedTokens = layoutTokensBatch.stream()
+            .map(SuperconductorsParser::normalizeAndRetokenizeLayoutTokens)
+            .toList();
+
+        try {
+            List<String> tokensWithFeatures = normalisedTokens.stream().map(nt -> addFeatures(nt) + "\n").toList();
+
+            String labellingResult = null;
+            try {
+                labellingResult = label(tokensWithFeatures);
+            } catch (Exception e) {
+                throw new GrobidException("CRF labeling for superconductors parsing failed.", e);
+            }
+
+            List<String> resultingBlocks = Arrays.asList(labellingResult.split("\n\n"));
+            List<List<Material>> localEntities = extractParallelResults(normalisedTokens, resultingBlocks);
+
+            entities.addAll(localEntities);
+        } catch (Exception e) {
+            throw new GrobidException("An exception occurred while running Grobid.", e);
+        }
+
+        return entities;
+    }
+
+    public List<List<Material>> extractParallelResults(List<List<LayoutToken>> tokens, List<String> results) {
+        List<List<Material>> spans = new ArrayList<>();
+        if (tokens.size() != results.size()) {
+            throw new GrobidException("One of the text provided is invalid or empty and cannot be tagged. Please provide a clean input.", GrobidExceptionStatus.BAD_INPUT_DATA);
+        }
+        for (int i = 0; i < tokens.size(); i++) {
+            spans.add(extractResults(tokens.get(i), results.get(i)));
+        }
+
+        return spans;
     }
 
 

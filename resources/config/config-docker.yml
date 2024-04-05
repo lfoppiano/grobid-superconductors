@@ -27,12 +27,12 @@ consolidation:
     # empty value will disable the data consolidation
   service: "glutton"
   glutton:
-    url: "http://falcon.nims.go.jp/glutton"
+    url: "http://falcon.nims.go.jp/glutton/lookup"
 
 models:
   - name: "superconductors"
-    engine: "wapiti"
-    #    engine: "delft"
+#    engine: "wapiti"
+    engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
@@ -41,20 +41,22 @@ models:
     delft:
       # deep learning parameters
       #      architecture: "BidLSTM_CRF"
-      architecture: "scibert"
-      embeddings_name: "glove-840B"
+      architecture: "BERT_CRF"
+#      embeddings_name: "glove-840B"
       runtime:
         # parameters used at runtime/prediction
-        max_sequence_length: 3000
+        max_sequence_length: 512
         batch_size: 4
 
   - name: "material"
-    engine: "wapiti"
+    engine: "delft"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
+    delft:
+      architecture: "BERT_CRF"
 
   - name: "entityLinker-material-tcValue"
     engine: "wapiti"
@@ -81,42 +83,58 @@ models:
       nbMaxIterations: 2000
 
   - name: "quantities"
-    engine: "wapiti"
+    engine: "delft"
+#    engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
+    delft:
+#      architecture: "BidLSTM_CRF_FEATURES"
+      architecture: "BERT_CRF"
+      useELMo: false
+      embeddings_name: "glove-840B"
 
   - name: "units"
-    engine: "wapiti"
+    engine: "delft"
+#    engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
 
   - name: "values"
-    engine: "wapiti"
+    engine: "delft"
+#    engine: "wapiti"
     wapiti:
       # wapiti training parameters, they will be used at training time only
       epsilon: 0.00001
       window: 30
       nbMaxIterations: 2000
+    delft:
+      architecture: "BidLSTM_CRF_FEATURES"
+      useELMo: false
+      embeddings_name: "glove-840B"
 
 server:
   type: custom
-  idleTimeout: 120 seconds
   applicationConnectors:
     - type: http
       port: 8072
+      idleTimeout: 120 seconds
   adminConnectors:
     - type: http
       port: 8073
   registerDefaultExceptionMappers: false
 
 logging:
-  level: DEBUG
+  level: WARN
 
   # Logger-specific levels.
   loggers:
@@ -128,6 +146,4 @@ logging:
   appenders:
     - type: console
       threshold: INFO
-
-version: 2
-timeZone: UTC
+      timeZone: UTC

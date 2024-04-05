@@ -1,10 +1,8 @@
 package org.grobid.service;
 
-import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Binder;
 import com.google.inject.Provides;
-import com.hubspot.dropwizard.guicier.DropwizardAwareModule;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.grobid.core.engines.*;
 import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.utilities.client.*;
@@ -14,59 +12,42 @@ import org.grobid.service.exceptions.mapper.GrobidExceptionMapper;
 import org.grobid.service.exceptions.mapper.GrobidExceptionsTranslationUtility;
 import org.grobid.service.exceptions.mapper.GrobidServiceExceptionMapper;
 import org.grobid.service.exceptions.mapper.WebApplicationExceptionMapper;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import ru.vyarus.dropwizard.guice.module.support.DropwizardAwareModule;
 
 
 public class SuperconductorsServiceModule extends DropwizardAwareModule<GrobidSuperconductorsConfiguration> {
 
     @Override
-    public void configure(Binder binder) {
+    public void configure() {
         // Generic modules
-        binder.bind(GrobidEngineInitialiser.class);
-        binder.bind(HealthCheck.class);
+        bind(GrobidEngineInitialiser.class);
+        bind(HealthCheck.class);
 
         //Core services
-        binder.bind(ChemspotClient.class);
-        binder.bind(ChemDataExtractorClient.class);
-        binder.bind(StructureIdentificationModuleClient.class);
-        binder.bind(ClassResolverModuleClient.class);
-        binder.bind(MaterialClassResolver.class);
-        binder.bind(ChemicalMaterialParserClient.class);
-        binder.bind(MaterialParser.class);
-        binder.bind(LinkingModuleClient.class);
-        binder.bind(RuleBasedLinker.class);
-        binder.bind(CRFBasedLinker.class);
-        binder.bind(SuperconductorsParser.class);
-        binder.bind(ModuleEngine.class);
+        bind(ChemspotClient.class);
+        bind(ChemDataExtractorClient.class);
+        bind(StructureIdentificationModuleClient.class);
+        bind(ClassResolverModuleClient.class);
+        bind(MaterialClassResolver.class);
+        bind(ChemicalMaterialParserClient.class);
+        bind(MaterialParser.class);
+        bind(LinkingModuleClient.class);
+        bind(RuleBasedLinker.class);
+        bind(CRFBasedLinker.class);
+        bind(SuperconductorsParser.class);
+        bind(ModuleEngine.class);
 
         //REST
-        binder.bind(AnnotationController.class);
-        binder.bind(MaterialController.class);
-        binder.bind(LinkerController.class);
-        binder.bind(ServiceController.class);
+        bind(AnnotationController.class);
+        bind(MaterialController.class);
+        bind(LinkerController.class);
+        bind(ServiceController.class);
 
         //Exception Mappers
-        binder.bind(GrobidServiceExceptionMapper.class);
-        binder.bind(GrobidExceptionsTranslationUtility.class);
-        binder.bind(GrobidExceptionMapper.class);
-        binder.bind(WebApplicationExceptionMapper.class);
-    }
-
-    @Provides
-    protected ObjectMapper getObjectMapper() {
-        return getEnvironment().getObjectMapper();
-    }
-
-    @Provides
-    protected MetricRegistry provideMetricRegistry() {
-        return getMetricRegistry();
-    }
-
-    //for unit tests
-    protected MetricRegistry getMetricRegistry() {
-        return getEnvironment().metrics();
+        bind(GrobidServiceExceptionMapper.class);
+        bind(GrobidExceptionsTranslationUtility.class);
+        bind(GrobidExceptionMapper.class);
+        bind(WebApplicationExceptionMapper.class);
     }
 
     @Provides
