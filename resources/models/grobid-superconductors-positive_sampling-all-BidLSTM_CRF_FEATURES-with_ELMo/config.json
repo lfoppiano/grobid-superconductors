@@ -1,0 +1,91 @@
+{
+    "model_name": "grobid-superconductors-positive_sampling-all-BidLSTM_CRF_FEATURES-with_ELMo",
+    "architecture": "BidLSTM_CRF_FEATURES",
+    "embeddings_name": "glove-840B",
+    "char_vocab_size": 227,
+    "case_vocab_size": 8,
+    "char_embedding_size": 25,
+    "num_char_lstm_units": 25,
+    "max_char_length": 30,
+    "features_vocabulary_size": 12,
+    "features_indices": [
+        9,
+        10,
+        11,
+        12,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+    ],
+    "features_embedding_size": 4,
+    "features_lstm_units": 4,
+    "max_sequence_length": 3000,
+    "word_embedding_size": 1324,
+    "num_word_lstm_units": 100,
+    "case_embedding_size": 5,
+    "dropout": 0.5,
+    "recurrent_dropout": 0.5,
+    "use_crf": true,
+    "use_chain_crf": false,
+    "fold_number": 1,
+    "batch_size": 20,
+    "transformer_name": null,
+    "use_ELMo": true,
+    "features_map_to_index": {
+        "9": {
+            "ALLCAPS": 1,
+            "INITCAP": 2,
+            "NOCAPS": 3
+        },
+        "10": {
+            "ALLDIGIT": 13,
+            "ALLDIGITS": 14,
+            "CONTAINDIGIT": 15,
+            "NODIGIT": 16
+        },
+        "11": {
+            "0": 25,
+            "1": 26
+        },
+        "12": {
+            "COMMA": 37,
+            "DOT": 38,
+            "ENDBRACKET": 39,
+            "HYPHEN": 40,
+            "NOPUNCT": 41,
+            "OPENBRACKET": 42,
+            "PUNCT": 43,
+            "QUOTE": 44
+        },
+        "16": {
+            "DIFFERENTFONT": 49,
+            "SAMEFONT": 50,
+            "SAxMEFONT": 51
+        },
+        "17": {
+            "HIGHERFONT": 61,
+            "LOWERFONT": 62,
+            "SAMEFONTSIZE": 63
+        },
+        "18": {
+            "false": 73,
+            "true": 74
+        },
+        "19": {
+            "false": 85,
+            "true": 86
+        },
+        "20": {
+            "BASELINE": 97,
+            "SUBSCRIPT": 98,
+            "SUPERSCRIPT": 99
+        },
+        "21": {
+            "false": 109,
+            "true": 110
+        }
+    }
+}

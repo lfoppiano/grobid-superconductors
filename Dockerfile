@@ -28,35 +28,36 @@ USER root
 RUN apt-get update && \
     apt-get -y --no-install-recommends install apt-utils libxml2 git unzip 
 
-RUN mkdir -p /opt/grobid-source/grobid-home/models
-
-WORKDIR /opt/grobid-source
-COPY gradle.properties .
-
 WORKDIR /opt/grobid-source
 
-RUN mkdir -p grobid-superconductors_source/resources/config grobid-superconductors_source/resources/models grobid-superconductors_source/gradle grobid-superconductors_source/localLibs grobid-superconductors_source/resources/web grobid-superconductors_source/src
+RUN mkdir -p grobid-home/models \
+    && mkdir -p grobid-superconductors_source/resources/config grobid-superconductors_source/resources/models grobid-superconductors_source/gradle grobid-superconductors_source/localLibs grobid-superconductors_source/resources/web grobid-superconductors_source/src
 
-COPY ./.git/ ./grobid-superconductors_source/.git
 COPY resources/models/ ./grobid-superconductors_source/resources/models/
 COPY resources/config/ ./grobid-superconductors_source/resources/config/
 COPY gradle/ ./grobid-superconductors_source/gradle/
 COPY src/ ./grobid-superconductors_source/src/
 COPY localLibs/ ./grobid-superconductors_source/localLibs/
-COPY build.gradle ./grobid-superconductors_source/
-COPY settings.gradle ./grobid-superconductors_source/
-COPY gradlew* ./grobid-superconductors_source/
-COPY gradle.properties ./grobid-superconductors_source/
+COPY ["gradlew*", "build.gradle", "settings.gradle", "gradle.properties", "./grobid-superconductors_source/"]
+COPY .git/ ./grobid-superconductors_source/.git/
 
 # Preparing models
-RUN rm -rf /opt/grobid-source/grobid-home/models/*
 WORKDIR /opt/grobid-source/grobid-superconductors_source
-RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info
-RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace && rm -f /opt/grobid-source/grobid-home/models/*.zip
+RUN git remote prune origin && git repack && git prune-packed && git reflog expire --expire=1.day.ago && git gc --aggressive \
+    && ./gradlew downloadTransformers --no-daemon --info --stacktrace \
+    && rm -f /opt/grobid-source/grobid-home/models/*.zip \
+    && rm -rf /opt/grobid-source/grobid-home/models/*.-with_ELMo \
+    && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
+    && ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
+    && unzip -o build/distributions/grobid-superconductors-*.zip -d ../grobid-superconductors_distribution \
+    && mv ../grobid-superconductors_distribution/grobid-superconductors-* ../grobid-superconductors \
+    && rm -rf ../grobid-superconductors_distribution \
+    && rm -rf /opt/grobid-source/grobid-superconductors_source/.git
+
 
 # Preparing distribution
-WORKDIR /opt/grobid-source
-RUN unzip -o /opt/grobid-source/grobid-superconductors_source/build/distributions/grobid-superconductors-*.zip -d grobid-superconductors_distribution && mv grobid-superconductors_distribution/grobid-superconductors-* grobid-superconductors
+WORKDIR /opt/grobid-source/grobid-superconductors_source
+
 
 WORKDIR /opt
 
@@ -70,10 +71,13 @@ FROM lfoppiano/grobid-quantities:0.8.0 as runtime
 ENV LANG C.UTF-8
 
 WORKDIR /opt/grobid
-RUN rm -rf /opt/grobid/grobid-quantities
-RUN rm /opt/grobid/resources
 
-RUN mkdir -p /opt/grobid/grobid-superconductors
+RUN rm -rf /opt/grobid/grobid-quantities \
+    && rm /opt/grobid/resources \
+    && mkdir -p /opt/grobid/grobid-superconductors \
+    && rm -rf /opt/grobid/grobid-home/models/*.-with_ELMo \
+    && rm -rf /opt/grobid/grobid-service
+
 COPY --from=builder /opt/grobid-source/grobid-home/models ./grobid-home/models
 COPY --from=builder /opt/grobid-source/grobid-superconductors ./grobid-superconductors/
 COPY --from=builder /opt/grobid-source/grobid-superconductors_source/resources/config/config-docker.yml ./grobid-superconductors/resources/config/config.yml
