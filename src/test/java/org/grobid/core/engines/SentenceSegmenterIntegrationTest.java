@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.grobid.core.engines.CRFBasedLinkerIntegrationTest.initEngineForTests;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -22,7 +23,7 @@ public class SentenceSegmenterIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        LibraryLoader.load();
+        initEngineForTests();
         target = new SentenceSegmenter();
     }
 

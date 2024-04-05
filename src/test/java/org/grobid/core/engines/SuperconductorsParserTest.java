@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.grobid.core.engines.CRFBasedLinkerIntegrationTest.initEngineForTests;
 import static org.grobid.core.engines.SuperconductorsParser.NONE_CHEMSPOT_TYPE;
 import static org.grobid.core.utilities.GrobidTestUtils.getWapitiResult;
 import static org.hamcrest.CoreMatchers.is;

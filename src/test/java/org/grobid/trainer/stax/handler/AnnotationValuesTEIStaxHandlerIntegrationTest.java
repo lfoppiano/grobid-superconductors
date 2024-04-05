@@ -27,7 +27,7 @@ public class AnnotationValuesTEIStaxHandlerIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        LibraryLoader.load();
+//        LibraryLoader.load();
     }
 
    

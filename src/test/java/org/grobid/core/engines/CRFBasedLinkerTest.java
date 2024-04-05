@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Ignore("Decommissioned")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Lexicon.class)
 public class CRFBasedLinkerTest {

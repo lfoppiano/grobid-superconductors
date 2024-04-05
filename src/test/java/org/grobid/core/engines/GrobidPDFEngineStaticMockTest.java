@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
+import static org.grobid.core.engines.CRFBasedLinkerIntegrationTest.initEngineForTests;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -32,6 +33,7 @@ public class GrobidPDFEngineStaticMockTest {
 
     @BeforeClass
     public static void before() throws Exception {
+        initEngineForTests();
         GrobidConfig.ModelParameters modelParameters = new GrobidConfig.ModelParameters();
         modelParameters.name = "bao";
         GrobidProperties.addModel(modelParameters);

@@ -8,17 +8,24 @@ import org.grobid.core.analyzers.DeepAnalyzer;
 import org.grobid.core.data.document.RawPassage;
 import org.grobid.core.data.document.TextPassage;
 import org.grobid.core.data.document.Span;
+import org.grobid.core.data.normalization.UnitNormalizer;
 import org.grobid.core.engines.linking.CRFBasedLinker;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.main.LibraryLoader;
+import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.client.ChemDataExtractorClient;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
+import org.grobid.service.configuration.GrobidQuantitiesConfiguration;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Ignore("This has been decommissioned")
 public class CRFBasedLinkerIntegrationTest {
 
     private CRFBasedLinker target;
@@ -36,17 +44,30 @@ public class CRFBasedLinkerIntegrationTest {
     private ChemDataExtractorClient mockChemdataExtractorClient;
     private StructureIdentificationModuleClient mockSpaceGroupsClient;
 
+    public static void initEngineForTests() throws IOException, IllegalAccessException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+        // https://stackoverflow.com/questions/14853324/can-not-find-deserialize-for-non-concrete-collection-type
+        mapper.registerModule(new GuavaModule());
+        GrobidSuperconductorsConfiguration configuration = mapper.readValue(RuleBasedLinker.class.getResourceAsStream("config-test.yml"), GrobidSuperconductorsConfiguration.class);
+        configuration.getModels().stream().forEach(GrobidProperties::addModel);
+        GrobidProperties.getInstance();
+        Field modelMap = Whitebox.getField(GrobidProperties.class, "modelMap");
+
+        Map<String, GrobidConfig.ModelParameters> newModelMap = (Map<String, GrobidConfig.ModelParameters>) modelMap.get(new HashMap<>());
+        newModelMap.entrySet().stream()
+            .forEach(entry -> {
+                entry.getValue().engine = "wapiti";
+            });
+        Whitebox.setInternalState(GrobidProperties.class, "modelMap", newModelMap);
+//        GrobidProperties.getDistinctModels().stream().forEach(model -> model);
+        LibraryLoader.load();
+    }
 
     @Before
     public void setUp() throws Exception {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        
-        // https://stackoverflow.com/questions/14853324/can-not-find-deserialize-for-non-concrete-collection-type
-        mapper.registerModule(new GuavaModule());
-        GrobidSuperconductorsConfiguration configuration = mapper.readValue(this.getClass().getResourceAsStream("config-test.yml"), GrobidSuperconductorsConfiguration.class);
-        configuration.getModels().stream().forEach(GrobidProperties::addModel);
-        LibraryLoader.load();
-        
+        initEngineForTests();
+
         target = new CRFBasedLinker();
         mockChemdataExtractorClient = EasyMock.createMock(ChemDataExtractorClient.class);
         mockSpaceGroupsClient = EasyMock.createMock(StructureIdentificationModuleClient.class);
@@ -55,7 +76,6 @@ public class CRFBasedLinkerIntegrationTest {
     }
 
     @Test
-    @Ignore()
     public void testRealCase_shouldExtract1Link() throws Exception {
         String input = "MgB 2 was discovered to be a superconductor in 2001, and it has a remarkably high critical temperature (T c ) around 40 K with a simple hexagonal structure.";
         List<LayoutToken> layoutTokens = DeepAnalyzer.getInstance().tokenizeWithLayoutToken(input);
@@ -63,29 +83,29 @@ public class CRFBasedLinkerIntegrationTest {
         EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
         EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
         EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
-        
+
         List<TextPassage> passages = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
-        
+
         assertThat(passages, hasSize(1));
-        
+
         TextPassage passage = passages.get(0);
         List<Span> annotations = passage.getSpans();
         assertThat(annotations, hasSize(4));
-        
+
         //set the annotations linkable 
         annotations
             .stream()
             .filter(l -> l.getType().equals(SUPERCONDUCTORS_TC_VALUE_LABEL) || l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .forEach(l -> l.setLinkable(true));
-        
+
         target.process(layoutTokens, annotations, CRFBasedLinker.getInstance().MATERIAL_TCVALUE_ID);
-        
+
         List<Span> linkedEntities = annotations.stream().filter(l -> isNotEmpty(l.getLinks())).collect(Collectors.toList());
         assertThat(linkedEntities, hasSize(2));
 
         assertThat(linkedEntities.get(0).getText(), is("MgB 2"));
         assertThat(linkedEntities.get(0).getLinks().get(0).getTargetText(), is("40 K"));
-        
+
         EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
     }
 
@@ -102,7 +122,7 @@ public class CRFBasedLinkerIntegrationTest {
 
         List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
-        
+
         TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
         assertThat(annotations, hasSize(annotations.size()));
@@ -133,14 +153,14 @@ public class CRFBasedLinkerIntegrationTest {
         EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
         EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
         EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
-        
+
         List<TextPassage> paragraphs = moduleEngine.process(Arrays.asList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
 
         TextPassage paragraph = paragraphs.get(0);
         List<Span> annotations = paragraph.getSpans();
-        
-        
+
+
         target.process(layoutTokens, annotations, CRFBasedLinker.MATERIAL_TCVALUE_ID);
 
         List<Span> linkedEntities = annotations.stream().filter(l -> isNotEmpty(l.getLinks())).collect(Collectors.toList());
@@ -204,7 +224,7 @@ public class CRFBasedLinkerIntegrationTest {
         List<Span> linkedEntities = processedSpans.stream()
             .filter(l -> isNotEmpty(l.getLinks()) && l.getType().equals(SUPERCONDUCTORS_MATERIAL_LABEL))
             .collect(Collectors.toList());
-        
+
         assertThat(linkedEntities, hasSize(1));
 
         EasyMock.verify(mockChemdataExtractorClient, mockSpaceGroupsClient);
@@ -218,7 +238,7 @@ public class CRFBasedLinkerIntegrationTest {
         EasyMock.expect(mockChemdataExtractorClient.processBulk(EasyMock.anyObject())).andReturn(Arrays.asList(new ArrayList<>()));
         EasyMock.expect(mockSpaceGroupsClient.extractStructuresMulti(EasyMock.anyObject())).andReturn(new ArrayList<>());
         EasyMock.replay(mockChemdataExtractorClient, mockSpaceGroupsClient);
-        
+
         List<TextPassage> paragraphs = moduleEngine.process(Collections.singletonList(new RawPassage(layoutTokens)), true);
         assertThat(paragraphs, hasSize(1));
 
