@@ -33,7 +33,6 @@ WORKDIR /opt/grobid-source
 RUN mkdir -p grobid-home/models \
     && mkdir -p grobid-superconductors_source/resources/config grobid-superconductors_source/resources/models grobid-superconductors_source/gradle grobid-superconductors_source/localLibs grobid-superconductors_source/resources/web grobid-superconductors_source/src
 
-COPY ./.git/ ./grobid-superconductors_source/.git
 COPY resources/models/ ./grobid-superconductors_source/resources/models/
 COPY resources/config/ ./grobid-superconductors_source/resources/config/
 COPY gradle/ ./grobid-superconductors_source/gradle/
@@ -44,19 +43,21 @@ COPY ["gradlew*", "build.gradle", "settings.gradle", "gradle.properties", "./gro
 # Preparing models
 RUN rm -rf /opt/grobid-source/grobid-home/models/*
 WORKDIR /opt/grobid-source/grobid-superconductors_source
-RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
-    && ./gradlew downloadTransformers --no-daemon --info --stacktrace \
+RUN ./gradlew downloadTransformers --no-daemon --info --stacktrace \
     && rm -f /opt/grobid-source/grobid-home/models/*.zip \
     && rm -rf /opt/grobid-source/grobid-home/models/*.-with_ELMo \
     && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
-    && rm -rf /opt/grobid-source/grobid-home/models/superconductors-mattpuscibert-BERT_CRF \
-    && rm -rf ./grobid-superconductors_source/.git
+    && rm -rf /opt/grobid-source/grobid-home/models/superconductors-mattpuscibert-BERT_CRF
 
 # Preparing distribution
 WORKDIR /opt/grobid-source
-RUN unzip -o /opt/grobid-source/grobid-superconductors_source/build/distributions/grobid-superconductors-*.zip -d grobid-superconductors_distribution \
+COPY ./.git/ ./grobid-superconductors_source/.git
+
+RUN ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
+    && unzip -o /opt/grobid-source/grobid-superconductors_source/build/distributions/grobid-superconductors-*.zip -d grobid-superconductors_distribution \
     && mv grobid-superconductors_distribution/grobid-superconductors-* grobid-superconductors \
-    && rm -rf grobid-superconductors_distribution/grobid-superconductors-*
+    && rm -rf grobid-superconductors_distribution/grobid-superconductors-* \
+    && rm -rf ./grobid-superconductors_source/.git
 
 WORKDIR /opt
 
