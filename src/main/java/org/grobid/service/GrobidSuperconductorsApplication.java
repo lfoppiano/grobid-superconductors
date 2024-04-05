@@ -14,6 +14,7 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.servlets.QoSFilter;
 import org.grobid.service.command.*;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.grobid.service.controller.HealthCheck;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 
 import java.util.EnumSet;
@@ -55,6 +56,8 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
 
     @Override
     public void run(GrobidSuperconductorsConfiguration configuration, Environment environment) {
+        environment.healthChecks().register("health-check", new HealthCheck(configuration));
+
         String allowedOrigins = configuration.getCorsAllowedOrigins();
         String allowedMethods = configuration.getCorsAllowedMethods();
         String allowedHeaders = configuration.getCorsAllowedHeaders();

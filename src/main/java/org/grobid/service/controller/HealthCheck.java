@@ -1,14 +1,14 @@
 package org.grobid.service.controller;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
-
-
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
+import org.grobid.service.GrobidSuperconductorsApplication;
+import org.grobid.service.configuration.GrobidQuantitiesConfiguration;
+import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -20,8 +20,9 @@ public class HealthCheck extends com.codahale.metrics.health.HealthCheck {
     @Inject
     private GrobidSuperconductorsConfiguration configuration;
 
-    @Inject
-    public HealthCheck() {
+    @jakarta.inject.Inject
+    public HealthCheck(GrobidSuperconductorsConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     @GET
