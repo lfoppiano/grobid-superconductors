@@ -32,7 +32,7 @@ A running demo is available at https://lfoppiano-grobid-superconductors.hf.space
 
 The system is divided into two main steps (Extraction and Linking): 
 
-![schema grobid-superconductors](docs/schema-grobid-superconductors.png)
+![schema grobid-superconductors](docs/images/schema-grobid-superconductors.png)
 
 The Extraction step is a Named Entities Recognition (NER) task and is performed using machine learning. 
 As other Grobid modules, it can use linear CRF (via [Wapiti](https://github.com/kermitt2/Wapiti) JNI integration) or Deep Learning model such as BiLSTM-CRF or transformers like BERT or SciBERT (via [DeLFT](https://github.com/kermitt2/delft) JNI integration).
@@ -43,15 +43,15 @@ Grobid-superconductors provides both an API and a User Interface (UI).
 
 The extracted materials and properties are summarised in a table with snippet of the original sentence:
 
-![screenshot-pdf-annotations](docs/grobid-superconductors-extracted-table.png)
+![screenshot-pdf-annotations](docs/images/grobid-superconductors-extracted-table.png)
 
 and each extracted entity is visualised directly on the PDF document:   
 
-![screenshot-pdf-annotations](docs/grobid-superconductors-pdf-annotation.png)
+![screenshot-pdf-annotations](docs/images/grobid-superconductors-pdf-annotation.png)
 
 As experimental feature, the system provides a summary of all the materials from their composition and the form they appear in the document: 
 
-![screenshot-summary](docs/grobid-superconductors-summary.png)
+![screenshot-summary](docs/images/grobid-superconductors-summary.png)
 
 The response is a JSON representation of the document and it includes the main bibliographic data (title, authors, DOI, publisher and journals) which are extracted via the underline [Grobid library](https://github.com/kermitt2/grobid). 
 
