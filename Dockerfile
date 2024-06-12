@@ -78,6 +78,8 @@ COPY --from=builder /opt/grobid-source/grobid-superconductors_source/resources/c
 
 VOLUME ["/opt/grobid/grobid-home/tmp"]
 
+RUN pip install -U git+https://github.com/kermitt2/delft.git
+
 WORKDIR /opt/grobid
 
 ## Select transformers model 
