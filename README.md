@@ -1,4 +1,4 @@
-8# Grobid superconductors
+# Grobid superconductors
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Docker Hub](https://img.shields.io/docker/pulls/lfoppiano/grobid-superconductors.svg)](https://hub.docker.com/r/lfoppiano/grobid-superconductors/ "Docker Pulls")
