@@ -424,7 +424,7 @@ Developed using ![JetBrains Logo (Main) logo](https://resources.jetbrains.com/st
 
 GROBID and grobid-superconductors are distributed under [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
 
-Contact: Luca Foppiano (FOPPIANO.Luca __AT__ nims.go.jp)
+Contact: Luca Foppiano (luca __AT__ sciencialab.com)
 
 
 ## References
