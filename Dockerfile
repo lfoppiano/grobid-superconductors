@@ -49,7 +49,8 @@ RUN git remote prune origin && git repack && git prune-packed && git reflog expi
     && rm -f /opt/grobid-source/grobid-home/models/*.zip \
     && rm -rf /opt/grobid-source/grobid-home/models/*.-with_ELMo \
 #    && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
-    && rm -rf /opt/grobid/grobid-home/models/data_models \
+    && rm -rf /opt/grobid/grobid-home/models/data_models_quantities \
+    && rm -rf /opt/grobid/grobid-home/models/data_models_superconductors \
     && ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
     && unzip -o build/distributions/grobid-superconductors-*.zip -d ../grobid-superconductors_distribution \
     && mv ../grobid-superconductors_distribution/grobid-superconductors-* ../grobid-superconductors \
