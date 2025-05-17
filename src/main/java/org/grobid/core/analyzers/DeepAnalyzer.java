@@ -90,6 +90,11 @@ public class DeepAnalyzer implements Analyzer {
     }
 
     @Override
+    public List<LayoutToken> retokenizeFromLayoutToken(List<LayoutToken> tokens) {
+        throw new NotImplementedException("This method has not implemented yet");
+    }
+
+    @Override
     public List<String> retokenizeSubdigits(List<String> list) {
         throw new NotImplementedException("Not yet implemented");
     }

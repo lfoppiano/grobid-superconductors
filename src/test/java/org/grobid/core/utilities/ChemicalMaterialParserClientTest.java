@@ -1,11 +1,12 @@
 package org.grobid.core.utilities;
 
+import org.apache.commons.io.IOUtils;
 import org.grobid.core.data.material.ChemicalComposition;
 import org.grobid.core.utilities.client.ChemicalMaterialParserClient;
 import org.junit.Test;
-import shadedwipo.org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +18,7 @@ public class ChemicalMaterialParserClientTest {
     @Test
     public void testFromJsonToChemicalComposition() {
         
-        InputStream is = IOUtils.toInputStream("{\"composition\": {\"La\": \"3\", \"Ir\": \"2\", \"Ge\": \"2\"}, \"name\": \"\", \"formula\": \"La3Ir2Ge2\"}");
+        InputStream is = IOUtils.toInputStream("{\"composition\": {\"La\": \"3\", \"Ir\": \"2\", \"Ge\": \"2\"}, \"name\": \"\", \"formula\": \"La3Ir2Ge2\"}", StandardCharsets.UTF_8);
         ChemicalComposition chemicalComposition = ChemicalMaterialParserClient.fromJsonToChemicalComposition(is);
         
         assertThat(chemicalComposition, is(notNullValue()));
