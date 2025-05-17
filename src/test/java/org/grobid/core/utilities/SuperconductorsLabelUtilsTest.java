@@ -5,11 +5,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class LabelUtilsTest {
+public class SuperconductorsLabelUtilsTest {
     
     @Test
     public void testGetPlainLabelName() throws Exception {
-        assertThat(LabelUtils.getPlainLabelName("<header>"), is("header"));
+        assertThat(SuperconductorsLabelUtils.getPlainLabelName("<header>"), is("header"));
     }
 
 }

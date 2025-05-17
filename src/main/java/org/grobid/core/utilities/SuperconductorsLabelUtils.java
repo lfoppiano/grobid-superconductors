@@ -1,6 +1,6 @@
 package org.grobid.core.utilities;
 
-public class LabelUtils {
+public class SuperconductorsLabelUtils {
     public static String getPlainLabelName(String label) {
         if (label == null) {
             return label;
