@@ -48,6 +48,7 @@ RUN git remote prune origin && git repack && git prune-packed && git reflog expi
     && rm -f /opt/grobid-source/grobid-home/models/*.zip \
     && rm -rf /opt/grobid-source/grobid-home/models/*.-with_ELMo \
     && rm -rf /opt/grobid-source/grobid-home/models/entityLinker* \
+    && rm -rf /opt/grobid/grobid-home/models/data_models \
     && ./gradlew clean assemble -x shadowJar --no-daemon  --stacktrace --info \
     && unzip -o build/distributions/grobid-superconductors-*.zip -d ../grobid-superconductors_distribution \
     && mv ../grobid-superconductors_distribution/grobid-superconductors-* ../grobid-superconductors \
@@ -59,7 +60,7 @@ RUN git remote prune origin && git repack && git prune-packed && git reflog expi
 # build runtime image
 # -------------------
 
-FROM lfoppiano/grobid-quantities:0.8.0 as runtime
+FROM lfoppiano/grobid-quantities:0.8.2 as runtime
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
@@ -93,6 +94,7 @@ RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using Scibert as default tran
 WORKDIR /opt/grobid
 ARG GROBID_VERSION
 ENV GROBID_VERSION=${GROBID_VERSION:-latest}
+# -agentpath:/usr/local/jprofiler12.0.2/bin/linux-x64/libjprofilerti.so=port=8849
 ENV GROBID_SUPERCONDUCTORS_OPTS "-Djava.library.path=/opt/grobid/grobid-home/lib/lin-64:/usr/local/lib/python3.8/dist-packages/jep --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED"
 ENV LINKING_MODULE_URL "http://linking_module.local:8080"
 ENV CDE_URL "http://cde.local:8080"
