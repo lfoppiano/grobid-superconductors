@@ -1,6 +1,14 @@
 name: Build unstable
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      custom_tag:
+        type: string
+        description: Docker image tag
+        required: true
+        default: "latest-develop"
 
 concurrency: 
   group: gradle
@@ -13,6 +21,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -49,7 +60,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           image: lfoppiano/grobid-superconductors
           registry: docker.io
-          pushImage: ${{ github.event_name != 'pull_request' }}
-          tags: latest-develop
+          pushImage: true
+          tags: ${{ github.event.inputs.custom_tag}}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
