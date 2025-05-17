@@ -5,7 +5,7 @@ import org.grobid.core.data.SuperconEntry;
 import org.grobid.core.data.document.Span;
 import org.grobid.core.data.document.TextPassage;
 import org.grobid.core.data.material.Material;
-import org.grobid.core.utilities.LabelUtils;
+import org.grobid.core.utilities.SuperconductorsLabelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,8 +131,8 @@ public class TabularDataEngine {
             dbEntry.setMaterialId(m.getId());
             dbEntry.addSpan(getMinimalSpan(spansById.get(m.getId())));
             dbEntry.setRawMaterial(m.getText());
-            dbEntry.setSection(LabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getLeft()));
-            dbEntry.setSubsection(LabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getRight()));
+            dbEntry.setSection(SuperconductorsLabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getLeft()));
+            dbEntry.setSubsection(SuperconductorsLabelUtils.getPlainLabelName(sectionsById.get(m.getId()).getRight()));
             dbEntry.setSentence(sentenceById.get(m.getId()));
 
             List<SuperconEntry> entriesWithAttachedAttributes = Material.processAttributes(m, dbEntry);
