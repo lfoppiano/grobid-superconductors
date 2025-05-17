@@ -1,3 +1,4 @@
+import org.ajoberstar.grgit.Grgit
 import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
@@ -359,18 +360,16 @@ task copyModels(type: Copy) {
     }
 }
 
-import org.ajoberstar.grgit.Grgit
-
 task downloadQuantitiesModelsGit(dependsOn: copyModels) {
     doLast {
-        if (new File("${grobidHome}/models/data_models").exists()) {
+        if (new File("${grobidHome}/models/data_models_quantities").exists()) {
             def grgit = Grgit.open(
-                dir: "${grobidHome}/models/data_models",
+                dir: "${grobidHome}/models/data_models_quantities",
             )
             grgit.pull()
         } else {
             def grgit = Grgit.clone(
-                dir: "${grobidHome}/models/data_models",
+                dir: "${grobidHome}/models/data_models_quantities",
                 uri: "https://huggingface.co/sciencialab/grobid-quantities-models",
                 depth: 1
             )
@@ -380,14 +379,14 @@ task downloadQuantitiesModelsGit(dependsOn: copyModels) {
 
 task downloadSuperconductorsModelsGit(dependsOn: copyModels) {
     doLast {
-        if (new File("${grobidHome}/models/data_models").exists()) {
+        if (new File("${grobidHome}/models/data_models_superconductors").exists()) {
             def grgit = Grgit.open(
-                dir: "${grobidHome}/models/data_models",
+                dir: "${grobidHome}/models/data_models_superconductors",
             )
             grgit.pull()
         } else {
             def grgit = Grgit.clone(
-                dir: "${grobidHome}/models/data_models",
+                dir: "${grobidHome}/models/data_models_superconductors",
                 uri: "https://huggingface.co/sciencialab/grobid-superconductors-models",
                 depth: 1
             )
@@ -397,7 +396,7 @@ task downloadSuperconductorsModelsGit(dependsOn: copyModels) {
 
 task installModels(dependsOn: [copyModels, downloadQuantitiesModelsGit, downloadSuperconductorsModelsGit]) {
     doLast {
-        def sourceDir = file("${grobidHome}/models/data_models")
+        def sourceDir = file("${grobidHome}/models/data_models_quantities")
         def destDir = file("${grobidHome}/models/")
 
         Arrays.asList(
@@ -412,7 +411,22 @@ task installModels(dependsOn: [copyModels, downloadQuantitiesModelsGit, download
             "values-BERT_CRF",
             "values-BidLSTM_CRF",
             "values-BidLSTM_CRF_FEATURES",
-            "values",
+            "values"
+        ).each { String subDirName ->
+            var subDir = new File(sourceDir, subDirName)
+            if (subDir.isDirectory()) {
+                copy {
+                    from subDir
+                    into new File(destDir, subDirName)
+                }
+            }
+        }
+
+        delete files("${sourceDir}")
+
+        sourceDir = file("${grobidHome}/models/data_models_superconductors")
+
+        Arrays.asList(
             "material-BERT_CRF",
             "superconductors-BERT_CRF",
             "superconductors-mattpuscibert-BERT_CRF"
@@ -425,7 +439,6 @@ task installModels(dependsOn: [copyModels, downloadQuantitiesModelsGit, download
                 }
             }
         }
-
         delete files("${sourceDir}")
     }
 }
