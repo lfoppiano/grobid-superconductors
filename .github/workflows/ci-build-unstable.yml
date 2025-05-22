@@ -12,7 +12,6 @@ on:
 
 concurrency: 
   group: gradle
-  cancel-in-progress: true
 
 
 jobs:
