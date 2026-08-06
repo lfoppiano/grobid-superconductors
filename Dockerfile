@@ -22,7 +22,9 @@
 # -------------------
 
 ## Grobid 0.9.1 artifacts are compiled for Java 21, so the builder needs a JDK 21 toolchain.
-FROM eclipse-temurin:21-jdk as builder
+## Pin to -noble (Ubuntu 24.04, like grobid's Dockerfile.delft): the unsuffixed tag floats to
+## the newest Ubuntu where apt renamed libxml2 (t64 transition) and the install fails.
+FROM eclipse-temurin:21-jdk-noble as builder
 
 USER root
 
