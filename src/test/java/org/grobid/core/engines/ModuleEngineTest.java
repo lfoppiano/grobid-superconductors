@@ -16,13 +16,12 @@ import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.UnitUtilities;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.io.InputStream;
 import java.sql.Array;
@@ -34,8 +33,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Lexicon.class)
 public class ModuleEngineTest {
 
     ModuleEngine target;
@@ -43,6 +40,8 @@ public class ModuleEngineTest {
     SuperconductorsParser mockSuperconductorsParser;
     CRFBasedLinker mockCRFBasedLinker;
     QuantityParser mockQuantityParser;
+
+    MockedStatic<Lexicon> lexiconMock;
 
     @BeforeClass
     public static void before() throws Exception {
@@ -54,12 +53,17 @@ public class ModuleEngineTest {
 
     @Before
     public void setUp() throws Exception {
-        PowerMock.mockStatic(Lexicon.class);
+        lexiconMock = Mockito.mockStatic(Lexicon.class);
         mockSuperconductorsParser = EasyMock.createMock(SuperconductorsParser.class);
         mockCRFBasedLinker = EasyMock.createMock(CRFBasedLinker.class);
         mockQuantityParser = EasyMock.createMock(QuantityParser.class);
 
         target = new ModuleEngine(new GrobidSuperconductorsConfiguration(), mockSuperconductorsParser, mockQuantityParser, null, mockCRFBasedLinker);
+    }
+
+    @After
+    public void tearDown() {
+        lexiconMock.close();
     }
 
     @Test

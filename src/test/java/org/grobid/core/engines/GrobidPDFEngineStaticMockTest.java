@@ -8,10 +8,8 @@ import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,14 +19,11 @@ import static org.grobid.core.engines.CRFBasedLinkerIntegrationTest.initEngineFo
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.powermock.api.easymock.PowerMock.mockStatic;
 
 /**
  * Same as GrobidPDFEngineTest but we will use this to mock the SentenceSplitter static call
  **/
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SentenceUtilities.class)
 public class GrobidPDFEngineStaticMockTest {
 
     @BeforeClass
@@ -50,14 +45,16 @@ public class GrobidPDFEngineStaticMockTest {
 
         List<OffsetPosition> sentences = Arrays.asList(new OffsetPosition(0, 108), new OffsetPosition(109, 165), new OffsetPosition(166, 329), new OffsetPosition(330, 466), new OffsetPosition(467, 559), new OffsetPosition(560, 608), new OffsetPosition(609, 710), new OffsetPosition(711, 805), new OffsetPosition(806, 927), new OffsetPosition(928, 1046), new OffsetPosition(1047, 1158));
 
-        mockStatic(SentenceUtilities.class);
-        expect(SentenceUtilities.getInstance()).andReturn(mockedSentenceUtilities);
         expect(mockedSentenceUtilities.runSentenceDetection(anyString(), anyObject(), anyObject(), anyObject())).andReturn(sentences);
+        replay(mockedSentenceUtilities);
 
-        PowerMock.replay(SentenceUtilities.class, mockedSentenceUtilities);
-        List<Pair<Integer, Integer>> sentencesOffsetsAsIndexes = GrobidPDFEngine.getSentencesOffsetsAsIndexes(block, markersAsOffsets);
+        List<Pair<Integer, Integer>> sentencesOffsetsAsIndexes;
+        try (MockedStatic<SentenceUtilities> sentenceUtilitiesMock = Mockito.mockStatic(SentenceUtilities.class)) {
+            sentenceUtilitiesMock.when(SentenceUtilities::getInstance).thenReturn(mockedSentenceUtilities);
+            sentencesOffsetsAsIndexes = GrobidPDFEngine.getSentencesOffsetsAsIndexes(block, markersAsOffsets);
+        }
 
-        PowerMock.verify(SentenceUtilities.class, mockedSentenceUtilities);
+        verify(mockedSentenceUtilities);
         assertThat(sentencesOffsetsAsIndexes, hasSize(11));
         assertThat(LayoutTokensUtil.toText(tokens.subList(sentencesOffsetsAsIndexes.get(0).getLeft(), sentencesOffsetsAsIndexes.get(0).getRight())), is("The process of micellization is an important and interesting problem, whose mechanism is not yet understood."));
         assertThat(LayoutTokensUtil.toText(tokens.subList(sentencesOffsetsAsIndexes.get(1).getLeft(), sentencesOffsetsAsIndexes.get(1).getRight())), is("Its complexity does not allow to describe it completely."));

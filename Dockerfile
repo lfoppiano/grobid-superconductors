@@ -21,7 +21,8 @@
 # build builder image
 # -------------------
 
-FROM openjdk:17-jdk-slim as builder
+## Grobid 0.9.1 artifacts are compiled for Java 21, so the builder needs a JDK 21 toolchain.
+FROM eclipse-temurin:21-jdk as builder
 
 USER root
 
@@ -62,7 +63,9 @@ RUN git remote prune origin && git repack && git prune-packed && git reflog expi
 # build runtime image
 # -------------------
 
-FROM lfoppiano/grobid-quantities:0.8.2 as runtime
+## Runtime base: the grobid-quantities develop image (built from its feature/grobid-0.9.1 /
+## develop line), which supplies the Python/DeLFT/JEP stack and the JDK 21 runtime for Grobid 0.9.1.
+FROM lfoppiano/grobid-quantities:latest-develop as runtime
 
 # setting locale is likely useless but to be sure
 ENV LANG C.UTF-8
