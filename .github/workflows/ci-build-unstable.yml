@@ -10,9 +10,10 @@ on:
         required: true
         default: "latest-develop"
 
-concurrency: 
+concurrency:
   group: gradle
-  cancel-in-progress: true
+# cancel-in-progress: true  # keep runs queued; a manual workflow_dispatch and the push run
+                            # share this group and must not cancel each other
 
 
 jobs:
@@ -60,7 +61,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           image: lfoppiano/grobid-superconductors
           registry: docker.io
-          pushImage: true
-          tags: ${{ github.event.inputs.custom_tag}}
+          pushImage: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ github.event.inputs.custom_tag || 'latest-develop' }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
