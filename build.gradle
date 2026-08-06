@@ -476,7 +476,7 @@ task installModels(dependsOn: [copyModels, downloadQuantitiesModelsGit, download
 }
 
 wrapper {
-    gradleVersion = "9.0.0"
+    gradleVersion = "9.6.1"
 }
 
 
