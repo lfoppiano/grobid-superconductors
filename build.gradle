@@ -108,7 +108,9 @@ dependencies {
     // pin is the sole source of opennlp on the classpath — a lower pin causes a runtime
     // NoSuchMethodError during sentence segmentation.
     implementation 'org.apache.opennlp:opennlp-tools:2.5.9'
-    implementation 'black.ninia:jep:4.0.2'
+    // Must match the native jep built into the runtime base image (grobid 0.9.x installs
+    // jep==4.3.1 under python3.11). A mismatched Java jar crashes the JVM (SIGSEGV) at JEP init.
+    implementation 'black.ninia:jep:4.3.1'
     implementation "org.apache.lucene:lucene-analyzers-common:4.5.1"
     implementation group: 'org.jruby', name: 'jruby-complete', version: '9.2.13.0'
 
