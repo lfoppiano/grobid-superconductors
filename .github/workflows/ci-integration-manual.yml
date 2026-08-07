@@ -12,12 +12,12 @@ jobs:
 
     steps:
     - name: Checkout grobid home
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: kermitt2/grobid
         path: ./grobid
     - name: Checkout grobid-superconductors
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         path: ./grobid/grobid-superconductors
     - name: Set up JDK 17
