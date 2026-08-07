@@ -99,7 +99,10 @@ WORKDIR /opt/grobid
 ## Select transformers model 
 ARG TRANSFORMERS_MODEL
 
-RUN if [[ -z "$TRANSFORMERS_MODEL" ]] ; then echo "Using Scibert as default transformer model" ; else rm -rf /opt/grobid/grobid-home/models/superconductors-BERT_CRF; mv /opt/grobid/grobid-home/models/superconductors-${TRANSFORMERS_MODEL}-BERT_CRF /opt/grobid/grobid-home/models/superconductors-BERT_CRF; rm -rf /opt/grobid/grobid-home/models/superconductors-*-BERT_CRF; fi
+# POSIX test (single brackets): the runtime base's /bin/sh is dash, where the bash-only
+# `[[ ]]` fails and would fall through to the else branch, deleting superconductors-BERT_CRF
+# on the default (no TRANSFORMERS_MODEL) build.
+RUN if [ -z "$TRANSFORMERS_MODEL" ] ; then echo "Using Scibert as default transformer model" ; else rm -rf /opt/grobid/grobid-home/models/superconductors-BERT_CRF; mv /opt/grobid/grobid-home/models/superconductors-${TRANSFORMERS_MODEL}-BERT_CRF /opt/grobid/grobid-home/models/superconductors-BERT_CRF; rm -rf /opt/grobid/grobid-home/models/superconductors-*-BERT_CRF; fi
 
 # JProfiler
 #RUN wget https://download-gcdn.ej-technologies.com/jprofiler/jprofiler_linux_12_0_2.tar.gz -P /tmp/ && \
