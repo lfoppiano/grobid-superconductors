@@ -1,5 +1,6 @@
-import org.ajoberstar.grgit.Grgit
+import javax.inject.Inject
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
 
 buildscript {
     repositories {
@@ -30,7 +31,6 @@ plugins {
     id 'com.palantir.git-version' version '0.12.3'
     id 'net.researchgate.release' version '3.1.0'
     id "org.jetbrains.kotlin.jvm" version "2.2.20"
-    id 'org.ajoberstar.grgit' version '5.3.0' apply false
 }
 
 
@@ -392,36 +392,50 @@ task copyModels(type: Copy) {
     }
 }
 
+// Gradle 9 removed the dynamic `exec {}` shortcut inside task actions, so we inject
+// ExecOperations via a helper interface and call it from doLast. Native git (not grgit/JGit)
+// clones the HuggingFace model repos: JGit's clone fails against HF with
+// "TransportException: Short read of block".
+interface InjectedExecOps {
+    @Inject ExecOperations getExecOps()
+}
+
 task downloadQuantitiesModelsGit(dependsOn: copyModels) {
+    def targetDir = file("${grobidHome}/models/data_models_quantities")
+    def injected = objects.newInstance(InjectedExecOps)
     doLast {
-        if (new File("${grobidHome}/models/data_models_quantities").exists()) {
-            def grgit = Grgit.open(
-                dir: "${grobidHome}/models/data_models_quantities",
-            )
-            grgit.pull()
+        targetDir.parentFile.mkdirs()
+        if (targetDir.exists()) {
+            injected.execOps.exec {
+                workingDir = targetDir
+                commandLine 'git', 'pull'
+            }
         } else {
-            def grgit = Grgit.clone(
-                dir: "${grobidHome}/models/data_models_quantities",
-                uri: "https://huggingface.co/sciencialab/grobid-quantities-models",
-                depth: 1
-            )
+            injected.execOps.exec {
+                commandLine 'git', 'clone',
+                    'https://huggingface.co/sciencialab/grobid-quantities-models',
+                    targetDir.absolutePath
+            }
         }
     }
 }
 
 task downloadSuperconductorsModelsGit(dependsOn: copyModels) {
+    def targetDir = file("${grobidHome}/models/data_models_superconductors")
+    def injected = objects.newInstance(InjectedExecOps)
     doLast {
-        if (new File("${grobidHome}/models/data_models_superconductors").exists()) {
-            def grgit = Grgit.open(
-                dir: "${grobidHome}/models/data_models_superconductors",
-            )
-            grgit.pull()
+        targetDir.parentFile.mkdirs()
+        if (targetDir.exists()) {
+            injected.execOps.exec {
+                workingDir = targetDir
+                commandLine 'git', 'pull'
+            }
         } else {
-            def grgit = Grgit.clone(
-                dir: "${grobidHome}/models/data_models_superconductors",
-                uri: "https://huggingface.co/sciencialab/grobid-superconductors-models",
-                depth: 1
-            )
+            injected.execOps.exec {
+                commandLine 'git', 'clone',
+                    'https://huggingface.co/sciencialab/grobid-superconductors-models',
+                    targetDir.absolutePath
+            }
         }
     }
 }

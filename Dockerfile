@@ -29,7 +29,15 @@ FROM eclipse-temurin:21-jdk-noble as builder
 USER root
 
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install apt-utils libxml2 git-lfs unzip
+    apt-get -y --no-install-recommends install \
+        apt-utils libxml2 unzip ca-certificates curl git git-lfs && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install git-xet so `git clone` can fetch the large model files stored via Xet on the
+# HuggingFace Hub (https://hf.co/docs/hub/git-xet); git-lfs alone leaves them as pointers.
+RUN curl --proto '=https' --tlsv1.2 -sSf \
+        https://raw.githubusercontent.com/huggingface/xet-core/refs/heads/main/git_xet/install.sh | sh \
+    && git xet install
 
 WORKDIR /opt/grobid-source
 
