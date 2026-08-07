@@ -13,14 +13,12 @@ import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.client.ChemDataExtractorClient;
 import org.grobid.core.utilities.client.StructureIdentificationModuleClient;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,9 +34,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Lexicon.class)
-@PowerMockIgnore({"kotlin.*"})
 public class SuperconductorsParserTest {
 
     private SuperconductorsParser target;
@@ -46,6 +41,8 @@ public class SuperconductorsParserTest {
     private ChemDataExtractorClient mockChemspotClient;
     private MaterialParser mockMaterialParser;
     private StructureIdentificationModuleClient mockSpaceGroupsClient;
+
+    private MockedStatic<Lexicon> lexiconMock;
 
 
     @BeforeClass
@@ -61,8 +58,13 @@ public class SuperconductorsParserTest {
         mockChemspotClient = EasyMock.createMock(ChemDataExtractorClient.class);
         mockMaterialParser = EasyMock.createMock(MaterialParser.class);
         mockSpaceGroupsClient = EasyMock.createMock(StructureIdentificationModuleClient.class);
-        PowerMock.mockStatic(Lexicon.class);
+        lexiconMock = Mockito.mockStatic(Lexicon.class);
         target = new SuperconductorsParser(GrobidModels.DUMMY, mockChemspotClient, mockMaterialParser, mockSpaceGroupsClient);
+    }
+
+    @After
+    public void tearDown() {
+        lexiconMock.close();
     }
 
     @Test

@@ -16,10 +16,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +32,6 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @Ignore("Decommissioned")
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Lexicon.class)
 public class CRFBasedLinkerTest {
     CRFBasedLinker target;
 
@@ -836,10 +832,12 @@ public class CRFBasedLinkerTest {
      * @return a string containing the resulting features + labels returned by wapiti
      */
     public static String getWapitiResult(List<LayoutToken> layoutTokens, List<Triple<String, Integer, Integer>> labels) {
-        PowerMock.mockStatic(Lexicon.class);
-        List<String> features = layoutTokens.stream()
-            .map(token -> FeaturesVectorEntityLinker.addFeatures(token.getText(), null, "other").printVector())
-            .collect(Collectors.toList());
+        List<String> features;
+        try (MockedStatic<Lexicon> lexiconMock = Mockito.mockStatic(Lexicon.class)) {
+            features = layoutTokens.stream()
+                .map(token -> FeaturesVectorEntityLinker.addFeatures(token.getText(), null, "other").printVector())
+                .collect(Collectors.toList());
+        }
 
         List<String> labeled = new ArrayList<>();
         int idx = 0;

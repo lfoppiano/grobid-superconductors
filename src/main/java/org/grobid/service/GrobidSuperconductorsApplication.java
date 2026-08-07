@@ -8,16 +8,17 @@ import io.dropwizard.core.Application;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
 import io.dropwizard.forms.MultiPartBundle;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.FilterRegistration;
-import org.eclipse.jetty.servlets.CrossOriginFilter;
-import org.eclipse.jetty.servlets.QoSFilter;
+import org.eclipse.jetty.server.handler.CrossOriginHandler;
+import org.eclipse.jetty.server.handler.QoSHandler;
 import org.grobid.service.command.*;
 import org.grobid.service.configuration.GrobidSuperconductorsConfiguration;
 import org.grobid.service.controller.HealthCheck;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GrobidSuperconductorsApplication extends Application<GrobidSuperconductorsConfiguration> {
     private static final String RESOURCES = "/service";
@@ -58,37 +59,41 @@ public class GrobidSuperconductorsApplication extends Application<GrobidSupercon
     public void run(GrobidSuperconductorsConfiguration configuration, Environment environment) {
         environment.healthChecks().register("health-check", new HealthCheck(configuration));
 
-        String allowedOrigins = configuration.getCorsAllowedOrigins();
-        String allowedMethods = configuration.getCorsAllowedMethods();
-        String allowedHeaders = configuration.getCorsAllowedHeaders();
+        // Enable CORS via Jetty 12's CrossOriginHandler (replaces the removed
+        // org.eclipse.jetty.servlets.CrossOriginFilter). Inserted above the application
+        // context so it applies to all served paths.
+        CrossOriginHandler cors = new CrossOriginHandler();
+        cors.setAllowedOriginPatterns(toSet(configuration.getCorsAllowedOrigins()));
+        cors.setAllowedMethods(toSet(configuration.getCorsAllowedMethods()));
+        cors.setAllowedHeaders(toSet(configuration.getCorsAllowedHeaders()));
+        cors.setAllowCredentials(false);
+        environment.getApplicationContext().insertHandler(cors);
 
-        // Enable CORS headers
-        final FilterRegistration.Dynamic cors =
-            environment.servlets().addFilter("CORS", CrossOriginFilter.class);
-
-        // Configure CORS parameters
-        cors.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, allowedOrigins);
-        cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, allowedMethods);
-        cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, allowedHeaders);
-
-        // Add URL mapping
-        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
-
-        // Enable QoS filter
-        final FilterRegistration.Dynamic qosPdf = environment.servlets().addFilter("QOS", QoSFilter.class);
-        qosPdf.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), true, "*/process/pdf", "*/process/text");
-        qosPdf.setInitParameter("maxRequests", String.valueOf(configuration.getMaxParallelRequests()));
-        qosPdf.setInitParameter("waitMs", String.valueOf(0));
-        qosPdf.setInitParameter("suspendMs", String.valueOf(0));
-
-        // Enable DDOS
-//        final FilterRegistration.Dynamic ddos =environment.servlets().addFilter("DDOS", DoSFilter.class);
-//        ddos.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), true, "*/process/pdf", "*/process/text");
-//        ddos.setInitParameter("delayMs", String.valueOf(5000));
-//        ddos.setInitParameter("maxRequestsPerSec", String.valueOf(configuration.getMaxParallelRequests()));
+        // Limit concurrent requests via Jetty 12's QoSHandler (replaces the removed
+        // org.eclipse.jetty.servlets.QoSFilter). A non-positive value means unlimited.
+        int maxParallelRequests = configuration.getMaxParallelRequests();
+        if (maxParallelRequests > 0) {
+            QoSHandler qos = new QoSHandler();
+            qos.setMaxRequestCount(maxParallelRequests);
+            environment.getApplicationContext().insertHandler(qos);
+        }
 
         environment.jersey().setUrlPattern(RESOURCES + "/*");
         environment.jersey().register(new EmptyOptionalNoContentExceptionMapper());
 
+    }
+
+    /**
+     * Splits a comma-separated config value (e.g. "OPTIONS,GET,POST") into a set of trimmed,
+     * non-empty entries preserving order, as expected by {@link CrossOriginHandler}.
+     */
+    private static Set<String> toSet(String csv) {
+        if (csv == null) {
+            return Set.of();
+        }
+        return Arrays.stream(csv.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

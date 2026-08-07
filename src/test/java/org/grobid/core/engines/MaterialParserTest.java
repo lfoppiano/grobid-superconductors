@@ -10,13 +10,12 @@ import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.GrobidConfig;
 import org.grobid.core.utilities.GrobidProperties;
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,11 +28,11 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Lexicon.class)
 public class MaterialParserTest {
 
     private MaterialParser target;
+
+    private MockedStatic<Lexicon> lexiconMock;
 
 
     @BeforeClass
@@ -46,8 +45,13 @@ public class MaterialParserTest {
     
     @Before
     public void setUp() throws Exception {
-        PowerMock.mockStatic(Lexicon.class);
+        lexiconMock = Mockito.mockStatic(Lexicon.class);
         target = new MaterialParser(GrobidModels.DUMMY, null, null);
+    }
+
+    @After
+    public void tearDown() {
+        lexiconMock.close();
     }
 
     private List<String> generateFeatures(List<LayoutToken> layoutTokens) {

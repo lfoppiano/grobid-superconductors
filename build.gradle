@@ -1,5 +1,6 @@
-import org.ajoberstar.grgit.Grgit
+import javax.inject.Inject
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
 
 buildscript {
     repositories {
@@ -24,24 +25,39 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'com.gradleup.shadow' version '8.3.10'
     id "de.undercouch.download" version "4.1.1"
     id 'com.github.kt3k.coveralls' version '2.12.2'
     id 'com.palantir.git-version' version '0.12.3'
-    id 'net.researchgate.release' version '3.0.2'
-    id "org.jetbrains.kotlin.jvm" version "1.8.21"
-    id 'org.ajoberstar.grgit' version '5.3.0' apply false
+    id 'net.researchgate.release' version '3.1.0'
+    id "org.jetbrains.kotlin.jvm" version "2.2.20"
 }
 
 
 repositories {
+    // grobid-core/service/trainer/quantities are vendored as plain jars in localLibs, with
+    // their transitive deps declared explicitly below. Bind org.grobid EXCLUSIVELY to flatDir
+    // so Gradle never resolves the shaded '-onejar' variant that ~/.m2 advertises via Gradle
+    // module metadata — that variant would drag grobid's relocated dependencies onto the
+    // classpath instead of using the plain jars this project is built around.
+    exclusiveContent {
+        forRepository {
+            flatDir { dirs 'localLibs' }
+        }
+        filter { includeGroup 'org.grobid' }
+    }
     mavenLocal()
     mavenCentral()
     maven { url 'https://jitpack.io' }
     maven { url "https://oss.jfrog.org/artifactory/libs-snapshot" }
     maven { url "https://oss.jfrog.org/artifactory/libs-release" }
-    flatDir {
-        dirs 'localLibs'
+}
+
+// Grobid 0.9.1 artifacts are compiled for Java 21 (class-file major 65); build on a JDK 21
+// toolchain so its classes are readable and the produced service matches the runtime image.
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -69,23 +85,32 @@ dependencies {
     testImplementation 'org.easymock:easymock:5.2.0'
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
-    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
-    testImplementation 'org.powermock:powermock-api-easymock:2.0.9'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    // JUnit 4 API for compilation (was previously provided transitively by
+    // powermock-module-junit4); JUnit 4 tests are executed by junit-vintage-engine.
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation "io.mockk:mockk:1.13.9"
 
     //GROBID and grobid-quantities
-    implementation 'org.grobid:grobid-quantities:0.8.2'
-    implementation 'org.grobid:grobid-core:0.8.2'
-    implementation 'org.grobid:grobid-trainer:0.8.2'
-    implementation 'org.grobid:grobid-service:0.8.2'
+    implementation 'org.grobid:grobid-quantities:0.9.0-SNAPSHOT'
+    implementation 'org.grobid:grobid-core:0.9.1'
+    implementation 'org.grobid:grobid-trainer:0.9.1'
+    implementation 'org.grobid:grobid-service:0.9.1'
     implementation 'xerces:xercesImpl:2.12.2'
     implementation "net.arnx:jsonic:1.3.10"
     implementation "net.sf.saxon:Saxon-HE:9.6.0-9"
     implementation "xom:xom:1.3.2"
     implementation 'javax.xml.bind:jaxb-api:2.3.0'
-    implementation 'org.apache.opennlp:opennlp-tools:1.9.1'
-    implementation 'black.ninia:jep:4.0.2'
+    // Must match the opennlp-tools version Grobid 0.9.1 is built against (2.5.9):
+    // grobid-core calls SentenceDetectorME.sentPosDetect(CharSequence), an OpenNLP 2.x
+    // overload. The vendored grobid-core jar carries no POM (flatDir), so this direct
+    // pin is the sole source of opennlp on the classpath — a lower pin causes a runtime
+    // NoSuchMethodError during sentence segmentation.
+    implementation 'org.apache.opennlp:opennlp-tools:2.5.9'
+    // Must match the native jep built into the runtime base image (grobid 0.9.x installs
+    // jep==4.3.1 under python3.11). A mismatched Java jar crashes the JVM (SIGSEGV) at JEP init.
+    implementation 'black.ninia:jep:4.3.1'
     implementation "org.apache.lucene:lucene-analyzers-common:4.5.1"
     implementation group: 'org.jruby', name: 'jruby-complete', version: '9.2.13.0'
 
@@ -98,18 +123,26 @@ dependencies {
     implementation 'org.apache.commons:commons-csv:1.9.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
 
-    //Dropwizard
-    implementation 'ru.vyarus:dropwizard-guicey:7.0.0'
+    //Dropwizard 5.x (Jakarta EE 10 / Jetty 12) to match Grobid 0.9.1. guicey 8.x is the
+    // Dropwizard-5-compatible line. Jetty 12 removed the org.eclipse.jetty.servlets
+    // CrossOriginFilter/QoSFilter; the service now uses CrossOriginHandler/QoSHandler.
+    // This project vendors grobid via flatDir (no POMs), so the whole DW5/Jetty stack
+    // must be declared here explicitly rather than inherited transitively.
+    implementation 'ru.vyarus:dropwizard-guicey:8.0.2'
 
-    implementation 'io.dropwizard:dropwizard-bom:4.0.13'
-    implementation 'io.dropwizard:dropwizard-core:4.0.13'
-    implementation 'io.dropwizard:dropwizard-assets:4.0.13'
-    implementation 'io.dropwizard:dropwizard-testing:4.0.13'
-    implementation 'io.dropwizard:dropwizard-forms:4.0.13'
-    implementation 'io.dropwizard:dropwizard-client:4.0.13'
-    implementation 'io.dropwizard:dropwizard-auth:4.0.13'
-    implementation 'io.dropwizard.metrics:metrics-core:4.2.22'
-    implementation 'io.dropwizard.metrics:metrics-servlets:4.2.22'
+    // Dropwizard 5.0.1 ships Jetty 12.1.5; force the Jetty BOMs to 12.1.9 (CVE-2026-2332).
+    implementation platform('org.eclipse.jetty:jetty-bom:12.1.9')
+    implementation platform('org.eclipse.jetty.ee10:jetty-ee10-bom:12.1.9')
+
+    implementation 'io.dropwizard:dropwizard-bom:5.0.1'
+    implementation 'io.dropwizard:dropwizard-core:5.0.1'
+    implementation 'io.dropwizard:dropwizard-assets:5.0.1'
+    implementation 'io.dropwizard:dropwizard-testing:5.0.1'
+    implementation 'io.dropwizard:dropwizard-forms:5.0.1'
+    implementation 'io.dropwizard:dropwizard-client:5.0.1'
+    implementation 'io.dropwizard:dropwizard-auth:5.0.1'
+    implementation 'io.dropwizard.metrics:metrics-core:4.2.38'
+    implementation 'io.dropwizard.metrics:metrics-servlets:4.2.38'
 
     //Misc
     implementation 'com.google.guava:guava:31.0.1-jre'
@@ -199,7 +232,9 @@ test {
 
 tasks.run.workingDir = rootProject.rootDir
 
-mainClassName = 'org.grobid.service.GrobidSuperconductorsApplication'
+application {
+    mainClass = 'org.grobid.service.GrobidSuperconductorsApplication'
+}
 
 run {
     args = ['server', 'resources/config/config.yml']
@@ -298,12 +333,11 @@ processResources {
 /*** Packaging and distribution ***/
 
 shadowJar {
-    mainClassName = "org.grobid.service.GrobidSuperconductorsApplication"
     archiveClassifier = "onejar"
     mergeServiceFiles()
     zip64 true
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes 'Main-Class': 'org.grobid.service.GrobidSuperconductorsApplication'
     }
     from sourceSets.main.output
     configurations = [project.configurations.runtimeClasspath]
@@ -360,36 +394,50 @@ task copyModels(type: Copy) {
     }
 }
 
+// Gradle 9 removed the dynamic `exec {}` shortcut inside task actions, so we inject
+// ExecOperations via a helper interface and call it from doLast. Native git (not grgit/JGit)
+// clones the HuggingFace model repos: JGit's clone fails against HF with
+// "TransportException: Short read of block".
+interface InjectedExecOps {
+    @Inject ExecOperations getExecOps()
+}
+
 task downloadQuantitiesModelsGit(dependsOn: copyModels) {
+    def targetDir = file("${grobidHome}/models/data_models_quantities")
+    def injected = objects.newInstance(InjectedExecOps)
     doLast {
-        if (new File("${grobidHome}/models/data_models_quantities").exists()) {
-            def grgit = Grgit.open(
-                dir: "${grobidHome}/models/data_models_quantities",
-            )
-            grgit.pull()
+        targetDir.parentFile.mkdirs()
+        if (targetDir.exists()) {
+            injected.execOps.exec {
+                workingDir = targetDir
+                commandLine 'git', 'pull'
+            }
         } else {
-            def grgit = Grgit.clone(
-                dir: "${grobidHome}/models/data_models_quantities",
-                uri: "https://huggingface.co/sciencialab/grobid-quantities-models",
-                depth: 1
-            )
+            injected.execOps.exec {
+                commandLine 'git', 'clone',
+                    'https://huggingface.co/sciencialab/grobid-quantities-models',
+                    targetDir.absolutePath
+            }
         }
     }
 }
 
 task downloadSuperconductorsModelsGit(dependsOn: copyModels) {
+    def targetDir = file("${grobidHome}/models/data_models_superconductors")
+    def injected = objects.newInstance(InjectedExecOps)
     doLast {
-        if (new File("${grobidHome}/models/data_models_superconductors").exists()) {
-            def grgit = Grgit.open(
-                dir: "${grobidHome}/models/data_models_superconductors",
-            )
-            grgit.pull()
+        targetDir.parentFile.mkdirs()
+        if (targetDir.exists()) {
+            injected.execOps.exec {
+                workingDir = targetDir
+                commandLine 'git', 'pull'
+            }
         } else {
-            def grgit = Grgit.clone(
-                dir: "${grobidHome}/models/data_models_superconductors",
-                uri: "https://huggingface.co/sciencialab/grobid-superconductors-models",
-                depth: 1
-            )
+            injected.execOps.exec {
+                commandLine 'git', 'clone',
+                    'https://huggingface.co/sciencialab/grobid-superconductors-models',
+                    targetDir.absolutePath
+            }
         }
     }
 }
@@ -444,14 +492,14 @@ task installModels(dependsOn: [copyModels, downloadQuantitiesModelsGit, download
 }
 
 wrapper {
-    gradleVersion "7.2"
+    gradleVersion = "9.6.1"
 }
 
 
 jacocoTestReport {
     reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
+        xml.required = true // coveralls plugin depends on xml format report
+        html.required = true
     }
     dependsOn test // tests are required to run before generating the report
 }
