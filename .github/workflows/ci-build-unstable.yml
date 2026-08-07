@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-tags: true
           fetch-depth: 0
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -38,6 +38,7 @@ jobs:
         run: ./gradlew test jacocoTestReport coveralls --no-daemon
 
       - name: Coveralls GitHub Action
+        continue-on-error: true  # coverage upload must not block the docker image build
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
